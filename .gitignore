@@ -1,0 +1,15 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Production / Build
+dist
+dist.zip
+build
+
+# Environment / Cache
+.wrangler
+.node
+.env
+.env.local
+*.log
