@@ -56,6 +56,7 @@ const hsCodeDictionary = [
 export default function Modals() {
   const {
     activeModal, setActiveModal, t, currentLang,
+    showLiveToast,
     setIsAdminLoggedIn, isAdminLoggedIn,
     adminPassword, saveAdminPassword, adminMobile, setAdminMobile,
     companiesList, activeCompanyId, activeCompany, setActiveCompanyId, updateCompanyProfile,
@@ -2373,7 +2374,7 @@ export default function Modals() {
                 style={{ fontSize: '0.8rem', padding: '6px 14px', color: '#2dd4bf', borderColor: 'rgba(45, 212, 191, 0.5)', background: 'rgba(45, 212, 191, 0.15)', fontWeight: 800 }}
                 onClick={async () => {
                   if (!heroTitleObj.en) {
-                    alert("Please enter English main headline title first.");
+                    showLiveToast("Please enter English main headline title first.", "info");
                     return;
                   }
                   const translatedTitle = await autoTranslateFullObject(heroTitleObj.en);
@@ -2383,7 +2384,7 @@ export default function Modals() {
                     const translatedSub = await autoTranslateFullObject(heroSubtitleObj.en);
                     setHeroSubtitleObj(prev => ({ ...prev, ...translatedSub }));
                   }
-                  alert("✅ Real-Time Master Auto-Translation Complete for Gujarati (GU), Hindi (HI), and French (FR)!");
+                  showLiveToast("✅ Real-Time Master Auto-Translation Complete for Gujarati (GU), Hindi (HI), and French (FR)!", "success");
                 }}
               >
                 🔄 Auto-Translate All Languages Now
@@ -2411,7 +2412,8 @@ export default function Modals() {
                 subtitle: finalSubtitles,
                 image: heroImgInput || 'images/hero_export_shipping.png'
               });
-              alert("✅ Multi-Language Hero Note & Headline Updated Successfully!");
+              showLiveToast("✅ Multi-Language Hero Note & Headline Updated Successfully!", "success");
+              setActiveModal(null);
             }}>
               {/* HERO PHOTO MANAGEMENT BOX */}
               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>

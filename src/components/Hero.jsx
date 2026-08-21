@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
 
 export default function Hero() {
-  const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn } = useApp();
+  const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn, showLiveToast } = useApp();
   const [showImgMenu, setShowImgMenu] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const menuRef = useRef(null);
@@ -113,7 +113,7 @@ export default function Hero() {
                         reader.onload = (evt) => {
                           saveHeroBanner({ ...heroBanner, image: evt.target.result });
                           setShowImgMenu(false);
-                          alert("✅ Hero Banner Photo Updated!");
+                          showLiveToast("✅ Hero Banner Photo Updated!", "success");
                         };
                         reader.readAsDataURL(file);
                       }
@@ -129,7 +129,7 @@ export default function Hero() {
                     if (url && url.trim()) {
                       saveHeroBanner({ ...heroBanner, image: url.trim() });
                       setShowImgMenu(false);
-                      alert("✅ Hero Banner Photo Updated!");
+                      showLiveToast("✅ Hero Banner Photo Updated!", "success");
                     }
                   }}
                 >
@@ -155,7 +155,7 @@ export default function Hero() {
                   onClick={() => {
                     saveHeroBanner({ ...heroBanner, image: 'images/hero_export_shipping.png' });
                     setShowImgMenu(false);
-                    alert("🔄 Reset to Default Shipping Banner Photo!");
+                    showLiveToast("🔄 Reset to Default Shipping Banner Photo!", "info");
                   }}
                 >
                   🔄 Reset to Default Photo
