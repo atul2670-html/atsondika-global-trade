@@ -169,24 +169,44 @@ export async function fetchGoogleTransliteration(text, lang = 'gu') {
   const cacheKey = `${clean.toLowerCase()}_${lang}`;
   if (transliterationCache.has(cacheKey)) return transliterationCache.get(cacheKey);
 
-  const itcCode = lang === 'gu' ? 'gu-t-i0-und' : (lang === 'hi' ? 'hi-t-i0-und' : '');
-  if (!itcCode) return autoTranslateText(clean, lang);
-
+  // 1. Try MyMemory Neural Translation API first for natural, fluent sentence translation
   try {
-    const url = `https://inputtools.google.com/request?text=${encodeURIComponent(clean)}&itc=${itcCode}&num=3`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
-        const translated = data[1][0][1][0];
-        transliterationCache.set(cacheKey, translated);
-        return translated;
+    const mmRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|${lang}`);
+    if (mmRes.ok) {
+      const mmData = await mmRes.json();
+      if (mmData && mmData.responseData && mmData.responseData.translatedText) {
+        let tText = mmData.responseData.translatedText.trim();
+        if (typeof document !== 'undefined') {
+          const txtEl = document.createElement('textarea');
+          txtEl.innerHTML = tText;
+          tText = txtEl.value;
+        }
+        if (tText && tText.toLowerCase() !== clean.toLowerCase() && !tText.includes('MYMEMORY WARNING')) {
+          transliterationCache.set(cacheKey, tText);
+          return tText;
+        }
       }
     }
-  } catch(e) {
-    console.warn('Google Transliteration API offline, using fallback engine:', e);
+  } catch (e) {}
+
+  // 2. Fallback to Google Transliteration Input Tools API
+  const itcCode = lang === 'gu' ? 'gu-t-i0-und' : (lang === 'hi' ? 'hi-t-i0-und' : '');
+  if (itcCode) {
+    try {
+      const url = `https://inputtools.google.com/request?text=${encodeURIComponent(clean)}&itc=${itcCode}&num=3`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+          const translated = data[1][0][1][0];
+          transliterationCache.set(cacheKey, translated);
+          return translated;
+        }
+      }
+    } catch(e) {}
   }
 
+  // 3. Fallback to offline Trade Dictionary & Algorithmic Engine
   return autoTranslateText(clean, lang);
 }
 
@@ -197,6 +217,15 @@ function matchTradeDictionary(text, lang) {
   let str = text;
 
   const dictionary = [
+    // Gender & Apparel Prefixes
+    { en: /For Women's|For Women|For Ladies|For Girls/gi, gu: 'મહિલાઓ માટે', hi: 'महिलाओं के लिए', fr: 'Pour Femmes' },
+    { en: /For Men's|For Men|For Gents|For Boys/gi, gu: 'પુરુષો માટે', hi: 'पुरुषों के लिए', fr: 'Pour Hommes' },
+    { en: /For Kids|For Children/gi, gu: 'બાળકો માટે', hi: 'बच्चों के लिए', fr: 'Pour Enfants' },
+    { en: /Women's|Ladies'/gi, gu: 'મહિલાઓ માટે', hi: 'महिलाओं के लिए', fr: 'Pour Femmes' },
+    { en: /Men's|Gents'/gi, gu: 'પુરુષો માટે', hi: 'पुरुषों के लिए', fr: 'Pour Hommes' },
+    { en: /Women|Ladies/gi, gu: 'મહિલાઓ', hi: 'महिलाएं', fr: 'Femmes' },
+    { en: /Men|Gents/gi, gu: 'પુરુષો', hi: 'पुरुष', fr: 'Hommes' },
+    { en: /Kids|Children/gi, gu: 'બાળકો', hi: 'बच्चे', fr: 'Enfants' },
     // Full Sentence Matching
     {
       en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World/gi,
