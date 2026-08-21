@@ -429,7 +429,7 @@ export default function Modals() {
         setHeroSubtitleObj({ ...defaultSubtitles, en: heroBanner.subtitle || defaultSubtitles.en });
       }
     }
-  }, [activeModal, heroBanner, currentLang]);
+  }, [activeModal]);
 
   // Sync state when editing about
   useEffect(() => {
@@ -444,7 +444,7 @@ export default function Modals() {
       setAboutStatsTitleObj(typeof aboutData.statsTitle === 'object' ? { ...aboutData.statsTitle } : { en: aboutData.statsTitle || '' });
       setAboutCounts(aboutData.counts || { exp: 12, countries: 45, shipments: 50000, clients: 350 });
     }
-  }, [activeModal, aboutData, currentLang]);
+  }, [activeModal]);
 
 
   // Sync state when editing product
