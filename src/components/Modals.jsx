@@ -252,8 +252,11 @@ export default function Modals() {
     }
 
     // Auto-fill invoice line items table from RFQ!
+    let lineItems = [];
+
+    // Case 1: Explicit selectedProducts array
     if (cust.selectedProducts && Array.isArray(cust.selectedProducts) && cust.selectedProducts.length > 0) {
-      const lineItems = cust.selectedProducts.map((p, pIdx) => {
+      lineItems = cust.selectedProducts.map((p, pIdx) => {
         const pName = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Export Commodity';
         const pHs = p.hsCode || p.localHsn || '9988';
         const pPrice = p.priceUsd ? p.priceUsd.replace(/[^0-9.]/g, '') : '500';
@@ -266,9 +269,49 @@ export default function Modals() {
           price: pPrice || '500'
         };
       });
-      setInvoiceItems(lineItems);
-    } else {
-      setInvoiceItems([
+    }
+
+    // Case 2: Multi-line notes (e.g. "1. Sari and Garment Fabrics (HS Code: 520811)...\n2. Punjabi Dress (HS Code: 620443)...")
+    if (lineItems.length === 0 && notes) {
+      const noteLines = notes.split('\n').map(l => l.trim()).filter(l => l && (/^\d+\./.test(l) || l.includes('HS Code:')));
+
+      if (noteLines.length > 0) {
+        lineItems = noteLines.map((l, lIdx) => {
+          const cleanLine = l.replace(/^\d+\.\s*/, '');
+          const hsMatch = cleanLine.match(/\(HS\s*Code:\s*([^\)]+)\)/i) || cleanLine.match(/\(HS:\s*([^\)]+)\)/i);
+          const itemHs = hsMatch ? hsMatch[1].trim() : '9988';
+          let itemTitle = cleanLine.split('|')[0].replace(/\(HS\s*Code:[^\)]+\)/i, '').replace(/\(HS:[^\)]+\)/i, '').trim();
+
+          return {
+            id: `item_${Date.now()}_${lIdx}`,
+            name: itemTitle || `Item #${lIdx + 1}`,
+            hsn: itemHs,
+            qty: '1',
+            unit: 'Unit / Container',
+            price: '500'
+          };
+        });
+      }
+    }
+
+    // Case 3: Comma separated productNames (e.g. "Sari and Garment Fabrics, Punjabi Dress")
+    if (lineItems.length === 0 && cust.productName && cust.productName.includes(',')) {
+      const pNames = cust.productName.split(',').map(s => s.trim()).filter(Boolean);
+      const hsList = (cust.hsCode || '').split(',').map(s => s.trim()).filter(Boolean);
+
+      lineItems = pNames.map((pn, pIdx) => ({
+        id: `item_${Date.now()}_${pIdx}`,
+        name: pn,
+        hsn: hsList[pIdx] || hsList[0] || '9988',
+        qty: '1',
+        unit: 'Unit / Container',
+        price: '500'
+      }));
+    }
+
+    // Fallback: 1 single item
+    if (lineItems.length === 0) {
+      lineItems = [
         {
           id: `item_${Date.now()}`,
           name: prodName,
@@ -277,8 +320,10 @@ export default function Modals() {
           unit: parsedUnit,
           price: unitPrice
         }
-      ]);
+      ];
     }
+
+    setInvoiceItems(lineItems);
 
     if (location.toLowerCase().includes('dubai') || notes.toLowerCase().includes('dubai') || notes.toLowerCase().includes('jebel ali')) {
       setQuotePortDischarge('Jebel Ali Port, Dubai (AEJEA)');
