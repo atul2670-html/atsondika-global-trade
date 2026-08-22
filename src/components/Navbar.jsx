@@ -491,45 +491,49 @@ export default function Navbar() {
                 </button>
               )}
 
-              {/* ALWAYS VISIBLE ADMIN LOGIN / ADMIN MODE CONTROL BUTTON */}
+              {/* DISCREET / SYMBOLIC ADMIN MODE CONTROL BUTTON */}
               {isAdminLoggedIn ? (
                 <div ref={companyRef} style={{ position: 'relative', display: 'inline-block' }}>
                   <button
                     type="button"
                     className="btn-secondary"
                     style={{
-                      background: 'rgba(34, 197, 94, 0.2)',
+                      background: 'rgba(34, 197, 94, 0.15)',
                       color: '#4ade80',
-                      borderColor: '#22c55e',
-                      padding: '5px 10px',
-                      fontSize: '0.78rem',
+                      borderColor: 'rgba(34, 197, 94, 0.4)',
+                      padding: '4px 10px',
+                      fontSize: '0.76rem',
                       fontWeight: 800,
-                      boxShadow: '0 0 10px rgba(34, 197, 94, 0.25)'
+                      borderRadius: '12px',
+                      boxShadow: '0 0 10px rgba(34, 197, 94, 0.2)'
                     }}
                     onClick={() => setActiveModal('admin_control')}
-                    title="Admin Mode Unlocked. Click for Admin Control Dashboard."
+                    title="Admin Control Panel"
                   >
-                    🔓 Admin Active ▾
+                    ⚙️ Control ▾
                   </button>
                 </div>
               ) : (
                 <button
                   type="button"
-                  className="btn-secondary"
                   style={{
-                    background: 'rgba(245, 158, 11, 0.25)',
-                    color: '#f59e0b',
-                    borderColor: '#f59e0b',
-                    padding: '5px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 900,
-                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.3)',
-                    cursor: 'pointer'
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    color: 'rgba(255, 255, 255, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
                   onClick={() => setActiveModal('admin')}
-                  title="Admin Password Access"
+                  title="System Portal"
                 >
-                  🔐 {currentLang === 'gu' ? 'એડમિન લોગઈન' : 'Admin Login'}
+                  ⚙️
                 </button>
               )}
             </div>
