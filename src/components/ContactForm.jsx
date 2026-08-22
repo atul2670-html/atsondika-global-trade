@@ -6,15 +6,43 @@ export default function ContactForm() {
   const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
 
   useEffect(() => {
+    const categories = getMainCategoryList ? getMainCategoryList() : [];
+
     if (selectedRfqProduct) {
       const prodName = selectedRfqProduct.names[currentLang] || selectedRfqProduct.names['en'] || selectedRfqProduct.names['gu'];
       const hs = selectedRfqProduct.hsCode ? ` (HS Code: ${selectedRfqProduct.hsCode})` : '';
+
+      // Auto-detect matching category from product object or category code
+      const prodCat = (selectedRfqProduct.category || '').toLowerCase();
+      let matchedCat = categories.find(c =>
+        c.id === prodCat ||
+        c.category === prodCat ||
+        c.nameEn.toLowerCase().includes(prodCat)
+      );
+
+      if (!matchedCat && prodCat) {
+        if (prodCat.includes('garment') || prodCat.includes('textile')) {
+          matchedCat = categories.find(c => c.id === 'garments' || c.id === 'textiles');
+        } else if (prodCat.includes('industrial') || prodCat.includes('fastener')) {
+          matchedCat = categories.find(c => c.id === 'industrial');
+        } else if (prodCat.includes('agro') || prodCat.includes('spice')) {
+          matchedCat = categories.find(c => c.id === 'agro');
+        } else if (prodCat.includes('used')) {
+          matchedCat = categories.find(c => c.id === 'used_machinery');
+        } else if (prodCat.includes('new')) {
+          matchedCat = categories.find(c => c.id === 'new_machinery');
+        }
+      }
+
+      const autoProductCat = matchedCat ? matchedCat.nameEn : (categories[0]?.nameEn || 'Agro Commodities (Spices, Rice, Oilseeds)');
+
       setFormData(prev => ({
         ...prev,
+        product: autoProductCat,
         msg: `Inquiry for item: ${prodName}${hs}\nMOQ: ${selectedRfqProduct.moq || '1 Container'}\nSpecifications: ${typeof selectedRfqProduct.spec === 'string' ? selectedRfqProduct.spec : 'Standard export quality'}`
       }));
     }
-  }, [selectedRfqProduct, currentLang]);
+  }, [selectedRfqProduct, currentLang, getMainCategoryList]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
