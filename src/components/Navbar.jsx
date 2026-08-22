@@ -491,7 +491,7 @@ export default function Navbar() {
                 </button>
               )}
 
-              {/* DISCREET / SYMBOLIC ADMIN MODE CONTROL BUTTON */}
+              {/* DISCREET / SYMBOLIC OM (🕉️) ADMIN MODE CONTROL BUTTON */}
               {isAdminLoggedIn ? (
                 <div ref={companyRef} style={{ position: 'relative', display: 'inline-block' }}>
                   <button
@@ -502,7 +502,7 @@ export default function Navbar() {
                       color: '#4ade80',
                       borderColor: 'rgba(34, 197, 94, 0.4)',
                       padding: '4px 10px',
-                      fontSize: '0.76rem',
+                      fontSize: '0.78rem',
                       fontWeight: 800,
                       borderRadius: '12px',
                       boxShadow: '0 0 10px rgba(34, 197, 94, 0.2)'
@@ -510,30 +510,31 @@ export default function Navbar() {
                     onClick={() => setActiveModal('admin_control')}
                     title="Admin Control Panel"
                   >
-                    ⚙️ Control ▾
+                    🕉️ Control ▾
                   </button>
                 </div>
               ) : (
                 <button
                   type="button"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    color: 'rgba(255, 255, 255, 0.65)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(245, 158, 11, 0.12)',
+                    color: '#fbbf24',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
                     borderRadius: '50%',
-                    width: '32px',
-                    height: '32px',
+                    width: '34px',
+                    height: '34px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.85rem',
+                    fontSize: '1rem',
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.15)'
                   }}
                   onClick={() => setActiveModal('admin')}
-                  title="System Portal"
+                  title="Atsondika Portal"
                 >
-                  ⚙️
+                  🕉️
                 </button>
               )}
             </div>
