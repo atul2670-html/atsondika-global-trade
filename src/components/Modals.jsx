@@ -124,6 +124,8 @@ export default function Modals() {
   // Proforma Invoice Generator State (Export vs Domestic India Trade & Jobworks)
   const [buyerName, setBuyerName] = useState('Global Trade Importer');
   const [buyerCompany, setBuyerCompany] = useState('International Import Corp');
+  const [buyerPhoneInput, setBuyerPhoneInput] = useState('');
+  const [buyerEmailInput, setBuyerEmailInput] = useState('');
   const [includeBankDetailsInInvoice, setIncludeBankDetailsInInvoice] = useState(true);
   const [includeStampInInvoice, setIncludeStampInInvoice] = useState(true);
   const [invoiceTradeMode, setInvoiceTradeMode] = useState('export'); // 'export' | 'interstate' | 'intrastate'
@@ -3877,64 +3879,196 @@ export default function Modals() {
                   Official Export Quote Document for Global Importers & Buyers
                 </span>
               </div>
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={() => {
-                  const sheet = document.getElementById('printableProformaSheet');
-                  if (!sheet) {
-                    window.print();
-                    return;
-                  }
-                  const printWin = window.open('', '_blank', 'width=900,height=800');
-                  if (printWin) {
-                    const docTitle = documentType === 'jobwork' ? 'Jobwork Delivery Challan' : (documentType === 'tax_invoice' ? 'Commercial Tax Invoice' : 'Proforma Export Quote');
-                    printWin.document.write(`
-                      <!DOCTYPE html>
-                      <html>
-                      <head>
-                        <title>${docTitle} - ${activeCompany?.name || 'ADIDEV EXPORT'}</title>
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                          @page { size: A4 portrait; margin: 8mm; }
-                          * { box-sizing: border-box; }
-                          html, body { background: #ffffff !important; color: #0f172a !important; margin: 0; padding: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-                          #printableProformaSheet { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 12px !important; box-shadow: none !important; border: none !important; }
-                          table { width: 100%; border-collapse: collapse; margin-bottom: 16px; page-break-inside: avoid; }
-                          th { background-color: #0f766e !important; color: #ffffff !important; padding: 8px 10px; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                          td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
-                          @media print {
-                            body { padding: 0; }
-                            #printableProformaSheet { padding: 0 !important; }
-                          }
-                        </style>
-                      </head>
-                      <body>
-                        ${sheet.outerHTML}
-                        <script>
-                          window.onload = function() {
-                            setTimeout(function() {
-                              window.print();
-                              window.close();
-                            }, 300);
-                          };
-                        </script>
-                      </body>
-                      </html>
-                    `);
-                    printWin.document.close();
-                  } else {
-                    window.print();
-                  }
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  padding: '8px 18px',
-                  fontWeight: 800
-                }}
-              >
-                🖨️ Print / Download PDF
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => {
+                    const sheet = document.getElementById('printableProformaSheet');
+                    if (!sheet) {
+                      window.print();
+                      return;
+                    }
+                    const printWin = window.open('', '_blank', 'width=900,height=800');
+                    if (printWin) {
+                      const docTitle = documentType === 'jobwork' ? 'Jobwork Delivery Challan' : (documentType === 'tax_invoice' ? 'Commercial Tax Invoice' : 'Proforma Export Quote');
+                      printWin.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                          <title>${docTitle} - ${activeCompany?.name || 'ADIDEV EXPORT'}</title>
+                          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                          <style>
+                            @page { size: A4 portrait; margin: 8mm; }
+                            * { box-sizing: border-box; }
+                            html, body { background: #ffffff !important; color: #0f172a !important; margin: 0; padding: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+                            #printableProformaSheet { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 12px !important; box-shadow: none !important; border: none !important; }
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 16px; page-break-inside: avoid; }
+                            th { background-color: #0f766e !important; color: #ffffff !important; padding: 8px 10px; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+                            @media print {
+                              body { padding: 0; }
+                              #printableProformaSheet { padding: 0 !important; }
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          ${sheet.outerHTML}
+                          <script>
+                            window.onload = function() {
+                              setTimeout(function() {
+                                window.print();
+                                window.close();
+                              }, 300);
+                            };
+                          </script>
+                        </body>
+                        </html>
+                      `);
+                      printWin.document.close();
+                    } else {
+                      window.print();
+                    }
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    padding: '8px 14px',
+                    fontWeight: 800,
+                    fontSize: '0.82rem'
+                  }}
+                  title="Print official document or save as high-resolution PDF"
+                >
+                  🖨️ Print / Download PDF
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '8px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)'
+                  }}
+                  onClick={() => {
+                    const compName = activeCompany?.name || 'Atsondika Global Trade';
+                    const subtotal = invoiceItems.reduce((acc, item) => acc + (Number(item.qty || 0) * Number(item.price || 0)), 0);
+                    const totalGst = (subtotal * domesticGstRate) / 100;
+                    const grandTotal = invoiceTradeMode === 'export' ? subtotal : (subtotal + totalGst);
+
+                    let docTitleStr = 'PROFORMA EXPORT QUOTE';
+                    if (documentType === 'tax_invoice') docTitleStr = 'COMMERCIAL TAX INVOICE';
+                    if (documentType === 'jobwork') docTitleStr = 'JOBWORK DELIVERY CHALLAN';
+
+                    const itemsListStr = invoiceItems.map((item, idx) => 
+                      `▪️ ${item.name} (${item.qty} ${item.unit}) - ${quoteCurrency} ${(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                    ).join('\n');
+
+                    let msg = `📄 *OFFICIAL DOCUMENT: ${docTitleStr}*\n`;
+                    msg += `🏢 *From:* ${compName}\n`;
+                    msg += `👤 *To:* ${buyerName || 'Valued Importer'} (${buyerCompany || 'Buyer'})\n`;
+                    msg += `-----------------------------------\n`;
+                    msg += `📦 *Goods / Line Items:*\n${itemsListStr}\n`;
+                    msg += `-----------------------------------\n`;
+                    msg += `💰 *Grand Total:* ${quoteCurrency} ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
+                    if (includeBankDetailsInInvoice && activeCompany?.bankDetails?.bankName) {
+                      msg += `🏦 *Bank:* ${activeCompany.bankDetails.bankName} (A/C: ${activeCompany.bankDetails.accountNumber || ''})\n`;
+                    }
+                    if (includeStampInInvoice) {
+                      msg += `🏵️ *Status:* Verified & Digital Seal Attached\n`;
+                    }
+                    msg += `-----------------------------------\n`;
+                    msg += `🌐 *View & Download PDF Portal:* ${window.location.origin}\n`;
+                    msg += `📞 *Exporter Phone:* ${activeCompany?.phone || '+91 78619 97755'}\n`;
+
+                    let cleanPhone = (buyerPhoneInput || '').replace(/[^0-9]/g, '');
+                    let targetUrl = '';
+                    if (cleanPhone && cleanPhone.length >= 10) {
+                      if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                      targetUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+                    } else {
+                      targetUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+                    }
+
+                    window.open(targetUrl, '_blank');
+                    showLiveToast(`📱 WhatsApp PDF quotation dispatch opened!`, 'success');
+                  }}
+                  title="Dispatch official quotation breakdown & PDF link via WhatsApp"
+                >
+                  📱 Send WhatsApp PDF
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '8px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+                  }}
+                  onClick={() => {
+                    const compName = activeCompany?.name || 'Atsondika Global Trade';
+                    const subtotal = invoiceItems.reduce((acc, item) => acc + (Number(item.qty || 0) * Number(item.price || 0)), 0);
+                    const totalGst = (subtotal * domesticGstRate) / 100;
+                    const grandTotal = invoiceTradeMode === 'export' ? subtotal : (subtotal + totalGst);
+
+                    let docTitleStr = 'PROFORMA EXPORT QUOTE';
+                    if (documentType === 'tax_invoice') docTitleStr = 'COMMERCIAL TAX INVOICE';
+                    if (documentType === 'jobwork') docTitleStr = 'JOBWORK DELIVERY CHALLAN';
+
+                    const itemsListStr = invoiceItems.map((item, idx) => 
+                      `${idx + 1}. ${item.name} | HSN: ${item.hsn || 'N/A'} | Qty: ${item.qty} ${item.unit} | Price: ${quoteCurrency} ${item.price} | Total: ${quoteCurrency} ${(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                    ).join('\n');
+
+                    const subject = `[OFFICIAL DOCUMENT] ${docTitleStr} - ${compName} / ${buyerCompany || buyerName}`;
+
+                    let body = `Dear ${buyerName || 'Valued Client'},\n\n`;
+                    body += `Please find the official quotation details below issued by ${compName}.\n\n`;
+                    body += `===============================================\n`;
+                    body += `DOCUMENT TYPE: ${docTitleStr}\n`;
+                    body += `EXPORTER: ${compName} (${activeCompany?.address || 'Surat, India'})\n`;
+                    body += `REGISTRATION / GST: ${activeCompany?.apedaReg || activeCompany?.gstin || ''}\n`;
+                    body += `BUYER: ${buyerName} - ${buyerCompany}\n`;
+                    body += `===============================================\n\n`;
+                    body += `ITEMIZED PARTICULARS:\n${itemsListStr}\n\n`;
+                    body += `-----------------------------------------------\n`;
+                    body += `GRAND TOTAL INVOICE VALUE: ${quoteCurrency} ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
+                    body += `-----------------------------------------------\n\n`;
+                    if (includeBankDetailsInInvoice && activeCompany?.bankDetails?.bankName) {
+                      body += `BANKING & WIRE TRANSFER DETAILS:\n`;
+                      body += `Bank Name: ${activeCompany.bankDetails.bankName}\n`;
+                      body += `Beneficiary: ${activeCompany.bankDetails.accountName}\n`;
+                      body += `Account No: ${activeCompany.bankDetails.accountNumber}\n`;
+                      body += `SWIFT Code: ${activeCompany.bankDetails.swiftCode}\n`;
+                      body += `IFSC Code: ${activeCompany.bankDetails.ifscCode}\n\n`;
+                    }
+                    body += `For official printable PDF copy, please reply to this email or visit our portal: ${window.location.origin}\n\n`;
+                    body += `Best regards,\n${compName} Export Team\nPhone: ${activeCompany?.phone || '+91 78619 97755'}\nEmail: ${activeCompany?.email || 'info@atsondikaglobaltrade.com'}`;
+
+                    const mailtoUrl = `mailto:${buyerEmailInput || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    window.open(mailtoUrl, '_blank');
+                    showLiveToast(`✉️ Email draft created for ${buyerName || 'buyer'}!`, 'success');
+                  }}
+                  title="Dispatch official quotation breakdown & PDF link via Email"
+                >
+                  ✉️ Send Email PDF
+                </button>
+              </div>
             </div>
 
             {/* Editable Configuration Controls */}
@@ -4175,6 +4309,16 @@ export default function Modals() {
                 <div className="form-group" style={{ marginBottom: '8px' }}>
                   <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Buyer Company / Business Name</label>
                   <input type="text" className="form-control" value={buyerCompany} onChange={(e) => setBuyerCompany(e.target.value)} />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label style={{ fontSize: '0.78rem', color: '#25D366', fontWeight: 800, display: 'block' }}>📱 Buyer WhatsApp / Mobile No.</label>
+                  <input type="text" className="form-control" placeholder="e.g. +91 98765 43210 / +971 50 123 4567" value={buyerPhoneInput} onChange={(e) => setBuyerPhoneInput(e.target.value)} />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 800, display: 'block' }}>✉️ Buyer Email Address</label>
+                  <input type="email" className="form-control" placeholder="e.g. import@globaltrade.com" value={buyerEmailInput} onChange={(e) => setBuyerEmailInput(e.target.value)} />
                 </div>
 
                 {invoiceTradeMode !== 'export' ? (
