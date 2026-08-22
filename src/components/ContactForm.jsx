@@ -204,9 +204,10 @@ export default function ContactForm() {
                 >
                   {(getMainCategoryList ? getMainCategoryList() : []).map(cat => {
                     const labelText = currentLang === 'gu' ? cat.nameGu : cat.nameEn;
+                    const prefix = cat.isCustom ? '⭐ ' : '';
                     return (
                       <option key={cat.id} value={cat.nameEn}>
-                        {labelText}
+                        {prefix}{labelText}
                       </option>
                     );
                   })}

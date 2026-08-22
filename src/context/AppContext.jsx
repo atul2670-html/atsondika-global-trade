@@ -1207,22 +1207,25 @@ export function AppProvider({ children }) {
       { id: 'packaging', nameEn: 'Eco Packaging & Jute Bags', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ (બાયોડિગ્રેડેબલ)' }
     ];
 
-    const seenCategoryNames = new Set(builtInCategories.map(c => c.nameEn.toLowerCase()));
+    const seenIds = new Set(builtInCategories.map(c => c.id));
+    const seenNames = new Set(builtInCategories.map(c => c.nameEn.toLowerCase()));
 
-    // Dynamically append custom main categories created by Admin now and in the future
-    (customProductsList || []).filter(p => !p.isSub).forEach(cm => {
-      const titleEn = (cm.names?.en || cm.names?.gu || '').trim();
-      const titleGu = (cm.names?.gu || cm.names?.en || '').trim();
-      const normName = (titleEn || titleGu).toLowerCase();
-      const catSlug = cm.category || cm.id;
+    // Dynamically append custom categories created by Admin now and in the future
+    (customProductsList || []).forEach(cm => {
+      const catSlug = (cm.category || cm.id || '').trim();
+      const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
+      const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
+      const normName = titleEn.toLowerCase();
 
-      if (!seenCategoryNames.has(normName)) {
-        seenCategoryNames.add(normName);
+      if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
+        seenIds.add(catSlug);
+        seenNames.add(normName);
         builtInCategories.push({
-          id: cm.id,
+          id: catSlug,
           category: catSlug,
           nameEn: titleEn,
-          nameGu: titleGu
+          nameGu: titleGu,
+          isCustom: true
         });
       }
     });
