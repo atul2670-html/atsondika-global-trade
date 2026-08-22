@@ -125,6 +125,7 @@ export default function Modals() {
   const [buyerName, setBuyerName] = useState('Global Trade Importer');
   const [buyerCompany, setBuyerCompany] = useState('International Import Corp');
   const [includeBankDetailsInInvoice, setIncludeBankDetailsInInvoice] = useState(true);
+  const [includeStampInInvoice, setIncludeStampInInvoice] = useState(true);
   const [invoiceTradeMode, setInvoiceTradeMode] = useState('export'); // 'export' | 'interstate' | 'intrastate'
   const [documentType, setDocumentType] = useState('proforma'); // 'proforma' | 'tax_invoice' | 'jobwork'
   const [domesticGstRate, setDomesticGstRate] = useState(18); // 5 | 12 | 18 | 28
@@ -4222,6 +4223,27 @@ export default function Modals() {
                   </select>
                 </div>
               </div>
+
+              {/* PRINT OPTIONS & TOGGLES (BANK DETAILS & DIGITAL STAMP) */}
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed var(--border-glass)' }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(29, 78, 216, 0.15)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(59, 130, 246, 0.4)', color: '#60a5fa', fontSize: '0.82rem', fontWeight: 800 }}>
+                  <input
+                    type="checkbox"
+                    checked={includeStampInInvoice}
+                    onChange={(e) => setIncludeStampInInvoice(e.target.checked)}
+                  />
+                  🏵️ Print Digital Round Stamp & Official Seal (ડિજિટલ સ્ટેમ્પ છાપવો)
+                </label>
+
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(16, 185, 129, 0.15)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34d399', fontSize: '0.82rem', fontWeight: 800 }}>
+                  <input
+                    type="checkbox"
+                    checked={includeBankDetailsInInvoice}
+                    onChange={(e) => setIncludeBankDetailsInInvoice(e.target.checked)}
+                  />
+                  🏦 Print Wire Transfer & Bank Details (બેંક વિગત છાપવી)
+                </label>
+              </div>
             </div>
 
             {/* PRINTABLE PROFORMA / TAX INVOICE / JOBWORK SHEET CONTAINER */}
@@ -4425,7 +4447,7 @@ export default function Modals() {
                       <div>{activeCompany?.address || 'Surat, Gujarat, India'}</div>
                     </div>
                     <div style={{ textAlign: 'center', border: '2px dashed #0f766e', padding: '12px 24px', borderRadius: '8px', position: 'relative', minWidth: '210px', background: '#f0fdf4' }}>
-                      {(activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin)) && (
+                      {includeStampInInvoice && (activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin)) && (
                         <img
                           src={activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin)}
                           alt="Digital Round Stamp Seal"
