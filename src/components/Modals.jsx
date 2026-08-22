@@ -252,16 +252,33 @@ export default function Modals() {
     }
 
     // Auto-fill invoice line items table from RFQ!
-    setInvoiceItems([
-      {
-        id: `item_${Date.now()}`,
-        name: prodName,
-        hsn: hs,
-        qty: parsedQty,
-        unit: parsedUnit,
-        price: unitPrice
-      }
-    ]);
+    if (cust.selectedProducts && Array.isArray(cust.selectedProducts) && cust.selectedProducts.length > 0) {
+      const lineItems = cust.selectedProducts.map((p, pIdx) => {
+        const pName = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Export Commodity';
+        const pHs = p.hsCode || p.localHsn || '9988';
+        const pPrice = p.priceUsd ? p.priceUsd.replace(/[^0-9.]/g, '') : '500';
+        return {
+          id: `item_${Date.now()}_${pIdx}`,
+          name: pName,
+          hsn: pHs,
+          qty: '1',
+          unit: p.moq || parsedUnit || 'Unit / Container',
+          price: pPrice || '500'
+        };
+      });
+      setInvoiceItems(lineItems);
+    } else {
+      setInvoiceItems([
+        {
+          id: `item_${Date.now()}`,
+          name: prodName,
+          hsn: hs,
+          qty: parsedQty,
+          unit: parsedUnit,
+          price: unitPrice
+        }
+      ]);
+    }
 
     if (location.toLowerCase().includes('dubai') || notes.toLowerCase().includes('dubai') || notes.toLowerCase().includes('jebel ali')) {
       setQuotePortDischarge('Jebel Ali Port, Dubai (AEJEA)');

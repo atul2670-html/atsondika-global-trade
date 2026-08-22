@@ -189,10 +189,50 @@ export function AppProvider({ children }) {
   const [editingBranchId, setEditingBranchId] = useState(null);
   const [selectedCertForView, setSelectedCertForView] = useState(null);
 
-  // Dynamic RFQ & Quotation State
-  const [selectedRfqProduct, setSelectedRfqProduct] = useState(null);
+  // Dynamic RFQ & Multi-Product Quotation State
+  const [selectedRfqProducts, setSelectedRfqProducts] = useState([]);
   const [quotationProduct, setQuotationProduct] = useState(null);
   const [imagePreviewData, setImagePreviewData] = useState(null);
+
+  const addRfqProduct = (prod) => {
+    if (!prod) return;
+    setSelectedRfqProducts(prev => {
+      if (prev.some(p => p.id === prod.id)) return prev;
+      return [...prev, prod];
+    });
+  };
+
+  const removeRfqProduct = (prodId) => {
+    setSelectedRfqProducts(prev => prev.filter(p => p.id !== prodId));
+  };
+
+  const clearRfqProducts = () => {
+    setSelectedRfqProducts([]);
+  };
+
+  const toggleRfqProduct = (prod) => {
+    if (!prod) return;
+    setSelectedRfqProducts(prev => {
+      const exists = prev.some(p => p.id === prod.id);
+      if (exists) return prev.filter(p => p.id !== prod.id);
+      return [...prev, prod];
+    });
+  };
+
+  // Backwards compatible getter and setter for single product RFQ
+  const selectedRfqProduct = selectedRfqProducts[0] || null;
+  const setSelectedRfqProduct = (prod) => {
+    if (!prod) {
+      setSelectedRfqProducts([]);
+    } else if (typeof prod === 'function') {
+      setSelectedRfqProducts(prev => {
+        const nextVal = prod(prev[0] || null);
+        return nextVal ? [nextVal] : [];
+      });
+    } else {
+      setSelectedRfqProducts([prod]);
+    }
+  };
 
   const openImagePreview = (data) => {
     setImagePreviewData(data);
@@ -1480,8 +1520,8 @@ export function AppProvider({ children }) {
       editingCertId, setEditingCertId,
       editingBranchId, setEditingBranchId,
       editingRouteId, setEditingRouteId,
-      selectedCertForView, setSelectedCertForView,
       selectedRfqProduct, setSelectedRfqProduct,
+      selectedRfqProducts, setSelectedRfqProducts, addRfqProduct, removeRfqProduct, clearRfqProducts, toggleRfqProduct,
       quotationProduct, setQuotationProduct,
       imagePreviewData, setImagePreviewData, openImagePreview,
       heroBanner, saveHeroBanner,

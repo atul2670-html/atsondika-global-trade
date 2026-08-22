@@ -9,7 +9,7 @@ export default function ProductsGrid() {
     searchFilterQuery, setSearchFilterQuery,
     getAllProducts, customProductsList, deleteProduct,
     verifyAdminAccess, setActiveModal, setEditingProductId,
-    setSelectedRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
+    setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
     productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen
   } = useApp();
 
@@ -577,25 +577,33 @@ export default function ProductsGrid() {
                         🛒 Add to Quote Cart (RFQ)
                       </button>
 
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        style={{
-                          width: '100%',
-                          justifyContent: 'center',
-                          fontSize: '0.82rem',
-                          padding: '8px 12px',
-                          whiteSpace: 'nowrap'
-                        }}
-                        onClick={() => {
-                          setSelectedRfqProduct(p);
-                          const contactSec = document.getElementById('contact');
-                          if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        title={t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}
-                      >
-                        💬 {t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}
-                      </button>
+                      {(() => {
+                        const isSelected = (selectedRfqProducts || []).some(sp => sp.id === p.id);
+
+                        return (
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            style={{
+                              width: '100%',
+                              justifyContent: 'center',
+                              fontSize: '0.82rem',
+                              padding: '8px 12px',
+                              whiteSpace: 'nowrap',
+                              background: isSelected ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined
+                            }}
+                            onClick={() => {
+                              if (addRfqProduct) addRfqProduct(p);
+                              else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
+                              const contactSec = document.getElementById('contact');
+                              if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            title={t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}
+                          >
+                            {isSelected ? `✔ Added to RFQ (${selectedRfqProducts.length})` : `💬 ${t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}`}
+                          </button>
+                        );
+                      })()}
 
                       <button
                         type="button"
