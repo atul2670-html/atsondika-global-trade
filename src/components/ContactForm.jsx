@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 
 export default function ContactForm() {
   const { t, currentLang, selectedRfqProduct, setSelectedRfqProduct, activeCompany, getMainCategoryList, registerCustomer } = useApp();
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
+  const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
 
   useEffect(() => {
     if (selectedRfqProduct) {
@@ -23,6 +23,7 @@ export default function ContactForm() {
       const hs = selectedRfqProduct ? (selectedRfqProduct.hsCode || '') : '';
       registerCustomer({
         name: formData.name,
+        companyName: formData.company || formData.name,
         phone: formData.phone,
         email: formData.email,
         productName: pName,
@@ -31,7 +32,7 @@ export default function ContactForm() {
       });
     }
     alert(`✅ Thank you ${formData.name}! Your quotation request has been submitted and saved successfully.`);
-    setFormData({ name: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
+    setFormData({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
     setSelectedRfqProduct(null);
   };
 
@@ -116,19 +117,33 @@ export default function ContactForm() {
             <form onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
-                  <label className="form-label">{t.form_name}</label>
+                  <label className="form-label">{currentLang === 'gu' ? 'ગ્રાહકનું નામ (Buyer Contact Name) *' : 'Buyer Contact Name *'}</label>
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Atulbhai Patel"
+                    placeholder="e.g. Atul Patel"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
                 </div>
-                
+
                 <div className="form-group">
-                  <label className="form-label">{t.form_phone}</label>
+                  <label className="form-label">{currentLang === 'gu' ? 'કંપનીનું નામ (Company / Business Name) *' : 'Company / Business Name *'}</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. Atul Automation / SST Group"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">{t.form_phone} *</label>
                   <input
                     type="tel"
                     className="form-control"
@@ -138,17 +153,17 @@ export default function ContactForm() {
                     required
                   />
                 </div>
-              </div>
 
-              <div className="form-group">
-                <label className="form-label">{t.form_email}</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="atul2670@gmail.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
+                <div className="form-group">
+                  <label className="form-label">{t.form_email}</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="atul2670@gmail.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="form-group">
