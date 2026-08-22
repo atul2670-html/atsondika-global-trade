@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { toUSEnglishAddress, convertGoogleDriveUrl } from '../utils/address';
+import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
@@ -100,6 +100,7 @@ export default function Modals() {
   const [compNameInput, setCompNameInput] = useState('');
   const [compTaglineInput, setCompTaglineInput] = useState('');
   const [compLogoInput, setCompLogoInput] = useState('');
+  const [compStampInput, setCompStampInput] = useState('');
   const [compAddressInput, setCompAddressInput] = useState('');
   const [compPhoneInput, setCompPhoneInput] = useState('');
   const [compEmailInput, setCompEmailInput] = useState('');
@@ -143,6 +144,7 @@ export default function Modals() {
         setCompNameInput(comp.name || '');
         setCompTaglineInput(comp.tagline || '');
         setCompLogoInput(comp.logo || 'images/logo.png');
+        setCompStampInput(comp.stamp || generateDigitalRoundStampSvg(comp.name, comp.apedaReg || comp.gstin));
         setCompAddressInput(comp.address || '');
         setCompPhoneInput(comp.phone || '');
         setCompEmailInput(comp.email || '');
@@ -1643,11 +1645,13 @@ export default function Modals() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
+              const finalStamp = compStampInput.trim() || generateDigitalRoundStampSvg(compNameInput.trim(), compApedaInput.trim() || compGstinInput.trim());
               updateCompanyProfile({
                 id: selectedCompId,
                 name: compNameInput.trim(),
                 tagline: compTaglineInput.trim(),
                 logo: compLogoInput.trim(),
+                stamp: finalStamp,
                 address: compAddressInput.trim(),
                 phone: compPhoneInput.trim(),
                 email: compEmailInput.trim(),
@@ -1664,7 +1668,7 @@ export default function Modals() {
                 }
               });
               setActiveCompanyId(selectedCompId);
-              alert(`✅ Company Profile "${compNameInput}" & Banking details saved successfully!`);
+              showLiveToast(`✅ Company Profile "${compNameInput}" & Digital Round Stamp saved successfully!`, "success");
               setActiveModal(null);
             }}>
 
@@ -1721,6 +1725,97 @@ export default function Modals() {
                       placeholder="images/logo.png"
                       value={compLogoInput}
                       onChange={(e) => setCompLogoInput(e.target.value)}
+                      style={{ marginTop: '4px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* DIGITAL ROUND RUBBER STAMP MANAGER BOX */}
+              <div style={{ background: 'rgba(29, 78, 216, 0.06)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(59, 130, 246, 0.3)', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#60a5fa' }}>
+                    🏵️ Digital Round Rubber Stamp Seal (ડિજિટલ રાઉન્ડ સ્ટેમ્પ)
+                  </label>
+                  <button
+                    type="button"
+                    style={{
+                      fontSize: '0.74rem',
+                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '4px 12px',
+                      borderRadius: '12px',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      const autoStamp = generateDigitalRoundStampSvg(compNameInput || "EXPORT HOUSE", compApedaInput || compGstinInput || "REGISTERED EXPORTER");
+                      setCompStampInput(autoStamp);
+                      showLiveToast("⚡ Official Digital Round Stamp auto-generated!", "success");
+                    }}
+                    title="Generate official round seal using company name & registration number"
+                  >
+                    ⚡ Auto-Generate Digital Stamp
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative', width: '75px', height: '75px', borderRadius: '50%', background: '#ffffff', padding: '4px', border: '2px solid #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      src={compStampInput || generateDigitalRoundStampSvg(compNameInput, compApedaInput || compGstinInput)}
+                      alt="Company Round Stamp Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      onError={(e) => {
+                        e.target.src = generateDigitalRoundStampSvg(compNameInput, compApedaInput || compGstinInput);
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginBottom: '4px' }}>
+                      📁 Upload Custom Stamp Image (PNG with transparent background):
+                    </div>
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            const img = new Image();
+                            img.onload = () => {
+                              const canvas = document.createElement('canvas');
+                              let width = img.width;
+                              let height = img.height;
+                              const maxDim = 400;
+                              if (width > maxDim || height > maxDim) {
+                                if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; }
+                                else { width = Math.round((width * maxDim) / height); height = maxDim; }
+                              }
+                              canvas.width = width;
+                              canvas.height = height;
+                              const ctx = canvas.getContext('2d');
+                              ctx.drawImage(img, 0, 0, width, height);
+                              setCompStampInput(canvas.toDataURL('image/png'));
+                            };
+                            img.src = evt.target.result;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                      🔗 Or Image Web URL:
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="data:image/png;base64,... or https://example.com/stamp.png"
+                      value={compStampInput}
+                      onChange={(e) => setCompStampInput(e.target.value)}
                       style={{ marginTop: '4px' }}
                     />
                   </div>
@@ -4329,9 +4424,30 @@ export default function Modals() {
                       <div>Verified Official Documentation • {activeCompany?.name || 'ADIDEV SMART SOLUTION'}</div>
                       <div>{activeCompany?.address || 'Surat, Gujarat, India'}</div>
                     </div>
-                    <div style={{ textAlign: 'center', border: '2px dashed #0f766e', padding: '10px 20px', borderRadius: '8px' }}>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f766e' }}>{activeCompany?.name || 'ADIDEV SMART SOLUTION'}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '2px' }}>Authorized Signatory & Stamp</div>
+                    <div style={{ textAlign: 'center', border: '2px dashed #0f766e', padding: '12px 24px', borderRadius: '8px', position: 'relative', minWidth: '210px', background: '#f0fdf4' }}>
+                      {(activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin)) && (
+                        <img
+                          src={activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin)}
+                          alt="Digital Round Stamp Seal"
+                          style={{
+                            position: 'absolute',
+                            top: '-42px',
+                            right: '-18px',
+                            width: '105px',
+                            height: '105px',
+                            objectFit: 'contain',
+                            opacity: 0.88,
+                            transform: 'rotate(-10deg)',
+                            pointerEvents: 'none',
+                            filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.18))'
+                          }}
+                          onError={(e) => {
+                            e.target.src = generateDigitalRoundStampSvg(activeCompany?.name, activeCompany?.apedaReg || activeCompany?.gstin);
+                          }}
+                        />
+                      )}
+                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f766e' }}>{activeCompany?.name || 'ADIDEV SMART SOLUTION'}</div>
+                      <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '2px', fontWeight: 700 }}>Authorized Signatory & Digital Seal</div>
                     </div>
                   </div>
                 </div>

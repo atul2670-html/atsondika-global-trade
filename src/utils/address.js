@@ -73,3 +73,51 @@ export function convertGoogleDriveUrl(url) {
   return trimmed;
 }
 
+/**
+ * Generates a high-res SVG Digital Round Rubber Stamp seal for any company name & registration number.
+ */
+export function generateDigitalRoundStampSvg(companyName = "Atsondika Global Trade", regNo = "REGISTERED EXPORTER") {
+  const name = String(companyName || "EXPORT HOUSE").toUpperCase();
+  const reg = String(regNo || "REGISTERED EXPORTER").toUpperCase();
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+    <defs>
+      <path id="circlePathOuter" d="M 100, 100 m -76, 0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0" />
+      <path id="circlePathInner" d="M 100, 100 m -50, 0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0" />
+    </defs>
+    <!-- Outer Decorative Rings -->
+    <circle cx="100" cy="100" r="95" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="6,3" />
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#1d4ed8" stroke-width="2.5" />
+    <circle cx="100" cy="100" r="62" fill="none" stroke="#1d4ed8" stroke-width="1.8" />
+    <circle cx="100" cy="100" r="58" fill="none" stroke="#1d4ed8" stroke-dasharray="3,2" stroke-width="1" />
+
+    <!-- Circular Company Name Text -->
+    <text fill="#1d4ed8" font-size="10.5" font-weight="900" font-family="Arial, sans-serif" letter-spacing="1.4">
+      <textPath href="#circlePathOuter" startOffset="50%" text-anchor="middle">
+        ★ ${name.length > 32 ? name.substring(0, 32) + '...' : name} ★
+      </textPath>
+    </text>
+
+    <!-- Bottom Arc Location -->
+    <text fill="#1d4ed8" font-size="8.5" font-weight="800" font-family="Arial, sans-serif" letter-spacing="1.2">
+      <textPath href="#circlePathInner" startOffset="50%" text-anchor="middle">
+        SURAT • GUJARAT • INDIA
+      </textPath>
+    </text>
+
+    <!-- Center Emblem & Reg Details -->
+    <polygon points="100,47 104,58 116,58 106,66 110,77 100,70 90,77 94,66 84,58 96,58" fill="#1d4ed8" opacity="0.9" />
+    <text x="100" y="98" fill="#1d4ed8" font-size="9.5" font-weight="900" font-family="Arial, sans-serif" text-anchor="middle">
+      OFFICIAL SEAL
+    </text>
+    <text x="100" y="112" fill="#1d4ed8" font-size="7.5" font-weight="800" font-family="Arial, sans-serif" text-anchor="middle">
+      ${reg.length > 24 ? reg.substring(0, 24) : reg}
+    </text>
+    <text x="100" y="126" fill="#1d4ed8" font-size="7.5" font-weight="900" font-family="Arial, sans-serif" text-anchor="middle">
+      ★ GOVT APPROVED ★
+    </text>
+  </svg>`;
+
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
