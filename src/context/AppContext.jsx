@@ -151,6 +151,36 @@ export function AppProvider({ children }) {
     } catch(e) {}
   }, [merchantProductsList]);
 
+  // Admin Commission & Seller Approval System State
+  const [adminCommissionRate, setAdminCommissionRate] = useState(() => {
+    try { return parseFloat(localStorage.getItem('site_admin_commission_rate_v1')) || 2.5; }
+    catch(e) { return 2.5; }
+  });
+
+  const [requireProductApproval, setRequireProductApproval] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_require_product_approval_v1');
+      return stored !== null ? stored === 'true' : true;
+    } catch(e) { return true; }
+  });
+
+  const saveAdminCommissionRate = (rate) => {
+    const num = parseFloat(rate);
+    const validRate = isNaN(num) ? 2.5 : Math.max(0, Math.min(50, num));
+    setAdminCommissionRate(validRate);
+    try { localStorage.setItem('site_admin_commission_rate_v1', validRate.toString()); } catch(e) {}
+    syncToServer({ adminCommissionRate: validRate });
+    showLiveToast(`💰 Admin Commission set to ${validRate}%`, 'success');
+  };
+
+  const saveRequireProductApproval = (val) => {
+    const boolVal = Boolean(val);
+    setRequireProductApproval(boolVal);
+    try { localStorage.setItem('site_require_product_approval_v1', boolVal.toString()); } catch(e) {}
+    syncToServer({ requireProductApproval: boolVal });
+    showLiveToast(`⚙️ Product Approval Policy updated: ${boolVal ? 'Manual Admin Approval Required' : 'Auto Approve'}`, 'info');
+  };
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1568,6 +1598,24 @@ export function AppProvider({ children }) {
     setMerchantsList(nextMerchants);
     try { localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants)); } catch(e) {}
     syncToServer({ merchantsList: nextMerchants });
+    const statusLabels = { approved: 'Approved ✅', blocked: 'Blocked 🚫', pending: 'Pending ⏳' };
+    showLiveToast(`🏬 Seller status updated to ${statusLabels[newStatus] || newStatus}`, 'info');
+  };
+
+  const deleteMerchant = (merchantId) => {
+    const target = merchantsList.find(m => m.id === merchantId);
+    if (!target) return;
+    if (confirm(`🗑️ Permanently delete registered seller "${target.businessName}"?`)) {
+      const nextMerchants = merchantsList.filter(m => m.id !== merchantId);
+      setMerchantsList(nextMerchants);
+      if (currentMerchant?.id === merchantId) {
+        setCurrentMerchant(null);
+        try { localStorage.removeItem('site_current_merchant_v1'); } catch(e) {}
+      }
+      try { localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants)); } catch(e) {}
+      syncToServer({ merchantsList: nextMerchants });
+      showLiveToast(`🗑️ Seller "${target.businessName}" removed!`, 'info');
+    }
   };
 
   const addMerchantProduct = (productData) => {
@@ -1575,6 +1623,7 @@ export function AppProvider({ children }) {
       alert("Please log in as a seller first!");
       return;
     }
+    const isApprovedByDefault = !requireProductApproval;
     const newProduct = {
       id: `mprod-${Date.now()}`,
       merchantId: currentMerchant.id,
@@ -1582,7 +1631,7 @@ export function AppProvider({ children }) {
       merchantPhone: currentMerchant.phone,
       merchantEmail: currentMerchant.email,
       isSub: true,
-      approvalStatus: 'approved',
+      approvalStatus: isApprovedByDefault ? 'approved' : 'pending',
       names: productData.names || { en: productData.nameEn || 'Merchant Product', gu: productData.nameGu || 'વેપારી પ્રોડક્ટ' },
       category: productData.category || 'garments',
       hsCode: productData.hsCode || '9988',
@@ -1591,7 +1640,8 @@ export function AppProvider({ children }) {
       image: productData.image || 'images/agro_spices_grains.png',
       images: productData.images || [productData.image || 'images/agro_spices_grains.png'],
       specifications: productData.specifications || { en: 'Export Quality Standard Grade', gu: 'એક્સપોર્ટ ક્વાલિટી ગ્રેડ એ' },
-      companyId: activeCompanyId || 'comp_1'
+      companyId: activeCompanyId || 'comp_1',
+      createdAt: new Date().toLocaleDateString()
     };
 
     const nextCustom = [newProduct, ...customProductsList];
@@ -1605,7 +1655,11 @@ export function AppProvider({ children }) {
     } catch(e) {}
 
     syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
-    showLiveToast(`📦 Product "${newProduct.names?.en}" published successfully!`, 'success');
+    if (isApprovedByDefault) {
+      showLiveToast(`📦 Product "${newProduct.names?.en}" published and live on website!`, 'success');
+    } else {
+      showLiveToast(`📦 Product "${newProduct.names?.en}" submitted! Sent for Admin Approval ⏳`, 'info');
+    }
   };
 
   const approveMerchantProduct = (productId) => {
@@ -1613,7 +1667,25 @@ export function AppProvider({ children }) {
     setCustomProductsList(nextCustom);
     const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved' } : p);
     setMerchantProductsList(nextMerchantProds);
+    try {
+      localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
+      localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
+    } catch(e) {}
     syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+    showLiveToast(`✅ Product approved and live on site!`, 'success');
+  };
+
+  const rejectMerchantProduct = (productId) => {
+    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected' } : p);
+    setCustomProductsList(nextCustom);
+    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected' } : p);
+    setMerchantProductsList(nextMerchantProds);
+    try {
+      localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
+      localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
+    } catch(e) {}
+    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+    showLiveToast(`❌ Product rejected!`, 'info');
   };
 
   const deleteMerchantProduct = (productId) => {
@@ -1718,7 +1790,9 @@ export function AppProvider({ children }) {
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
-      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, addMerchantProduct, approveMerchantProduct, deleteMerchantProduct,
+      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+      adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
+      requireProductApproval, setRequireProductApproval: saveRequireProductApproval,
       exportDatabase, importDatabase,
       verifyAdminAccess, t
     }}>

@@ -73,8 +73,20 @@ export default function Modals() {
     aboutData, saveAboutData, getMainCategoryList,
     marketTickerList, saveMarketTickerList,
     customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
-    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, addMerchantProduct, approveMerchantProduct, deleteMerchantProduct
+    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+    adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval
   } = useApp();
+
+  // Admin Seller & Product Approval Control Modal State
+  const [adminSellerSearch, setAdminSellerSearch] = useState('');
+  const [adminSellerStatusFilter, setAdminSellerStatusFilter] = useState('all'); // 'all' | 'approved' | 'pending' | 'blocked'
+  const [adminProductApprovalFilter, setAdminProductApprovalFilter] = useState('pending'); // 'pending' | 'approved' | 'rejected' | 'all'
+  const [adminProductSearch, setAdminProductSearch] = useState('');
+  const [commissionInputRate, setCommissionInputRate] = useState(adminCommissionRate || 2.5);
+
+  useEffect(() => {
+    setCommissionInputRate(adminCommissionRate || 2.5);
+  }, [adminCommissionRate]);
 
   // Live Commodity Market Ticker Rates Manager State
   const [tickerItemsInput, setTickerItemsInput] = useState([]);
@@ -1168,6 +1180,33 @@ export default function Modals() {
                 type="button"
                 className="btn-primary"
                 style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0284c7, #0369a1)' }}
+                onClick={() => setActiveModal('admin_sellers')}
+              >
+                🏬 Registered Sellers & Exporters Control ({merchantsList?.length || 0})
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}
+                onClick={() => setActiveModal('admin_product_approvals')}
+              >
+                📦 Seller Product Approvals — એડમિન એપ્રુઅલ ({(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'pending').length})
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #d97706, #b45309)' }}
+                onClick={() => setActiveModal('admin_commission')}
+              >
+                💰 Admin Commission & Platform Settings ({adminCommissionRate || 2.5}%)
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0369a1, #075985)' }}
                 onClick={() => setActiveModal('admin_leads')}
               >
                 👥 View Registered Customer Leads & Inquiries ({customerList?.length || 0})
@@ -1215,7 +1254,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #d97706, #b45309)' }}
+                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #475569, #334155)' }}
                 onClick={() => setActiveModal('admin_security')}
               >
                 🔑 Change Admin Password (OTP)
@@ -1234,6 +1273,506 @@ export default function Modals() {
               >
                 🔒 Exit / Logout Admin Mode
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1. ADMIN REGISTERED SELLERS & EXPORTERS CONTROL MODAL */}
+      {activeModal === 'admin_sellers' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>🏬</span>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                Registered Sellers & Exporters Control
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                વિક્રેતા રજિસ્ટ્રેશન કંટ્રોલ પેનલ — Manage, verify, block or delete registered global suppliers.
+              </p>
+            </div>
+
+            {/* Search & Filter Bar */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="🔍 Search sellers by Name, Phone, Email, GSTIN, City..."
+                value={adminSellerSearch}
+                onChange={(e) => setAdminSellerSearch(e.target.value)}
+                style={{ flex: '1 1 240px', padding: '10px 14px', fontSize: '0.88rem' }}
+              />
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {['all', 'approved', 'pending', 'blocked'].map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => setAdminSellerStatusFilter(st)}
+                    className="btn-secondary"
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      borderRadius: '10px',
+                      textTransform: 'capitalize',
+                      background: adminSellerStatusFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+                      color: adminSellerStatusFilter === st ? '#fff' : '#a1a1aa',
+                      borderColor: adminSellerStatusFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
+                    }}
+                  >
+                    {st === 'all' ? `All (${merchantsList?.length || 0})` :
+                     st === 'approved' ? `Approved ✅ (${merchantsList?.filter(m => m.status === 'approved').length || 0})` :
+                     st === 'pending' ? `Pending ⏳ (${merchantsList?.filter(m => m.status === 'pending').length || 0})` :
+                     `Blocked 🚫 (${merchantsList?.filter(m => m.status === 'blocked').length || 0})`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sellers List Grid */}
+            <div style={{ display: 'grid', gap: '12px' }}>
+              {(() => {
+                const filtered = (merchantsList || []).filter(m => {
+                  const matchQuery = !adminSellerSearch ||
+                    (m.businessName && m.businessName.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.brandName && m.brandName.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.contactPerson && m.contactPerson.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.phone && m.phone.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.email && m.email.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.gstin && m.gstin.toLowerCase().includes(adminSellerSearch.toLowerCase())) ||
+                    (m.city && m.city.toLowerCase().includes(adminSellerSearch.toLowerCase()));
+                  const matchStatus = adminSellerStatusFilter === 'all' || m.status === adminSellerStatusFilter;
+                  return matchQuery && matchStatus;
+                });
+
+                if (filtered.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', padding: '32px', color: '#9ca3af', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+                      🚫 No registered sellers found matching criteria.
+                    </div>
+                  );
+                }
+
+                return filtered.map((seller) => {
+                  const sellerProdsCount = (customProductsList || []).filter(p => p.merchantId === seller.id).length;
+                  return (
+                    <div
+                      key={seller.id}
+                      style={{
+                        padding: '16px',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '16px',
+                        display: 'grid',
+                        gap: '10px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                        <div>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            🏢 {seller.businessName}
+                            {seller.brandName && <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600 }}>({seller.brandName})</span>}
+                          </h4>
+                          <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '2px' }}>
+                            👤 Contact: <strong>{seller.contactPerson || 'N/A'}</strong> | 📍 {seller.city || 'Surat'}, {seller.state || 'Gujarat'}
+                          </div>
+                        </div>
+                        <span
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: '12px',
+                            fontSize: '0.75rem',
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            background: seller.status === 'approved' ? 'rgba(34,197,94,0.15)' : seller.status === 'pending' ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+                            color: seller.status === 'approved' ? '#4ade80' : seller.status === 'pending' ? '#fde047' : '#f87171',
+                            border: `1px solid ${seller.status === 'approved' ? 'rgba(34,197,94,0.3)' : seller.status === 'pending' ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'}`
+                          }}
+                        >
+                          {seller.status === 'approved' ? 'Approved ✅' : seller.status === 'pending' ? 'Pending Approval ⏳' : 'Blocked 🚫'}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', fontSize: '0.82rem', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '10px' }}>
+                        <div>📱 Phone: <a href={`tel:${seller.phone}`} style={{ color: '#38bdf8', fontWeight: 700 }}>{seller.phone || 'N/A'}</a></div>
+                        <div>✉️ Email: <a href={`mailto:${seller.email}`} style={{ color: '#38bdf8', fontWeight: 700 }}>{seller.email || 'N/A'}</a></div>
+                        <div>📄 GSTIN/IEC: <strong>{seller.gstin || 'Not Provided'}</strong></div>
+                        <div>🏭 Type: <strong>{seller.businessType || 'Exporter'}</strong></div>
+                        <div>📦 Products Uploaded: <strong style={{ color: '#facc15' }}>{sellerProdsCount} Items</strong></div>
+                        <div>📅 Registered: <span>{seller.registeredAt || 'N/A'}</span></div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '4px' }}>
+                        {seller.status !== 'approved' && (
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            style={{ padding: '6px 12px', fontSize: '0.78rem', background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
+                            onClick={() => updateMerchantStatus(seller.id, 'approved')}
+                          >
+                            ✅ Approve Seller
+                          </button>
+                        )}
+                        {seller.status !== 'blocked' && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '6px 12px', fontSize: '0.78rem', color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                            onClick={() => updateMerchantStatus(seller.id, 'blocked')}
+                          >
+                            🚫 Block Account
+                          </button>
+                        )}
+                        {seller.status !== 'pending' && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '6px 12px', fontSize: '0.78rem', color: '#fde047', borderColor: 'rgba(234,179,8,0.3)' }}
+                            onClick={() => updateMerchantStatus(seller.id, 'pending')}
+                          >
+                            ⏳ Mark Pending
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          style={{ padding: '6px 12px', fontSize: '0.78rem', color: '#ef4444' }}
+                          onClick={() => deleteMerchant(seller.id)}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. ADMIN SELLER PRODUCT APPROVALS MODAL (એડમિન એપ્રુઅલ) */}
+      {activeModal === 'admin_product_approvals' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>📦</span>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                Seller Product Admin Approvals (એડમિન એપ્રુઅલ)
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                Review seller-uploaded products before publishing them live on the public global site.
+              </p>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="🔍 Search products by Title, Category, HS Code, Seller Name..."
+                value={adminProductSearch}
+                onChange={(e) => setAdminProductSearch(e.target.value)}
+                style={{ flex: '1 1 240px', padding: '10px 14px', fontSize: '0.88rem' }}
+              />
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {['pending', 'approved', 'rejected', 'all'].map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => setAdminProductApprovalFilter(st)}
+                    className="btn-secondary"
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      borderRadius: '10px',
+                      textTransform: 'capitalize',
+                      background: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+                      color: adminProductApprovalFilter === st ? '#fff' : '#a1a1aa',
+                      borderColor: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
+                    }}
+                  >
+                    {st === 'pending' ? `Pending ⏳ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'pending').length})` :
+                     st === 'approved' ? `Approved ✅ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'approved').length})` :
+                     st === 'rejected' ? `Rejected ❌ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'rejected').length})` :
+                     `All Sellers' (${(customProductsList || []).filter(p => p.isSub).length})`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Product Approvals List */}
+            <div style={{ display: 'grid', gap: '14px' }}>
+              {(() => {
+                const sellerProducts = (customProductsList || []).filter(p => p.isSub);
+                const filtered = sellerProducts.filter(p => {
+                  const titleEn = p.names?.en || p.name || '';
+                  const titleGu = p.names?.gu || '';
+                  const matchQuery = !adminProductSearch ||
+                    titleEn.toLowerCase().includes(adminProductSearch.toLowerCase()) ||
+                    titleGu.toLowerCase().includes(adminProductSearch.toLowerCase()) ||
+                    (p.category && p.category.toLowerCase().includes(adminProductSearch.toLowerCase())) ||
+                    (p.hsCode && p.hsCode.toLowerCase().includes(adminProductSearch.toLowerCase())) ||
+                    (p.merchantName && p.merchantName.toLowerCase().includes(adminProductSearch.toLowerCase()));
+                  
+                  const status = p.approvalStatus || 'approved';
+                  const matchStatus = adminProductApprovalFilter === 'all' || status === adminProductApprovalFilter;
+                  return matchQuery && matchStatus;
+                });
+
+                if (filtered.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', padding: '36px', color: '#9ca3af', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+                      ✨ No products found for filter "{adminProductApprovalFilter}".
+                    </div>
+                  );
+                }
+
+                return filtered.map((prod) => {
+                  const priceNum = parseFloat(prod.priceUsd) || 0;
+                  const estimatedComm = (priceNum * ((adminCommissionRate || 2.5) / 100)).toFixed(2);
+                  const status = prod.approvalStatus || 'approved';
+
+                  return (
+                    <div
+                      key={prod.id}
+                      style={{
+                        padding: '16px',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '16px',
+                        display: 'grid',
+                        gridTemplateColumns: 'auto 1fr',
+                        gap: '14px',
+                        alignItems: 'start'
+                      }}
+                    >
+                      {/* Thumbnail */}
+                      <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#000', flexShrink: 0 }}>
+                        <img
+                          src={prod.image || 'images/agro_spices_grains.png'}
+                          alt={prod.names?.en}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
+                        />
+                      </div>
+
+                      {/* Details */}
+                      <div style={{ display: 'grid', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
+                          <div>
+                            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white', margin: 0 }}>
+                              {prod.names?.en} {prod.names?.gu && <span style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 600 }}>({prod.names.gu})</span>}
+                            </h4>
+                            <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '2px' }}>
+                              🏷️ Category: <strong style={{ color: '#cbd5e1' }}>{prod.category}</strong> | 🔢 HS Code: <strong>{prod.hsCode || 'N/A'}</strong>
+                            </div>
+                          </div>
+
+                          <span
+                            style={{
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              fontSize: '0.75rem',
+                              fontWeight: 800,
+                              textTransform: 'uppercase',
+                              background: status === 'approved' ? 'rgba(34,197,94,0.15)' : status === 'pending' ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+                              color: status === 'approved' ? '#4ade80' : status === 'pending' ? '#fde047' : '#f87171',
+                              border: `1px solid ${status === 'approved' ? 'rgba(34,197,94,0.3)' : status === 'pending' ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'}`
+                            }}
+                          >
+                            {status === 'approved' ? 'Live & Approved ✅' : status === 'pending' ? 'Pending Approval ⏳' : 'Rejected ❌'}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '6px', fontSize: '0.8rem', background: 'rgba(0,0,0,0.25)', padding: '8px 12px', borderRadius: '10px' }}>
+                          <div>🏬 Seller: <strong>{prod.merchantName || 'Exporter'}</strong></div>
+                          <div>📞 Phone: <span>{prod.merchantPhone || 'N/A'}</span></div>
+                          <div>💵 FOB Price: <strong style={{ color: '#4ade80' }}>${prod.priceUsd || '0'} / MT</strong></div>
+                          <div>📦 MOQ: <span>{prod.moq || '1 Container'}</span></div>
+                          <div>💰 Platform Comm. ({adminCommissionRate}%): <strong style={{ color: '#facc15' }}>${estimatedComm} / MT</strong></div>
+                          <div>📅 Date: <span>{prod.createdAt || 'Recent'}</span></div>
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '4px' }}>
+                          {status !== 'approved' && (
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ padding: '6px 14px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
+                              onClick={() => approveMerchantProduct(prod.id)}
+                            >
+                              ✅ Approve & Make Live
+                            </button>
+                          )}
+                          {status !== 'rejected' && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '6px 14px', fontSize: '0.8rem', color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                              onClick={() => rejectMerchantProduct(prod.id)}
+                            >
+                              ❌ Reject Product
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '6px 12px', fontSize: '0.78rem', color: '#ef4444' }}
+                            onClick={() => deleteMerchantProduct(prod.id)}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. ADMIN COMMISSION & PLATFORM SETTINGS MODAL */}
+      {activeModal === 'admin_commission' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '580px', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💰</span>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                Admin Commission & Platform Settings
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                એડમિન કમિશન અને સેલર પ્રોડક્ટ પોલિસી સેટિંગ્સ
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '18px' }}>
+              {/* Commission Rate Settings */}
+              <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
+                  💰 Global Admin Platform Commission Rate (%)
+                </label>
+                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                  Commission charged on exported seller transactions and calculated in quote estimations.
+                </p>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="50"
+                    className="input-field"
+                    style={{ fontSize: '1.2rem', fontWeight: 800, padding: '10px 14px', width: '120px', textAlign: 'center', color: '#facc15' }}
+                    value={commissionInputRate}
+                    onChange={(e) => setCommissionInputRate(e.target.value)}
+                  />
+                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#facc15' }}>%</span>
+
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ padding: '10px 20px', fontSize: '0.88rem', fontWeight: 800, marginLeft: 'auto', background: 'linear-gradient(135deg, #d97706, #b45309)' }}
+                    onClick={() => {
+                      if (setAdminCommissionRate) setAdminCommissionRate(commissionInputRate);
+                    }}
+                  >
+                    💾 Save Commission
+                  </button>
+                </div>
+
+                {/* Preset Quick Buttons */}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', alignSelf: 'center' }}>Presets:</span>
+                  {[1.0, 2.0, 2.5, 3.5, 5.0, 10.0].map((rateVal) => (
+                    <button
+                      key={rateVal}
+                      type="button"
+                      onClick={() => setCommissionInputRate(rateVal)}
+                      style={{
+                        padding: '4px 10px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        borderRadius: '8px',
+                        background: parseFloat(commissionInputRate) === rateVal ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
+                        color: parseFloat(commissionInputRate) === rateVal ? '#fde047' : '#d4d4d8',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {rateVal}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Approval Policy Settings */}
+              <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
+                  🔒 Seller Product Submission Policy
+                </label>
+                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                  Control whether seller uploaded products require manual Admin approval before appearing live.
+                </p>
+
+                <div style={{ display: 'grid', gap: '10px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: requireProductApproval ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${requireProductApproval ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer' }}>
+                    <input
+                      type="radio"
+                      name="approvalPolicy"
+                      checked={requireProductApproval === true}
+                      onChange={() => {
+                        if (setRequireProductApproval) setRequireProductApproval(true);
+                      }}
+                    />
+                    <div>
+                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (Recommended)</strong>
+                      <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products remain in "Pending" until Admin reviews & approves.</span>
+                    </div>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: !requireProductApproval ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${!requireProductApproval ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer' }}>
+                    <input
+                      type="radio"
+                      name="approvalPolicy"
+                      checked={requireProductApproval === false}
+                      onChange={() => {
+                        if (setRequireProductApproval) setRequireProductApproval(false);
+                      }}
+                    />
+                    <div>
+                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products</strong>
+                      <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products go live immediately upon upload without manual review.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Summary Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', textAlign: 'center' }}>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#38bdf8', display: 'block' }}>{merchantsList?.length || 0}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Registered Sellers</span>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#facc15', display: 'block' }}>{(customProductsList || []).filter(p => p.isSub).length}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Seller Products</span>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80', display: 'block' }}>{adminCommissionRate}%</span>
+                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Platform Rate</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -10,7 +10,8 @@ export default function ProductsGrid() {
     getAllProducts, customProductsList, deleteProduct,
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
-    productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen
+    productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
+    currentMerchant
   } = useApp();
 
   const [carouselIndices, setCarouselIndices] = useState({});
@@ -87,6 +88,18 @@ export default function ProductsGrid() {
   const allProds = getAllProducts();
   const q = searchFilterQuery.toLowerCase().trim();
   let filtered = currentCategory === 'all' ? allProds : allProds.filter(p => p.category === currentCategory);
+
+  // Filter out pending/rejected seller products for public visitors
+  filtered = filtered.filter(p => {
+    if (p.isSub) {
+      if (p.approvalStatus && p.approvalStatus !== 'approved') {
+        if (!isAdminLoggedIn && currentMerchant?.id !== p.merchantId) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
 
   if (q) {
     filtered = filtered.filter(p => {
