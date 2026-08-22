@@ -271,24 +271,37 @@ export default function Modals() {
       });
     }
 
-    // Case 2: Multi-line notes (e.g. "1. Sari and Garment Fabrics (HS Code: 520811)...\n2. Punjabi Dress (HS Code: 620443)...")
+    // Case 2: Multi-line / regex matching in notes (e.g. "1. Readymade Garments (HS Code: 620413)...\n2. Industrial Automation Systems...")
     if (lineItems.length === 0 && notes) {
-      const noteLines = notes.split('\n').map(l => l.trim()).filter(l => l && (/^\d+\./.test(l) || l.includes('HS Code:')));
+      const allCatalogProds = getAllProducts ? getAllProducts() : [];
+      const itemMatches = [...notes.matchAll(/(\d+)\.\s*([^\n\r<]+)/g)];
 
-      if (noteLines.length > 0) {
-        lineItems = noteLines.map((l, lIdx) => {
-          const cleanLine = l.replace(/^\d+\.\s*/, '');
-          const hsMatch = cleanLine.match(/\(HS\s*Code:\s*([^\)]+)\)/i) || cleanLine.match(/\(HS:\s*([^\)]+)\)/i);
+      if (itemMatches.length > 0) {
+        lineItems = itemMatches.map((m, idx) => {
+          const lineText = m[2].trim();
+          const hsMatch = lineText.match(/\(HS\s*Code:\s*([^\)]+)\)/i) || lineText.match(/\(HS:\s*([^\)]+)\)/i);
           const itemHs = hsMatch ? hsMatch[1].trim() : '9988';
-          let itemTitle = cleanLine.split('|')[0].replace(/\(HS\s*Code:[^\)]+\)/i, '').replace(/\(HS:[^\)]+\)/i, '').trim();
+          let itemTitle = lineText.split('|')[0].replace(/\(HS\s*Code:[^\)]+\)/i, '').replace(/\(HS:[^\)]+\)/i, '').trim();
+          itemTitle = itemTitle.replace(/^Inquiry for item:|^Inquiry for|^Need|^Export Order for/gi, '').trim();
+
+          const matchedProd = allCatalogProds.find(p => {
+            const enName = (p.names?.en || '').toLowerCase();
+            const guName = (p.names?.gu || '').toLowerCase();
+            const lowTitle = itemTitle.toLowerCase();
+            return (enName && (lowTitle.includes(enName) || enName.includes(lowTitle))) ||
+                   (guName && (lowTitle.includes(guName) || guName.includes(lowTitle)));
+          });
+
+          const price = matchedProd?.priceUsd ? matchedProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
+          const unit = matchedProd?.moq || '1 Unit / Container';
 
           return {
-            id: `item_${Date.now()}_${lIdx}`,
-            name: itemTitle || `Item #${lIdx + 1}`,
+            id: `item_${Date.now()}_${idx}`,
+            name: itemTitle || `Item #${idx + 1}`,
             hsn: itemHs,
             qty: '1',
-            unit: 'Unit / Container',
-            price: '500'
+            unit: unit,
+            price: price
           };
         });
       }

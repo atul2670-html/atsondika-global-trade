@@ -1378,7 +1378,10 @@ export function AppProvider({ children }) {
       country: data.country || 'India',
       registeredAt: new Date().toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
       inquiriesCount: 1,
-      notes: data.notes || 'Inquiry submitted online'
+      notes: data.notes || 'Inquiry submitted online',
+      productName: data.productName || '',
+      hsCode: data.hsCode || '',
+      selectedProducts: data.selectedProducts || []
     };
 
     setCustomerList(prev => {
