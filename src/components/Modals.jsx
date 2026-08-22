@@ -191,23 +191,27 @@ export default function Modals() {
 
     setBuyerName(bName);
     setBuyerCompany(bComp);
+    setBuyerPhoneInput(cust.phone || '');
+    setBuyerEmailInput(cust.email || '');
     setBuyerCountry(bCountry);
 
     const notes = cust.notes || '';
     const qtyMatch = notes.match(/(\d+)\s*(MT|Metric Tons|Tons|KG|Bags|Cartons|Containers|PCS|Units|Bales|CFT|CBM)/i);
+    let parsedQty = '1';
+    let parsedUnit = 'Unit / Container';
     if (qtyMatch) {
-      setQuoteQty(qtyMatch[1]);
+      parsedQty = qtyMatch[1];
       const matchedUnit = qtyMatch[2].toUpperCase();
-      if (matchedUnit.includes('MT') || matchedUnit.includes('TON')) setQuoteUnit('MT (Metric Tons)');
-      else if (matchedUnit.includes('KG')) setQuoteUnit('KG (Kilograms)');
-      else if (matchedUnit.includes('BAG')) setQuoteUnit('BAGS (Standard Bags)');
-      else if (matchedUnit.includes('CARTON')) setQuoteUnit('CARTONS (Export Cartons)');
-      else if (matchedUnit.includes('CONTAINER')) setQuoteUnit('20FT FCL (20ft Container)');
-      else setQuoteUnit(matchedUnit);
-    } else {
-      setQuoteQty('20');
-      setQuoteUnit('MT (Metric Tons)');
+      if (matchedUnit.includes('MT') || matchedUnit.includes('TON')) parsedUnit = 'MT (Metric Tons)';
+      else if (matchedUnit.includes('KG')) parsedUnit = 'KG (Kilograms)';
+      else if (matchedUnit.includes('BAG')) parsedUnit = 'BAGS (Standard Bags)';
+      else if (matchedUnit.includes('CARTON')) parsedUnit = 'CARTONS (Export Cartons)';
+      else if (matchedUnit.includes('CONTAINER')) parsedUnit = '20FT FCL (20ft Container)';
+      else parsedUnit = matchedUnit;
     }
+
+    setQuoteQty(parsedQty);
+    setQuoteUnit(parsedUnit);
 
     const allProds = getAllProducts ? getAllProducts() : [];
     let matchedProd = null;
@@ -228,19 +232,36 @@ export default function Modals() {
       }
     }
 
+    let prodName = cust.productName || '';
+    let hs = cust.hsCode || '';
+    let unitPrice = '500';
+
     if (matchedProd) {
       setQuotationProduct(matchedProd);
+      if (!prodName) prodName = matchedProd.names?.en || matchedProd.names?.gu || 'Punjabi Dress';
+      if (!hs) hs = matchedProd.hsCode || matchedProd.localHsn || '620443';
+      if (matchedProd.priceUsd) unitPrice = matchedProd.priceUsd.replace(/[^0-9.]/g, '') || '500';
     } else {
-      const cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
-      setQuotationProduct({
-        id: `custom-quote-prod-${Date.now()}`,
-        names: { en: cleanName || 'Premium Export Commodity', gu: cleanName || 'પ્રીમિયમ નિકાસ પ્રોડક્ટ' },
-        hsCode: '090931',
-        localHsn: '09093110',
-        packaging: 'Standard Export Packaging',
-        spec: 'Export Quality Cleaned & Sterilized'
-      });
+      let cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for item:|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
+      if (cleanName.includes('MOQ:')) cleanName = cleanName.split('MOQ:')[0].trim();
+      if (!prodName) prodName = cleanName || 'Punjabi Dress';
+      if (!hs) {
+        const hsMatch = notes.match(/HS\s*Code:\s*(\d+)/i) || notes.match(/HS:\s*(\d+)/i);
+        hs = hsMatch ? hsMatch[1] : '620443';
+      }
     }
+
+    // Auto-fill invoice line items table from RFQ!
+    setInvoiceItems([
+      {
+        id: `item_${Date.now()}`,
+        name: prodName,
+        hsn: hs,
+        qty: parsedQty,
+        unit: parsedUnit,
+        price: unitPrice
+      }
+    ]);
 
     if (location.toLowerCase().includes('dubai') || notes.toLowerCase().includes('dubai') || notes.toLowerCase().includes('jebel ali')) {
       setQuotePortDischarge('Jebel Ali Port, Dubai (AEJEA)');
@@ -256,6 +277,8 @@ export default function Modals() {
       const cust = activeQuoteCustomer;
       setBuyerName(cust.name || 'Importer / Buyer');
       setBuyerCompany(cust.companyName && cust.companyName !== 'N/A' ? cust.companyName : (cust.name || 'Importer Corp'));
+      setBuyerPhoneInput(cust.phone || '');
+      setBuyerEmailInput(cust.email || '');
       const location = [cust.city, cust.country].filter(Boolean).join(', ');
       setBuyerCountry(location || 'Dubai, UAE');
     }
@@ -4074,6 +4097,30 @@ export default function Modals() {
             {/* Editable Configuration Controls */}
             <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
               
+              {/* AUTO-LOAD RFQ INQUIRY SELECTOR */}
+              {customerList && customerList.length > 0 && (
+                <div style={{ background: 'rgba(20, 184, 166, 0.12)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(20, 184, 166, 0.3)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.84rem', color: '#4ade80', fontWeight: 800 }}>
+                    ⚡ Auto-Fill Quotation from Buyer RFQ Inquiry:
+                  </span>
+                  <select
+                    className="form-control"
+                    style={{ flex: 1, minWidth: '220px', fontSize: '0.82rem', fontWeight: 700, padding: '5px 10px', background: '#0f172a', color: 'white', borderColor: '#0d9488' }}
+                    onChange={(e) => {
+                      const found = customerList.find(c => c.id === e.target.value);
+                      if (found) openQuoteForInquiry(found);
+                    }}
+                  >
+                    <option value="">-- Select Buyer RFQ Inquiry to Auto-Fill Form --</option>
+                    {customerList.map(cust => (
+                      <option key={cust.id} value={cust.id}>
+                        👤 {cust.name} | 🏢 {cust.companyName || 'Buyer'} | 📦 {cust.productName || (cust.notes ? cust.notes.substring(0, 35) + '...' : 'RFQ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* DOCUMENT TYPE SWITCHER (PROFORMA VS COMMERCIAL TAX INVOICE VS JOBWORK) */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <button

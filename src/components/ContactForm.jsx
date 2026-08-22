@@ -19,10 +19,14 @@ export default function ContactForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (registerCustomer) {
+      const pName = selectedRfqProduct ? (selectedRfqProduct.names[currentLang] || selectedRfqProduct.names['en']) : formData.product;
+      const hs = selectedRfqProduct ? (selectedRfqProduct.hsCode || '') : '';
       registerCustomer({
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
+        productName: pName,
+        hsCode: hs,
         notes: `Inquiry for ${formData.product}: ${formData.msg}`
       });
     }
