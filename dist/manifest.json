@@ -1,0 +1,18 @@
+{
+  "short_name": "ADIDEV EXPORT",
+  "name": "ADIDEV SMART SOLUTION | Global Trading House",
+  "description": "Premium Global Exporter from Surat, India specializing in Agro Commodities, Fasteners, Machinery & Eco Packaging.",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "display": "standalone",
+  "orientation": "portrait"
+}
