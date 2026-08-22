@@ -72,7 +72,8 @@ export default function Modals() {
     heroBanner, saveHeroBanner,
     aboutData, saveAboutData, getMainCategoryList,
     marketTickerList, saveMarketTickerList,
-    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer
+    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
+    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, addMerchantProduct, approveMerchantProduct, deleteMerchantProduct
   } = useApp();
 
   // Live Commodity Market Ticker Rates Manager State
@@ -94,6 +95,29 @@ export default function Modals() {
   const [custCityInput, setCustCityInput] = useState('Surat');
   const [custCountryInput, setCustCountryInput] = useState('India');
   const [custLeadSearch, setCustLeadSearch] = useState('');
+
+  // Seller Portal & Multi-Vendor Merchant State
+  const [sellerTab, setSellerTab] = useState('register'); // 'register' | 'login' | 'dashboard' | 'add_product'
+  const [mBizNameInput, setMBizNameInput] = useState('');
+  const [mBrandInput, setMBrandInput] = useState('');
+  const [mContactInput, setMContactInput] = useState('');
+  const [mPhoneInput, setMPhoneInput] = useState('');
+  const [mEmailInput, setMEmailInput] = useState('');
+  const [mCityInput, setMCityInput] = useState('Surat');
+  const [mStateInput, setMStateInput] = useState('Gujarat');
+  const [mGstinInput, setMGstinInput] = useState('');
+  const [mBizTypeInput, setMBizTypeInput] = useState('Manufacturer & Exporter');
+  const [mSellerLoginQuery, setMSellerLoginQuery] = useState('');
+
+  // Seller New Product Upload Form State
+  const [mProdNameEn, setMProdNameEn] = useState('');
+  const [mProdNameGu, setMProdNameGu] = useState('');
+  const [mProdCategory, setMProdCategory] = useState('garments');
+  const [mProdHsCode, setMProdHsCode] = useState('620443');
+  const [mProdPrice, setMProdPrice] = useState('500');
+  const [mProdMoq, setMProdMoq] = useState('1 Container / Shipment');
+  const [mProdImage, setMProdImage] = useState('');
+  const [mProdSpecEn, setMProdSpecEn] = useState('Export Quality Standard Grade');
 
   // Company Profile Modal State
   const [selectedCompId, setSelectedCompId] = useState(activeCompanyId || 'comp_1');
@@ -4949,6 +4973,346 @@ export default function Modals() {
                 );
               })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL MODAL */}
+      {activeModal === 'seller_portal' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '820px', width: '92%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>🏬</span> Seller & Exporter Portal (વિક્રેતા રજિસ્ટ્રેશન પ્લેટફોર્મ)
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#facc15', fontWeight: 700 }}>
+                  Publish your products & export globally with Atsondika Global Trade Platform
+                </span>
+              </div>
+
+              {currentMerchant && (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.75rem', padding: '4px 10px', color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)' }}
+                  onClick={logoutMerchant}
+                >
+                  🚪 Logout ({currentMerchant.businessName.split(' ')[0]})
+                </button>
+              )}
+            </div>
+
+            {/* Navigation Tabs */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              {!currentMerchant ? (
+                <>
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.84rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      border: '1px solid',
+                      background: sellerTab === 'register' ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'rgba(255,255,255,0.06)',
+                      color: sellerTab === 'register' ? 'black' : 'var(--text-sub)',
+                      borderColor: sellerTab === 'register' ? '#eab308' : 'var(--border-glass)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setSellerTab('register')}
+                  >
+                    🤝 1. Register as Seller / Exporter (વેપારી બનો)
+                  </button>
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.84rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      border: '1px solid',
+                      background: sellerTab === 'login' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'rgba(255,255,255,0.06)',
+                      color: sellerTab === 'login' ? 'white' : 'var(--text-sub)',
+                      borderColor: sellerTab === 'login' ? '#0284c7' : 'var(--border-glass)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setSellerTab('login')}
+                  >
+                    🔑 2. Seller Login (લોગઈન કરો)
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.84rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      border: '1px solid',
+                      background: sellerTab === 'dashboard' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(255,255,255,0.06)',
+                      color: sellerTab === 'dashboard' ? 'white' : 'var(--text-sub)',
+                      borderColor: sellerTab === 'dashboard' ? '#10b981' : 'var(--border-glass)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setSellerTab('dashboard')}
+                  >
+                    📦 My Products ({merchantProductsList.filter(p => p.merchantId === currentMerchant.id).length})
+                  </button>
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.84rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      border: '1px solid',
+                      background: sellerTab === 'add_product' ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'rgba(255,255,255,0.06)',
+                      color: sellerTab === 'add_product' ? 'black' : 'var(--text-sub)',
+                      borderColor: sellerTab === 'add_product' ? '#eab308' : 'var(--border-glass)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setSellerTab('add_product')}
+                  >
+                    ➕ Upload New Product (નવી પ્રોડક્ટ)
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* TAB 1: REGISTER NEW SELLER */}
+            {sellerTab === 'register' && !currentMerchant && (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!mBizNameInput || !mPhoneInput) {
+                  alert("⚠️ Please enter Business Name and Mobile/WhatsApp Number!");
+                  return;
+                }
+                registerMerchant({
+                  businessName: mBizNameInput,
+                  brandName: mBrandInput || mBizNameInput,
+                  contactPerson: mContactInput || mBizNameInput,
+                  phone: mPhoneInput,
+                  email: mEmailInput,
+                  city: mCityInput,
+                  state: mStateInput,
+                  gstin: mGstinInput,
+                  businessType: mBizTypeInput
+                });
+                setSellerTab('add_product');
+              }}>
+                <div style={{ background: 'rgba(234, 179, 8, 0.08)', padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(234, 179, 8, 0.3)', marginBottom: '16px', fontSize: '0.84rem', color: '#facc15' }}>
+                  🤝 <strong>Join as a Verified Exporter & Supplier:</strong> Display your Agro, Garment, Textile, Fastener & Industrial products to international buyers across the world!
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Business / Company Name *</label>
+                    <input type="text" className="form-control" value={mBizNameInput} onChange={(e) => setMBizNameInput(e.target.value)} placeholder="e.g. Surat Silks & Garments Pvt Ltd" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Brand Name (ઓળખ નામ)</label>
+                    <input type="text" className="form-control" value={mBrandInput} onChange={(e) => setMBrandInput(e.target.value)} placeholder="e.g. Surat Silks" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Mobile / WhatsApp Number *</label>
+                    <input type="tel" className="form-control" value={mPhoneInput} onChange={(e) => setMPhoneInput(e.target.value)} placeholder="e.g. +91 98250 11223" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email Address</label>
+                    <input type="email" className="form-control" value={mEmailInput} onChange={(e) => setMEmailInput(e.target.value)} placeholder="e.g. info@suratsilks.com" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Contact Person Name</label>
+                    <input type="text" className="form-control" value={mContactInput} onChange={(e) => setMContactInput(e.target.value)} placeholder="e.g. Rameshbhai Patel" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">GSTIN / IEC Registration (ઓપ્શનલ)</label>
+                    <input type="text" className="form-control" value={mGstinInput} onChange={(e) => setMGstinInput(e.target.value)} placeholder="e.g. 24AAACS1122E1Z4" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">City</label>
+                    <input type="text" className="form-control" value={mCityInput} onChange={(e) => setMCityInput(e.target.value)} placeholder="e.g. Surat / Ahmedabad" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Business Type</label>
+                    <select className="form-control" value={mBizTypeInput} onChange={(e) => setMBizTypeInput(e.target.value)}>
+                      <option value="Manufacturer & Exporter">Manufacturer & Exporter (ઉત્પાદક)</option>
+                      <option value="Merchant Exporter">Merchant Exporter (વેપારી)</option>
+                      <option value="Wholesaler & Supplier">Wholesaler & Supplier (જથ્થાબંધ વેપારી)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 900 }}>
+                  🚀 Complete Registration & Upload Products
+                </button>
+              </form>
+            )}
+
+            {/* TAB 2: SELLER LOGIN */}
+            {sellerTab === 'login' && !currentMerchant && (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!mSellerLoginQuery) {
+                  alert("Please enter Mobile or Email!");
+                  return;
+                }
+                const res = loginMerchant(mSellerLoginQuery);
+                if (res.success) {
+                  setSellerTab('dashboard');
+                } else {
+                  alert(res.message);
+                }
+              }}>
+                <div className="form-group">
+                  <label className="form-label">Registered Mobile / Email / Business Name *</label>
+                  <input type="text" className="form-control" value={mSellerLoginQuery} onChange={(e) => setMSellerLoginQuery(e.target.value)} placeholder="e.g. +91 98250 11223 or info@suratsilks.com" required />
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem' }}>
+                  🔑 Login to Seller Portal
+                </button>
+              </form>
+            )}
+
+            {/* TAB 3: SELLER DASHBOARD / MY PRODUCTS */}
+            {sellerTab === 'dashboard' && currentMerchant && (
+              <div>
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#34d399', fontWeight: 900 }}>
+                      🏬 {currentMerchant.businessName} <span style={{ fontSize: '0.78rem', background: '#059669', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>⭐ Verified Exporter</span>
+                    </h4>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-sub)' }}>
+                      📞 {currentMerchant.phone} | 📍 {currentMerchant.city}, {currentMerchant.state} | GST: {currentMerchant.gstin || 'N/A'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ fontSize: '0.8rem', padding: '6px 12px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black' }}
+                    onClick={() => setSellerTab('add_product')}
+                  >
+                    ➕ Add Product
+                  </button>
+                </div>
+
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '10px' }}>📦 Published Products List:</h4>
+
+                {customProductsList.filter(p => p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName).length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', color: 'var(--text-sub)' }}>
+                    📦 No products published yet! Click "Upload New Product" to add your items to the website.
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                    {customProductsList.filter(p => p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName).map((p, pIdx) => (
+                      <div key={p.id || pIdx} style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
+                        <img src={p.image || (p.images && p.images[0]) || 'images/agro_spices_grains.png'} alt={p.names?.en} style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px' }} />
+                        <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{p.names?.en || p.names?.gu}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#38bdf8' }}>HS: {p.hsCode || '9988'} | Price: USD {p.priceUsd || '500'}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 800 }}>✓ Published</span>
+                          <button
+                            type="button"
+                            style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
+                            onClick={() => deleteMerchantProduct(p.id)}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 4: UPLOAD NEW PRODUCT */}
+            {(sellerTab === 'add_product' || (sellerTab === 'register' && currentMerchant)) && (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!mProdNameEn || !mProdHsCode) {
+                  alert("⚠️ Please enter Product Name and HS Code!");
+                  return;
+                }
+                addMerchantProduct({
+                  names: { en: mProdNameEn, gu: mProdNameGu || mProdNameEn, hi: mProdNameEn, fr: mProdNameEn },
+                  category: mProdCategory,
+                  hsCode: mProdHsCode,
+                  priceUsd: mProdPrice,
+                  moq: mProdMoq,
+                  image: mProdImage || 'images/agro_spices_grains.png',
+                  images: mProdImage ? [mProdImage] : ['images/agro_spices_grains.png'],
+                  specifications: { en: mProdSpecEn, gu: mProdSpecEn }
+                });
+                setSellerTab('dashboard');
+              }}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Product Title (English) *</label>
+                    <input type="text" className="form-control" value={mProdNameEn} onChange={(e) => setMProdNameEn(e.target.value)} placeholder="e.g. Premium Cotton Sarees / CNC Lathe" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Product Title (ગુજરાતી)</label>
+                    <input type="text" className="form-control" value={mProdNameGu} onChange={(e) => setMProdNameGu(e.target.value)} placeholder="e.g. પ્રીમિયમ કોટન સાડી" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Category *</label>
+                    <select className="form-control" value={mProdCategory} onChange={(e) => setMProdCategory(e.target.value)}>
+                      {getMainCategoryList().map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.nameEn}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">HS Code (6-Digit International) *</label>
+                    <input type="text" className="form-control" value={mProdHsCode} onChange={(e) => setMProdHsCode(e.target.value)} placeholder="e.g. 520811 / 620443 / 845811" required />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">FOB Price (USD) *</label>
+                    <input type="text" className="form-control" value={mProdPrice} onChange={(e) => setMProdPrice(e.target.value)} placeholder="e.g. 500" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Minimum Order Quantity (MOQ)</label>
+                    <input type="text" className="form-control" value={mProdMoq} onChange={(e) => setMProdMoq(e.target.value)} placeholder="e.g. 1 Container / 100 Units" />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Product Image Link / File URL</label>
+                  <input type="text" className="form-control" value={mProdImage} onChange={(e) => setMProdImage(e.target.value)} placeholder="https://example.com/photo.jpg or data:image/png..." />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Key Specifications & Quality Grade</label>
+                  <textarea className="form-control" rows="2" value={mProdSpecEn} onChange={(e) => setMProdSpecEn(e.target.value)} placeholder="e.g. Export Quality Grade A Standard Packing"></textarea>
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', fontWeight: 900 }}>
+                  🚀 Publish Product on Website
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

@@ -87,6 +87,65 @@ export function AppProvider({ children }) {
   const [searchFilterQuery, setSearchFilterQuery] = useState('');
   const [productViewMode, setProductViewMode] = useState('grid'); // 'grid' | 'list' | 'compare'
 
+  // Multi-Vendor Merchant / Supplier System State
+  const [merchantsList, setMerchantsList] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_merchants_list_v1');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return [
+      {
+        id: 'merchant-demo-1',
+        businessName: 'Surat Silk & Garment House',
+        brandName: 'Surat Silks',
+        contactPerson: 'Rameshbhai Patel',
+        phone: '+91 98250 11223',
+        email: 'info@suratsilks.com',
+        city: 'Surat',
+        state: 'Gujarat',
+        gstin: '24AAACS1122E1Z4',
+        businessType: 'Manufacturer & Exporter',
+        status: 'approved',
+        registeredAt: 'Aug 20, 2026'
+      }
+    ];
+  });
+
+  const [currentMerchant, setCurrentMerchant] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_current_merchant_v1');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return null;
+  });
+
+  const [merchantProductsList, setMerchantProductsList] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_merchant_products_v1');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('site_merchants_list_v1', JSON.stringify(merchantsList));
+    } catch(e) {}
+  }, [merchantsList]);
+
+  useEffect(() => {
+    try {
+      if (currentMerchant) localStorage.setItem('site_current_merchant_v1', JSON.stringify(currentMerchant));
+      else localStorage.removeItem('site_current_merchant_v1');
+    } catch(e) {}
+  }, [currentMerchant]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('site_merchant_products_v1', JSON.stringify(merchantProductsList));
+    } catch(e) {}
+  }, [merchantProductsList]);
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1535,6 +1594,7 @@ export function AppProvider({ children }) {
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
+      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, addMerchantProduct, approveMerchantProduct, deleteMerchantProduct,
       exportDatabase, importDatabase,
       verifyAdminAccess, t
     }}>

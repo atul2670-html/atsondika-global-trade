@@ -530,6 +530,12 @@ export default function ProductsGrid() {
                       </div>
                     )}
 
+                    {p.merchantName && (
+                      <div style={{ marginTop: '6px', background: 'rgba(234, 179, 8, 0.12)', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.3)', fontSize: '0.76rem', color: '#facc15', fontWeight: 800 }}>
+                        🏬 Supplier: {p.merchantName} <span style={{ color: '#4ade80' }}>⭐ Verified Exporter</span>
+                      </div>
+                    )}
+
                     {(!p.isSub && isAdminLoggedIn) && (
                       <button
                         type="button"

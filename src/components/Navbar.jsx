@@ -16,7 +16,7 @@ export default function Navbar() {
     customProductsList, saveProduct,
     certificatesList, saveCertificate,
     branchesList, saveBranch,
-    marketTickerList
+    marketTickerList, currentMerchant
   } = useApp();
 
   const [isFullTranslating, setIsFullTranslating] = useState(false);
@@ -449,6 +449,45 @@ export default function Navbar() {
                   title="Customer Login / Register"
                 >
                   👤 <span className="nav-btn-label">{currentLang === 'gu' ? 'કસ્ટમર લોગઈન' : 'Customer Login'}</span>
+                </button>
+              )}
+
+              {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL BUTTON */}
+              {currentMerchant ? (
+                <button
+                  type="button"
+                  className="btn-secondary nav-cust-btn"
+                  style={{
+                    background: 'rgba(234, 179, 8, 0.2)',
+                    color: '#facc15',
+                    borderColor: 'rgba(234, 179, 8, 0.4)',
+                    padding: '5px 10px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap'
+                  }}
+                  onClick={() => setActiveModal('seller_portal')}
+                  title={`Seller Account: ${currentMerchant.businessName}`}
+                >
+                  🏬 <span className="nav-btn-label">{currentMerchant.businessName.split(' ')[0]}</span> ⭐
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-secondary nav-cust-btn"
+                  style={{
+                    background: 'rgba(234, 179, 8, 0.18)',
+                    color: '#facc15',
+                    borderColor: 'rgba(234, 179, 8, 0.35)',
+                    padding: '5px 10px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap'
+                  }}
+                  onClick={() => setActiveModal('seller_portal')}
+                  title="Register as Seller / Exporter to sell your products on our platform"
+                >
+                  🤝 <span className="nav-btn-label">{currentLang === 'gu' ? 'વેપારી બનો' : 'Sell With Us'}</span>
                 </button>
               )}
 
