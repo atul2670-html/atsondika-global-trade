@@ -1512,6 +1512,125 @@ export function AppProvider({ children }) {
     });
   };
 
+  // Multi-Vendor Merchant / Supplier System Methods
+  const registerMerchant = (merchantData) => {
+    const newMerchant = {
+      id: `merchant-${Date.now()}`,
+      businessName: merchantData.businessName || 'Exporter',
+      brandName: merchantData.brandName || merchantData.businessName || 'Exporter',
+      contactPerson: merchantData.contactPerson || 'N/A',
+      phone: merchantData.phone || '',
+      email: merchantData.email || '',
+      city: merchantData.city || 'Surat',
+      state: merchantData.state || 'Gujarat',
+      gstin: merchantData.gstin || '',
+      businessType: merchantData.businessType || 'Manufacturer & Exporter',
+      status: 'approved',
+      registeredAt: new Date().toLocaleDateString()
+    };
+    const nextMerchants = [newMerchant, ...merchantsList];
+    setMerchantsList(nextMerchants);
+    setCurrentMerchant(newMerchant);
+    try {
+      localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants));
+      localStorage.setItem('site_current_merchant_v1', JSON.stringify(newMerchant));
+    } catch(e) {}
+    syncToServer({ merchantsList: nextMerchants });
+    showLiveToast(`🏬 Registered as Seller "${newMerchant.businessName}"!`, 'success');
+    return newMerchant;
+  };
+
+  const loginMerchant = (identifier) => {
+    if (!identifier) return { success: false, message: 'Please enter Mobile or Email!' };
+    const query = identifier.trim().toLowerCase();
+    const found = merchantsList.find(m =>
+      (m.phone && m.phone.toLowerCase().includes(query)) ||
+      (m.email && m.email.toLowerCase().includes(query)) ||
+      (m.businessName && m.businessName.toLowerCase().includes(query))
+    );
+    if (found) {
+      setCurrentMerchant(found);
+      try { localStorage.setItem('site_current_merchant_v1', JSON.stringify(found)); } catch(e) {}
+      showLiveToast(`🔑 Welcome back, ${found.businessName}!`, 'success');
+      return { success: true, merchant: found };
+    }
+    return { success: false, message: 'No registered seller found with this Mobile/Email. Please register as a new seller.' };
+  };
+
+  const logoutMerchant = () => {
+    setCurrentMerchant(null);
+    try { localStorage.removeItem('site_current_merchant_v1'); } catch(e) {}
+    showLiveToast(`🚪 Seller Logged Out`, 'info');
+  };
+
+  const updateMerchantStatus = (merchantId, newStatus) => {
+    const nextMerchants = merchantsList.map(m => m.id === merchantId ? { ...m, status: newStatus } : m);
+    setMerchantsList(nextMerchants);
+    try { localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants)); } catch(e) {}
+    syncToServer({ merchantsList: nextMerchants });
+  };
+
+  const addMerchantProduct = (productData) => {
+    if (!currentMerchant) {
+      alert("Please log in as a seller first!");
+      return;
+    }
+    const newProduct = {
+      id: `mprod-${Date.now()}`,
+      merchantId: currentMerchant.id,
+      merchantName: currentMerchant.businessName,
+      merchantPhone: currentMerchant.phone,
+      merchantEmail: currentMerchant.email,
+      isSub: true,
+      approvalStatus: 'approved',
+      names: productData.names || { en: productData.nameEn || 'Merchant Product', gu: productData.nameGu || 'વેપારી પ્રોડક્ટ' },
+      category: productData.category || 'garments',
+      hsCode: productData.hsCode || '9988',
+      priceUsd: productData.priceUsd || '500',
+      moq: productData.moq || '1 Container',
+      image: productData.image || 'images/agro_spices_grains.png',
+      images: productData.images || [productData.image || 'images/agro_spices_grains.png'],
+      specifications: productData.specifications || { en: 'Export Quality Standard Grade', gu: 'એક્સપોર્ટ ક્વાલિટી ગ્રેડ એ' },
+      companyId: activeCompanyId || 'comp_1'
+    };
+
+    const nextCustom = [newProduct, ...customProductsList];
+    setCustomProductsList(nextCustom);
+    const nextMerchantProds = [newProduct, ...merchantProductsList];
+    setMerchantProductsList(nextMerchantProds);
+
+    try {
+      localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
+      localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
+    } catch(e) {}
+
+    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+    showLiveToast(`📦 Product "${newProduct.names?.en}" published successfully!`, 'success');
+  };
+
+  const approveMerchantProduct = (productId) => {
+    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved' } : p);
+    setCustomProductsList(nextCustom);
+    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved' } : p);
+    setMerchantProductsList(nextMerchantProds);
+    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+  };
+
+  const deleteMerchantProduct = (productId) => {
+    if (confirm("🗑️ Delete this product from inventory?")) {
+      const nextCustom = customProductsList.filter(p => p.id !== productId);
+      setCustomProductsList(nextCustom);
+      const nextMerchantProds = merchantProductsList.filter(p => p.id !== productId);
+      setMerchantProductsList(nextMerchantProds);
+      try {
+        localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
+        localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
+      } catch(e) {}
+      syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+      showLiveToast("🗑️ Product deleted!", "info");
+    }
+  };
+
   // 1-Click Site Database Backup Export (store.json)
   const exportDatabase = () => {
     const backupObj = {
