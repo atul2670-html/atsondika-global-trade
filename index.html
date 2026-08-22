@@ -36,6 +36,15 @@
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
   <script>
+    // Automatic Cache-Buster & LocalStorage Safety Reset for Browser Cache Issues
+    try {
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (let name of names) caches.delete(name);
+        });
+      }
+    } catch(e) {}
+
     window.onerror = function(msg, url, lineNo, columnNo, error) {
       console.error('Global JS Error:', msg, url, lineNo);
       return false;
