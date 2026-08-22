@@ -4229,123 +4229,192 @@ export default function Modals() {
               </div>
 
               {/* MULTIPLE PARTICULAR ITEMS & JOBWORK MANAGER BOX */}
-              <div style={{ background: 'rgba(15, 23, 42, 0.65)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(56, 189, 248, 0.3)', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <label style={{ fontSize: '0.86rem', color: '#38bdf8', fontWeight: 800, margin: 0 }}>
-                    🛠️ Particular Line Items & Jobwork Services ({invoiceItems.length} Items):
-                  </label>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => {
-                      setInvoiceItems(prev => [
-                        ...prev,
-                        {
-                          id: `item_${Date.now()}`,
-                          name: `Jobwork Service / Item ${prev.length + 1}`,
-                          hsn: '9988',
-                          qty: '1',
-                          unit: 'PCS (Pieces)',
-                          price: '100'
-                        }
-                      ]);
-                    }}
-                    style={{ fontSize: '0.78rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', background: 'rgba(34, 197, 94, 0.15)' }}
-                  >
-                    ➕ Add Jobwork / Particular Item
-                  </button>
-                </div>
+              {(() => {
+                const allCatalogProducts = getAllProducts ? getAllProducts() : [];
 
-                {invoiceItems.map((item, idx) => (
-                  <div key={item.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', marginBottom: '8px', border: '1px solid var(--border-glass)' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-gold)' }}>#{idx + 1}</span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Particular Item Name / Jobwork Description (e.g. Dyeing Jobwork / CNC Lathe Turning)"
-                        value={item.name}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setInvoiceItems(prev => prev.map(i => i.id === item.id ? { ...i, name: val } : i));
-                        }}
-                        style={{ flexGrow: 2, minWidth: '220px', fontWeight: 700, fontSize: '0.84rem' }}
-                      />
-                      {invoiceItems.length > 1 && (
+                return (
+                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(56, 189, 248, 0.3)', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                      <label style={{ fontSize: '0.86rem', color: '#38bdf8', fontWeight: 800, margin: 0 }}>
+                        🛠️ Particular Line Items & Jobwork Services ({invoiceItems.length} Items):
+                      </label>
+                      
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button
                           type="button"
-                          onClick={() => setInvoiceItems(prev => prev.filter(i => i.id !== item.id))}
-                          style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '1rem', cursor: 'pointer', padding: '0 4px' }}
-                          title="Remove item"
+                          className="btn-secondary"
+                          onClick={() => {
+                            const firstProd = allCatalogProducts[0];
+                            const pName = firstProd ? (firstProd.names?.[currentLang] || firstProd.names?.en || firstProd.names?.gu) : `Product Item ${invoiceItems.length + 1}`;
+                            const hs = firstProd ? (firstProd.hsCode || firstProd.localHsn || '9988') : '9988';
+                            const price = firstProd?.priceUsd ? firstProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
+                            setInvoiceItems(prev => [
+                              ...prev,
+                              {
+                                id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+                                name: pName,
+                                hsn: hs,
+                                qty: '1',
+                                unit: firstProd?.moq || 'Unit / Container',
+                                price: price || '500'
+                              }
+                            ]);
+                          }}
+                          style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(14, 165, 233, 0.15)', fontWeight: 800 }}
+                          title="Add a new line item pre-filled from website product catalog"
                         >
-                          🗑️
+                          📦 + Add Website Product
                         </button>
-                      )}
+
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => {
+                            setInvoiceItems(prev => [
+                              ...prev,
+                              {
+                                id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+                                name: `Custom Jobwork Service / Item ${prev.length + 1}`,
+                                hsn: '9988',
+                                qty: '1',
+                                unit: 'PCS (Pieces)',
+                                price: '100'
+                              }
+                            ]);
+                          }}
+                          style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', background: 'rgba(34, 197, 94, 0.15)', fontWeight: 800 }}
+                          title="Add a new custom jobwork or custom service line item"
+                        >
+                          ➕ + Add Custom Item
+                        </button>
+                      </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '6px' }}>
-                      <div>
-                        <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>HSN / SAC</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={item.hsn}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setInvoiceItems(prev => prev.map(i => i.id === item.id ? { ...i, hsn: val } : i));
-                          }}
-                          style={{ padding: '3px 6px', fontSize: '0.8rem' }}
-                        />
+                    {invoiceItems.map((item, idx) => (
+                      <div key={item.id || `line_${idx}`} style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', marginBottom: '8px', border: '1px solid var(--border-glass)' }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-gold)', minWidth: '24px' }}>#{idx + 1}</span>
+
+                          {/* Quick Catalog Selector Dropdown */}
+                          {allCatalogProducts && allCatalogProducts.length > 0 && (
+                            <select
+                              className="form-control"
+                              style={{ fontSize: '0.78rem', padding: '4px 8px', width: 'auto', maxWidth: '210px', background: '#0f172a', color: '#38bdf8', borderColor: '#0284c7', fontWeight: 700 }}
+                              onChange={(e) => {
+                                const selectedProd = allCatalogProducts.find(p => p.id === e.target.value);
+                                if (selectedProd) {
+                                  const pName = selectedProd.names?.[currentLang] || selectedProd.names?.en || selectedProd.names?.gu || 'Export Product';
+                                  const hs = selectedProd.hsCode || selectedProd.localHsn || '9988';
+                                  const price = selectedProd.priceUsd ? selectedProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
+                                  setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                    ...i,
+                                    name: pName,
+                                    hsn: hs,
+                                    price: price || '500',
+                                    unit: selectedProd.moq || 'Unit / Container'
+                                  } : i));
+                                }
+                              }}
+                              value=""
+                            >
+                              <option value="" disabled>📦 Pick Product from Catalog...</option>
+                              {allCatalogProducts.map(p => (
+                                <option key={p.id} value={p.id}>
+                                  {p.names?.en || p.names?.gu} (HS: {p.hsCode || 'N/A'})
+                                </option>
+                              ))}
+                            </select>
+                          )}
+
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Particular Item Name / Description (e.g. Punjabi Dress / Dyeing Jobwork)"
+                            value={item.name}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, name: val } : i));
+                            }}
+                            style={{ flexGrow: 2, minWidth: '220px', fontWeight: 700, fontSize: '0.84rem' }}
+                          />
+
+                          {invoiceItems.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setInvoiceItems(prev => prev.filter((_, iIdx) => iIdx !== idx))}
+                              style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '1.1rem', cursor: 'pointer', padding: '0 6px' }}
+                              title="Remove item"
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '6px' }}>
+                          <div>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>HSN / SAC</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={item.hsn}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsn: val } : i));
+                              }}
+                              style={{ padding: '3px 6px', fontSize: '0.8rem' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Quantity</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              value={item.qty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, qty: val } : i));
+                              }}
+                              style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={item.unit}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, unit: val } : i));
+                              }}
+                              style={{ padding: '3px 6px', fontSize: '0.8rem' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit Price ({quoteCurrency})</label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              value={item.price}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, price: val } : i));
+                              }}
+                              style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
+                            />
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Line Total</label>
+                            <strong style={{ fontSize: '0.88rem', color: '#4ade80' }}>
+                              {(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </strong>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Quantity</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={item.qty}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setInvoiceItems(prev => prev.map(i => i.id === item.id ? { ...i, qty: val } : i));
-                          }}
-                          style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={item.unit}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setInvoiceItems(prev => prev.map(i => i.id === item.id ? { ...i, unit: val } : i));
-                          }}
-                          style={{ padding: '3px 6px', fontSize: '0.8rem' }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit Price ({quoteCurrency})</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={item.price}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setInvoiceItems(prev => prev.map(i => i.id === item.id ? { ...i, price: val } : i));
-                          }}
-                          style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
-                        />
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Line Total</label>
-                        <strong style={{ fontSize: '0.88rem', color: '#4ade80' }}>
-                          {(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </strong>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               <div className="form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
