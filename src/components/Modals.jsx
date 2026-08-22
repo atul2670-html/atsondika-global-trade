@@ -4994,14 +4994,14 @@ export default function Modals() {
                 </span>
               </div>
 
-              {currentMerchant && (
+              {currentMerchant && currentMerchant.businessName && (
                 <button
                   type="button"
                   className="btn-secondary"
                   style={{ fontSize: '0.75rem', padding: '4px 10px', color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)' }}
                   onClick={logoutMerchant}
                 >
-                  🚪 Logout ({currentMerchant.businessName.split(' ')[0]})
+                  🚪 Logout ({(currentMerchant.businessName || 'Seller').split(' ')[0]})
                 </button>
               )}
             </div>
@@ -5062,7 +5062,7 @@ export default function Modals() {
                     }}
                     onClick={() => setSellerTab('dashboard')}
                   >
-                    📦 My Products ({merchantProductsList.filter(p => p.merchantId === currentMerchant.id).length})
+                    📦 My Products ({merchantProductsList.filter(p => p.merchantId === (currentMerchant?.id || '')).length})
                   </button>
                   <button
                     type="button"

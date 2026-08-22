@@ -453,7 +453,7 @@ export default function Navbar() {
               )}
 
               {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL BUTTON */}
-              {currentMerchant ? (
+              {currentMerchant && currentMerchant.businessName ? (
                 <button
                   type="button"
                   className="btn-secondary nav-cust-btn"
@@ -467,9 +467,9 @@ export default function Navbar() {
                     whiteSpace: 'nowrap'
                   }}
                   onClick={() => setActiveModal('seller_portal')}
-                  title={`Seller Account: ${currentMerchant.businessName}`}
+                  title={`Seller Account: ${currentMerchant.businessName || 'Exporter'}`}
                 >
-                  🏬 <span className="nav-btn-label">{currentMerchant.businessName.split(' ')[0]}</span> ⭐
+                  🏬 <span className="nav-btn-label">{(currentMerchant.businessName || 'Seller').split(' ')[0]}</span> ⭐
                 </button>
               ) : (
                 <button

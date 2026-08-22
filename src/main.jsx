@@ -20,7 +20,8 @@ class ErrorBoundary extends React.Component {
 
   handleReset = () => {
     try {
-      localStorage.clear();
+      localStorage.removeItem('site_current_merchant_v1');
+      localStorage.removeItem('site_active_logged_customer_v1');
       sessionStorage.clear();
     } catch(e) {}
     window.location.reload();
