@@ -4230,7 +4230,14 @@ export default function Modals() {
 
               {/* MULTIPLE PARTICULAR ITEMS & JOBWORK MANAGER BOX */}
               {(() => {
-                const allCatalogProducts = getAllProducts ? getAllProducts() : [];
+                const baseProds = getAllProducts ? getAllProducts() : [];
+                const customProds = customProductsList || [];
+
+                // Deduplicate and combine all products including future custom added ones
+                const prodMap = new Map();
+                baseProds.forEach(p => { if (p && p.id) prodMap.set(p.id, p); });
+                customProds.forEach(p => { if (p && p.id) prodMap.set(p.id, p); });
+                const allCatalogProducts = Array.from(prodMap.values());
 
                 return (
                   <div style={{ background: 'rgba(15, 23, 42, 0.65)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(56, 189, 248, 0.3)', marginBottom: '14px' }}>
@@ -4318,11 +4325,15 @@ export default function Modals() {
                               value=""
                             >
                               <option value="" disabled>📦 Pick Product from Catalog...</option>
-                              {allCatalogProducts.map(p => (
-                                <option key={p.id} value={p.id}>
-                                  {p.names?.en || p.names?.gu} (HS: {p.hsCode || 'N/A'})
-                                </option>
-                              ))}
+                              {allCatalogProducts.map(p => {
+                                const title = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Product';
+                                const isCustom = (customProductsList || []).some(cp => cp.id === p.id);
+                                return (
+                                  <option key={p.id} value={p.id}>
+                                    {isCustom ? '⭐ ' : ''}{title} (HS: {p.hsCode || p.localHsn || 'N/A'})
+                                  </option>
+                                );
+                              })}
                             </select>
                           )}
 
