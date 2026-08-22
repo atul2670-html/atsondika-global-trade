@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Force immediate purge of all ServiceWorker & CacheStorage registrations
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var r of regs) r.unregister();
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var name of names) caches.delete(name);
+      });
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Atsondika Global Trade | Premium Global Exporter | Surat, Gujarat</title>
   <meta name="description" content="Atulbhai Ishwarbhai Patel - Certified Global Exporter from Surat, Gujarat specializing in Spices, Basmati Rice, Industrial Fasteners, Machinery, and Eco Packaging.">
