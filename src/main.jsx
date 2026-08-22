@@ -29,43 +29,11 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#0b0f19',
-          color: '#ffffff',
-          fontFamily: 'sans-serif',
-          padding: '20px',
-          textAlign: 'center'
-        }}>
-          <h2 style={{ color: '#f59e0b', fontSize: '1.8rem', marginBottom: '10px' }}>
-            ⚡ atsondika-global-trade
-          </h2>
-          <p style={{ color: '#94a3b8', maxWidth: '500px', marginBottom: '20px' }}>
-            Browser storage cache issue detected. Click below to repair and open the live website.
-          </p>
-          <button
-            onClick={this.handleReset}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              fontWeight: 800,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '30px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
-            }}
-          >
-            🔄 Auto-Repair & Open Website
-          </button>
-        </div>
-      );
+      try {
+        localStorage.removeItem('site_current_merchant_v1');
+        localStorage.removeItem('site_active_logged_customer_v1');
+      } catch(e) {}
+      return this.props.children;
     }
     return this.props.children;
   }
