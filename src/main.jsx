@@ -40,10 +40,11 @@ class ErrorBoundary extends React.Component {
               try {
                 localStorage.removeItem('site_current_merchant_v1');
                 localStorage.removeItem('site_active_logged_customer_v1');
+                sessionStorage.clear();
               } catch(e) {}
-              window.location.reload();
+              window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
             }}
-            style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', color: 'white', border: 'none', borderRadius: '30px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem' }}
+            style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', color: 'white', border: 'none', borderRadius: '30px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 4px 14px rgba(13, 148, 136, 0.4)' }}
           >
             🚀 Load Live Website
           </button>

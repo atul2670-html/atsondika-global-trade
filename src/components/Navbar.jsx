@@ -453,7 +453,7 @@ export default function Navbar() {
               )}
 
               {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL BUTTON */}
-              {currentMerchant && currentMerchant.businessName ? (
+              {currentMerchant && currentMerchant.id && currentMerchant.businessName ? (
                 <button
                   type="button"
                   className="btn-secondary nav-cust-btn"

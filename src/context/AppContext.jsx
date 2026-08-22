@@ -114,7 +114,12 @@ export function AppProvider({ children }) {
   const [currentMerchant, setCurrentMerchant] = useState(() => {
     try {
       const stored = localStorage.getItem('site_current_merchant_v1');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object' && parsed.id && parsed.businessName) {
+          return parsed;
+        }
+      }
     } catch(e) {}
     return null;
   });
