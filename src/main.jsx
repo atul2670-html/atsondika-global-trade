@@ -31,22 +31,25 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div style={{ minHeight: '100vh', background: '#090d16', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '20px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.6rem', color: '#2dd4bf', marginBottom: '12px' }}>Atsondika Global Trade</h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '480px', marginBottom: '20px' }}>
-            Updating live website assets. Click below to load fresh data.
-          </p>
+          <h2 style={{ fontSize: '1.6rem', color: '#f59e0b', marginBottom: '12px' }}>⚠️ React Diagnostic Error Screen</h2>
+          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', padding: '16px', borderRadius: '12px', color: '#fca5a5', maxWidth: '750px', width: '90%', textAlign: 'left', margin: '15px 0', fontSize: '0.85rem', wordBreak: 'break-word' }}>
+            <strong>Error Message:</strong> {this.state.error ? this.state.error.toString() : 'Unknown Error'}<br/><br/>
+            <strong>Stack Trace:</strong>
+            <pre style={{ fontSize: '0.75rem', overflowX: 'auto', background: 'black', padding: '10px', borderRadius: '6px', marginTop: '6px', whiteSpace: 'pre-wrap' }}>
+              {this.state.error ? this.state.error.stack : ''}
+            </pre>
+          </div>
           <button
             onClick={() => {
               try {
-                localStorage.removeItem('site_current_merchant_v1');
-                localStorage.removeItem('site_active_logged_customer_v1');
+                localStorage.clear();
                 sessionStorage.clear();
               } catch(e) {}
               window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
             }}
-            style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', color: 'white', border: 'none', borderRadius: '30px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 4px 14px rgba(13, 148, 136, 0.4)' }}
+            style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', border: 'none', borderRadius: '30px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem' }}
           >
-            🚀 Load Live Website
+            🔄 Reset All Local Storage & Load Fresh Website
           </button>
         </div>
       );
