@@ -5062,7 +5062,7 @@ export default function Modals() {
                     }}
                     onClick={() => setSellerTab('dashboard')}
                   >
-                    📦 My Products ({merchantProductsList.filter(p => p.merchantId === (currentMerchant?.id || '')).length})
+                    📦 My Products ({(Array.isArray(merchantProductsList) ? merchantProductsList : []).filter(p => p.merchantId === (currentMerchant?.id || '')).length})
                   </button>
                   <button
                     type="button"
@@ -5213,13 +5213,13 @@ export default function Modals() {
 
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '10px' }}>📦 Published Products List:</h4>
 
-                {customProductsList.filter(p => p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName).length === 0 ? (
+                {(Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName))).length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', color: 'var(--text-sub)' }}>
                     📦 No products published yet! Click "Upload New Product" to add your items to the website.
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
-                    {customProductsList.filter(p => p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName).map((p, pIdx) => (
+                    {(Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName))).map((p, pIdx) => (
                       <div key={p.id || pIdx} style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
                         <img src={p.image || (p.images && p.images[0]) || 'images/agro_spices_grains.png'} alt={p.names?.en} style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px' }} />
                         <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{p.names?.en || p.names?.gu}</div>
