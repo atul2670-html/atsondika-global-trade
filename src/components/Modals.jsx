@@ -177,6 +177,26 @@ export default function Modals() {
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
 
+  // Bank Details State for Invoice Sheet with Automatic Sister Company Fallbacks
+  const [invoiceBankName, setInvoiceBankName] = useState('');
+  const [invoiceAccountName, setInvoiceAccountName] = useState('');
+  const [invoiceAccountNumber, setInvoiceAccountNumber] = useState('');
+  const [invoiceSwiftCode, setInvoiceSwiftCode] = useState('');
+  const [invoiceIfscCode, setInvoiceIfscCode] = useState('');
+  const [invoiceBranch, setInvoiceBranch] = useState('');
+
+  useEffect(() => {
+    if (activeCompany) {
+      const b = activeCompany.bankDetails || {};
+      setInvoiceBankName(b.bankName || (activeCompany.id === 'comp_4' ? 'Axis Bank Ltd' : (activeCompany.id === 'comp_3' ? 'ICICI Bank Ltd' : (activeCompany.id === 'comp_2' ? 'State Bank of India' : 'HDFC Bank Ltd'))));
+      setInvoiceAccountName(b.accountName || activeCompany.name || 'ADIDEV SMART SOLUTION');
+      setInvoiceAccountNumber(b.accountNumber || (activeCompany.id === 'comp_4' ? '921020033445566' : (activeCompany.id === 'comp_3' ? '001105009988' : (activeCompany.id === 'comp_2' ? '409988776655' : '50200088997755'))));
+      setInvoiceSwiftCode(b.swiftCode || (activeCompany.id === 'comp_4' ? 'AXISINBBXXX' : (activeCompany.id === 'comp_3' ? 'ICICINBBXXX' : (activeCompany.id === 'comp_2' ? 'SBININBBXXX' : 'HDFCINBBXXX'))));
+      setInvoiceIfscCode(b.ifscCode || (activeCompany.id === 'comp_4' ? 'UTIB0000123' : (activeCompany.id === 'comp_3' ? 'ICIC0000011' : (activeCompany.id === 'comp_2' ? 'SBIN0001234' : 'HDFC0000240'))));
+      setInvoiceBranch(b.branch || 'Main Commercial Branch, Surat, Gujarat, India');
+    }
+  }, [activeCompany]);
+
   const [activeQuoteCustomer, setActiveQuoteCustomer] = useState(null);
 
   // 1-Click Proforma Invoice Generator for Particular Inquiry Item & Buyer
@@ -4076,8 +4096,9 @@ export default function Modals() {
                     msg += `📦 *Goods / Line Items:*\n${itemsListStr}\n`;
                     msg += `-----------------------------------\n`;
                     msg += `💰 *Grand Total:* ${quoteCurrency} ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
-                    if (includeBankDetailsInInvoice && activeCompany?.bankDetails?.bankName) {
-                      msg += `🏦 *Bank:* ${activeCompany.bankDetails.bankName} (A/C: ${activeCompany.bankDetails.accountNumber || ''})\n`;
+                    if (includeBankDetailsInInvoice) {
+                      msg += `🏦 *Bank:* ${invoiceBankName} (A/C: ${invoiceAccountNumber})\n`;
+                      msg += `🏦 *IFSC/SWIFT:* ${invoiceIfscCode} / ${invoiceSwiftCode}\n`;
                     }
                     if (includeStampInInvoice) {
                       msg += `🏵️ *Status:* Verified & Digital Seal Attached\n`;
@@ -4147,13 +4168,13 @@ export default function Modals() {
                     body += `-----------------------------------------------\n`;
                     body += `GRAND TOTAL INVOICE VALUE: ${quoteCurrency} ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
                     body += `-----------------------------------------------\n\n`;
-                    if (includeBankDetailsInInvoice && activeCompany?.bankDetails?.bankName) {
+                    if (includeBankDetailsInInvoice) {
                       body += `BANKING & WIRE TRANSFER DETAILS:\n`;
-                      body += `Bank Name: ${activeCompany.bankDetails.bankName}\n`;
-                      body += `Beneficiary: ${activeCompany.bankDetails.accountName}\n`;
-                      body += `Account No: ${activeCompany.bankDetails.accountNumber}\n`;
-                      body += `SWIFT Code: ${activeCompany.bankDetails.swiftCode}\n`;
-                      body += `IFSC Code: ${activeCompany.bankDetails.ifscCode}\n\n`;
+                      body += `Bank Name: ${invoiceBankName}\n`;
+                      body += `Beneficiary: ${invoiceAccountName}\n`;
+                      body += `Account No: ${invoiceAccountNumber}\n`;
+                      body += `SWIFT Code: ${invoiceSwiftCode}\n`;
+                      body += `IFSC Code: ${invoiceIfscCode}\n\n`;
                     }
                     body += `For official printable PDF copy, please reply to this email or visit our portal: ${window.location.origin}\n\n`;
                     body += `Best regards,\n${compName} Export Team\nPhone: ${activeCompany?.phone || '+91 78619 97755'}\nEmail: ${activeCompany?.email || 'info@atsondikaglobaltrade.com'}`;
@@ -4590,6 +4611,37 @@ export default function Modals() {
                   🏦 Print Wire Transfer & Bank Details (બેંક વિગત છાપવી)
                 </label>
               </div>
+
+              {/* Inline Bank Details Editor Panel */}
+              {includeBankDetailsInInvoice && (
+                <div style={{ marginTop: '12px', background: 'rgba(16, 185, 129, 0.08)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#4ade80', fontWeight: 800, marginBottom: '8px' }}>
+                    🏦 Editable Bank & Wire Transfer Details (જરૂર મુજબ બેંક માહિતી સેટ કરો):
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Bank Name</label>
+                      <input type="text" className="form-control" value={invoiceBankName} onChange={(e) => setInvoiceBankName(e.target.value)} placeholder="Bank Name" style={{ fontSize: '0.8rem', padding: '4px 8px' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Beneficiary / Account Name</label>
+                      <input type="text" className="form-control" value={invoiceAccountName} onChange={(e) => setInvoiceAccountName(e.target.value)} placeholder="Beneficiary Name" style={{ fontSize: '0.8rem', padding: '4px 8px' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Account / IBAN No.</label>
+                      <input type="text" className="form-control" value={invoiceAccountNumber} onChange={(e) => setInvoiceAccountNumber(e.target.value)} placeholder="Account Number" style={{ fontSize: '0.8rem', padding: '4px 8px', fontWeight: 800 }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>SWIFT / BIC Code</label>
+                      <input type="text" className="form-control" value={invoiceSwiftCode} onChange={(e) => setInvoiceSwiftCode(e.target.value)} placeholder="SWIFT Code" style={{ fontSize: '0.8rem', padding: '4px 8px' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>IFSC Code</label>
+                      <input type="text" className="form-control" value={invoiceIfscCode} onChange={(e) => setInvoiceIfscCode(e.target.value)} placeholder="IFSC Code" style={{ fontSize: '0.8rem', padding: '4px 8px' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* PRINTABLE PROFORMA / TAX INVOICE / JOBWORK SHEET CONTAINER */}
@@ -4725,18 +4777,18 @@ export default function Modals() {
                         </>
                       )}
 
-                      {includeBankDetailsInInvoice && activeCompany?.bankDetails && (activeCompany.bankDetails.bankName || activeCompany.bankDetails.accountNumber) && (
+                      {includeBankDetailsInInvoice && (
                         <div style={{ background: '#f0f9ff', padding: '10px 12px', borderRadius: '6px', border: '1px solid #bae6fd', marginTop: '10px', fontSize: '0.78rem', textAlign: 'left' }}>
                           <div style={{ fontWeight: 800, color: '#0369a1', marginBottom: '4px', fontSize: '0.8rem' }}>
                             🏦 WIRE TRANSFER / BANKING DETAILS:
                           </div>
                           <div style={{ display: 'grid', gap: '2px', color: '#1e293b' }}>
-                            {activeCompany.bankDetails.bankName && <div><strong>Bank Name:</strong> {activeCompany.bankDetails.bankName}</div>}
-                            {activeCompany.bankDetails.accountName && <div><strong>Beneficiary / Account:</strong> {activeCompany.bankDetails.accountName}</div>}
-                            {activeCompany.bankDetails.accountNumber && <div><strong>Account / IBAN No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0369a1' }}>{activeCompany.bankDetails.accountNumber}</span></div>}
-                            {activeCompany.bankDetails.swiftCode && <div><strong>SWIFT / BIC Code:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0f766e' }}>{activeCompany.bankDetails.swiftCode}</span></div>}
-                            {activeCompany.bankDetails.ifscCode && <div><strong>IFSC Code:</strong> {activeCompany.bankDetails.ifscCode}</div>}
-                            {activeCompany.bankDetails.branch && <div><strong>Bank Branch:</strong> {activeCompany.bankDetails.branch}</div>}
+                            {invoiceBankName && <div><strong>Bank Name:</strong> {invoiceBankName}</div>}
+                            {invoiceAccountName && <div><strong>Beneficiary / Account:</strong> {invoiceAccountName}</div>}
+                            {invoiceAccountNumber && <div><strong>Account / IBAN No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0369a1' }}>{invoiceAccountNumber}</span></div>}
+                            {invoiceSwiftCode && <div><strong>SWIFT / BIC Code:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0f766e' }}>{invoiceSwiftCode}</span></div>}
+                            {invoiceIfscCode && <div><strong>IFSC Code:</strong> {invoiceIfscCode}</div>}
+                            {invoiceBranch && <div><strong>Bank Branch:</strong> {invoiceBranch}</div>}
                           </div>
                         </div>
                       )}
