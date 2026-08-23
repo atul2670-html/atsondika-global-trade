@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
 import { translateFullWebsiteData } from '../utils/masterWebsiteTranslator';
+import FlagIcon from './FlagIcon';
 
 export default function Navbar() {
   const {
@@ -81,7 +82,6 @@ export default function Navbar() {
     else document.body.classList.remove('light-theme');
   };
 
-  const flagMap = { en: '🇬🇧', gu: '🇮🇳', hi: '🇮🇳', fr: '🇫🇷' };
   const shortMap = { en: 'EN', gu: 'GU', hi: 'HI', fr: 'FR' };
   const nameMap = { en: 'English', gu: 'ગુજરાતી', hi: 'हिन्दी', fr: 'Français' };
 
@@ -182,7 +182,7 @@ export default function Navbar() {
                 style={{ padding: '3px 8px', fontSize: '0.75rem', background: 'transparent', border: 'none', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
                 title="Select Display Language"
               >
-                <span>{flagMap[currentLang]}</span>
+                <FlagIcon code={currentLang} />
                 <span style={{ fontWeight: 800 }}>{shortMap[currentLang]}</span>
                 <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>▼</span>
               </button>
@@ -294,9 +294,10 @@ export default function Navbar() {
                         setCurrentLang(lang);
                         setLangMenuOpen(false);
                       }}
-                      style={{ width: '100%', padding: '6px 10px', fontSize: '0.82rem' }}
+                      style={{ width: '100%', padding: '6px 10px', fontSize: '0.82rem', display: 'flex', alignItems: 'center' }}
                     >
-                      <span>{flagMap[lang]}</span> {nameMap[lang]}
+                      <FlagIcon code={lang} />
+                      <span>{nameMap[lang]}</span>
                     </button>
                   ))}
                 </div>

@@ -4,6 +4,7 @@ import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
+import FlagIcon from './FlagIcon';
 
 // INTERNATIONAL WCO (6-DIGIT) & LOCAL CUSTOMS/GST (8-DIGIT) HARMONIZED SYSTEM DICTIONARY
 const hsCodeDictionary = [
@@ -3162,10 +3163,13 @@ export default function Modals() {
                     fontSize: '0.82rem',
                     background: heroLangTab === lang.code ? 'var(--primary-teal)' : 'rgba(255,255,255,0.05)',
                     color: heroLangTab === lang.code ? 'white' : 'var(--text-sub)',
-                    borderColor: heroLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
+                    borderColor: heroLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)',
+                    display: 'inline-flex',
+                    alignItems: 'center'
                   }}
                 >
-                  {lang.flag} {lang.name}
+                  <FlagIcon code={lang.code} />
+                  <span>{lang.name}</span>
                 </button>
               ))}
             </div>
@@ -3500,11 +3504,14 @@ export default function Modals() {
                     fontSize: '0.82rem',
                     background: aboutLangTab === lang.code ? 'var(--primary-teal)' : 'rgba(255,255,255,0.05)',
                     color: aboutLangTab === lang.code ? 'white' : 'var(--text-sub)',
-                    borderColor: aboutLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
+                    borderColor: aboutLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)',
+                    display: 'inline-flex',
+                    alignItems: 'center'
                   }}
                   onClick={() => setAboutLangTab(lang.code)}
                 >
-                  <span>{lang.flag}</span> {lang.name}
+                  <FlagIcon code={lang.code} />
+                  <span>{lang.name}</span>
                 </button>
               ))}
             </div>
