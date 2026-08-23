@@ -86,6 +86,7 @@ export default function ProductsGrid() {
   });
 
   const allProds = getAllProducts();
+  const q = searchFilterQuery.toLowerCase().trim();
   let filtered = currentCategory === 'all'
     ? allProds
     : allProds.filter(p => {
