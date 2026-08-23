@@ -554,7 +554,7 @@ export function AppProvider({ children }) {
       // Rule 0b: Clean up corrupted or missing product names
       if (enTitle.includes('chocolate')) {
         copy.names = { en: 'Chocolates', gu: 'ચોકલેટ', hi: 'चॉकलेट', fr: 'Chocolats' };
-        copy.category = 'agro';
+        if (!copy.category || copy.category === 'textiles') copy.category = 'dairy';
       } else if (enTitle.includes('paper bag') || enTitle.includes('packaging material')) {
         copy.category = 'packaging';
         if (!copy.names?.hi || copy.names.hi === copy.names.en) {

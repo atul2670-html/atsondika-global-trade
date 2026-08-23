@@ -86,8 +86,17 @@ export default function ProductsGrid() {
   });
 
   const allProds = getAllProducts();
-  const q = searchFilterQuery.toLowerCase().trim();
-  let filtered = currentCategory === 'all' ? allProds : allProds.filter(p => p.category === currentCategory);
+  let filtered = currentCategory === 'all'
+    ? allProds
+    : allProds.filter(p => {
+        if (p.category === currentCategory) return true;
+        const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
+        // Chocolates & Confectionery belong to both 'dairy' and 'agro' tabs!
+        if (normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
+          if (currentCategory === 'dairy' || currentCategory === 'agro') return true;
+        }
+        return false;
+      });
 
   // Filter out pending/rejected seller products for public visitors
   filtered = filtered.filter(p => {
