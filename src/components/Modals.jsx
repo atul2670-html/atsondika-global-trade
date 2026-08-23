@@ -121,6 +121,12 @@ export default function Modals() {
   const [mBizTypeInput, setMBizTypeInput] = useState('Manufacturer & Exporter');
   const [mSellerLoginQuery, setMSellerLoginQuery] = useState('');
 
+  // Seller Certificate Upload States
+  const [mIecCertInput, setMIecCertInput] = useState('');
+  const [mGstCertInput, setMGstCertInput] = useState('');
+  const [mQualityCertInput, setMQualityCertInput] = useState('');
+  const [mFactoryPhotoInput, setMFactoryPhotoInput] = useState('');
+
   // Seller New Product Upload Form State
   const [mProdNameEn, setMProdNameEn] = useState('');
   const [mProdNameGu, setMProdNameGu] = useState('');
@@ -1403,6 +1409,53 @@ export default function Modals() {
                         <div>📦 Products Uploaded: <strong style={{ color: '#facc15' }}>{sellerProdsCount} Items</strong></div>
                         <div>📅 Registered: <span>{seller.registeredAt || 'N/A'}</span></div>
                       </div>
+
+                      {/* Attached Certificates Badges */}
+                      {(seller.iecCertUrl || seller.gstCertUrl || seller.qualityCertUrl || seller.factoryPhotoUrl) && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#a1a1aa', fontWeight: 700 }}>📜 Uploaded Documents:</span>
+                          {seller.iecCertUrl && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.74rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.4)' }}
+                              onClick={() => openImagePreview && openImagePreview({ title: `📄 IEC Certificate - ${seller.businessName}`, url: seller.iecCertUrl, category: 'Export License' })}
+                            >
+                              📄 View IEC Cert
+                            </button>
+                          )}
+                          {seller.gstCertUrl && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.74rem', color: '#4ade80', borderColor: 'rgba(74,222,128,0.4)' }}
+                              onClick={() => openImagePreview && openImagePreview({ title: `📜 GST Certificate - ${seller.businessName}`, url: seller.gstCertUrl, category: 'Tax Registration' })}
+                            >
+                              📜 View GST Cert
+                            </button>
+                          )}
+                          {seller.qualityCertUrl && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.74rem', color: '#facc15', borderColor: 'rgba(250,204,21,0.4)' }}
+                              onClick={() => openImagePreview && openImagePreview({ title: `🏅 Quality Certificate - ${seller.businessName}`, url: seller.qualityCertUrl, category: 'Quality Certification' })}
+                            >
+                              🏅 View Quality Cert
+                            </button>
+                          )}
+                          {seller.factoryPhotoUrl && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.74rem', color: '#cbd5e1', borderColor: 'rgba(203,213,225,0.4)' }}
+                              onClick={() => openImagePreview && openImagePreview({ title: `🏭 Factory Premises - ${seller.businessName}`, url: seller.factoryPhotoUrl, category: 'Factory Premises' })}
+                            >
+                              🏭 View Factory Photo
+                            </button>
+                          )}
+                        </div>
+                      )}
 
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '4px' }}>
                         {seller.status !== 'approved' && (
@@ -5641,7 +5694,11 @@ export default function Modals() {
                   city: mCityInput,
                   state: mStateInput,
                   gstin: mGstinInput,
-                  businessType: mBizTypeInput
+                  businessType: mBizTypeInput,
+                  iecCertUrl: mIecCertInput,
+                  gstCertUrl: mGstCertInput,
+                  qualityCertUrl: mQualityCertInput,
+                  factoryPhotoUrl: mFactoryPhotoInput
                 });
                 setSellerTab('add_product');
               }}>
@@ -5694,6 +5751,120 @@ export default function Modals() {
                       <option value="Merchant Exporter">Merchant Exporter (વેપારી)</option>
                       <option value="Wholesaler & Supplier">Wholesaler & Supplier (જથ્થાબંધ વેપારી)</option>
                     </select>
+                  </div>
+                </div>
+
+                {/* EXPORT CERTIFICATES & BUSINESS DOCUMENTS UPLOAD SECTION */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '18px' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38bdf8', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    📜 Export Certificates & Business Documents (સર્ટિફિકેટ અને દસ્તાવેજો)
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                    તમારા નિકાસ લાઇસન્સ અને GST સર્ટિફિકેટ્સ અપલોડ કરો (Select certificate files or photos).
+                  </p>
+
+                  <div className="form-row">
+                    {/* 1. IEC CERTIFICATE */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        📄 Import Export Code (IEC) Certificate
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setMIecCertInput(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {mIecCertInput && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700 }}>
+                          ✅ IEC Certificate File Attached!
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 2. GST CERTIFICATE */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        📜 GST Registration Certificate
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setMGstCertInput(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {mGstCertInput && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700 }}>
+                          ✅ GST Certificate File Attached!
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    {/* 3. QUALITY CERTIFICATE (APEDA / FSSAI / ISO) */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        🏅 Quality Cert (APEDA / FSSAI / ISO / FIEO)
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setMQualityCertInput(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {mQualityCertInput && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700 }}>
+                          ✅ Quality Certificate Attached!
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 4. FACTORY / GODOWN PHOTO */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        🏭 Factory / Premises Photo
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setMFactoryPhotoInput(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {mFactoryPhotoInput && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700 }}>
+                          ✅ Factory Photo Attached!
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

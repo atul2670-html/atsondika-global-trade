@@ -1555,8 +1555,13 @@ export function AppProvider({ children }) {
       state: merchantData.state || 'Gujarat',
       gstin: merchantData.gstin || '',
       businessType: merchantData.businessType || 'Manufacturer & Exporter',
-      status: 'approved',
-      registeredAt: new Date().toLocaleDateString()
+      status: merchantData.status || 'approved',
+      registeredAt: new Date().toLocaleDateString(),
+      certificates: merchantData.certificates || [],
+      iecCertUrl: merchantData.iecCertUrl || '',
+      gstCertUrl: merchantData.gstCertUrl || '',
+      qualityCertUrl: merchantData.qualityCertUrl || '',
+      factoryPhotoUrl: merchantData.factoryPhotoUrl || ''
     };
     const nextMerchants = [newMerchant, ...merchantsList];
     setMerchantsList(nextMerchants);
