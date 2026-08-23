@@ -277,6 +277,44 @@ function matchTradeDictionary(text, lang) {
       fr: 'Tarification compétitive des conteneurs & conditions transparentes'
     },
 
+    // Exact Product Specifications & Common Quality Terms
+    {
+      en: /Hi[- ]quality premium product|High[- ]quality premium product|Hi quality premium product|High quality premium product/gi,
+      gu: 'ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ',
+      hi: 'उच्च गुणवत्ता वाला प्रीमियम उत्पाद',
+      fr: 'Produit Premium de Haute Qualité'
+    },
+    {
+      en: /Hi[- ]quality|High[- ]quality|Hi quality|High quality/gi,
+      gu: 'ઉચ્ચ ગુણવત્તાવાળી',
+      hi: 'उच्च गुणवत्ता वाला',
+      fr: 'Haute Qualité'
+    },
+    {
+      en: /Premium Product|Premium Products/gi,
+      gu: 'પ્રીમિયમ પ્રોડક્ટ',
+      hi: 'प्रीमियम उत्पाद',
+      fr: 'Produit Premium'
+    },
+    {
+      en: /Chocolates|Chocolate/gi,
+      gu: 'ચોકલેટ',
+      hi: 'चॉकलेट',
+      fr: 'Chocolats'
+    },
+    {
+      en: /Standard Export Packaging|Export Packaging/gi,
+      gu: 'સ્ટાન્ડર્ડ એક્સપોર્ટ પેકેજિંગ',
+      hi: 'मानक निर्यात पैकेजिंग',
+      fr: 'Emballage d\'Exportation Standard'
+    },
+    {
+      en: /1 Unit \/ Container|Unit \/ Container/gi,
+      gu: '૧ યુનિટ / કન્ટેનર',
+      hi: '1 यूनिट / कंटेनर',
+      fr: '1 Unité / Conteneur'
+    },
+
     // Phrase & Word Translations
     { en: /Connecting/gi, gu: 'જોડતી', hi: 'जोड़ना', fr: 'Connecter' },
     { en: /Premium Quality/gi, gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા', hi: 'उत्कृष्ट गुणवत्ता', fr: 'Qualité Supérieure' },

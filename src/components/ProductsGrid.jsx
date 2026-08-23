@@ -137,6 +137,14 @@ export default function ProductsGrid() {
       }
     }
 
+    // 1. Check Agro Commodities & Food / Confectionery Products Group FIRST
+    if (catSlug.includes('agro') || nameStr.includes('chocolate') || nameStr.includes('spice') || nameStr.includes('rice') || nameStr.includes('wheat') || nameStr.includes('seed') || nameStr.includes('sugar') || nameStr.includes('food')) {
+      if (currentLang === 'gu') return '🏷️ એગ્રો કોમોડિટીઝ & ફૂડ (Agro & Food)';
+      if (currentLang === 'hi') return '🏷️ कृषि एवं खाद्य उत्पाद (Agro & Food)';
+      if (currentLang === 'fr') return '🏷️ Produits Agricoles & Alimentaires';
+      return '🏷️ Agro & Food Products';
+    }
+
     // 2. Garments & Apparel Group
     if (catSlug.includes('garment') || catSlug.includes('apparel') || nameStr.includes('suit') || hs.startsWith('61') || hs.startsWith('62')) {
       if (currentLang === 'gu') return '🏷️ રેડિ-મેડ ગારમેન્ટ્સ (Garments)';
@@ -146,7 +154,7 @@ export default function ProductsGrid() {
     }
 
     // 3. Textile & Fabric Products Group
-    if (catSlug.includes('textile') || catSlug.includes('fabric') || nameStr.includes('saree') || nameStr.includes('yarn') || nameStr.includes('fabric') || hs.startsWith('52') || hs.startsWith('54')) {
+    if (catSlug.includes('textile') || catSlug.includes('fabric') || nameStr.includes('saree') || nameStr.includes('yarn') || nameStr.includes('fabric') || (hs.startsWith('52') && !nameStr.includes('chocolate')) || hs.startsWith('54')) {
       if (currentLang === 'gu') return '🏷️ ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)';
       if (currentLang === 'hi') return '🏷️ कपड़ा उत्पाद (Textiles)';
       if (currentLang === 'fr') return '🏷️ Produits Textiles';
@@ -433,11 +441,18 @@ export default function ProductsGrid() {
             </div>
           ) : (
             filtered.map(p => {
-              const rawTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || p.names['en'] || p.names['gu'] || '') : (p.name || '');
-              const title = autoTranslateText(rawTitle, currentLang);
+              const enTitle = (p.names && typeof p.names === 'object') ? (p.names['en'] || p.name || '') : (p.name || '');
+              const langTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || '') : '';
+              const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
+                ? langTitle
+                : autoTranslateText(enTitle || langTitle, currentLang);
 
-              const rawSpec = (typeof p.spec === 'object') ? (p.spec[currentLang] || p.spec['en'] || p.spec['gu'] || '') : (p.spec || '');
-              const specText = autoTranslateText(rawSpec, currentLang);
+              const enSpec = (typeof p.spec === 'object') ? (p.spec['en'] || '') : (typeof p.specifications === 'object' ? p.specifications['en'] : p.spec || '');
+              const langSpec = (typeof p.spec === 'object') ? (p.spec[currentLang] || '') : '';
+              const specText = (langSpec && currentLang !== 'en' && !langSpec.includes('વુઅલિચય') && !langSpec.includes('પરેમિયમ'))
+                ? langSpec
+                : autoTranslateText(enSpec || langSpec || 'High Quality Premium Product', currentLang);
+
               const rawImgs = (p.images && p.images.length > 0) ? p.images : [p.image || 'images/agro_spices_grains.png'];
               const imgs = rawImgs.map(convertGoogleDriveUrl);
               const activeIdx = (carouselIndices[p.id] || 0) % imgs.length;
