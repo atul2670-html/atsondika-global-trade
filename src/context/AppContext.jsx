@@ -522,7 +522,7 @@ export function AppProvider({ children }) {
     catch(e) { return []; }
   });
 
-  // SANITIZATION HELPER: Deduplicate tabs & move Grains, Seeds, Spices, Turmeric to 'agro' category
+  // SANITIZATION HELPER: Deduplicate tabs & move Grains, Seeds, Spices, Turmeric to 'agro' category + purge corrupted spec strings
   const sanitizeCustomProductsList = (list) => {
     if (!Array.isArray(list)) return [];
     const seenCategoryKeys = new Set();
@@ -535,8 +535,47 @@ export function AppProvider({ children }) {
       copy.companyId = compId;
 
       const guTitle = (copy.names?.gu || '').toLowerCase();
-      const enTitle = (copy.names?.en || '').toLowerCase();
+      const enTitle = (copy.names?.en || copy.name || '').toLowerCase();
       const cat = (copy.category || '').toLowerCase();
+
+      // Rule 0: Clean up corrupted specifications/sub-text across all objects
+      const rawSpecGu = copy.spec?.gu || copy.specifications?.gu || '';
+      const rawSpecHi = copy.spec?.hi || copy.specifications?.hi || '';
+      if (rawSpecGu.includes('વુઅલિચય') || rawSpecGu.includes('પરોડુટ') || rawSpecGu.includes('હિ વુઅલિચય') || !copy.spec || typeof copy.spec !== 'object') {
+        copy.spec = {
+          en: 'High Quality Premium Product',
+          gu: 'ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ',
+          hi: 'उच्च गुणवत्ता वाला प्रीमियम उत्पाद',
+          fr: 'Produit Premium de Haute Qualité'
+        };
+        copy.specifications = { ...copy.spec };
+      }
+
+      // Rule 0b: Clean up corrupted or missing product names
+      if (enTitle.includes('chocolate')) {
+        copy.names = { en: 'Chocolates', gu: 'ચોકલેટ', hi: 'चॉकलेट', fr: 'Chocolats' };
+        copy.category = 'agro';
+      } else if (enTitle.includes('paper bag') || enTitle.includes('packaging material')) {
+        copy.category = 'packaging';
+        if (!copy.names?.hi || copy.names.hi === copy.names.en) {
+          copy.names = {
+            en: copy.names?.en || 'Paper Bag & Box Packaging Material',
+            gu: 'પેપર બેગ અને બોક્સનું પેકેજિંગ મટીરીયલ',
+            hi: 'पेपर बैग और बॉक्स पैकेजिंग सामग्री',
+            fr: 'Matériel d\'emballage sacs en papier et boîtes'
+          };
+        }
+      } else if (enTitle.includes('cnc') || enTitle.includes('machine')) {
+        if (!cat.includes('machinery')) copy.category = 'new_machinery';
+        if (!copy.names?.hi || copy.names.hi === copy.names.en) {
+          copy.names = {
+            en: copy.names?.en || 'CNC Machine',
+            gu: 'સી.એન.સી. મશીન',
+            hi: 'सीएनसी मशीन',
+            fr: 'Machine CNC'
+          };
+        }
+      }
 
       // Rule 1: Move Agro Commodities (Spices, Turmeric, Cumin, Rice, Grains & Seeds) to "agro" category ONLY for comp_1 or comp_2
       if (

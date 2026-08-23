@@ -552,9 +552,18 @@ export default function ProductsGrid() {
 
                     {p.isSub && (
                       <div className="product-meta">
-                        <div><strong>📦 Packaging:</strong> {p.packaging || 'Standard Export Packing'}</div>
-                        <div><strong>⚡ MOQ:</strong> {p.moq || '1 Container'}</div>
-                        <div><strong>🌐 HS Code:</strong> {p.hsCode || 'N/A'}</div>
+                        <div>
+                          <strong>{currentLang === 'gu' ? '📦 પેકેજિંગ:' : (currentLang === 'hi' ? '📦 पैकेजिंग:' : (currentLang === 'fr' ? '📦 Emballage:' : '📦 Packaging:'))}</strong>{' '}
+                          {autoTranslateText(p.packaging || 'Standard Export Packaging', currentLang)}
+                        </div>
+                        <div>
+                          <strong>{currentLang === 'gu' ? '⚡ ન્યૂનતમ ઓર્ડર (MOQ):' : (currentLang === 'hi' ? '⚡ न्यूनतम ऑर्डर (MOQ):' : (currentLang === 'fr' ? '⚡ Quantité Minimale (MOQ):' : '⚡ MOQ:'))}</strong>{' '}
+                          {autoTranslateText(p.moq || '1 Unit / Container', currentLang)}
+                        </div>
+                        <div>
+                          <strong>{currentLang === 'gu' ? '🌐 એચ.એસ. કોડ:' : (currentLang === 'hi' ? '🌐 एचएस कोड:' : (currentLang === 'fr' ? '🌐 Code SH:' : '🌐 HS Code:'))}</strong>{' '}
+                          {p.hsCode || 'N/A'}
+                        </div>
                       </div>
                     )}
 
@@ -606,9 +615,9 @@ export default function ProductsGrid() {
                           addToRfqCart(p, 1, p.unit || 'MT', 'FOB');
                           setIsRfqDrawerOpen(true);
                         }}
-                        title="Add to Amazon/Flipkart Style Wholesale Quote Cart"
+                        title="Add to Wholesale Quote Cart"
                       >
-                        🛒 Add to Quote Cart (RFQ)
+                        {currentLang === 'gu' ? '🛒 ક્વોટ કાર્ટમાં ઉમેરો (RFQ)' : (currentLang === 'hi' ? '🛒 कोट कार्ट में जोड़ें (RFQ)' : (currentLang === 'fr' ? '🛒 Ajouter au Panier' : '🛒 Add to Quote Cart (RFQ)'))}
                       </button>
 
                       {(() => {
@@ -632,9 +641,11 @@ export default function ProductsGrid() {
                               const contactSec = document.getElementById('contact');
                               if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            title={t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}
+                            title="Request Quotation (RFQ)"
                           >
-                            {isSelected ? `✔ Added to RFQ (${selectedRfqProducts.length})` : `💬 ${t.btn_rfq || t.btn_inquire || 'Request Quotation (RFQ)'}`}
+                            {isSelected
+                              ? (currentLang === 'gu' ? `✔ ક્વોટેશન માં ઉમેરાયું (${selectedRfqProducts.length})` : (currentLang === 'hi' ? `✔ कोटेशन में जोड़ा गया (${selectedRfqProducts.length})` : `✔ Added to RFQ (${selectedRfqProducts.length})`))
+                              : (currentLang === 'gu' ? '💬 કોટેશન વિગત જણાવો (RFQ)' : (currentLang === 'hi' ? '💬 कोटेशन अनुरोध (RFQ)' : (currentLang === 'fr' ? '💬 Demander un Devis (RFQ)' : '💬 Request Quotation (RFQ)')))}
                           </button>
                         );
                       })()}
@@ -658,7 +669,7 @@ export default function ProductsGrid() {
                         }}
                         title="Generate Proforma Invoice / Export Quotation PDF"
                       >
-                        📄 Proforma Export Quote
+                        {currentLang === 'gu' ? '📄 પ્રોફોર્મા એક્સપોર્ટ ક્વોટ (PDF)' : (currentLang === 'hi' ? '📄 प्रोफॉर्मा निर्यात कोटेशन (PDF)' : (currentLang === 'fr' ? '📄 Devis Proforma Export' : '📄 Proforma Export Quote'))}
                       </button>
 
                       {/* Admin Action Controls (Only visible when Admin is logged in) */}
