@@ -6122,6 +6122,7 @@ export default function Modals() {
                 ? imagePreviewData.allImages
                 : [imagePreviewData.url];
               const currentImgUrl = currentImages[activePreviewIdx] || imagePreviewData.url;
+              const isPdfDoc = currentImgUrl && (currentImgUrl.includes('application/pdf') || currentImgUrl.toLowerCase().includes('.pdf'));
 
               return (
                 <div>
@@ -6134,26 +6135,47 @@ export default function Modals() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      minHeight: '380px',
-                      maxHeight: '68vh',
+                      minHeight: '400px',
+                      maxHeight: '75vh',
                       border: '1px solid var(--border-glass)',
-                      cursor: isUltraZoom ? 'zoom-out' : 'zoom-in'
+                      cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'zoom-out' : 'zoom-in')
                     }}
-                    onClick={() => setIsUltraZoom(!isUltraZoom)}
+                    onClick={() => !isPdfDoc && setIsUltraZoom(!isUltraZoom)}
                   >
-                    <img
-                      src={currentImgUrl}
-                      alt={imagePreviewData.title}
-                      style={{
-                        maxWidth: isUltraZoom ? '180%' : '100%',
-                        maxHeight: isUltraZoom ? 'none' : '65vh',
-                        objectFit: 'contain',
-                        transform: isUltraZoom ? 'scale(1.5)' : 'scale(1)',
-                        transition: 'transform 0.3s ease-in-out',
-                        borderRadius: '8px'
-                      }}
-                      onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
-                    />
+                    {isPdfDoc ? (
+                      <div style={{ width: '100%', height: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        <iframe
+                          src={currentImgUrl}
+                          title={imagePreviewData.title}
+                          style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px', background: 'white' }}
+                        />
+                        <div style={{ padding: '8px' }}>
+                          <a
+                            href={currentImgUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary"
+                            style={{ textDecoration: 'none', padding: '8px 18px', fontSize: '0.86rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                          >
+                            📄 Open / Download Full PDF Document (નવા ટેબમાં PDF ખોલો)
+                          </a>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={currentImgUrl}
+                        alt={imagePreviewData.title}
+                        style={{
+                          maxWidth: isUltraZoom ? '180%' : '100%',
+                          maxHeight: isUltraZoom ? 'none' : '65vh',
+                          objectFit: 'contain',
+                          transform: isUltraZoom ? 'scale(1.5)' : 'scale(1)',
+                          transition: 'transform 0.3s ease-in-out',
+                          borderRadius: '8px'
+                        }}
+                        onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
+                      />
+                    )}
 
                     {/* Carousel Prev / Next Overlay Buttons */}
                     {currentImages.length > 1 && (
