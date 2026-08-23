@@ -171,7 +171,8 @@ export async function fetchGoogleTransliteration(text, lang = 'gu') {
 
   // 1. Try MyMemory Neural Translation API first for natural, fluent sentence translation
   try {
-    const mmRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|${lang}`);
+    const pairCode = lang === 'fr' ? 'en-US|fr-CA' : (lang === 'gu' ? 'en-US|gu-IN' : (lang === 'hi' ? 'en-US|hi-IN' : `en-US|${lang}`));
+    const mmRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=${pairCode}`);
     if (mmRes.ok) {
       const mmData = await mmRes.json();
       if (mmData && mmData.responseData && mmData.responseData.translatedText) {
@@ -443,9 +444,11 @@ export async function autoTranslateFullObject(englishText) {
 
   try {
     const langs = ['gu', 'hi', 'fr'];
+    const langPairMap = { gu: 'en-US|gu-IN', hi: 'en-US|hi-IN', fr: 'en-US|fr-CA' };
     const promises = langs.map(async (l) => {
       try {
-        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|${l}`);
+        const pair = langPairMap[l] || `en-US|${l}`;
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=${pair}`);
         const data = await res.json();
         if (data && data.responseData && data.responseData.translatedText) {
           let text = data.responseData.translatedText.trim();

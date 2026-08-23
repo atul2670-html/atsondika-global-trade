@@ -1,8 +1,8 @@
 export const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'gu', name: 'ગુજરાતી', flag: '🇮🇳' },
-  { code: 'hi', name: 'હિन्दी', flag: '🇮🇳' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' }
+  { code: 'en', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'gu', name: 'ગુજરાતી (IN)', flag: '🇮🇳' },
+  { code: 'hi', name: 'હિन्दी (IN)', flag: '🇮🇳' },
+  { code: 'fr', name: 'Français (Canada)', flag: '🇨🇦' }
 ];
 
 export const translations = {

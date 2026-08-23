@@ -82,8 +82,8 @@ export default function Navbar() {
     else document.body.classList.remove('light-theme');
   };
 
-  const shortMap = { en: 'EN', gu: 'GU', hi: 'HI', fr: 'FR' };
-  const nameMap = { en: 'English', gu: 'ગુજરાતી', hi: 'हिन्दी', fr: 'Français' };
+  const shortMap = { en: 'EN (US)', gu: 'GU (IN)', hi: 'HI (IN)', fr: 'FR (CA)' };
+  const nameMap = { en: 'English (US)', gu: 'ગુજરાતી (IN)', hi: 'હિन्दी (IN)', fr: 'Français (Canada)' };
 
   return (
     <>
