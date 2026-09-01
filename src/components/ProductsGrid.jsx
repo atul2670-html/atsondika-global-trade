@@ -814,7 +814,7 @@ export default function ProductsGrid() {
               {/* LOCAL TRADE B2C E-COMMERCE CARD DESIGN (Matching Screenshots 3 & 4) */}
               if (tradeMode === 'local') {
                 const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
-                const mrpInr = Math.round(basePriceInr * 1.32);
+                const mrpInr = p.mrpInr || Math.round(basePriceInr * 1.32);
                 const discountPct = Math.round(((mrpInr - basePriceInr) / mrpInr) * 100);
                 const couponPay = Math.round(basePriceInr * 0.94);
                 const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
@@ -982,9 +982,20 @@ export default function ProductsGrid() {
                           {convertPrice ? convertPrice(couponPay, 'INR') : `₹${couponPay.toLocaleString()}`} with coupon
                         </div>
 
-                        {/* Delivery Tag matching Screenshots 3 & 4 */}
-                        <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600 }}>
-                          <span style={{ color: '#007600', fontWeight: 800 }}>FREE delivery</span> <b>Fri, 4 Sept</b>
+                        {/* Delivery & Packing Charge Tag */}
+                        <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                          {parseFloat(p.courierCharge) > 0 ? (
+                            <span style={{ color: '#0284c7', fontWeight: 800 }}>🚚 Courier: ₹{p.courierCharge}</span>
+                          ) : (
+                            <span style={{ color: '#007600', fontWeight: 800 }}>🚚 FREE delivery</span>
+                          )}
+
+                          {parseFloat(p.packingCharge) > 0 ? (
+                            <span style={{ color: '#d97706', fontWeight: 800 }}>📦 Packing: ₹{p.packingCharge}</span>
+                          ) : (
+                            <span style={{ color: '#059669', fontWeight: 700 }}>📦 FREE Packing</span>
+                          )}
+                          <span>• <b>Est. Delivery: 2-3 Days</b></span>
                         </div>
                       </div>
 

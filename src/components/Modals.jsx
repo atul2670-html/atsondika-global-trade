@@ -451,6 +451,15 @@ export default function Modals() {
   const [imageUrls, setImageUrls] = useState([]);
   const [newUrlInput, setNewUrlInput] = useState('');
 
+  // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
+  const [localMrp, setLocalMrp] = useState('1499');
+  const [localPrice, setLocalPrice] = useState('999');
+  const [packingCharge, setPackingCharge] = useState('0');
+  const [courierCharge, setCourierCharge] = useState('0');
+  const [localGstRate, setLocalGstRate] = useState('18');
+  const [localStock, setLocalStock] = useState('100');
+  const [couponBadge, setCouponBadge] = useState('10% OFF Special Offer');
+
   // Live HS Code Search State
   const [hsSearchQuery, setHsSearchQuery] = useState('');
   const [showHsDropdown, setShowHsDropdown] = useState(false);
@@ -619,6 +628,13 @@ export default function Modals() {
           setMoq(target.moq || '1 Unit / Container');
           setSpec(typeof target.spec === 'object' ? (target.spec['en'] || target.spec['gu']) : (target.spec || 'ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ'));
           setPackaging(target.packaging || 'Standard Export Packaging');
+          setLocalMrp(target.mrpInr || Math.round((target.localPrice || 999) * 1.32));
+          setLocalPrice(target.localPrice || target.priceInr || '999');
+          setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
+          setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
+          setLocalGstRate(target.localGstRate || '18');
+          setLocalStock(target.localStock || '100');
+          setCouponBadge(target.couponBadge || '10% OFF Special Offer');
 
           let imgs = [];
           if (target.images && target.images.length > 0) {
@@ -641,6 +657,13 @@ export default function Modals() {
       setMoq('1 Unit / Container');
       setSpec('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
       setPackaging('Standard Export Packaging');
+      setLocalMrp('1499');
+      setLocalPrice('999');
+      setPackingCharge('0');
+      setCourierCharge('0');
+      setLocalGstRate('18');
+      setLocalStock('100');
+      setCouponBadge('10% OFF Special Offer');
       setImageUrls(['images/agro_spices_grains.png']);
       setNewUrlInput('');
       setHsSearchQuery('');
@@ -3942,6 +3965,13 @@ export default function Modals() {
                     names: autoNames,
                     spec: autoSpec,
                     packaging, moq,
+                    localPrice: parseFloat(localPrice) || 999,
+                    mrpInr: parseFloat(localMrp) || 1499,
+                    packingCharge: parseFloat(packingCharge) || 0,
+                    courierCharge: parseFloat(courierCharge) || 0,
+                    localGstRate: parseFloat(localGstRate) || 18,
+                    localStock: parseInt(localStock) || 100,
+                    couponBadge: couponBadge || '10% OFF Special Offer',
                     isCustom: true
                   });
                   alert(`✅ Sub-Product "${baseEnglishName}" with International HS Code "${hsCode}" saved successfully!`);
@@ -4314,6 +4344,142 @@ export default function Modals() {
                           placeholder="e.g. 1 Unit / Container"
                           value={moq}
                           onChange={(e) => setMoq(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* LOCAL B2C RETAIL TRADE OPTIONS SECTION (લોકલ વેચાણ, પેકિંગ ચાર્જ & કુરિયર ચાર્જીસ) */}
+                  <div style={{
+                    background: 'rgba(250, 204, 21, 0.05)',
+                    padding: '16px',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(250, 204, 21, 0.35)',
+                    marginBottom: '16px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '1.25rem' }}>🛍️</span>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#facc15' }}>
+                          Local B2C Retail Trade Options (લોકલ વેચાણ, પેકિંગ ચાર્જ & કુરિયર ચાર્જીસ)
+                        </h4>
+                        <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                          (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🛍️ Local Trade મોડ ચાલુ કરે ત્યારે જ ડિસ્પલે થશે)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                      {/* Local MRP Original Price */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          MRP Original Price (₹ INR) *
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="e.g. 1499"
+                          value={localMrp}
+                          onChange={(e) => setLocalMrp(e.target.value)}
+                          style={{ fontWeight: 800, color: '#ef4444' }}
+                        />
+                      </div>
+
+                      {/* Local Discounted Selling Price */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Local Selling Price (₹ INR) *
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="e.g. 999"
+                          value={localPrice}
+                          onChange={(e) => setLocalPrice(e.target.value)}
+                          style={{ fontWeight: 900, color: '#4ade80' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                      {/* Packing Charge */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Packing Charge (₹ INR) <span style={{ color: '#4ade80' }}>(0 = FREE)</span>
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="0 for FREE Packing"
+                          value={packingCharge}
+                          onChange={(e) => setPackingCharge(e.target.value)}
+                          style={{ fontWeight: 800 }}
+                        />
+                      </div>
+
+                      {/* Courier / Shipping Delivery Charge */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Courier Delivery Charge (₹ INR) <span style={{ color: '#4ade80' }}>(0 = FREE)</span>
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="0 for FREE Delivery"
+                          value={courierCharge}
+                          onChange={(e) => setCourierCharge(e.target.value)}
+                          style={{ fontWeight: 800 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                      {/* Local GST Rate % */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Local GST Rate (%)
+                        </label>
+                        <select
+                          className="form-control"
+                          value={localGstRate}
+                          onChange={(e) => setLocalGstRate(e.target.value)}
+                          style={{ fontWeight: 800 }}
+                        >
+                          <option value="0">0% (Exempt)</option>
+                          <option value="5">5% GST</option>
+                          <option value="12">12% GST</option>
+                          <option value="18">18% GST</option>
+                          <option value="28">28% GST</option>
+                        </select>
+                      </div>
+
+                      {/* Available Local Stock Quantity */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Local Stock Qty
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="e.g. 100"
+                          value={localStock}
+                          onChange={(e) => setLocalStock(e.target.value)}
+                          style={{ fontWeight: 800 }}
+                        />
+                      </div>
+
+                      {/* Coupon Badge / Offer Tag */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          Offer Badge / Coupon
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="e.g. 10% OFF"
+                          value={couponBadge}
+                          onChange={(e) => setCouponBadge(e.target.value)}
+                          style={{ fontWeight: 800 }}
                         />
                       </div>
                     </div>
