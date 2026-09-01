@@ -6278,6 +6278,221 @@ export default function Modals() {
           </div>
         </div>
       )}
+
+      {/* COMPLETED PAYMENT RECEIPTS & TAX INVOICES HISTORY MODAL */}
+      {activeModal === 'payment_receipts' && (
+        <div
+          className="modal-backdrop show"
+          style={{ zIndex: 99999, background: 'rgba(3, 7, 18, 0.92)', backdropFilter: 'blur(16px)' }}
+          onClick={() => setActiveModal(null)}
+        >
+          <div
+            className="glass-card modal-card"
+            style={{
+              maxWidth: '920px',
+              width: '95%',
+              maxHeight: '92vh',
+              overflowY: 'auto',
+              padding: '24px',
+              borderRadius: '24px',
+              border: '1px solid var(--border-glass)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top-Right Close Button */}
+            <button
+              type="button"
+              className="modal-close-btn"
+              onClick={() => setActiveModal(null)}
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                zIndex: 20,
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: '#ffffff',
+                fontSize: '1.4rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              title="Close Modal"
+            >
+              ✕
+            </button>
+
+            {/* Modal Header */}
+            <div style={{ textAlign: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '14px' }}>
+              <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>🧾</span>
+              <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
+                {currentLang === 'gu' ? 'પેમેન્ટ રીસિપ્ટ & ઓર્ડર ટેક્સ ઈનવોઈસ' : 'Official Payment Receipts & Tax Invoices'}
+              </h3>
+              <p style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '4px' }}>
+                {currentLang === 'gu'
+                  ? 'ઓર્ડર પેમેન્ટ પૂરું થયા પછી જ અહીંયા રીયલ ટ્રાન્ઝેક્શન આઈડી સાથે રીસિપ્ટ જનરેટ થાય છે.'
+                  : 'Official payment receipts generate automatically here with real Transaction ID after order payment is confirmed.'}
+              </p>
+            </div>
+
+            {/* Load Orders from localStorage */}
+            {(() => {
+              let savedOrders = [];
+              try {
+                savedOrders = JSON.parse(localStorage.getItem('site_customer_orders_v1') || '[]');
+              } catch(e) {}
+
+              if (savedOrders.length === 0) {
+                return (
+                  <div style={{ textAlign: 'center', padding: '50px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed var(--border-glass)' }}>
+                    <span style={{ fontSize: '3rem', display: 'block', marginBottom: '10px' }}>📦</span>
+                    <h4 style={{ color: '#facc15', fontSize: '1.15rem', fontWeight: 800, margin: '0 0 8px 0' }}>
+                      {currentLang === 'gu' ? 'હજુ સુધી કોઈ પેમેન્ટ પૂરું થયેલ નથી' : 'No Completed Payment Receipts Yet'}
+                    </h4>
+                    <p style={{ fontSize: '0.86rem', color: '#94a3b8', maxWidth: '520px', margin: '0 auto 16px auto', lineHeight: '1.6' }}>
+                      {currentLang === 'gu'
+                        ? 'તમે જ્યારે લોકલ ટ્રેડમાં સામાન પસંદ કરીને UPI, Card અથવા NetBanking થી પેમેન્ટ કન્ફર્મ કરશો, ત્યારે તેની ઓરિજિનલ પેમેન્ટ રીસિપ્ટ ઓટોમેટિક અહીંયા રીયલ ટ્રાન્ઝેક્શન આઈડી સાથે જનરેટ થઈને સેવ થઈ જશે.'
+                        : 'When you place a Local Trade order and complete payment, your official payment receipt with real Transaction ID will generate and display here.'}
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={() => {
+                        setActiveModal(null);
+                        setIsRfqDrawerOpen(true);
+                      }}
+                      style={{ padding: '8px 20px', fontSize: '0.88rem', fontWeight: 800 }}
+                    >
+                      🛍️ {currentLang === 'gu' ? 'કાર્ટ ખોલો અને ઓર્ડર કરો' : 'Open Cart & Place Order'}
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {savedOrders.map((ord, idx) => (
+                    <div
+                      key={ord.orderId || idx}
+                      style={{
+                        background: 'rgba(15, 23, 42, 0.95)',
+                        border: '1px solid var(--primary-teal-glow)',
+                        borderRadius: '16px',
+                        padding: '18px',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                      }}
+                    >
+                      {/* Top Order Row */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                        <div>
+                          <span style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase' }}>Official Payment Receipt</span>
+                          <h4 style={{ margin: '2px 0 0 0', color: '#facc15', fontSize: '1.1rem', fontWeight: 900 }}>
+                            {ord.orderId}
+                          </h4>
+                          <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '2px' }}>
+                            📅 Date: {ord.date} | 💳 Method: <strong style={{ color: 'white' }}>{ord.paymentMethod}</strong>
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            background: 'rgba(16, 185, 129, 0.2)',
+                            color: '#4ade80',
+                            border: '1px solid rgba(16, 185, 129, 0.4)',
+                            padding: '4px 12px',
+                            borderRadius: '20px',
+                            fontSize: '0.8rem',
+                            fontWeight: 900
+                          }}>
+                            ✅ {ord.paymentStatus || 'PAID (Successful)'}
+                          </span>
+                          <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, marginTop: '4px' }}>
+                            Txn Ref: {ord.utrRef || ('TXN-' + (ord.orderId || '').replace(/[^0-9]/g, ''))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Customer Details */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.82rem', color: '#e2e8f0', marginBottom: '14px', background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '10px' }}>
+                        <div>
+                          <div>👤 <b>Customer Name:</b> {ord.customerName}</div>
+                          <div>📞 <b>Phone / WhatsApp:</b> {ord.phone}</div>
+                          {ord.gstin && <div>🏛️ <b>GSTIN:</b> {ord.gstin}</div>}
+                        </div>
+                        <div>
+                          <div>🏠 <b>Delivery Address:</b> {ord.deliveryAddress}</div>
+                          {ord.pincode && <div>📮 <b>Pincode:</b> {ord.pincode}</div>}
+                        </div>
+                      </div>
+
+                      {/* Order Items Table */}
+                      <div style={{ overflowX: 'auto', marginBottom: '12px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', color: 'white' }}>
+                          <thead>
+                            <tr style={{ background: 'rgba(255,255,255,0.06)', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                              <th style={{ padding: '8px' }}>Product</th>
+                              <th style={{ padding: '8px' }}>Qty & Unit</th>
+                              <th style={{ padding: '8px' }}>Unit Price</th>
+                              <th style={{ padding: '8px', textAlign: 'right' }}>Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(ord.items || []).map((it, i) => (
+                              <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                <td style={{ padding: '8px', fontWeight: 700 }}>{it.name}</td>
+                                <td style={{ padding: '8px', color: '#facc15', fontWeight: 800 }}>{it.qty} {it.unit}</td>
+                                <td style={{ padding: '8px' }}>₹{it.price}</td>
+                                <td style={{ padding: '8px', textAlign: 'right', fontWeight: 800, color: '#4ade80' }}>
+                                  ₹{(it.qty * it.price).toLocaleString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Bottom Total & Actions */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap', gap: '10px' }}>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
+                          Total Paid: {convertPrice ? convertPrice(ord.totalAmount) : '₹' + (ord.totalAmount ? ord.totalAmount.toLocaleString() : '0')}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ fontSize: '0.78rem', padding: '6px 12px' }}
+                            onClick={() => window.print()}
+                          >
+                            🖨️ {currentLang === 'gu' ? 'પ્રિન્ટ / PDF' : 'Print / Download Receipt'}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            style={{ fontSize: '0.78rem', padding: '6px 12px', background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                            onClick={() => {
+                              const shareText = `*PAYMENT RECEIPT - ${ord.orderId}*\nCustomer: ${ord.customerName}\nAmount Paid: ₹${ord.totalAmount}\nTxn Ref: ${ord.utrRef}\nStatus: ${ord.paymentStatus}\nWebsite: https://atsondika-global-trade.pages.dev`;
+                              window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+                            }}
+                          >
+                            📲 {currentLang === 'gu' ? 'વોટ્સએપ શેર' : 'Share Receipt'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
     </>
   );
 }

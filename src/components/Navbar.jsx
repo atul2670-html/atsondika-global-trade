@@ -638,6 +638,25 @@ export default function Navbar() {
                 </button>
               )}
 
+              {/* 3. Official Payment Receipts & Tax Invoice History Button */}
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{
+                  background: 'rgba(250, 204, 21, 0.15)',
+                  color: '#facc15',
+                  borderColor: 'rgba(250, 204, 21, 0.35)',
+                  fontSize: '0.78rem',
+                  padding: '5px 10px',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveModal('payment_receipts')}
+                title="View Completed Order Payment Receipts & Tax Invoices"
+              >
+                🧾 <span className="nav-btn-label">{currentLang === 'gu' ? 'પેમેન્ટ રીસિપ્ટ્સ' : 'Payment Receipts'}</span>
+              </button>
+
               {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
               <button
                 type="button"
