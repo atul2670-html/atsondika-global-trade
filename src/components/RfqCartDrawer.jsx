@@ -8,6 +8,7 @@ export default function RfqCartDrawer() {
     rfqCartItems,
     removeFromRfqCart,
     updateRfqCartQuantity,
+    updateRfqCartUnit,
     clearRfqCart,
     convertPrice,
     currentCurrency,
@@ -313,7 +314,39 @@ export default function RfqCartDrawer() {
                               +
                             </button>
                           </div>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{item.unit || (tradeMode === 'local' ? 'pcs' : 'MT')}</span>
+                          {/* Interactive Unit Selector Dropdown */}
+                          <select
+                            className="rfq-unit-select"
+                            value={item.unit || (tradeMode === 'local' ? (name.toLowerCase().includes('ghee') || name.toLowerCase().includes('ઘી') ? 'kg' : 'pcs') : 'MT')}
+                            onChange={(e) => updateRfqCartUnit && updateRfqCartUnit(item.id, item.incoterm, e.target.value)}
+                            style={{
+                              padding: '5px 8px',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              color: '#facc15',
+                              border: '1px solid var(--border-glass)',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}
+                            title="Select Item Unit (યુનિટ પસંદ કરો)"
+                          >
+                            <option value="kg" style={{ background: '#0f172a', color: 'white' }}>kg (કિલોગ્રામ)</option>
+                            <option value="gm" style={{ background: '#0f172a', color: 'white' }}>gm (ગ્રામ)</option>
+                            <option value="pcs" style={{ background: '#0f172a', color: 'white' }}>pcs (પીસ)</option>
+                            <option value="Sets" style={{ background: '#0f172a', color: 'white' }}>Sets (સેટ / ડ્રેસ)</option>
+                            <option value="Pairs" style={{ background: '#0f172a', color: 'white' }}>Pairs (જોડી / શૂઝ)</option>
+                            <option value="Dozen" style={{ background: '#0f172a', color: 'white' }}>Dozen (ડઝન - 12 Pcs)</option>
+                            <option value="Litre" style={{ background: '#0f172a', color: 'white' }}>Litre (લીટર / Liquid)</option>
+                            <option value="Box" style={{ background: '#0f172a', color: 'white' }}>Box (બોક્સ / ખોખું)</option>
+                            <option value="Tin" style={{ background: '#0f172a', color: 'white' }}>Tin (ડબ્બો / ઘી 15kg)</option>
+                            <option value="Packet" style={{ background: '#0f172a', color: 'white' }}>Packet (પેકેટ)</option>
+                            <option value="Bags" style={{ background: '#0f172a', color: 'white' }}>Bags (કોથળા / ગુણી)</option>
+                            <option value="Meter" style={{ background: '#0f172a', color: 'white' }}>Meter (મીટર / કાપડ)</option>
+                            <option value="Rolls" style={{ background: '#0f172a', color: 'white' }}>Rolls (રોલ / ફાબ્રિક)</option>
+                            <option value="MT" style={{ background: '#0f172a', color: 'white' }}>MT (મીટ્રિક ટન)</option>
+                          </select>
                           <button
                             type="button"
                             className="remove-item-btn"

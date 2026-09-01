@@ -249,6 +249,10 @@ export function AppProvider({ children }) {
     setRfqCartItems(prev => prev.map(item => item.id === id && item.incoterm === incoterm ? { ...item, quantity: newQty } : item));
   };
 
+  const updateRfqCartUnit = (id, incoterm, newUnit) => {
+    setRfqCartItems(prev => prev.map(item => item.id === id && item.incoterm === incoterm ? { ...item, unit: newUnit } : item));
+  };
+
   const clearRfqCart = () => {
     setRfqCartItems([]);
   };
@@ -1833,7 +1837,7 @@ export function AppProvider({ children }) {
       productViewMode, setProductViewMode,
       currentCurrency, setCurrentCurrency, convertPrice, currenciesList,
       liveToast, showLiveToast, lastUpdatedProductId,
-      rfqCartItems, addToRfqCart, removeFromRfqCart, updateRfqCartQuantity, clearRfqCart,
+      rfqCartItems, addToRfqCart, removeFromRfqCart, updateRfqCartQuantity, updateRfqCartUnit, clearRfqCart,
       isRfqDrawerOpen, setIsRfqDrawerOpen,
       isOrderTrackerOpen, setIsOrderTrackerOpen,
       activeModal, setActiveModal,
