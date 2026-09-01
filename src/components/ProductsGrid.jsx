@@ -15,6 +15,7 @@ export default function ProductsGrid() {
   } = useApp();
 
   const [carouselIndices, setCarouselIndices] = useState({});
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   const activeCompId = activeCompany?.id || 'comp_1';
   let defaultTabs = [];
@@ -375,58 +376,254 @@ export default function ProductsGrid() {
           </div>
         </div>
 
-        {/* Tab Bar */}
+        {/* Tab Bar with Sub-Product Hover Mega Menu Dropdown */}
         <div className="tab-bar">
-          {defaultTabs.map(tab => (
-            <button
-              key={tab.filter}
-              type="button"
-              className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
-              onClick={() => setCurrentCategory(tab.filter)}
-            >
-              {tab.title}
-            </button>
-          ))}
+          {defaultTabs.map(tab => {
+            const subProds = getSubProductsForCategory(tab.filter);
+            const isHovered = hoveredTab === tab.filter && subProds.length > 0;
+
+            return (
+              <div
+                key={tab.filter}
+                style={{ position: 'relative', display: 'inline-block' }}
+                onMouseEnter={() => setHoveredTab(tab.filter)}
+                onMouseLeave={() => setHoveredTab(null)}
+              >
+                <button
+                  type="button"
+                  className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentCategory(tab.filter);
+                    setSearchFilterQuery('');
+                  }}
+                >
+                  {tab.title}
+                  {subProds.length > 0 && <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>}
+                </button>
+
+                {/* SUB-PRODUCTS MEGA DROPDOWN POPUP ON HOVER */}
+                {isHovered && (
+                  <div
+                    className="sub-product-hover-dropdown"
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 4px)',
+                      left: 0,
+                      zIndex: 9999,
+                      minWidth: '290px',
+                      maxWidth: '350px',
+                      background: 'rgba(11, 15, 25, 0.97)',
+                      backdropFilter: 'blur(24px)',
+                      WebkitBackdropFilter: 'blur(24px)',
+                      border: '1px solid var(--primary-teal-glow)',
+                      borderRadius: '14px',
+                      padding: '10px',
+                      boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(45, 212, 191, 0.35)',
+                      maxHeight: '340px',
+                      overflowY: 'auto'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.75rem', color: '#facc15', fontWeight: 800, padding: '4px 6px 8px 6px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>📦 {subProds.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ (ક્લિક કરો)' : 'Products (Click to View)'}</span>
+                      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>⚡ Quick Select</span>
+                    </div>
+
+                    {subProds.map(subP => {
+                      const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
+                      const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
+                      const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
+                        ? langTitle
+                        : autoTranslateText(enTitle || langTitle, currentLang);
+                      const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
+
+                      return (
+                        <div
+                          key={subP.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentCategory(tab.filter);
+                            setSearchFilterQuery(enTitle || subTitle);
+                            setHoveredTab(null);
+                            setTimeout(() => {
+                              const el = document.getElementById(`prod-card-${subP.id}`);
+                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '6px 8px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            marginBottom: '4px',
+                            background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
+                            border: '1px solid transparent'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
+                            e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'transparent';
+                          }}
+                        >
+                          <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+                          <div style={{ overflow: 'hidden' }}>
+                            <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {subTitle}
+                            </strong>
+                            <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
+                              HS: {subP.hsCode || '090931'}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           {/* Cleaned Custom Category Tabs with Edit & Delete options */}
           {customMains.map(p => {
             const title = p.names[currentLang] || p.names['en'] || p.names['gu'];
+            const subProds = getSubProductsForCategory(p.category);
+            const isHovered = hoveredTab === p.category && subProds.length > 0;
+
             return (
-              <button
+              <div
                 key={p.id}
-                type="button"
-                className={`tab-btn ${currentCategory === p.category ? 'active' : ''}`}
-                onClick={() => setCurrentCategory(p.category)}
+                style={{ position: 'relative', display: 'inline-block' }}
+                onMouseEnter={() => setHoveredTab(p.category)}
+                onMouseLeave={() => setHoveredTab(null)}
               >
-                <span>{title}</span>
-                {isAdminLoggedIn && (
-                  <>
-                    <span
-                      style={{ marginLeft: '6px', opacity: 0.8 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        verifyAdminAccess(() => {
-                          setEditingProductId(p.id);
-                          setActiveModal('product_main');
-                        });
-                      }}
-                      title={`Edit Category "${title}"`}
-                    >
-                      ✏️
-                    </span>
-                    <span
-                      className="delete-cat-tab"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteProduct(p.id, p.category, title, true);
-                      }}
-                      title={`Delete Category "${title}"`}
-                    >
-                      ✖
-                    </span>
-                  </>
+                <button
+                  type="button"
+                  className={`tab-btn ${currentCategory === p.category ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentCategory(p.category);
+                    setSearchFilterQuery('');
+                  }}
+                >
+                  <span>{title}</span>
+                  {subProds.length > 0 && <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>}
+                  {isAdminLoggedIn && (
+                    <>
+                      <span
+                        style={{ marginLeft: '6px', opacity: 0.8 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          verifyAdminAccess(() => {
+                            setEditingProductId(p.id);
+                            setActiveModal('product_main');
+                          });
+                        }}
+                        title={`Edit Category "${title}"`}
+                      >
+                        ✏️
+                      </span>
+                      <span
+                        className="delete-cat-tab"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteProduct(p.id, p.category, title, true);
+                        }}
+                        title={`Delete Category "${title}"`}
+                      >
+                        ✖
+                      </span>
+                    </>
+                  )}
+                </button>
+
+                {/* SUB-PRODUCTS HOVER DROPDOWN FOR CUSTOM CATEGORIES */}
+                {isHovered && (
+                  <div
+                    className="sub-product-hover-dropdown"
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 4px)',
+                      left: 0,
+                      zIndex: 9999,
+                      minWidth: '290px',
+                      maxWidth: '350px',
+                      background: 'rgba(11, 15, 25, 0.97)',
+                      backdropFilter: 'blur(24px)',
+                      WebkitBackdropFilter: 'blur(24px)',
+                      border: '1px solid var(--primary-teal-glow)',
+                      borderRadius: '14px',
+                      padding: '10px',
+                      boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(45, 212, 191, 0.35)',
+                      maxHeight: '340px',
+                      overflowY: 'auto'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.75rem', color: '#facc15', fontWeight: 800, padding: '4px 6px 8px 6px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>📦 {subProds.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ (ક્લિક કરો)' : 'Products (Click to View)'}</span>
+                      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>⚡ Quick Select</span>
+                    </div>
+
+                    {subProds.map(subP => {
+                      const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
+                      const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
+                      const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
+                        ? langTitle
+                        : autoTranslateText(enTitle || langTitle, currentLang);
+                      const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
+
+                      return (
+                        <div
+                          key={subP.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentCategory(p.category);
+                            setSearchFilterQuery(enTitle || subTitle);
+                            setHoveredTab(null);
+                            setTimeout(() => {
+                              const el = document.getElementById(`prod-card-${subP.id}`);
+                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '6px 8px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            marginBottom: '4px',
+                            background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
+                            border: '1px solid transparent'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
+                            e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'transparent';
+                          }}
+                        >
+                          <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+                          <div style={{ overflow: 'hidden' }}>
+                            <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {subTitle}
+                            </strong>
+                            <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
+                              HS: {subP.hsCode || '090931'}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-              </button>
+              </div>
             );
           })}
 
@@ -616,7 +813,7 @@ export default function ProductsGrid() {
                 const reviews = (150 + idx * 132).toLocaleString();
 
                 return (
-                  <div key={p.id} className="local-b2c-card" style={{
+                  <div key={p.id} id={`prod-card-${p.id}`} className="local-b2c-card" style={{
                     background: '#ffffff',
                     borderRadius: '16px',
                     overflow: 'hidden',
@@ -816,7 +1013,7 @@ export default function ProductsGrid() {
               }
 
               return (
-                <div key={p.id} className="glass-card product-card" style={{ position: 'relative' }}>
+                <div key={p.id} id={`prod-card-${p.id}`} className="glass-card product-card" style={{ position: 'relative' }}>
                   <div
                     className="product-img-wrapper"
                     style={{ cursor: 'zoom-in', position: 'relative' }}
