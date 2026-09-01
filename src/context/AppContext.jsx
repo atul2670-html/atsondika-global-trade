@@ -86,6 +86,17 @@ export function AppProvider({ children }) {
   const [currentCategory, setCurrentCategory] = useState('all');
   const [searchFilterQuery, setSearchFilterQuery] = useState('');
   const [productViewMode, setProductViewMode] = useState('grid'); // 'grid' | 'list' | 'compare'
+  
+  // Trade Mode System State: 'global' (B2B Export) | 'local' (B2C E-Commerce)
+  const [tradeMode, setTradeMode] = useState(() => {
+    try { return localStorage.getItem('site_trade_mode_v1') || 'global'; }
+    catch(e) { return 'global'; }
+  });
+
+  const changeTradeMode = (mode) => {
+    setTradeMode(mode);
+    try { localStorage.setItem('site_trade_mode_v1', mode); } catch(e) {}
+  };
 
   // Multi-Vendor Merchant / Supplier System State
   const [merchantsList, setMerchantsList] = useState(() => {
@@ -1811,6 +1822,7 @@ export function AppProvider({ children }) {
       companiesList, activeCompanyId, activeCompany, setActiveCompanyId: changeActiveCompany, updateCompanyProfile,
       currentCategory, setCurrentCategory,
       searchFilterQuery, setSearchFilterQuery,
+      tradeMode, setTradeMode: changeTradeMode,
       productViewMode, setProductViewMode,
       currentCurrency, setCurrentCurrency, convertPrice, currenciesList,
       liveToast, showLiveToast, lastUpdatedProductId,

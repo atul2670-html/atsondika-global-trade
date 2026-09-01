@@ -6,7 +6,7 @@ import { autoTranslateText } from '../utils/translator';
 export default function ProductsGrid() {
   const {
     t, currentLang, currentCategory, setCurrentCategory,
-    searchFilterQuery, setSearchFilterQuery,
+    searchFilterQuery, setSearchFilterQuery, tradeMode, setTradeMode,
     getAllProducts, customProductsList, deleteProduct,
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
@@ -224,6 +224,68 @@ export default function ProductsGrid() {
         <div className="section-header">
           <h2 className="section-title">{t.products_title}</h2>
           <p className="section-subtitle">{t.products_subtitle}</p>
+
+          {/* Global Trade B2B vs Local Trade B2C Selector Pill Switcher */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '8px',
+            margin: '20px auto 10px auto',
+            background: 'rgba(15, 23, 42, 0.75)',
+            padding: '6px',
+            borderRadius: '50px',
+            border: '1px solid var(--border-glass)',
+            maxWidth: '520px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
+          }}>
+            <button
+              type="button"
+              onClick={() => setTradeMode('global')}
+              style={{
+                flex: 1,
+                padding: '10px 18px',
+                borderRadius: '50px',
+                fontSize: '0.88rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                background: tradeMode === 'global' ? 'linear-gradient(135deg, #00d2ff 0%, #0086ff 100%)' : 'transparent',
+                border: 'none',
+                color: 'white',
+                boxShadow: tradeMode === 'global' ? '0 4px 18px rgba(0, 210, 255, 0.4)' : 'none',
+                transition: 'all 0.3s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              🌐 {currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ (B2B Export)' : 'Global Trade (B2B Export)'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTradeMode('local')}
+              style={{
+                flex: 1,
+                padding: '10px 18px',
+                borderRadius: '50px',
+                fontSize: '0.88rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                background: tradeMode === 'local' ? 'linear-gradient(135deg, #ff9900 0%, #e67e22 100%)' : 'transparent',
+                border: 'none',
+                color: 'white',
+                boxShadow: tradeMode === 'local' ? '0 4px 18px rgba(255, 153, 0, 0.4)' : 'none',
+                transition: 'all 0.3s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              🛍️ {currentLang === 'gu' ? 'લોકલ ટ્રેડ (B2C E-Commerce)' : 'Local Trade (B2C Retail)'}
+            </button>
+          </div>
 
           {/* DEDICATED QUICK ADMIN ACTION BUTTONS */}
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
@@ -450,7 +512,7 @@ export default function ProductsGrid() {
               )}
             </div>
           ) : (
-            filtered.map(p => {
+            filtered.map((p, idx) => {
               const enTitle = (p.names && typeof p.names === 'object') ? (p.names['en'] || p.name || '') : (p.name || '');
               const langTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || '') : '';
               const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
@@ -466,6 +528,215 @@ export default function ProductsGrid() {
               const rawImgs = (p.images && p.images.length > 0) ? p.images : [p.image || 'images/agro_spices_grains.png'];
               const imgs = rawImgs.map(convertGoogleDriveUrl);
               const activeIdx = (carouselIndices[p.id] || 0) % imgs.length;
+
+              {/* LOCAL TRADE B2C E-COMMERCE CARD DESIGN (Matching Screenshots 3 & 4) */}
+              if (tradeMode === 'local') {
+                const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
+                const mrpInr = Math.round(basePriceInr * 1.32);
+                const discountPct = Math.round(((mrpInr - basePriceInr) / mrpInr) * 100);
+                const couponPay = Math.round(basePriceInr * 0.94);
+                const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
+                const reviews = (150 + idx * 132).toLocaleString();
+
+                return (
+                  <div key={p.id} className="local-b2c-card" style={{
+                    background: '#ffffff',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    border: '1px solid rgba(229, 231, 235, 0.8)',
+                    transition: 'all 0.25s ease'
+                  }}>
+                    {/* Top Rank Ribbon Badge (#1, #2, #3...) matching Screenshot 3 & 4 */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      zIndex: 10,
+                      background: 'linear-gradient(135deg, #e67e22, #d35400)',
+                      color: '#ffffff',
+                      fontSize: '0.74rem',
+                      fontWeight: 900,
+                      padding: '4px 14px 4px 10px',
+                      clipPath: 'polygon(0 0, 100% 0, 85% 100%, 0 100%)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                    }}>
+                      #{idx + 1}
+                    </div>
+
+                    {/* Top Bestseller Badge */}
+                    {(idx < 3 || p.isBestseller) && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        zIndex: 10,
+                        background: '#c45500',
+                        color: '#ffffff',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        textTransform: 'uppercase'
+                      }}>
+                        Best seller
+                      </div>
+                    )}
+
+                    {/* Image Container with Watch Badge Overlay */}
+                    <div
+                      style={{
+                        background: '#ffffff',
+                        padding: '20px 16px 14px 16px',
+                        height: '210px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #f3f4f6'
+                      }}
+                      onClick={() => openImagePreview && openImagePreview({
+                        url: imgs[activeIdx],
+                        title,
+                        hsCode: p.hsCode,
+                        category: getMainCategoryBadgeTitle(p),
+                        allImages: imgs,
+                        activeIndex: activeIdx,
+                        productObj: p
+                      })}
+                    >
+                      <img
+                        src={imgs[activeIdx]}
+                        alt={title}
+                        style={{ maxHeight: '175px', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
+                        onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
+                      />
+
+                      {/* Watch Badge Overlay matching Screenshot 3 */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        background: 'rgba(255,255,255,0.92)',
+                        border: '1px solid #d5d9d9',
+                        borderRadius: '20px',
+                        padding: '2px 8px',
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        color: '#0F1111',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
+                        <span style={{ fontSize: '0.6rem', color: '#0086ff' }}>▶</span> Watch
+                      </div>
+                    </div>
+
+                    {/* Product Content Body */}
+                    <div style={{ padding: '14px 16px 16px 16px', display: 'flex', flexDirection: 'column', flex: 1, background: '#ffffff', color: '#0F1111' }}>
+                      {/* Title */}
+                      <h4 style={{
+                        fontSize: '0.86rem',
+                        fontWeight: 700,
+                        color: '#007185',
+                        margin: '0 0 6px 0',
+                        lineHeight: 1.35,
+                        height: '2.7em',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        cursor: 'pointer'
+                      }}>
+                        {title}
+                      </h4>
+
+                      {/* Ratings & Reviews Stars Bar */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <div style={{ color: '#de7921', fontSize: '0.78rem', fontWeight: 800 }}>
+                          ★★★★☆ <span style={{ color: '#007185', fontWeight: 700, marginLeft: '2px' }}>{rating}</span>
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#565959' }}>
+                          ({reviews})
+                        </span>
+                        <span style={{
+                          fontSize: '0.65rem',
+                          background: '#e7f4e8',
+                          color: '#007600',
+                          border: '1px solid #c2e2c5',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          fontWeight: 700
+                        }}>
+                          🟢 100% Natural
+                        </span>
+                      </div>
+
+                      {/* Price Section matching Screenshots 3 & 4 */}
+                      <div style={{ margin: '4px 0 8px 0' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F1111' }}>
+                            {convertPrice ? convertPrice(basePriceInr, 'INR') : `₹${basePriceInr.toLocaleString()}`}
+                          </span>
+                          <span style={{ fontSize: '0.74rem', color: '#565959' }}>
+                            ({convertPrice ? convertPrice(Math.round(basePriceInr / 5), 'INR') : `₹${Math.round(basePriceInr / 5)}`}/100 g)
+                          </span>
+                          <span style={{ fontSize: '0.74rem', color: '#565959', textDecoration: 'line-through' }}>
+                            M.R.P.: {convertPrice ? convertPrice(mrpInr, 'INR') : `₹${mrpInr.toLocaleString()}`}
+                          </span>
+                          <span style={{ fontSize: '0.76rem', color: '#CC0C39', fontWeight: 800 }}>
+                            ({discountPct}% off)
+                          </span>
+                        </div>
+
+                        {/* Coupon Savings Badge */}
+                        <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', fontWeight: 700, display: 'inline-block' }}>
+                          <span style={{ background: '#007600', color: 'white', padding: '0 4px', borderRadius: '2px', marginRight: '4px', fontSize: '0.62rem' }}>You pay</span>
+                          {convertPrice ? convertPrice(couponPay, 'INR') : `₹${couponPay.toLocaleString()}`} with coupon
+                        </div>
+
+                        {/* Delivery Tag matching Screenshots 3 & 4 */}
+                        <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600 }}>
+                          <span style={{ color: '#007600', fontWeight: 800 }}>FREE delivery</span> <b>Fri, 4 Sept</b>
+                        </div>
+                      </div>
+
+                      {/* Amazon/Flipkart Style Yellow "Add to Cart" Button */}
+                      <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            addToRfqCart(p, 1, 'pcs', 'LOCAL');
+                            setIsRfqDrawerOpen(true);
+                          }}
+                          style={{
+                            width: '100%',
+                            background: '#ffd814',
+                            border: '1px solid #fcd200',
+                            borderRadius: '20px',
+                            color: '#0F1111',
+                            fontSize: '0.82rem',
+                            fontWeight: 800,
+                            padding: '8px 16px',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 5px rgba(213, 217, 217, 0.5)',
+                            transition: 'background 0.2s ease'
+                          }}
+                          onMouseOver={(e) => e.target.style.background = '#f7ca00'}
+                          onMouseOut={(e) => e.target.style.background = '#ffd814'}
+                        >
+                          {currentLang === 'gu' ? '🛒 અત્યારે ખરીદો / કાર્ટમાં ઉમેરો' : 'Add to cart'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <div key={p.id} className="glass-card product-card" style={{ position: 'relative' }}>

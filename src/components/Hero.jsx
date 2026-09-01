@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
 
 export default function Hero() {
-  const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn, showLiveToast } = useApp();
+  const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn, showLiveToast, tradeMode, setTradeMode } = useApp();
   const [showImgMenu, setShowImgMenu] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const menuRef = useRef(null);
@@ -61,20 +61,84 @@ export default function Hero() {
             {currentSubtitle}
           </p>
 
-          <div className="hero-buttons">
-            <a href="#products" className="btn-primary" style={{ padding: '12px 28px', fontSize: '0.95rem' }}>
-              {t.btn_explore}
-            </a>
+          {/* 3 HERO BUTTONS: 1. Global Trade (Left), 2. Explore Products (Center), 3. Local Trade (Right) */}
+          <div className="hero-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            {/* 1. Global Trade (Left) */}
             <button
               type="button"
-              className="btn-secondary"
-              style={{ padding: '12px 28px', fontSize: '0.95rem' }}
+              className={`btn-hero-trade ${tradeMode === 'global' ? 'active-global' : ''}`}
+              style={{
+                padding: '12px 24px',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                borderRadius: '50px',
+                cursor: 'pointer',
+                background: tradeMode === 'global' ? 'linear-gradient(135deg, #00d2ff, #0086ff)' : 'rgba(255,255,255,0.06)',
+                border: '1px solid ' + (tradeMode === 'global' ? '#00d2ff' : 'rgba(255,255,255,0.2)'),
+                color: 'white',
+                boxShadow: tradeMode === 'global' ? '0 4px 20px rgba(0, 210, 255, 0.4)' : 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
               onClick={() => {
-                const el = document.getElementById('contact');
+                setTradeMode('global');
+                const el = document.getElementById('products');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              {t.btn_rfq}
+              🌐 {currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ (Global Trade)' : (currentLang === 'hi' ? 'ग्लोबल ट्रेड (Global Trade)' : 'Global Trade')}
+            </button>
+
+            {/* 2. Explore Products (Center) */}
+            <a
+              href="#products"
+              className="btn-primary"
+              style={{
+                padding: '12px 26px',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                borderRadius: '50px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                border: 'none',
+                color: 'white',
+                boxShadow: '0 4px 18px rgba(16, 185, 129, 0.4)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                textDecoration: 'none'
+              }}
+            >
+              📦 {t.btn_explore || 'Explore Products'}
+            </a>
+
+            {/* 3. Local Trade (Right) */}
+            <button
+              type="button"
+              className={`btn-hero-trade ${tradeMode === 'local' ? 'active-local' : ''}`}
+              style={{
+                padding: '12px 24px',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                borderRadius: '50px',
+                cursor: 'pointer',
+                background: tradeMode === 'local' ? 'linear-gradient(135deg, #ff9900, #e67e22)' : 'rgba(255,255,255,0.06)',
+                border: '1px solid ' + (tradeMode === 'local' ? '#ff9900' : 'rgba(255,255,255,0.2)'),
+                color: 'white',
+                boxShadow: tradeMode === 'local' ? '0 4px 20px rgba(255, 153, 0, 0.4)' : 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onClick={() => {
+                setTradeMode('local');
+                const el = document.getElementById('products');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              🛍️ {currentLang === 'gu' ? 'લોકલ ટ્રેડ (Local Trade)' : (currentLang === 'hi' ? 'लोकल ट्रेड (Local Trade)' : 'Local Trade')}
             </button>
           </div>
         </div>
