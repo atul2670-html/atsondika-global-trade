@@ -405,11 +405,13 @@ export default function Modals() {
   // Lightbox Image Preview State
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [isUltraZoom, setIsUltraZoom] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
 
   useEffect(() => {
     if (activeModal === 'image_preview' && imagePreviewData) {
       setActivePreviewIdx(imagePreviewData.activeIndex || 0);
       setIsUltraZoom(false);
+      setZoomPos({ x: 50, y: 50 });
     }
   }, [activeModal, imagePreviewData]);
 
@@ -6129,18 +6131,33 @@ export default function Modals() {
                   <div
                     style={{
                       position: 'relative',
-                      background: 'rgba(0,0,0,0.6)',
+                      background: 'rgba(0,0,0,0.85)',
                       borderRadius: '16px',
                       overflow: 'hidden',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      minHeight: '400px',
+                      minHeight: '420px',
                       maxHeight: '75vh',
                       border: '1px solid var(--border-glass)',
-                      cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'zoom-out' : 'zoom-in')
+                      cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'zoom-out' : 'zoom-in'),
+                      userSelect: 'none'
                     }}
-                    onClick={() => !isPdfDoc && setIsUltraZoom(!isUltraZoom)}
+                    onMouseMove={(e) => {
+                      if (!isUltraZoom || isPdfDoc) return;
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                      const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                      setZoomPos({ x, y });
+                    }}
+                    onClick={() => {
+                      if (!isPdfDoc) {
+                        setIsUltraZoom(!isUltraZoom);
+                        if (isUltraZoom) {
+                          setZoomPos({ x: 50, y: 50 });
+                        }
+                      }
+                    }}
                   >
                     {isPdfDoc ? (
                       <div style={{ width: '100%', height: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
@@ -6166,11 +6183,12 @@ export default function Modals() {
                         src={currentImgUrl}
                         alt={imagePreviewData.title}
                         style={{
-                          maxWidth: isUltraZoom ? '180%' : '100%',
-                          maxHeight: isUltraZoom ? 'none' : '65vh',
+                          maxWidth: '100%',
+                          maxHeight: '65vh',
                           objectFit: 'contain',
-                          transform: isUltraZoom ? 'scale(1.5)' : 'scale(1)',
-                          transition: 'transform 0.3s ease-in-out',
+                          transform: isUltraZoom ? 'scale(2.2)' : 'scale(1)',
+                          transformOrigin: isUltraZoom ? `${zoomPos.x}% ${zoomPos.y}%` : 'center center',
+                          transition: isUltraZoom ? 'transform-origin 0.04s ease-out, transform 0.25s ease' : 'transform 0.25s ease',
                           borderRadius: '8px'
                         }}
                         onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
