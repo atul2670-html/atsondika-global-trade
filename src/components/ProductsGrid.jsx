@@ -389,7 +389,7 @@ export default function ProductsGrid() {
         </div>
 
         {/* Tab Bar with Sub-Product Hover Mega Menu Dropdown */}
-        <div className="tab-bar">
+        <div className="tab-bar" style={{ position: 'relative', zIndex: 1000, overflow: 'visible' }}>
           {defaultTabs.map(tab => {
             const subProds = getSubProductsForCategory(tab.filter);
             const isHovered = hoveredTab === tab.filter && subProds.length > 0;
@@ -397,7 +397,7 @@ export default function ProductsGrid() {
             return (
               <div
                 key={tab.filter}
-                style={{ position: 'relative', display: 'inline-block' }}
+                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 9999 : 1 }}
                 onMouseEnter={() => setHoveredTab(tab.filter)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
@@ -421,16 +421,14 @@ export default function ProductsGrid() {
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
                       left: 0,
-                      zIndex: 9999,
+                      zIndex: 99999,
                       minWidth: '290px',
                       maxWidth: '350px',
-                      background: 'rgba(11, 15, 25, 0.97)',
-                      backdropFilter: 'blur(24px)',
-                      WebkitBackdropFilter: 'blur(24px)',
-                      border: '1px solid var(--primary-teal-glow)',
+                      background: '#090d16',
+                      border: '2px solid var(--primary-teal-glow)',
                       borderRadius: '14px',
                       padding: '10px',
-                      boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(45, 212, 191, 0.35)',
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.95), 0 0 30px rgba(45, 212, 191, 0.4)',
                       maxHeight: '340px',
                       overflowY: 'auto'
                     }}
@@ -509,7 +507,7 @@ export default function ProductsGrid() {
             return (
               <div
                 key={p.id}
-                style={{ position: 'relative', display: 'inline-block' }}
+                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 9999 : 1 }}
                 onMouseEnter={() => setHoveredTab(p.category)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
@@ -560,16 +558,14 @@ export default function ProductsGrid() {
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
                       left: 0,
-                      zIndex: 9999,
+                      zIndex: 99999,
                       minWidth: '290px',
                       maxWidth: '350px',
-                      background: 'rgba(11, 15, 25, 0.97)',
-                      backdropFilter: 'blur(24px)',
-                      WebkitBackdropFilter: 'blur(24px)',
-                      border: '1px solid var(--primary-teal-glow)',
+                      background: '#090d16',
+                      border: '2px solid var(--primary-teal-glow)',
                       borderRadius: '14px',
                       padding: '10px',
-                      boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(45, 212, 191, 0.35)',
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.95), 0 0 30px rgba(45, 212, 191, 0.4)',
                       maxHeight: '340px',
                       overflowY: 'auto'
                     }}

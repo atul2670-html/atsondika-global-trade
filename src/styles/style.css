@@ -2657,5 +2657,23 @@ body.light-theme .modal-card code {
   }
 }
 
+/* --- TAB BAR STACKING CONTEXT & OVERFLOW CLIPPING FIX FOR HOVER DROPDOWN --- */
+.tab-bar {
+  position: relative !important;
+  z-index: 5000 !important;
+  overflow: visible !important;
+}
+
+.products-grid {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.sub-product-hover-dropdown {
+  position: absolute !important;
+  z-index: 999999 !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(45, 212, 191, 0.4) !important;
+}
+
 
 
