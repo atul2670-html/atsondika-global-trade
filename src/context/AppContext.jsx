@@ -253,14 +253,21 @@ export function AppProvider({ children }) {
     setRfqCartItems([]);
   };
 
-  // Convert USD price to currently selected currency
-  const convertPrice = (usdPriceStr) => {
-    if (!usdPriceStr) return '';
-    if (currentCurrency.code === 'USD') return usdPriceStr;
-    const num = parseFloat(usdPriceStr.replace(/[^0-9.]/g, ''));
-    if (isNaN(num)) return usdPriceStr;
-    const converted = (num * currentCurrency.rate).toLocaleString('en-US', { maximumFractionDigits: 2 });
-    return `${currentCurrency.symbol}${converted}`;
+  // Convert USD / INR price to currently selected currency
+  const convertPrice = (usdPriceVal) => {
+    if (usdPriceVal === null || usdPriceVal === undefined || usdPriceVal === '') return '';
+    if (typeof usdPriceVal === 'number') {
+      const num = usdPriceVal;
+      if (currentCurrency.code === 'USD') return `$${Math.round(num).toLocaleString('en-US')}`;
+      const converted = Math.round(num * (currentCurrency.rate || 1)).toLocaleString('en-US');
+      return `${currentCurrency.symbol || '₹'}${converted}`;
+    }
+    const str = String(usdPriceVal);
+    if (currentCurrency.code === 'USD') return str;
+    const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return str;
+    const converted = Math.round(num * (currentCurrency.rate || 1)).toLocaleString('en-US');
+    return `${currentCurrency.symbol || '₹'}${converted}`;
   };
 
   // Subscribe to RealTimeSyncEngine events across tabs
