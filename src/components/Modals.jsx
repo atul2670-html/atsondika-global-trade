@@ -6038,7 +6038,7 @@ export default function Modals() {
       {activeModal === 'image_preview' && imagePreviewData && (
         <div
           className="modal-backdrop show"
-          style={{ zIndex: 3000, background: 'rgba(3, 7, 18, 0.94)', backdropFilter: 'blur(16px)' }}
+          style={{ zIndex: 99999, background: 'rgba(3, 7, 18, 0.94)', backdropFilter: 'blur(16px)' }}
           onClick={() => setActiveModal(null)}
         >
           <div

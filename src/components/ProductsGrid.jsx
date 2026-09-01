@@ -389,7 +389,7 @@ export default function ProductsGrid() {
         </div>
 
         {/* Tab Bar with Sub-Product Hover Mega Menu Dropdown */}
-        <div className="tab-bar" style={{ position: 'relative', zIndex: 1000, overflow: 'visible' }}>
+        <div className="tab-bar" style={{ position: 'relative', zIndex: 50, overflow: 'visible' }}>
           {defaultTabs.map(tab => {
             const subProds = getSubProductsForCategory(tab.filter);
             const isHovered = hoveredTab === tab.filter && subProds.length > 0;
@@ -397,7 +397,7 @@ export default function ProductsGrid() {
             return (
               <div
                 key={tab.filter}
-                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 9999 : 1 }}
+                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 500 : 1 }}
                 onMouseEnter={() => setHoveredTab(tab.filter)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
@@ -421,7 +421,7 @@ export default function ProductsGrid() {
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
                       left: 0,
-                      zIndex: 99999,
+                      zIndex: 500,
                       minWidth: '290px',
                       maxWidth: '350px',
                       background: '#090d16',
@@ -507,7 +507,7 @@ export default function ProductsGrid() {
             return (
               <div
                 key={p.id}
-                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 9999 : 1 }}
+                style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 500 : 1 }}
                 onMouseEnter={() => setHoveredTab(p.category)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
@@ -558,7 +558,7 @@ export default function ProductsGrid() {
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
                       left: 0,
-                      zIndex: 99999,
+                      zIndex: 500,
                       minWidth: '290px',
                       maxWidth: '350px',
                       background: '#090d16',
