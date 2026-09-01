@@ -6057,8 +6057,37 @@ export default function Modals() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Top-Right Corner Close Button (International Standard) */}
+            <button
+              type="button"
+              className="modal-close-btn"
+              onClick={() => setActiveModal(null)}
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                zIndex: 20,
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: '#ffffff',
+                fontSize: '1.4rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.4)'
+              }}
+              title="Close (અહીંયા બંધ કરવા ક્લિક કરો)"
+            >
+              ✕
+            </button>
+
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', paddingRight: '48px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '1.4rem' }}>🔍</span>
@@ -6105,15 +6134,6 @@ export default function Modals() {
                   title="Request Official Quotation (RFQ) Inquiry Form"
                 >
                   💬 Request Official Quotation (RFQ)
-                </button>
-
-                <button
-                  type="button"
-                  className="modal-close"
-                  onClick={() => setActiveModal(null)}
-                  style={{ position: 'static', fontSize: '1.8rem', padding: '0 8px' }}
-                >
-                  &times;
                 </button>
               </div>
             </div>
