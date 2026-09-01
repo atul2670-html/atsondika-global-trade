@@ -28,6 +28,19 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLight, setIsLight] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const currencyRef = useRef(null);
   const langRef = useRef(null);
@@ -87,8 +100,17 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Live Global Market & Currency Ticker Bar */}
-      <div className="top-bar">
+      {/* Live Global Market & Currency Ticker Bar (Collapses on Scroll) */}
+      <div className="top-bar" style={{
+        maxHeight: isScrolled ? '0px' : '80px',
+        opacity: isScrolled ? 0 : 1,
+        overflow: 'hidden',
+        pointerEvents: isScrolled ? 'none' : 'auto',
+        transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        paddingTop: isScrolled ? '0' : undefined,
+        paddingBottom: isScrolled ? '0' : undefined,
+        borderBottomWidth: isScrolled ? '0' : undefined
+      }}>
         <div className="top-bar-content">
           <div className="top-ticker-wrapper">
             {/* SOLID ELEVATED LEFT CONTAINER (NO SCROLLING TEXT CAN EVER OVERLAP THIS) */}
@@ -351,12 +373,52 @@ export default function Navbar() {
               <li><a href="#branches" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_branches}</a></li>
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>            </ul>
 
-            <button type="button" className="mobile-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              ☰
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {isScrolled && tradeMode === 'local' && (
+                <button
+                  type="button"
+                  className="nav-rfq-cart-btn"
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    color: '#ffffff',
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.4)'
+                  }}
+                  onClick={() => setIsRfqDrawerOpen(true)}
+                  title="View Shopping Cart"
+                >
+                  🛒 <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 6px', borderRadius: '10px', fontSize: '0.72rem' }}>{rfqCartItems.length}</span>
+                </button>
+              )}
+
+              <button type="button" className="mobile-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                ☰
+              </button>
+            </div>
           </div>
 
-          {/* ROW 2: PROMINENT MULTI-COMPANY SISTER COMPANIES TABS BAR INSIDE GLASS CONTAINER */}
+          {/* COLLAPSIBLE TOP SUB-HEADER BARS (SISTER COMPANIES & ACTION BUTTONS HIDE UPWARDS ON SCROLL) */}
+          <div style={{
+            maxHeight: isScrolled ? '0px' : '400px',
+            opacity: isScrolled ? 0 : 1,
+            overflow: 'hidden',
+            pointerEvents: isScrolled ? 'none' : 'auto',
+            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            width: '100%',
+            marginTop: isScrolled ? '0' : '4px'
+          }}>
+            {/* ROW 2: PROMINENT MULTI-COMPANY SISTER COMPANIES TABS BAR INSIDE GLASS CONTAINER */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -588,7 +650,8 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
     </>
   );
 }
