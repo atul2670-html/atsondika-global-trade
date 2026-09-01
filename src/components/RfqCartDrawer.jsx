@@ -12,7 +12,8 @@ export default function RfqCartDrawer() {
     convertPrice,
     currentCurrency,
     currentLang,
-    activeCompany
+    activeCompany,
+    tradeMode
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -86,10 +87,12 @@ export default function RfqCartDrawer() {
             <span style={{ fontSize: '1.8rem' }}>🛒</span>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                {rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart'}
+                {tradeMode === 'local'
+                  ? (currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ (Local Cart)' : '🛍️ Local Trade Shopping Cart')
+                  : (rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart')}
               </h3>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                {rfqCartItems.length} Products | Real-Time Wholesale Estimate
+                {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં ઉમેરેલ છે' : 'Products in Cart'}
               </span>
             </div>
           </div>

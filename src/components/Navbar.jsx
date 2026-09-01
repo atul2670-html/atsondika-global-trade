@@ -10,7 +10,7 @@ export default function Navbar() {
     isAdminLoggedIn, setIsAdminLoggedIn, setActiveModal,
     activeCompany, companiesList, activeCompanyId, setActiveCompanyId,
     currentCustomer, customerList, exportDatabase, importDatabase,
-    rfqCartItems, setIsRfqDrawerOpen, setIsOrderTrackerOpen,
+    rfqCartItems, setIsRfqDrawerOpen, setIsOrderTrackerOpen, tradeMode,
     currentCurrency, setCurrentCurrency, currenciesList, liveToast,
     heroBanner, saveHeroBanner,
     aboutData, saveAboutData,
@@ -563,16 +563,18 @@ export default function Navbar() {
                 📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
               </button>
 
-              {/* 2. Amazon / Flipkart Style RFQ Quote Cart Tray Button */}
-              <button
-                type="button"
-                className="nav-rfq-cart-btn"
-                onClick={() => setIsRfqDrawerOpen(true)}
-                title="View Quote Cart (RFQ)"
-              >
-                <span>🛒</span>
-                <span className="rfq-cart-badge">{rfqCartItems.length}</span>
-              </button>
+              {/* 2. Amazon / Flipkart Style Local Trade Shopping Cart Button (ONLY VISIBLE IN LOCAL TRADE B2C MODE) */}
+              {tradeMode === 'local' && (
+                <button
+                  type="button"
+                  className="nav-rfq-cart-btn"
+                  onClick={() => setIsRfqDrawerOpen(true)}
+                  title={currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ જુઓ' : 'View Shopping Cart (Local Trade)'}
+                >
+                  <span>🛒</span>
+                  <span className="rfq-cart-badge">{rfqCartItems.length}</span>
+                </button>
+              )}
 
               {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
               <button

@@ -878,28 +878,8 @@ export default function ProductsGrid() {
                       </button>
                     )}
 
-                    {/* PRODUCT CARD FOOTER ACTION BUTTONS (STACKED FULL-WIDTH FOR ZERO CLIPPING ON ALL MONITORS) */}
+                    {/* PRODUCT CARD FOOTER ACTION BUTTONS (DIRECT B2B BULK DEAL & PROFORMA QUOTE) */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        style={{
-                          width: '100%',
-                          justifyContent: 'center',
-                          fontSize: '0.85rem',
-                          fontWeight: 800,
-                          padding: '9px 12px',
-                          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)'
-                        }}
-                        onClick={() => {
-                          addToRfqCart(p, 1, p.unit || 'MT', 'FOB');
-                          setIsRfqDrawerOpen(true);
-                        }}
-                        title="Add to Wholesale Quote Cart"
-                      >
-                        {currentLang === 'gu' ? '🛒 ક્વોટ કાર્ટમાં ઉમેરો (RFQ)' : (currentLang === 'hi' ? '🛒 कोट कार्ट में जोड़ें (RFQ)' : (currentLang === 'fr' ? '🛒 Ajouter au Panier' : '🛒 Add to Quote Cart (RFQ)'))}
-                      </button>
 
                       {(() => {
                         const isSelected = (selectedRfqProducts || []).some(sp => sp.id === p.id);
