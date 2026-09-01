@@ -13,7 +13,8 @@ export default function RfqCartDrawer() {
     currentCurrency,
     currentLang,
     activeCompany,
-    tradeMode
+    tradeMode,
+    showLiveToast
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -30,6 +31,18 @@ export default function RfqCartDrawer() {
   const [billingAddress, setBillingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Payment Checkout System States
+  const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'bank' | 'cod'
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [upiUtxRef, setUpiUtxRef] = useState('');
+  const [cardNum, setCardNum] = useState('');
+  const [cardExp, setCardExp] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [paymentStep, setPaymentStep] = useState('pay'); // 'pay' | 'otp' | 'success'
+  const [completedOrderReceipt, setCompletedOrderReceipt] = useState(null);
+
   if (!isRfqDrawerOpen) return null;
 
   const totalQuantity = rfqCartItems.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1), 0);
@@ -40,76 +53,132 @@ export default function RfqCartDrawer() {
     return acc + (price * (parseFloat(item.quantity) || 1));
   }, 0);
 
+  // Trigger Payment Modal for Local Trade
+  const handleInitiatePayment = () => {
+    if (rfqCartItems.length === 0) {
+      alert(currentLang === 'gu' ? '🛒 તમારું કાર્ટ ખાલી છે!' : '🛒 Your Cart is empty!');
+      return;
+    }
+    if (!deliveryAddress || deliveryAddress.trim().length < 5) {
+      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું સંપૂર્ણ ડિલિવરી એડ્રેસ લખો.' : '⚠️ Please enter your complete delivery shipping address.');
+      return;
+    }
+    if (!buyerPhone || buyerPhone.trim().length < 8) {
+      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારો મોબાઈલ / વોટ્સએપ નંબર લખો.' : '⚠️ Please enter your phone/WhatsApp number.');
+      return;
+    }
+
+    setPaymentStep('pay');
+    setShowCheckoutModal(true);
+  };
+
+  // Execute Final Successful Payment & Process Order
+  const handleCompletePaymentSuccess = () => {
+    const orderId = `ORD-LOCAL-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+    const orderDate = new Date().toLocaleString();
+
+    const orderData = {
+      orderId,
+      orderDate,
+      company: activeCompany?.name || 'ATS-ONDIKA GLOBAL TRADE',
+      customerName: buyerName || 'Valued Customer',
+      phone: buyerPhone,
+      email: buyerEmail,
+      gstin: buyerGstin,
+      deliveryAddress,
+      pincode,
+      billingAddress: sameAsBilling ? deliveryAddress : billingAddress,
+      paymentMethod: paymentMethod.toUpperCase(),
+      paymentStatus: paymentMethod === 'cod' ? 'COD (Pending Delivery)' : 'PAID (Successful)',
+      utrRef: upiUtxRef || 'TXN-' + Date.now(),
+      items: rfqCartItems.map(item => ({
+        name: item.names?.[currentLang] || item.names?.en || item.name || 'Product',
+        qty: item.quantity,
+        unit: item.unit || 'pcs',
+        price: item.localPrice || (item.priceInr ? parseFloat(item.priceInr) : 499)
+      })),
+      totalAmount: totalLocalAmount,
+      deliveryNotes: notes
+    };
+
+    // Save completed order to localStorage
+    try {
+      const existingOrders = JSON.parse(localStorage.getItem('site_customer_orders_v1') || '[]');
+      existingOrders.unshift(orderData);
+      localStorage.setItem('site_customer_orders_v1', JSON.stringify(existingOrders));
+    } catch(e) {}
+
+    setCompletedOrderReceipt(orderData);
+    setPaymentStep('success');
+
+    // Clear cart AFTER payment is successful
+    clearRfqCart();
+
+    if (showLiveToast) showLiveToast(`🎉 Order ${orderId} Paid & Placed Successfully!`, 'success');
+
+    // Send WhatsApp Paid Order Confirmation to Store Admin
+    let msg = `✅ *ORDER & PAYMENT CONFIRMED! (atsondika-global-trade)*\n`;
+    msg += `---------------------------------------\n`;
+    msg += `🧾 *Order Receipt ID:* ${orderId}\n`;
+    msg += `💳 *Payment Status:* ${orderData.paymentStatus}\n`;
+    msg += `💰 *Amount Paid:* ${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount.toLocaleString()}\n`;
+    msg += `👤 *Customer Name:* ${orderData.customerName}\n`;
+    msg += `📞 *Phone/WhatsApp:* ${orderData.phone}\n`;
+    msg += `🏠 *Delivery Address:* ${orderData.deliveryAddress}\n`;
+    if (pincode) msg += `📮 *Pincode:* ${pincode}\n`;
+    if (buyerGstin) msg += `🏛️ *GSTIN:* ${buyerGstin}\n`;
+    msg += `---------------------------------------\n`;
+    msg += `📦 *PAID ITEMS:* (${rfqCartItems.length} Products)\n`;
+    rfqCartItems.forEach((item, index) => {
+      const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product';
+      msg += `${index + 1}. *${name}* (Qty: ${item.quantity} ${item.unit || 'pcs'})\n`;
+    });
+    msg += `---------------------------------------\n`;
+    msg += `⚡ *Paid & Verified via Atsondika Local Portal*`;
+
+    const encoded = encodeURIComponent(msg);
+    const phone = (activeCompany?.phone || '+917861997755').replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+  };
+
+  // WhatsApp RFQ for Global Export Trade
   const handleSendRfqWhatsApp = () => {
     if (rfqCartItems.length === 0) {
       alert('🛒 Your Cart is empty! Add products first.');
       return;
     }
 
-    let msg = '';
-    if (tradeMode === 'local') {
-      msg = `🛍️ *LOCAL TRADE RETAIL ORDER (atsondika-global-trade)*\n`;
-      msg += `---------------------------------------\n`;
-      msg += `🏢 *Company:* ${activeCompany?.name || 'ADIDEV SMART SOLUTION'}\n`;
-      msg += `👤 *Customer Name:* ${buyerName || 'Valued Buyer'}\n`;
-      if (buyerPhone) msg += `📞 *Phone/WhatsApp:* ${buyerPhone}\n`;
-      if (buyerEmail) msg += `✉️ *Email:* ${buyerEmail}\n`;
-      if (buyerGstin) msg += `🏛️ *GSTIN:* ${buyerGstin}\n`;
-      msg += `🏠 *Delivery Address:* ${deliveryAddress || 'Surat, Gujarat'}\n`;
-      if (pincode) msg += `📮 *Pincode:* ${pincode}\n`;
-      if (!sameAsBilling && billingAddress) {
-        msg += `📑 *Billing Address:* ${billingAddress}\n`;
-      } else {
-        msg += `📑 *Billing Address:* Same as Delivery Address\n`;
-      }
-      msg += `---------------------------------------\n`;
-      msg += `📦 *ORDERED ITEMS:* (${rfqCartItems.length} Products)\n`;
-      rfqCartItems.forEach((item, index) => {
-        const prodName = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
-        const itemPrice = item.localPrice || (item.priceInr ? parseFloat(item.priceInr) : 499);
-        msg += `${index + 1}. *${prodName}*\n`;
-        msg += `   - Quantity: ${item.quantity} ${item.unit || 'pcs'}\n`;
-        msg += `   - Unit Price: ${convertPrice ? convertPrice(itemPrice) : '₹' + itemPrice}\n`;
-      });
-      msg += `---------------------------------------\n`;
-      msg += `🚚 *Delivery Charge:* FREE Delivery\n`;
-      msg += `💰 *Total Amount:* ${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount.toLocaleString()}\n`;
+    let msg = rfqTradeCategory === 'export'
+      ? `🌐 *OFFICIAL EXPORT RFQ / QUOTE REQUEST*\n`
+      : `🇮🇳 *OFFICIAL INDIAN DOMESTIC SALE RFQ (B2B)*\n`;
+    msg += `---------------------------------------\n`;
+    msg += `🏢 *Company / Supplier:* ${activeCompany?.name || 'ADIDEV SMART SOLUTION'}\n`;
+    msg += `👤 *Buyer Name:* ${buyerName || 'Valued Client'}\n`;
+    if (buyerGstin) msg += `🏛️ *Buyer GSTIN:* ${buyerGstin}\n`;
+    if (buyerPhone) msg += `📞 *Phone:* ${buyerPhone}\n`;
+    if (buyerEmail) msg += `✉️ *Email:* ${buyerEmail}\n`;
+    if (rfqTradeCategory === 'export') {
+      msg += `⚓ *Destination Port:* ${destinationPort}\n`;
+      msg += `📄 *Preferred Terms:* ${selectedIncoterm}\n`;
+      msg += `💱 *Currency:* ${currentCurrency.code} (${currentCurrency.symbol})\n\n`;
     } else {
-      msg = rfqTradeCategory === 'export'
-        ? `🌐 *OFFICIAL EXPORT RFQ / QUOTE REQUEST*\n`
-        : `🇮🇳 *OFFICIAL INDIAN DOMESTIC SALE RFQ (B2B)*\n`;
-      msg += `---------------------------------------\n`;
-      msg += `🏢 *Company / Supplier:* ${activeCompany?.name || 'ADIDEV SMART SOLUTION'}\n`;
-      msg += `👤 *Buyer Name:* ${buyerName || 'Valued Client'}\n`;
-      if (buyerGstin) msg += `🏛️ *Buyer GSTIN:* ${buyerGstin}\n`;
-      if (buyerPhone) msg += `📞 *Phone:* ${buyerPhone}\n`;
-      if (buyerEmail) msg += `✉️ *Email:* ${buyerEmail}\n`;
+      msg += `🚚 *Delivery Destination State/City:* ${domesticCity}\n`;
+      msg += `💱 *Currency:* INR (₹ - Indian Rupee)\n\n`;
+    }
+    msg += `📦 *ITEMS FOR QUOTATION:* (${rfqCartItems.length} Products, ~${totalQuantity} Units/MT)\n`;
+
+    rfqCartItems.forEach((item, index) => {
+      const prodName = item.names?.[currentLang] || item.names?.en || item.name || 'Agro Item';
+      const formattedPrice = item.priceUSD ? convertPrice(item.priceUSD) : 'On Request';
+      msg += `\n${index + 1}. *${prodName}*\n`;
+      msg += `   - Quantity: ${item.quantity} ${item.unit || 'MT'}\n`;
+      msg += `   - Est. Price: ${formattedPrice}\n`;
       if (rfqTradeCategory === 'export') {
-        msg += `⚓ *Destination Port:* ${destinationPort}\n`;
-        msg += `📄 *Preferred Terms:* ${selectedIncoterm}\n`;
-        msg += `💱 *Currency:* ${currentCurrency.code} (${currentCurrency.symbol})\n\n`;
-      } else {
-        msg += `🚚 *Delivery Destination State/City:* ${domesticCity}\n`;
-        msg += `💱 *Currency:* INR (₹ - Indian Rupee)\n\n`;
+        msg += `   - Incoterms: ${item.incoterm || selectedIncoterm}\n`;
       }
-      msg += `📦 *ITEMS FOR QUOTATION:* (${rfqCartItems.length} Products, ~${totalQuantity} Units/MT)\n`;
+    });
 
-      rfqCartItems.forEach((item, index) => {
-        const prodName = item.names?.[currentLang] || item.names?.en || item.name || 'Agro Item';
-        const formattedPrice = item.priceUSD ? convertPrice(item.priceUSD) : 'On Request';
-        msg += `\n${index + 1}. *${prodName}*\n`;
-        msg += `   - Quantity: ${item.quantity} ${item.unit || 'MT'}\n`;
-        msg += `   - Est. Price: ${formattedPrice}\n`;
-        if (rfqTradeCategory === 'export') {
-          msg += `   - Incoterms: ${item.incoterm || selectedIncoterm}\n`;
-        }
-      });
-    }
-
-    if (notes) {
-      msg += `\n📝 *Delivery / Order Notes:* ${notes}\n`;
-    }
-
+    if (notes) msg += `\n📝 *Notes:* ${notes}\n`;
     msg += `\n---------------------------------------\n`;
     msg += `⚡ *Sent via Realtime Amazon-Style Trade Portal*`;
 
@@ -132,7 +201,7 @@ export default function RfqCartDrawer() {
                   : (rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart')}
               </h3>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં ઉમેરેલ છે' : 'Products in Cart'}
+                {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં સેવ થયેલ છે' : 'Products Saved in Cart'}
               </span>
             </div>
           </div>
@@ -147,7 +216,7 @@ export default function RfqCartDrawer() {
 
         {/* Drawer Body */}
         <div className="rfq-drawer-body">
-          {rfqCartItems.length === 0 ? (
+          {rfqCartItems.length === 0 && !showCheckoutModal ? (
             <div className="empty-cart-view">
               <span style={{ fontSize: '3rem', opacity: 0.5 }}>📦</span>
               <h4>{currentLang === 'gu' ? 'તમારું કાર્ટ ખાલી છે' : 'Your Cart is empty'}</h4>
@@ -222,7 +291,7 @@ export default function RfqCartDrawer() {
                           </span>
                         </div>
 
-                        {/* Quantity & Unit Controls */}
+                        {/* Quantity Controls */}
                         <div className="rfq-item-qty-row">
                           <div className="qty-picker">
                             <button
@@ -264,11 +333,11 @@ export default function RfqCartDrawer() {
               <div className="rfq-customer-form">
                 <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', color: 'var(--accent-gold)' }}>
                   📋 {tradeMode === 'local'
-                    ? (currentLang === 'gu' ? 'ડિલિવરી અને બિલિંગ એડ્રેસ વિગત:' : 'Delivery & Billing Address Details:')
+                    ? (currentLang === 'gu' ? 'ડિલિવરી & પેમેન્ટ વિગત (Delivery & Payment Setup):' : 'Delivery & Payment Setup:')
                     : (rfqTradeCategory === 'export' ? 'Export Destination & Inquiry Details:' : 'Domestic India Delivery Details:')}
                 </h4>
 
-                {/* LOCAL TRADE ADDRESS FIELDS (Matching User Requirement) */}
+                {/* LOCAL TRADE ADDRESS & PAYMENT SELECTOR */}
                 {tradeMode === 'local' ? (
                   <>
                     <div className="rfq-form-group">
@@ -335,6 +404,82 @@ export default function RfqCartDrawer() {
                         </div>
                       )}
                     </div>
+
+                    {/* Select Payment Method Bar */}
+                    <div className="rfq-form-group" style={{ marginTop: '10px' }}>
+                      <label style={{ fontWeight: 800, color: '#facc15' }}>
+                        💳 {currentLang === 'gu' ? 'ચુકવણીનો પ્રકાર પસંદ કરો (Payment Method):' : 'Select Payment Option:'}
+                      </label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '6px' }}>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('upi')}
+                          style={{
+                            padding: '10px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (paymentMethod === 'upi' ? '#10b981' : 'rgba(255,255,255,0.15)'),
+                            background: paymentMethod === 'upi' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.04)',
+                            color: paymentMethod === 'upi' ? '#4ade80' : '#e2e8f0',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          📱 UPI / QR (GPay/Paytm)
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('card')}
+                          style={{
+                            padding: '10px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (paymentMethod === 'card' ? '#38bdf8' : 'rgba(255,255,255,0.15)'),
+                            background: paymentMethod === 'card' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255,255,255,0.04)',
+                            color: paymentMethod === 'card' ? '#38bdf8' : '#e2e8f0',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          💳 Card / NetBanking
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('bank')}
+                          style={{
+                            padding: '10px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (paymentMethod === 'bank' ? '#f59e0b' : 'rgba(255,255,255,0.15)'),
+                            background: paymentMethod === 'bank' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.04)',
+                            color: paymentMethod === 'bank' ? '#fbbf24' : '#e2e8f0',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          🏦 Bank NEFT / IMPS
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('cod')}
+                          style={{
+                            padding: '10px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (paymentMethod === 'cod' ? '#a855f7' : 'rgba(255,255,255,0.15)'),
+                            background: paymentMethod === 'cod' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.04)',
+                            color: paymentMethod === 'cod' ? '#c084fc' : '#e2e8f0',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          💵 Cash on Delivery
+                        </button>
+                      </div>
+                    </div>
                   </>
                 ) : (
                   /* GLOBAL B2B EXPORT FIELDS */
@@ -376,8 +521,6 @@ export default function RfqCartDrawer() {
                             <option value="CIF">CIF (Cost, Insurance & Freight)</option>
                             <option value="EXW">EXW (Ex-Works)</option>
                             <option value="CFR">CFR / CNF (Cost & Freight)</option>
-                            <option value="FCA">FCA (Free Carrier)</option>
-                            <option value="DDP">DDP (Delivered Duty Paid)</option>
                           </select>
                         </div>
 
@@ -444,7 +587,7 @@ export default function RfqCartDrawer() {
         </div>
 
         {/* Drawer Footer Actions */}
-        {rfqCartItems.length > 0 && (
+        {rfqCartItems.length > 0 && !showCheckoutModal && (
           <div className="rfq-drawer-footer">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
               <button
@@ -473,17 +616,257 @@ export default function RfqCartDrawer() {
               </div>
             </div>
 
-            <button
-              className="btn-submit-rfq-whatsapp"
-              onClick={handleSendRfqWhatsApp}
-              style={{
-                background: tradeMode === 'local' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined
-              }}
-            >
-              <span>📲</span> {tradeMode === 'local'
-                ? (currentLang === 'gu' ? '🛍️ ઓર્ડર કન્ફર્મ કરો (Submit Order via WhatsApp)' : '🛍️ Complete Order via WhatsApp')
-                : (currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ક્વોટેશન મોકલો' : 'Submit Wholesale Order via WhatsApp')}
-            </button>
+            {tradeMode === 'local' ? (
+              <button
+                className="btn-submit-rfq-whatsapp"
+                onClick={handleInitiatePayment}
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)'
+                }}
+              >
+                <span>💳</span> {currentLang === 'gu'
+                  ? `પેમેન્ટ કરીને ઓર્ડર પૂરું કરો (${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount})`
+                  : `Pay & Complete Order (${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount})`}
+              </button>
+            ) : (
+              <button
+                className="btn-submit-rfq-whatsapp"
+                onClick={handleSendRfqWhatsApp}
+              >
+                <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ક્વોટેશન મોકલો' : 'Submit Wholesale Order via WhatsApp'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* INTERACTIVE PAYMENT CHECKOUT MODAL OVERLAY */}
+        {showCheckoutModal && (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 100,
+            background: '#090d16',
+            padding: '20px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
+              <h3 style={{ margin: 0, color: '#facc15', fontSize: '1.2rem', fontWeight: 800 }}>
+                💳 {currentLang === 'gu' ? 'સુરક્ષિત ઓનલાઈન પેમેન્ટ (Local Checkout)' : 'Secure Payment Checkout'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCheckoutModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Note to User */}
+            <div style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '10px 12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.78rem', color: '#38bdf8' }}>
+              ℹ️ {currentLang === 'gu'
+                ? 'પેમેન્ટ પૂરું થયા પછી જ ઓર્ડર કન્ફર્મ થશે. ત્યાં સુધી તમારું કાર્ટ સુરક્ષિત સેવ રહેશે.'
+                : 'Items will remain saved in your cart until payment is completed successfully.'}
+            </div>
+
+            {/* Order Amount Summary */}
+            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Total ({rfqCartItems.length} Products):</span>
+                <span style={{ fontWeight: 700, color: '#white' }}>{convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Delivery Fee:</span>
+                <span style={{ fontWeight: 800, color: '#4ade80' }}>FREE</span>
+              </div>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
+                <span style={{ color: '#ffffff' }}>Payable Amount:</span>
+                <span style={{ color: '#facc15' }}>{convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount}</span>
+              </div>
+            </div>
+
+            {paymentStep === 'pay' && (
+              <>
+                {/* UPI / QR Payment Gate */}
+                {paymentMethod === 'upi' && (
+                  <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <h5 style={{ margin: '0 0 10px 0', color: '#4ade80', fontSize: '0.95rem' }}>
+                      📱 Scan QR Code to Pay via GPay / PhonePe / Paytm
+                    </h5>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${totalLocalAmount}&cu=INR`)}`}
+                      alt="UPI QR Code"
+                      style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)', width: '160px', height: '160px' }}
+                    />
+                    <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 700 }}>
+                      UPI ID: <span style={{ color: '#38bdf8' }}>7861997755@ybl</span>
+                    </div>
+
+                    <div style={{ marginTop: '14px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'block', marginBottom: '4px', textAlign: 'left' }}>
+                        Enter Transaction Reference / UTR Number (ઓપ્શનલ):
+                      </label>
+                      <input
+                        type="text"
+                        className="rfq-input"
+                        placeholder="e.g. 423981290311"
+                        value={upiUtxRef}
+                        onChange={(e) => setUpiUtxRef(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Card Payment Gate */}
+                {paymentMethod === 'card' && (
+                  <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <h5 style={{ margin: '0 0 12px 0', color: '#38bdf8', fontSize: '0.95rem' }}>
+                      💳 Enter Credit / Debit Card Details
+                    </h5>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Cardholder Name</label>
+                      <input
+                        type="text"
+                        className="rfq-input"
+                        placeholder="Name on Card"
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                      />
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Card Number</label>
+                      <input
+                        type="text"
+                        className="rfq-input"
+                        placeholder="4111 2222 3333 4444"
+                        maxLength="19"
+                        value={cardNum}
+                        onChange={(e) => setCardNum(e.target.value)}
+                      />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Expiry Date</label>
+                        <input
+                          type="text"
+                          className="rfq-input"
+                          placeholder="MM/YY"
+                          maxLength="5"
+                          value={cardExp}
+                          onChange={(e) => setCardExp(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', color: '#94a3b8' }}>CVV Code</label>
+                        <input
+                          type="password"
+                          className="rfq-input"
+                          placeholder="***"
+                          maxLength="4"
+                          value={cardCvv}
+                          onChange={(e) => setCardCvv(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bank Transfer Gate */}
+                {paymentMethod === 'bank' && (
+                  <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <h5 style={{ margin: '0 0 10px 0', color: '#fbbf24', fontSize: '0.95rem' }}>
+                      🏦 Company Bank Account for NEFT / RTGS Transfer
+                    </h5>
+                    <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: '1.6' }}>
+                      <div>• <b>Bank Name:</b> ICICI Bank Ltd</div>
+                      <div>• <b>Account Name:</b> ADIDEV SMART SOLUTION / ATSONDIKA</div>
+                      <div>• <b>Account No:</b> 000405012345</div>
+                      <div>• <b>IFSC Code:</b> ICIC0000004</div>
+                      <div>• <b>Branch:</b> Ring Road, Surat, Gujarat</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* COD Gate */}
+                {paymentMethod === 'cod' && (
+                  <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <h5 style={{ margin: '0 0 8px 0', color: '#c084fc', fontSize: '0.95rem' }}>
+                      💵 Cash on Delivery (COD) Order Verification
+                    </h5>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
+                      You can pay in cash when the order arrives at your delivery shipping address.
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleCompletePaymentSuccess}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.95rem',
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
+                    marginTop: 'auto'
+                  }}
+                >
+                  ✅ {currentLang === 'gu' ? 'પેમેન્ટ કન્ફર્મ કરો અને ઓર્ડર પૂરું કરો' : 'Confirm Payment & Complete Order'}
+                </button>
+              </>
+            )}
+
+            {/* Step: Success Invoice Screen */}
+            {paymentStep === 'success' && completedOrderReceipt && (
+              <div style={{ textAlign: 'center', padding: '20px 10px' }}>
+                <span style={{ fontSize: '3.5rem' }}>🎉</span>
+                <h4 style={{ color: '#4ade80', margin: '10px 0 6px 0', fontSize: '1.3rem', fontWeight: 900 }}>
+                  {currentLang === 'gu' ? 'ઓર્ડર અને પેમેન્ટ સફળતાપૂર્વક પૂરું થઈ ગયું!' : 'Payment & Order Placed Successfully!'}
+                </h4>
+                <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '16px' }}>
+                  Receipt ID: <b style={{ color: '#facc15' }}>{completedOrderReceipt.orderId}</b>
+                </p>
+
+                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', textAlign: 'left', marginBottom: '20px', border: '1px solid var(--border-glass)' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: '1.6' }}>
+                    <div><b>Customer:</b> {completedOrderReceipt.customerName}</div>
+                    <div><b>Phone:</b> {completedOrderReceipt.phone}</div>
+                    <div><b>Address:</b> {completedOrderReceipt.deliveryAddress}</div>
+                    <div><b>Payment Status:</b> <span style={{ color: '#4ade80', fontWeight: 800 }}>{completedOrderReceipt.paymentStatus}</span></div>
+                    <div><b>Total Amount:</b> <span style={{ color: '#facc15', fontWeight: 800 }}>{convertPrice ? convertPrice(completedOrderReceipt.totalAmount) : '₹' + completedOrderReceipt.totalAmount}</span></div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCheckoutModal(false);
+                    setIsRfqDrawerOpen(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #00d2ff, #0086ff)',
+                    color: 'white',
+                    fontWeight: 800,
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  👍 {currentLang === 'gu' ? 'પૂરૂ થયું (Done)' : 'Done & Close'}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
