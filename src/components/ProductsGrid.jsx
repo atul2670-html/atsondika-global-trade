@@ -87,6 +87,18 @@ export default function ProductsGrid() {
   });
 
   const allProds = getAllProducts();
+
+  const getSubProductsForCategory = (catFilter) => {
+    if (!catFilter || catFilter === 'all') return [];
+    return allProds.filter(p => {
+      if (p.category === catFilter || p.parentId === catFilter) return true;
+      const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
+      if (normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
+        if (catFilter === 'dairy' || catFilter === 'agro') return true;
+      }
+      return false;
+    });
+  };
   const q = searchFilterQuery.toLowerCase().trim();
   let filtered = currentCategory === 'all'
     ? allProds
