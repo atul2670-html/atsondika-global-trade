@@ -450,8 +450,85 @@ export default function ProductsGrid() {
           </button>
         </div>
 
-        {/* Products Grid */}
-        <div className="products-grid">
+        {/* Products Grid / List / Compare Container */}
+        {productViewMode === 'compare' && filtered.length > 0 ? (
+          <div style={{ overflowX: 'auto', background: 'rgba(15, 23, 42, 0.85)', borderRadius: '16px', border: '1px solid var(--border-glass)', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', margin: '16px 0' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', fontSize: '0.88rem' }}>
+              <thead>
+                <tr style={{ background: 'rgba(255,255,255,0.06)', borderBottom: '2px solid var(--primary-teal)' }}>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'પ્રોડક્ટ નામ' : 'Product Image & Title'}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કેટેગરી / વિભાગ' : 'Category'}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કિંમત (Price)' : 'Price / MRP'}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'HS Code & સ્પેસિફિકેશન' : 'HS Code & Specs'}</th>
+                  <th style={{ padding: '12px', textAlign: 'center' }}>{currentLang === 'gu' ? 'એક્શન' : 'Action'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((p, idx) => {
+                  const enTitle = (p.names && typeof p.names === 'object') ? (p.names['en'] || p.name || '') : (p.name || '');
+                  const langTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || '') : '';
+                  const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
+                    ? langTitle
+                    : autoTranslateText(enTitle || langTitle, currentLang);
+                  const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
+                  const formattedPrice = tradeMode === 'local' ? (convertPrice ? convertPrice(basePriceInr) : '₹' + basePriceInr) : (p.priceUSD ? convertPrice(p.priceUSD) : 'On Request');
+                  const mrpInr = Math.round(basePriceInr * 1.32);
+
+                  return (
+                    <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <td style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <img src={convertGoogleDriveUrl((p.images && p.images[0]) || p.image || 'images/agro_spices_grains.png')} alt={title} style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '8px' }} />
+                        <div>
+                          <strong style={{ display: 'block', color: 'white', fontSize: '0.92rem' }}>{title}</strong>
+                          <span style={{ fontSize: '0.78rem', color: '#facc15' }}>★★★★☆ (4.8 / 5)</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px' }}>{getMainCategoryBadgeTitle(p)}</td>
+                      <td style={{ padding: '12px' }}>
+                        <div style={{ fontWeight: 900, color: '#4ade80', fontSize: '1rem' }}>{formattedPrice}</div>
+                        {tradeMode === 'local' && (
+                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', textDecoration: 'line-through' }}>
+                            M.R.P: {convertPrice ? convertPrice(mrpInr) : '₹' + mrpInr}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '12px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                        <div>HS Code: <b style={{ color: '#38bdf8' }}>{p.hsCode || '090931'}</b></div>
+                        <div style={{ opacity: 0.85, fontSize: '0.75rem', marginTop: '2px' }}>{p.specifications?.en || 'High Export Quality'}</div>
+                      </td>
+                      <td style={{ padding: '12px', textAlign: 'center' }}>
+                        {tradeMode === 'local' ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              addToRfqCart(p, 1, 'pcs');
+                              setIsRfqDrawerOpen(true);
+                            }}
+                            style={{ background: 'linear-gradient(135deg, #ff9900, #e67e22)', color: '#000', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >
+                            🛒 Add to Cart
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              addToRfqCart(p, 1, 'MT');
+                              setIsRfqDrawerOpen(true);
+                            }}
+                            style={{ background: 'linear-gradient(135deg, #14b8a6, #0d9488)', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >
+                            📲 Request Quote
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className={`products-grid ${productViewMode === 'list' ? 'view-list' : ''}`}>
           {filtered.length === 0 ? (
             <div className="glass-card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 24px' }}>
               <div style={{ fontSize: '3.5rem', marginBottom: '16px' }}>🏢</div>
@@ -985,6 +1062,7 @@ export default function ProductsGrid() {
             })
           )}
         </div>
+        )}
       </div>
     </section>
   );

@@ -2597,5 +2597,65 @@ body.light-theme .modal-card code {
   font-weight: 800 !important;
 }
 
+/* --- MULTI-VIEW MODE TOOLBAR (GRID, LIST, COMPARE) --- */
+.view-mode-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.view-mode-btn.active {
+  background: var(--primary-teal) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(20, 184, 166, 0.4);
+}
+
+/* --- LIST VIEW MODE OVERRIDES --- */
+.products-grid.view-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.products-grid.view-list .local-b2c-card {
+  display: grid !important;
+  grid-template-columns: 240px 1fr !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+.products-grid.view-list .glass-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+.products-grid.view-list .product-img {
+  width: 200px !important;
+  height: 150px !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .products-grid.view-list .local-b2c-card,
+  .products-grid.view-list .glass-card {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+  }
+}
+
 
 
