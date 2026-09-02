@@ -997,8 +997,8 @@ export function AppProvider({ children }) {
           if (Array.isArray(data.customProductsList)) {
             setCustomProductsList(prev => {
               const map = new Map();
-              prev.forEach(p => { if (p && p.id) map.set(p.id, p); });
               data.customProductsList.forEach(p => { if (p && p.id) map.set(p.id, p); });
+              prev.forEach(p => { if (p && p.id) map.set(p.id, p); });
               const merged = sanitizeCustomProductsList(Array.from(map.values()));
               try {
                 localStorage.setItem('custom_added_products_v8', JSON.stringify(merged));
@@ -1011,7 +1011,7 @@ export function AppProvider({ children }) {
           }
           if (data.photoOverrides && typeof data.photoOverrides === 'object') {
             setPhotoOverrides(prev => {
-              const merged = { ...prev, ...data.photoOverrides };
+              const merged = { ...data.photoOverrides, ...prev };
               try { localStorage.setItem('site_product_photo_overrides_v1', JSON.stringify(merged)); } catch(e) {}
               return merged;
             });
