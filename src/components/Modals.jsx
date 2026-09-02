@@ -630,13 +630,23 @@ export default function Modals() {
           setMoq(target.moq || '1 Unit / Container');
           setSpec(typeof target.spec === 'object' ? (target.spec['en'] || target.spec['gu']) : (target.spec || 'ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ'));
           setPackaging(target.packaging || 'Standard Export Packaging');
-          setLocalMrp(target.mrpInr || Math.round((target.localPrice || 999) * 1.32));
-          setLocalPrice(target.localPrice || target.priceInr || '999');
+          const loadedMrp = target.mrpInr || Math.round((target.localPrice || 999) * 1.32);
+          const loadedPrice = target.localPrice || target.priceInr || '999';
+          setLocalMrp(loadedMrp);
+          setLocalPrice(loadedPrice);
           setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
           setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
           setLocalGstRate(target.localGstRate || '18');
           setLocalStock(target.localStock || '100');
-          setCouponBadge(target.couponBadge || '10% OFF Special Offer');
+
+          const mNum = parseFloat(loadedMrp);
+          const pNum = parseFloat(loadedPrice);
+          if (mNum > 0 && pNum > 0 && mNum > pNum) {
+            const calcPct = Math.round(((mNum - pNum) / mNum) * 100);
+            setCouponBadge(`${calcPct}% OFF Special Offer`);
+          } else {
+            setCouponBadge(target.couponBadge || '10% OFF Special Offer');
+          }
           setLocalUnit(target.unit || 'kg');
           setLocalCurrency(target.currency || 'INR');
 
@@ -4394,7 +4404,7 @@ export default function Modals() {
                             const mrp = parseFloat(val);
                             const price = parseFloat(localPrice);
                             if (mrp > 0 && price > 0 && mrp > price) {
-                              const disc = Math.floor(((mrp - price) / mrp) * 100);
+                              const disc = Math.round(((mrp - price) / mrp) * 100);
                               if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
                             }
                           }}
@@ -4418,7 +4428,7 @@ export default function Modals() {
                             const mrp = parseFloat(localMrp);
                             const price = parseFloat(val);
                             if (mrp > 0 && price > 0 && mrp > price) {
-                              const disc = Math.floor(((mrp - price) / mrp) * 100);
+                              const disc = Math.round(((mrp - price) / mrp) * 100);
                               if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
                             }
                           }}

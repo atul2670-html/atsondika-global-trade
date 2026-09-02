@@ -822,7 +822,7 @@ export default function ProductsGrid() {
                 const mrpInr = p.mrpInr || Math.round(basePriceInr * 1.32);
                 const rawDisc = Math.max(0, ((mrpInr - basePriceInr) / mrpInr) * 100);
                 const badgeMatch = (p.couponBadge && typeof p.couponBadge === 'string') ? p.couponBadge.match(/(\d+)\s*%/) : null;
-                const displayDiscountPct = badgeMatch ? parseInt(badgeMatch[1], 10) : (rawDisc > 0 ? Math.floor(rawDisc) : 0);
+                const displayDiscountPct = badgeMatch ? parseInt(badgeMatch[1], 10) : (rawDisc > 0 ? Math.round(rawDisc) : 0);
                 const couponPay = Math.round(basePriceInr * 0.94);
                 const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
                 const reviews = (150 + idx * 132).toLocaleString();
