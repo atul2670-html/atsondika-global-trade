@@ -815,10 +815,15 @@ export default function ProductsGrid() {
               if (tradeMode === 'local') {
                 const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
                 const mrpInr = p.mrpInr || Math.round(basePriceInr * 1.32);
-                const discountPct = Math.round(((mrpInr - basePriceInr) / mrpInr) * 100);
+                const discountPct = Math.max(0, Math.round(((mrpInr - basePriceInr) / mrpInr) * 100));
                 const couponPay = Math.round(basePriceInr * 0.94);
                 const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
                 const reviews = (150 + idx * 132).toLocaleString();
+
+                const currSymbolMap = { INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ' };
+                const itemCurrency = p.currency || 'INR';
+                const currSym = currSymbolMap[itemCurrency] || '₹';
+                const itemUnit = p.unit || 'pcs';
 
                 return (
                   <div key={p.id} id={`prod-card-${p.id}`} className="local-b2c-card" style={{
@@ -959,39 +964,64 @@ export default function ProductsGrid() {
                         </span>
                       </div>
 
-                      {/* Price Section matching Screenshots 3 & 4 */}
+                      {/* Price Section with Exact Currency & Selected Unit */}
                       <div style={{ margin: '4px 0 8px 0' }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F1111' }}>
-                            {convertPrice ? convertPrice(basePriceInr, 'INR') : `₹${basePriceInr.toLocaleString()}`}
+                            {currSym}{basePriceInr.toLocaleString()}
                           </span>
-                          <span style={{ fontSize: '0.74rem', color: '#565959' }}>
-                            ({convertPrice ? convertPrice(Math.round(basePriceInr / 5), 'INR') : `₹${Math.round(basePriceInr / 5)}`}/100 g)
+                          <span style={{ fontSize: '0.76rem', color: '#565959', fontWeight: 800 }}>
+                            / 1 {itemUnit}
                           </span>
                           <span style={{ fontSize: '0.74rem', color: '#565959', textDecoration: 'line-through' }}>
-                            M.R.P.: {convertPrice ? convertPrice(mrpInr, 'INR') : `₹${mrpInr.toLocaleString()}`}
+                            M.R.P.: {currSym}{mrpInr.toLocaleString()}
                           </span>
-                          <span style={{ fontSize: '0.76rem', color: '#CC0C39', fontWeight: 800 }}>
-                            ({discountPct}% off)
-                          </span>
+                          {discountPct > 0 && (
+                            <span style={{ fontSize: '0.76rem', color: '#CC0C39', fontWeight: 800 }}>
+                              ({discountPct}% off)
+                            </span>
+                          )}
                         </div>
 
-                        {/* Coupon Savings Badge */}
-                        <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', fontWeight: 700, display: 'inline-block' }}>
-                          <span style={{ background: '#007600', color: 'white', padding: '0 4px', borderRadius: '2px', marginRight: '4px', fontSize: '0.62rem' }}>You pay</span>
-                          {convertPrice ? convertPrice(couponPay, 'INR') : `₹${couponPay.toLocaleString()}`} with coupon
+                        {/* GST & Stock Badges */}
+                        <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                          {/* Offer Badge */}
+                          {p.couponBadge ? (
+                            <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, display: 'inline-block' }}>
+                              🏷️ {p.couponBadge}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, display: 'inline-block' }}>
+                              <span style={{ background: '#007600', color: 'white', padding: '0 4px', borderRadius: '2px', marginRight: '4px', fontSize: '0.62rem' }}>You pay</span>
+                              {currSym}{couponPay.toLocaleString()} with coupon
+                            </div>
+                          )}
+
+                          {/* GST Rate */}
+                          {p.localGstRate && (
+                            <span style={{ fontSize: '0.68rem', color: '#0284c7', background: '#e0f2fe', border: '1px solid #bae6fd', padding: '1px 6px', borderRadius: '4px', fontWeight: 800 }}>
+                              Incl. {p.localGstRate}% GST
+                            </span>
+                          )}
+
+                          {/* Stock Quantity */}
+                          {p.localStock && (
+                            <span style={{ fontSize: '0.68rem', color: '#16a34a', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                              Stock: {p.localStock} {itemUnit}
+                            </span>
+                          )}
                         </div>
 
                         {/* Delivery & Packing Charge Tag */}
                         <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {parseFloat(p.courierCharge) > 0 ? (
-                            <span style={{ color: '#0284c7', fontWeight: 800 }}>🚚 Courier: ₹{p.courierCharge}</span>
+                            <span style={{ color: '#0284c7', fontWeight: 800 }}>🚚 Courier: {currSym}{p.courierCharge}</span>
                           ) : (
                             <span style={{ color: '#007600', fontWeight: 800 }}>🚚 FREE delivery</span>
                           )}
 
                           {parseFloat(p.packingCharge) > 0 ? (
-                            <span style={{ color: '#d97706', fontWeight: 800 }}>📦 Packing: ₹{p.packingCharge}</span>
+                            <span style={{ color: '#d97706', fontWeight: 800 }}>📦 Packing: {currSym}{p.packingCharge}</span>
                           ) : (
                             <span style={{ color: '#059669', fontWeight: 700 }}>📦 FREE Packing</span>
                           )}

@@ -102,9 +102,9 @@ export default function Navbar() {
     <>
       {/* Live Global Market & Currency Ticker Bar (Collapses on Scroll) */}
       <div className="top-bar" style={{
-        maxHeight: isScrolled ? '0px' : '80px',
+        maxHeight: isScrolled ? '0px' : '120px',
         opacity: isScrolled ? 0 : 1,
-        overflow: 'hidden',
+        overflow: isScrolled ? 'hidden' : 'visible',
         pointerEvents: isScrolled ? 'none' : 'auto',
         transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
         paddingTop: isScrolled ? '0' : undefined,
