@@ -4514,7 +4514,21 @@ export default function Modals() {
                           className="form-control"
                           placeholder="e.g. 10% OFF"
                           value={couponBadge}
-                          onChange={(e) => setCouponBadge(e.target.value)}
+                          onChange={(e) => {
+                            const badgeVal = e.target.value;
+                            setCouponBadge(badgeVal);
+                            const match = badgeVal.match(/(\d+(\.\d+)?)\s*%/);
+                            const mrp = parseFloat(localMrp);
+                            if (match && mrp > 0) {
+                              const pct = parseFloat(match[1]);
+                              if (pct > 0 && pct < 100) {
+                                const calcSelling = Math.round(mrp - (mrp * pct / 100));
+                                if (calcSelling > 0) {
+                                  setLocalPrice(calcSelling.toString());
+                                }
+                              }
+                            }
+                          }}
                           style={{ fontWeight: 800 }}
                         />
                       </div>
