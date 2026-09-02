@@ -820,7 +820,9 @@ export default function ProductsGrid() {
               if (tradeMode === 'local') {
                 const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
                 const mrpInr = p.mrpInr || Math.round(basePriceInr * 1.32);
-                const discountPct = Math.max(0, Math.round(((mrpInr - basePriceInr) / mrpInr) * 100));
+                const rawDisc = Math.max(0, ((mrpInr - basePriceInr) / mrpInr) * 100);
+                const badgeMatch = (p.couponBadge && typeof p.couponBadge === 'string') ? p.couponBadge.match(/(\d+)\s*%/) : null;
+                const displayDiscountPct = badgeMatch ? parseInt(badgeMatch[1], 10) : Math.round(rawDisc);
                 const couponPay = Math.round(basePriceInr * 0.94);
                 const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
                 const reviews = (150 + idx * 132).toLocaleString();
@@ -1082,9 +1084,9 @@ export default function ProductsGrid() {
                           <span style={{ fontSize: '0.74rem', color: '#565959', textDecoration: 'line-through' }}>
                             M.R.P.: {currSym}{mrpInr.toLocaleString()}
                           </span>
-                          {discountPct > 0 && (
+                          {displayDiscountPct > 0 && (
                             <span style={{ fontSize: '0.76rem', color: '#CC0C39', fontWeight: 800 }}>
-                              ({discountPct}% off)
+                              ({displayDiscountPct}% off)
                             </span>
                           )}
                         </div>
