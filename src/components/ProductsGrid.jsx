@@ -103,10 +103,10 @@ export default function ProductsGrid() {
   let filtered = currentCategory === 'all'
     ? allProds
     : allProds.filter(p => {
-        if (p.category === currentCategory) return true;
+        if (p.category === currentCategory || p.parentId === currentCategory) return true;
         const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
-        // Chocolates & Confectionery belong to both 'dairy' and 'agro' tabs!
-        if (normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
+        // Ghee, Butter, Milk, Dairy, Chocolates belong to 'dairy' and 'agro' tabs!
+        if (normTitle.includes('ghee') || normTitle.includes('ઘી') || normTitle.includes('butter') || normTitle.includes('milk') || normTitle.includes('dairy') || normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
           if (currentCategory === 'dairy' || currentCategory === 'agro') return true;
         }
         return false;
@@ -1068,7 +1068,12 @@ export default function ProductsGrid() {
                           }}>
                             <button
                               type="button"
-                              onClick={() => openEditProductModal && openEditProductModal(p)}
+                              onClick={() => {
+                                verifyAdminAccess(() => {
+                                  setEditingProductId(p.id);
+                                  setActiveModal(p.isSub ? 'product_sub' : 'product_main');
+                                });
+                              }}
                               style={{
                                 background: 'rgba(245, 158, 11, 0.12)',
                                 color: '#d97706',

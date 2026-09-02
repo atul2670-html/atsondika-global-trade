@@ -678,7 +678,7 @@ export function AppProvider({ children }) {
 
   // Custom Products with Sanitization
   const [customProductsList, setCustomProductsList] = useState(() => {
-    const keys = ['custom_added_products_v7', 'custom_added_products_v6', 'custom_added_products_master'];
+    const keys = ['custom_added_products_v8', 'custom_added_products_v7', 'custom_added_products_v6', 'custom_added_products_master'];
     let combined = [];
     const seenIds = new Set();
     keys.forEach(k => {
@@ -706,6 +706,8 @@ export function AppProvider({ children }) {
   // Persistent Storage effect for customProductsList across localStorage & IndexedDB
   useEffect(() => {
     try {
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(customProductsList));
+      localStorage.setItem('custom_added_products_v7', JSON.stringify(customProductsList));
       localStorage.setItem('custom_added_products_v6', JSON.stringify(customProductsList));
       localStorage.setItem('custom_added_products_master', JSON.stringify(customProductsList));
     } catch(e) {
