@@ -4403,9 +4403,9 @@ export default function Modals() {
                             setLocalMrp(val);
                             const mrp = parseFloat(val);
                             const price = parseFloat(localPrice);
-                            if (mrp > 0 && price > 0 && mrp > price) {
+                            if (mrp > 0 && price > 0 && mrp >= price) {
                               const disc = Math.round(((mrp - price) / mrp) * 100);
-                              if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
+                              setCouponBadge(`${disc}% OFF Special Offer`);
                             }
                           }}
                           style={{ fontWeight: 800, color: '#ef4444' }}
@@ -4427,9 +4427,9 @@ export default function Modals() {
                             setLocalPrice(val);
                             const mrp = parseFloat(localMrp);
                             const price = parseFloat(val);
-                            if (mrp > 0 && price > 0 && mrp > price) {
+                            if (mrp > 0 && price > 0 && mrp >= price) {
                               const disc = Math.round(((mrp - price) / mrp) * 100);
-                              if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
+                              setCouponBadge(`${disc}% OFF Special Offer`);
                             }
                           }}
                           style={{ fontWeight: 900, color: '#4ade80' }}
@@ -4521,7 +4521,7 @@ export default function Modals() {
                             const mrp = parseFloat(localMrp);
                             if (match && mrp > 0) {
                               const pct = parseFloat(match[1]);
-                              if (pct > 0 && pct < 100) {
+                              if (pct >= 0 && pct < 100) {
                                 const calcSelling = Math.round(mrp - (mrp * pct / 100));
                                 if (calcSelling > 0) {
                                   setLocalPrice(calcSelling.toString());
