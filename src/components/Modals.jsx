@@ -4388,7 +4388,16 @@ export default function Modals() {
                           className="form-control"
                           placeholder="e.g. 1499"
                           value={localMrp}
-                          onChange={(e) => setLocalMrp(e.target.value)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setLocalMrp(val);
+                            const mrp = parseFloat(val);
+                            const price = parseFloat(localPrice);
+                            if (mrp > 0 && price > 0 && mrp > price) {
+                              const disc = Math.floor(((mrp - price) / mrp) * 100);
+                              if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
+                            }
+                          }}
                           style={{ fontWeight: 800, color: '#ef4444' }}
                         />
                       </div>
@@ -4403,7 +4412,16 @@ export default function Modals() {
                           className="form-control"
                           placeholder="e.g. 999"
                           value={localPrice}
-                          onChange={(e) => setLocalPrice(e.target.value)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setLocalPrice(val);
+                            const mrp = parseFloat(localMrp);
+                            const price = parseFloat(val);
+                            if (mrp > 0 && price > 0 && mrp > price) {
+                              const disc = Math.floor(((mrp - price) / mrp) * 100);
+                              if (disc > 0) setCouponBadge(`${disc}% OFF Special Offer`);
+                            }
+                          }}
                           style={{ fontWeight: 900, color: '#4ade80' }}
                         />
                       </div>
