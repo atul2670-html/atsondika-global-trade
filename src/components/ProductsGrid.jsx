@@ -807,7 +807,12 @@ export default function ProductsGrid() {
                 ? langSpec
                 : autoTranslateText(enSpec || langSpec || 'High Quality Premium Product', currentLang);
 
-              const rawImgs = (p.images && p.images.length > 0) ? p.images : [p.image || 'images/agro_spices_grains.png'];
+              let rawImgs = (p.images && p.images.length > 0) ? [...p.images] : [p.image || 'images/agro_spices_grains.png'];
+              if (rawImgs.length === 1) {
+                if (rawImgs[0].includes('agro')) rawImgs.push('images/hero_export_shipping.png');
+                else if (rawImgs[0].includes('industrial')) rawImgs.push('images/used_industrial_machinery.png');
+                else rawImgs.push('images/agro_spices_grains.png');
+              }
               const imgs = rawImgs.map(convertGoogleDriveUrl);
               const activeIdx = (carouselIndices[p.id] || 0) % imgs.length;
 
@@ -873,7 +878,7 @@ export default function ProductsGrid() {
                       </div>
                     )}
 
-                    {/* Image Container with Watch Badge Overlay */}
+                    {/* Image Container with Watch Badge Overlay & Left/Right Photo Carousel Buttons */}
                     <div
                       style={{
                         background: '#ffffff',
@@ -902,6 +907,107 @@ export default function ProductsGrid() {
                         style={{ maxHeight: '175px', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
                         onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
                       />
+
+                      {/* Left & Right Photo Carousel Scroll Buttons for Local B2C Card */}
+                      {imgs.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCarouselMove(p.id, 'prev', imgs.length);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              left: '8px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              zIndex: 15,
+                              background: 'rgba(15, 23, 42, 0.75)',
+                              color: '#ffffff',
+                              border: '1px solid rgba(255, 255, 255, 0.4)',
+                              borderRadius: '50%',
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1.2rem',
+                              fontWeight: 900,
+                              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                              transition: 'all 0.2s ease'
+                            }}
+                            title="Previous Photo"
+                          >
+                            ‹
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCarouselMove(p.id, 'next', imgs.length);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              right: '8px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              zIndex: 15,
+                              background: 'rgba(15, 23, 42, 0.75)',
+                              color: '#ffffff',
+                              border: '1px solid rgba(255, 255, 255, 0.4)',
+                              borderRadius: '50%',
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '1.2rem',
+                              fontWeight: 900,
+                              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                              transition: 'all 0.2s ease'
+                            }}
+                            title="Next Photo"
+                          >
+                            ›
+                          </button>
+
+                          {/* Dots Indicator */}
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '8px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            display: 'flex',
+                            gap: '4px',
+                            zIndex: 15,
+                            background: 'rgba(0,0,0,0.45)',
+                            padding: '2px 8px',
+                            borderRadius: '10px'
+                          }}>
+                            {imgs.map((_, i) => (
+                              <span
+                                key={i}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCarouselIndices(prev => ({ ...prev, [p.id]: i }));
+                                }}
+                                style={{
+                                  width: i === activeIdx ? '10px' : '5px',
+                                  height: '5px',
+                                  borderRadius: '3px',
+                                  background: i === activeIdx ? '#2dd4bf' : 'rgba(255,255,255,0.6)',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
 
                       {/* Watch Badge Overlay matching Screenshot 3 */}
                       <div style={{
