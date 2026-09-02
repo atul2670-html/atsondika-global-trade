@@ -914,15 +914,15 @@ export function AppProvider({ children }) {
         body: JSON.stringify(payload)
       }).catch(() => {});
 
-      // 3. AUTOMATED GLOBAL CLOUD SYNC (Secondary Cloud Database Backup)
-      await pushGlobalCloudSync(payload);
+      // 3. AUTOMATED GLOBAL CLOUD SYNC (Secondary Cloud Database Backup - Async Fire-and-Forget for 0ms Lightning Speed)
+      pushGlobalCloudSync(payload).catch(() => {});
 
       // 4. Broadcast to all open local browser windows/tabs
       realtimeEngine.broadcast('PRODUCT_UPDATE', { productName: overrides.productName || 'Export Item' });
     } catch(e) {
       console.warn('Network sync POST failed:', e);
     } finally {
-      setTimeout(() => { isSyncing.current = false; }, 2500);
+      setTimeout(() => { isSyncing.current = false; }, 200);
     }
   };
 
