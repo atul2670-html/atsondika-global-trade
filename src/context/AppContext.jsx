@@ -540,8 +540,13 @@ export function AppProvider({ children }) {
 
   // Deleted built-in IDs
   const [deletedBuiltInIds, setDeletedBuiltInIds] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('deleted_built_in_ids') || '[]'); }
-    catch(e) { return []; }
+    try {
+      const stored = JSON.parse(localStorage.getItem('deleted_built_in_ids') || '[]');
+      if (Array.isArray(stored)) {
+        return stored.filter(id => !['dairy', 'agro', 'textiles', 'garments', 'new_machinery', 'used_machinery', 'packaging', 'eco_packaging', 'industrial', 'apparel'].includes(id));
+      }
+    } catch(e) {}
+    return [];
   });
 
   // SANITIZATION HELPER: Deduplicate tabs & move Grains, Seeds, Spices, Turmeric to 'agro' category + purge corrupted spec strings
@@ -1101,14 +1106,14 @@ export function AppProvider({ children }) {
   const getAllProducts = () => {
     const customIds = new Set(customProductsList.map(p => p.id));
     const activeBuiltIn = initialProductsData
-      .filter(p => !deletedBuiltInIds.includes(p.id) && !deletedBuiltInIds.includes(p.category) && !deletedBuiltInIds.includes(p.parentId))
+      .filter(p => !deletedBuiltInIds.includes(p.id))
       .filter(p => !customIds.has(p.id))
       .map(p => ({ ...p, companyId: p.companyId || 'comp_1' }));
 
     const rawList = [...activeBuiltIn, ...customProductsList];
 
-    // Exclude any product whose ID, category, or parentId is present in deletedBuiltInIds
-    const nonDeleted = rawList.filter(p => !deletedBuiltInIds.includes(p.id) && !deletedBuiltInIds.includes(p.category) && !deletedBuiltInIds.includes(p.parentId));
+    // Exclude any product whose specific ID is present in deletedBuiltInIds
+    const nonDeleted = rawList.filter(p => !deletedBuiltInIds.includes(p.id));
 
     // Filter products strictly belonging to the active company
     const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
