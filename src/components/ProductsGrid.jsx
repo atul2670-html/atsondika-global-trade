@@ -1025,6 +1025,62 @@ export default function ProductsGrid() {
                         >
                           {currentLang === 'gu' ? '🛒 અત્યારે ખરીદો / કાર્ટમાં ઉમેરો' : 'Add to cart'}
                         </button>
+
+                        {/* ADMIN EDIT & DELETE CONTROLS (VISIBLE ONLY WHEN LOGGED IN AS ADMIN) */}
+                        {isAdminLoggedIn && (
+                          <div style={{
+                            marginTop: '10px',
+                            paddingTop: '8px',
+                            borderTop: '1px dashed #e5e7eb',
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: '8px'
+                          }}>
+                            <button
+                              type="button"
+                              onClick={() => openEditProductModal && openEditProductModal(p)}
+                              style={{
+                                background: 'rgba(245, 158, 11, 0.12)',
+                                color: '#d97706',
+                                border: '1px solid rgba(245, 158, 11, 0.4)',
+                                borderRadius: '8px',
+                                padding: '6px 10px',
+                                fontSize: '0.78rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px'
+                              }}
+                              title="Edit Sub-Product Details"
+                            >
+                              ✏️ {currentLang === 'gu' ? 'એડિટ પ્રોડક્ટ' : 'Edit Product'}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => deleteProduct && deleteProduct(p.id)}
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.12)',
+                                color: '#dc2626',
+                                border: '1px solid rgba(239, 68, 68, 0.4)',
+                                borderRadius: '8px',
+                                padding: '6px 10px',
+                                fontSize: '0.78rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px'
+                              }}
+                              title="Delete Product from Catalog"
+                            >
+                              🗑️ {currentLang === 'gu' ? 'ડિલીટ' : 'Delete'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

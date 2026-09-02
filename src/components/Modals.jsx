@@ -459,6 +459,8 @@ export default function Modals() {
   const [localGstRate, setLocalGstRate] = useState('18');
   const [localStock, setLocalStock] = useState('100');
   const [couponBadge, setCouponBadge] = useState('10% OFF Special Offer');
+  const [localUnit, setLocalUnit] = useState('kg');
+  const [localCurrency, setLocalCurrency] = useState('INR');
 
   // Live HS Code Search State
   const [hsSearchQuery, setHsSearchQuery] = useState('');
@@ -635,6 +637,8 @@ export default function Modals() {
           setLocalGstRate(target.localGstRate || '18');
           setLocalStock(target.localStock || '100');
           setCouponBadge(target.couponBadge || '10% OFF Special Offer');
+          setLocalUnit(target.unit || 'kg');
+          setLocalCurrency(target.currency || 'INR');
 
           let imgs = [];
           if (target.images && target.images.length > 0) {
@@ -664,6 +668,8 @@ export default function Modals() {
       setLocalGstRate('18');
       setLocalStock('100');
       setCouponBadge('10% OFF Special Offer');
+      setLocalUnit('kg');
+      setLocalCurrency('INR');
       setImageUrls(['images/agro_spices_grains.png']);
       setNewUrlInput('');
       setHsSearchQuery('');
@@ -3972,6 +3978,8 @@ export default function Modals() {
                     localGstRate: parseFloat(localGstRate) || 18,
                     localStock: parseInt(localStock) || 100,
                     couponBadge: couponBadge || '10% OFF Special Offer',
+                    unit: localUnit || 'kg',
+                    currency: localCurrency || 'INR',
                     isCustom: true
                   });
                   alert(`✅ Sub-Product "${baseEnglishName}" with International HS Code "${hsCode}" saved successfully!`);
@@ -4481,6 +4489,56 @@ export default function Modals() {
                           onChange={(e) => setCouponBadge(e.target.value)}
                           style={{ fontWeight: 800 }}
                         />
+                      </div>
+                    </div>
+
+                    {/* Unit Selection & Currency Selection Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                      {/* Product Unit Selection */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          📐 Product Unit (યુનિટ પસંદગી) *
+                        </label>
+                        <select
+                          className="form-control"
+                          value={localUnit}
+                          onChange={(e) => setLocalUnit(e.target.value)}
+                          style={{ fontWeight: 800, background: '#0f172a', color: '#facc15', border: '1px solid rgba(250, 204, 21, 0.5)' }}
+                        >
+                          <option value="kg">kg (કિલોગ્રામ - Kilograms)</option>
+                          <option value="pcs">pcs (પીસ - Pieces / Garments)</option>
+                          <option value="gm">gm (ગ્રામ - Grams / Spices)</option>
+                          <option value="Sets">Sets (સેટ - Dress / Punjabi Suits)</option>
+                          <option value="Pairs">Pairs (જોડી - Shoes / Gloves)</option>
+                          <option value="Dozen">Dozen (ડઝન - 12 Pcs)</option>
+                          <option value="Litre">Litre (લીટર - Liquids / Ghee)</option>
+                          <option value="Box">Box (બોક્સ / ખોખું)</option>
+                          <option value="Tin">Tin (ડબ્બો / 15kg Ghee)</option>
+                          <option value="Packet">Packet (પેકેટ / Pouches)</option>
+                          <option value="Bags">Bags (કોથળા / Jute Bags)</option>
+                          <option value="Meter">Meter (મીટર / Fabric)</option>
+                          <option value="Rolls">Rolls (રોલ / Textile)</option>
+                          <option value="MT">MT (મીટ્રિક ટન - Metric Ton)</option>
+                        </select>
+                      </div>
+
+                      {/* Pricing Currency Selection */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                          💱 Pricing Currency (કરન્સી સિલેક્શન) *
+                        </label>
+                        <select
+                          className="form-control"
+                          value={localCurrency}
+                          onChange={(e) => setLocalCurrency(e.target.value)}
+                          style={{ fontWeight: 800, background: '#0f172a', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.5)' }}
+                        >
+                          <option value="INR">🇮🇳 ₹ INR (Indian Rupee)</option>
+                          <option value="USD">🇺🇸 $ USD (US Dollar)</option>
+                          <option value="EUR">🇪🇺 € EUR (Euro)</option>
+                          <option value="GBP">🇬🇧 £ GBP (British Pound)</option>
+                          <option value="AED">🇦🇪 د.إ AED (UAE Dirham)</option>
+                        </select>
                       </div>
                     </div>
                   </div>
