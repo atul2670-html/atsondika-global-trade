@@ -805,6 +805,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     try {
       const sanitized = sanitizeCustomProductsList(customProductsList);
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(sanitized));
       localStorage.setItem('custom_added_products_master', JSON.stringify(sanitized));
       localStorage.setItem('custom_added_products_v7', JSON.stringify(sanitized));
       localStorage.setItem('custom_added_products_v6', JSON.stringify(sanitized));
@@ -1000,6 +1001,7 @@ export function AppProvider({ children }) {
               data.customProductsList.forEach(p => { if (p && p.id) map.set(p.id, p); });
               const merged = sanitizeCustomProductsList(Array.from(map.values()));
               try {
+                localStorage.setItem('custom_added_products_v8', JSON.stringify(merged));
                 localStorage.setItem('custom_added_products_v7', JSON.stringify(merged));
                 localStorage.setItem('custom_added_products_v6', JSON.stringify(merged));
                 localStorage.setItem('custom_added_products_master', JSON.stringify(merged));
@@ -1216,6 +1218,7 @@ export function AppProvider({ children }) {
     }
     setCustomProductsList(nextProductsList);
     try {
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(nextProductsList));
       localStorage.setItem('custom_added_products_v7', JSON.stringify(nextProductsList));
       localStorage.setItem('custom_added_products_v6', JSON.stringify(nextProductsList));
       localStorage.setItem('custom_added_products_master', JSON.stringify(nextProductsList));
@@ -1274,6 +1277,7 @@ export function AppProvider({ children }) {
         });
         setCustomProductsList(nextProducts);
         try {
+          localStorage.setItem('custom_added_products_v8', JSON.stringify(nextProducts));
           localStorage.setItem('custom_added_products_master', JSON.stringify(nextProducts));
           localStorage.setItem('custom_added_products_v7', JSON.stringify(nextProducts));
           localStorage.setItem('custom_added_products_v6', JSON.stringify(nextProducts));
@@ -1723,6 +1727,7 @@ export function AppProvider({ children }) {
     setMerchantProductsList(nextMerchantProds);
 
     try {
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(nextCustom));
       localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
       localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
     } catch(e) {}
