@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import SearchableCurrencySelect from './SearchableCurrencySelect';
 
 export default function RfqCartDrawer() {
   const {
@@ -12,6 +13,8 @@ export default function RfqCartDrawer() {
     clearRfqCart,
     convertPrice,
     currentCurrency,
+    setCurrentCurrency,
+    currenciesList,
     currentLang,
     activeCompany,
     tradeMode,
@@ -568,10 +571,14 @@ export default function RfqCartDrawer() {
                         </div>
 
                         <div className="rfq-form-group">
-                          <label>Currency</label>
-                          <div style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700 }}>
-                            {currentCurrency.flag} {currentCurrency.code} ({currentCurrency.symbol})
-                          </div>
+                          <SearchableCurrencySelect
+                            label={currentLang === 'gu' ? 'કરન્સી (Currency)' : 'Currency'}
+                            value={currentCurrency}
+                            currenciesList={currenciesList}
+                            onChange={(selectedObj) => {
+                              if (setCurrentCurrency) setCurrentCurrency(selectedObj);
+                            }}
+                          />
                         </div>
                       </div>
                     )}
