@@ -376,7 +376,7 @@ export default function RfqCartDrawer() {
                   <>
                     <div className="rfq-form-group">
                       <label style={{ fontWeight: 800, color: '#38bdf8' }}>
-                        🚚 {currentLang === 'gu' ? 'ડિલિવરી એડ્રેસ (Delivery Shipping Address)' : 'Delivery Shipping Address'}
+                        🚚 {currentLang === 'gu' ? 'બાયર ડિલિવરી સરનામું (Buyer Delivery Shipping Address)' : 'Buyer Delivery Shipping Address'}
                       </label>
                       <textarea
                         className="rfq-textarea"
@@ -592,21 +592,21 @@ export default function RfqCartDrawer() {
                   </>
                 )}
 
-                {/* Common Name, Phone, Email fields */}
+                {/* Common Buyer Name, Phone, Email fields */}
                 <div className="rfq-form-group">
-                  <label>{currentLang === 'gu' ? 'તમારું નામ (Your Name)' : 'Your Name / Business Name'}</label>
+                  <label>👤 {currentLang === 'gu' ? 'બાયરનું નામ / કંપનીનું નામ (Buyer Name / Business Name)' : 'Buyer Name / Business Name'}</label>
                   <input
                     type="text"
                     className="rfq-input"
                     value={buyerName}
                     onChange={(e) => setBuyerName(e.target.value)}
-                    placeholder={currentLang === 'gu' ? 'તમારું નામ લખો' : 'Enter your name'}
+                    placeholder={currentLang === 'gu' ? 'બાયરનું નામ લખો' : 'Enter buyer name'}
                   />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div className="rfq-form-group">
-                    <label>{currentLang === 'gu' ? 'મોબાઈલ / વોટ્સએપ' : 'Phone / WhatsApp'}</label>
+                    <label>📱 {currentLang === 'gu' ? 'બાયર મોબાઈલ / વોટ્સએપ (Buyer Phone)' : 'Buyer Phone / WhatsApp'}</label>
                     <input
                       type="text"
                       className="rfq-input"
@@ -617,7 +617,7 @@ export default function RfqCartDrawer() {
                   </div>
 
                   <div className="rfq-form-group">
-                    <label>{currentLang === 'gu' ? 'ઈમેલ (Email)' : 'Email Address'}</label>
+                    <label>✉️ {currentLang === 'gu' ? 'બાયર ઈમેલ (Buyer Email)' : 'Buyer Email Address'}</label>
                     <input
                       type="email"
                       className="rfq-input"
