@@ -5,12 +5,14 @@ export default function ContactForm() {
   const {
     t, currentLang, selectedRfqProduct, setSelectedRfqProduct,
     selectedRfqProducts, setSelectedRfqProducts, addRfqProduct, removeRfqProduct, clearRfqProducts,
-    activeCompany, getMainCategoryList, getAllProducts, registerCustomer
+    activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems
   } = useApp();
 
-  const activeProducts = (selectedRfqProducts && selectedRfqProducts.length > 0)
-    ? selectedRfqProducts
-    : (selectedRfqProduct ? [selectedRfqProduct] : []);
+  const activeProducts = (rfqCartItems && rfqCartItems.length > 0)
+    ? rfqCartItems
+    : ((selectedRfqProducts && selectedRfqProducts.length > 0)
+      ? selectedRfqProducts
+      : (selectedRfqProduct ? [selectedRfqProduct] : []));
 
   const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
 
@@ -43,15 +45,17 @@ export default function ContactForm() {
       const autoProductCat = matchedCat ? matchedCat.nameEn : (categories[0]?.nameEn || 'Agro Commodities (Spices, Rice, Oilseeds)');
 
       const lines = activeProducts.map((p, idx) => {
-        const pName = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Product';
+        const pName = p.names?.[currentLang] || p.names?.en || p.names?.gu || p.name || 'Product';
         const hs = p.hsCode ? ` (HS Code: ${p.hsCode})` : '';
-        return `${idx + 1}. ${pName}${hs} | MOQ: ${p.moq || '1 Container'} | Specs: ${typeof p.spec === 'string' ? p.spec : 'Export Quality'}`;
+        const qtyStr = p.quantity ? ` | Required Quantity: ${p.quantity} ${p.unit || 'MT'}` : '';
+        const specStr = typeof p.spec === 'string' ? ` | Specs: ${p.spec}` : ' | Export Premium Quality';
+        return `${idx + 1}. ${pName}${hs}${qtyStr}${specStr}`;
       });
 
       setFormData(prev => ({
         ...prev,
         product: autoProductCat,
-        msg: `Inquiry for ${activeProducts.length} Selected Product(s):\n` + lines.join('\n')
+        msg: `🌐 OFFICIAL EXPORT RFQ / INQUIRY SPECIFICATIONS (${activeProducts.length} Selected Items):\n` + lines.join('\n')
       }));
     }
   }, [activeProducts.length, currentLang, getMainCategoryList]);

@@ -19,7 +19,8 @@ export default function RfqCartDrawer() {
     activeCompany,
     tradeMode,
     showLiveToast,
-    paymentGatewaysConfig
+    paymentGatewaysConfig,
+    setSelectedRfqProducts
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -812,9 +813,12 @@ export default function RfqCartDrawer() {
               <button
                 type="button"
                 onClick={() => {
+                  if (setSelectedRfqProducts) setSelectedRfqProducts([...rfqCartItems]);
                   setIsRfqDrawerOpen(false);
                   const contactSec = document.getElementById('contact');
-                  if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+                  if (contactSec) {
+                    contactSec.scrollIntoView({ behavior: 'smooth' });
+                  }
                 }}
                 style={{
                   width: '100%',
