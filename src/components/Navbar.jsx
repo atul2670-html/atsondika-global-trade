@@ -373,31 +373,34 @@ export default function Navbar() {
               <li><a href="#branches" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_branches}</a></li>
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>            </ul>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {isScrolled && (
-                <button
-                  type="button"
-                  className="nav-rfq-cart-btn"
-                  style={{
-                    background: tradeMode === 'local' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'linear-gradient(135deg, #059669, #047857)',
-                    color: '#ffffff',
-                    padding: '5px 12px',
-                    borderRadius: '20px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)'
-                  }}
-                  onClick={() => setIsRfqDrawerOpen(true)}
-                  title="View Shopping Cart"
-                >
-                  {tradeMode === 'local' ? '🛒' : '🌐'} <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 6px', borderRadius: '10px', fontSize: '0.72rem' }}>{rfqCartItems.length}</span>
-                </button>
-              )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px' }}>
+              <button
+                type="button"
+                className="btn-primary nav-rfq-cart-btn"
+                style={{
+                  padding: '6px 14px',
+                  fontSize: '0.82rem',
+                  fontWeight: 900,
+                  borderRadius: '20px',
+                  background: tradeMode === 'local' ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                  border: '1px solid ' + (tradeMode === 'local' ? 'rgba(59,130,246,0.5)' : 'rgba(52,211,153,0.5)'),
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 0 14px ' + (tradeMode === 'local' ? 'rgba(37,99,235,0.5)' : 'rgba(16,185,129,0.5)'),
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setIsRfqDrawerOpen(true)}
+                title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
+              >
+                <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
+                <span>{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
+                <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
+                  {rfqCartItems.length}
+                </span>
+              </button>
 
               <button type="button" className="mobile-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 ☰
