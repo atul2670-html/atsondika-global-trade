@@ -36,7 +36,12 @@ export default function RfqCartDrawer() {
   const [billingAddress, setBillingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Payment Checkout System States
+  // Payment Checkout System States & Validation Refs
+  const buyerNameInputRef = React.useRef(null);
+  const buyerPhoneInputRef = React.useRef(null);
+  const [formErrorMsg, setFormErrorMsg] = useState('');
+  const [highlightField, setHighlightField] = useState('');
+
   const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'bank' | 'cod'
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [upiUtxRef, setUpiUtxRef] = useState('');
@@ -67,18 +72,36 @@ export default function RfqCartDrawer() {
   // Trigger Payment Modal for Local & Global Trade
   const handleInitiatePayment = () => {
     if (rfqCartItems.length === 0) {
-      alert(currentLang === 'gu' ? '🛒 તમારું કાર્ટ ખાલી છે!' : '🛒 Your Cart is empty!');
+      const msg = currentLang === 'gu' ? '🛒 તમારું કાર્ટ ખાલી છે! પહેલાં પ્રોડક્ટ્સ ઉમેરો.' : '🛒 Your Cart is empty! Please add products first.';
+      setFormErrorMsg(msg);
+      if (showLiveToast) showLiveToast(msg, 'error');
       return;
     }
     if (!buyerName || buyerName.trim().length < 2) {
-      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું નામ (Buyer Name) લખો.' : '⚠️ Please enter your name.');
+      const msg = currentLang === 'gu' ? '⚠️ કૃપા કરીને આગળ વધવા માટે તમારું નામ (Buyer Name) અહિયાં લખો.' : '⚠️ Please enter your name (Buyer Name) here to proceed.';
+      setFormErrorMsg(msg);
+      setHighlightField('buyerName');
+      if (showLiveToast) showLiveToast(msg, 'error');
+      if (buyerNameInputRef.current) {
+        buyerNameInputRef.current.focus();
+        buyerNameInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
     if (!buyerPhone || buyerPhone.trim().length < 8) {
-      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારો મોબાઈલ / વોટ્સએપ નંબર લખો.' : '⚠️ Please enter your phone/WhatsApp number.');
+      const msg = currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારો વાસ્તવિક મોબાઈલ / વોટ્સએપ નંબર અહિયાં લખો.' : '⚠️ Please enter your phone/WhatsApp number here.';
+      setFormErrorMsg(msg);
+      setHighlightField('buyerPhone');
+      if (showLiveToast) showLiveToast(msg, 'error');
+      if (buyerPhoneInputRef.current) {
+        buyerPhoneInputRef.current.focus();
+        buyerPhoneInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
+    setFormErrorMsg('');
+    setHighlightField('');
     setPaymentStep('pay');
     setShowCheckoutModal(true);
   };
@@ -155,7 +178,20 @@ export default function RfqCartDrawer() {
   // WhatsApp RFQ for Global Export Trade
   const handleSendRfqWhatsApp = () => {
     if (rfqCartItems.length === 0) {
-      alert('🛒 Your Cart is empty! Add products first.');
+      const msg = currentLang === 'gu' ? '🛒 તમારું કાર્ટ ખાલી છે! પહેલાં પ્રોડક્ટ્સ ઉમેરો.' : '🛒 Your Cart is empty! Please add products first.';
+      setFormErrorMsg(msg);
+      if (showLiveToast) showLiveToast(msg, 'error');
+      return;
+    }
+    if (!buyerName || buyerName.trim().length < 2) {
+      const msg = currentLang === 'gu' ? '⚠️ કૃપા કરીને વોટ્સએપ ક્વોટેશન માટે તમારું નામ (Buyer Name) અહિયાં લખો.' : '⚠️ Please enter your name (Buyer Name) here to proceed.';
+      setFormErrorMsg(msg);
+      setHighlightField('buyerName');
+      if (showLiveToast) showLiveToast(msg, 'error');
+      if (buyerNameInputRef.current) {
+        buyerNameInputRef.current.focus();
+        buyerNameInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
@@ -605,27 +641,72 @@ export default function RfqCartDrawer() {
                   </>
                 )}
 
+                {/* IN-DRAWER FLASHING ERROR ALERT BANNER */}
+                {formErrorMsg && (
+                  <div style={{
+                    background: 'rgba(239, 68, 68, 0.16)',
+                    border: '1px solid rgba(239, 68, 68, 0.5)',
+                    color: '#fca5a5',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    marginBottom: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 0 16px rgba(239, 68, 68, 0.3)'
+                  }}>
+                    <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+                    <span>{formErrorMsg}</span>
+                  </div>
+                )}
+
                 {/* Common Buyer Name, Phone, Email fields */}
                 <div className="rfq-form-group">
-                  <label>👤 {currentLang === 'gu' ? 'બાયરનું નામ / કંપનીનું નામ (Buyer Name / Business Name)' : 'Buyer Name / Business Name'}</label>
+                  <label style={{ color: highlightField === 'buyerName' ? '#f87171' : undefined, fontWeight: highlightField === 'buyerName' ? 900 : undefined }}>
+                    👤 {currentLang === 'gu' ? 'બાયરનું નામ / કંપનીનું નામ (Buyer Name / Business Name)' : 'Buyer Name / Business Name'}
+                  </label>
                   <input
+                    ref={buyerNameInputRef}
                     type="text"
                     className="rfq-input"
                     value={buyerName}
-                    onChange={(e) => setBuyerName(e.target.value)}
+                    onChange={(e) => {
+                      setBuyerName(e.target.value);
+                      if (formErrorMsg) setFormErrorMsg('');
+                      if (highlightField) setHighlightField('');
+                    }}
                     placeholder={currentLang === 'gu' ? 'બાયરનું નામ લખો' : 'Enter buyer name'}
+                    style={{
+                      borderColor: highlightField === 'buyerName' ? '#ef4444' : undefined,
+                      boxShadow: highlightField === 'buyerName' ? '0 0 14px rgba(239, 68, 68, 0.6)' : undefined,
+                      background: highlightField === 'buyerName' ? 'rgba(239, 68, 68, 0.08)' : undefined
+                    }}
                   />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div className="rfq-form-group">
-                    <label>📱 {currentLang === 'gu' ? 'બાયર મોબાઈલ / વોટ્સએપ (Buyer Phone)' : 'Buyer Phone / WhatsApp'}</label>
+                    <label style={{ color: highlightField === 'buyerPhone' ? '#f87171' : undefined, fontWeight: highlightField === 'buyerPhone' ? 900 : undefined }}>
+                      📱 {currentLang === 'gu' ? 'બાયર મોબાઈલ / વોટ્સએપ (Buyer Phone)' : 'Buyer Phone / WhatsApp'}
+                    </label>
                     <input
+                      ref={buyerPhoneInputRef}
                       type="text"
                       className="rfq-input"
                       value={buyerPhone}
-                      onChange={(e) => setBuyerPhone(e.target.value)}
+                      onChange={(e) => {
+                        setBuyerPhone(e.target.value);
+                        if (formErrorMsg) setFormErrorMsg('');
+                        if (highlightField) setHighlightField('');
+                      }}
                       placeholder="+91 98765 ..."
+                      style={{
+                        borderColor: highlightField === 'buyerPhone' ? '#ef4444' : undefined,
+                        boxShadow: highlightField === 'buyerPhone' ? '0 0 14px rgba(239, 68, 68, 0.6)' : undefined,
+                        background: highlightField === 'buyerPhone' ? 'rgba(239, 68, 68, 0.08)' : undefined
+                      }}
                     />
                   </div>
 
