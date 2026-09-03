@@ -172,6 +172,17 @@ export default function OrderTrackerModal() {
                   <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#38bdf8' }}>{activeOrder.eta}</div>
                 </div>
               </div>
+
+              {/* SKYDO GLOBAL INWARD REMITTANCE & FIRA STATUS BADGE */}
+              <div style={{ marginTop: '14px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#6ee7b7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong style={{ color: 'white', display: 'block' }}>🌐 Skydo B2B Inward Remittance Verified</strong>
+                  <span>RBI PA-CB Certified • 0% Forex Markup • FIRA Receipt Issued</span>
+                </div>
+                <span style={{ background: 'rgba(52,211,153,0.2)', color: '#34d399', padding: '4px 10px', borderRadius: '8px', fontWeight: 800, fontSize: '0.75rem' }}>
+                  ✓ FIRA Ready
+                </span>
+              </div>
             </div>
 
             {/* Progress Bar */}
