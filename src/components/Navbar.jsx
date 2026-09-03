@@ -628,34 +628,6 @@ export default function Navbar() {
                 📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
               </button>
 
-              {/* 2. Global B2B Export & Local Trade Cart Button (PERMANENTLY VISIBLE IN HEADER) */}
-              <button
-                type="button"
-                className="btn-primary nav-rfq-cart-btn"
-                style={{
-                  padding: '6px 14px',
-                  fontSize: '0.82rem',
-                  fontWeight: 900,
-                  borderRadius: '20px',
-                  background: tradeMode === 'local' ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                  border: '1px solid ' + (tradeMode === 'local' ? 'rgba(59,130,246,0.4)' : 'rgba(52,211,153,0.4)'),
-                  color: 'white',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 0 12px ' + (tradeMode === 'local' ? 'rgba(37,99,235,0.4)' : 'rgba(16,185,129,0.4)')
-                }}
-                onClick={() => setIsRfqDrawerOpen(true)}
-                title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
-              >
-                <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
-                <span>{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
-                <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
-                  {rfqCartItems.length}
-                </span>
-              </button>
-
               {/* 3. Official Payment Receipts & Tax Invoice History Button */}
               <button
                 type="button"
