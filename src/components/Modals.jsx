@@ -86,6 +86,12 @@ export default function Modals() {
   const [commissionInputRate, setCommissionInputRate] = useState(adminCommissionRate || 2.5);
 
   useEffect(() => {
+    if (adminCommissionRate !== undefined) {
+      setCommissionInputRate(adminCommissionRate);
+    }
+  }, [adminCommissionRate]);
+
+  useEffect(() => {
     setCommissionInputRate(adminCommissionRate || 2.5);
   }, [adminCommissionRate]);
 
@@ -1738,10 +1744,11 @@ export default function Modals() {
       {/* 3. ADMIN COMMISSION & PLATFORM SETTINGS MODAL */}
       {activeModal === 'admin_commission' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '580px', borderRadius: '24px' }}>
-            <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
+          <div className="glass-card modal-card" style={{ maxWidth: '580px', borderRadius: '24px', position: 'relative' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', fontSize: '1.2rem', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', zIndex: 10 }}>✕</button>
+            <button className="modal-close" onClick={() => setActiveModal('admin_control')} style={{ position: 'absolute', top: '16px', left: '16px' }}>← Admin Panel</button>
             
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
               <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💰</span>
               <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
                 Admin Commission & Platform Settings
@@ -1755,10 +1762,10 @@ export default function Modals() {
               {/* Commission Rate Settings */}
               <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
-                  💰 Global Admin Platform Commission Rate (%)
+                  💰 Global Admin Platform Commission Rate (%) (પ્લેટફોર્મ કમિશન દર)
                 </label>
                 <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
-                  Commission charged on exported seller transactions and calculated in quote estimations.
+                  સેલર દ્વારા થતા એક્સપોર્ટ અને લોકલ વેચાણ પર લેવાતો પ્લેટફોર્મ કમિશન દર.
                 </p>
 
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1777,9 +1784,12 @@ export default function Modals() {
                   <button
                     type="button"
                     className="btn-primary"
-                    style={{ padding: '10px 20px', fontSize: '0.88rem', fontWeight: 800, marginLeft: 'auto', background: 'linear-gradient(135deg, #d97706, #b45309)' }}
+                    style={{ padding: '10px 20px', fontSize: '0.88rem', fontWeight: 800, marginLeft: 'auto', background: 'linear-gradient(135deg, #d97706, #b45309)', cursor: 'pointer' }}
                     onClick={() => {
-                      if (setAdminCommissionRate) setAdminCommissionRate(commissionInputRate);
+                      if (setAdminCommissionRate) {
+                        setAdminCommissionRate(commissionInputRate);
+                        showLiveToast(`✅ Admin Commission Rate saved as ${commissionInputRate}%!`, 'success');
+                      }
                     }}
                   >
                     💾 Save Commission
@@ -1793,7 +1803,13 @@ export default function Modals() {
                     <button
                       key={rateVal}
                       type="button"
-                      onClick={() => setCommissionInputRate(rateVal)}
+                      onClick={() => {
+                        setCommissionInputRate(rateVal);
+                        if (setAdminCommissionRate) {
+                          setAdminCommissionRate(rateVal);
+                          showLiveToast(`✅ Admin Commission Rate updated to ${rateVal}%!`, 'success');
+                        }
+                      }}
                       style={{
                         padding: '4px 10px',
                         fontSize: '0.75rem',
@@ -1814,10 +1830,10 @@ export default function Modals() {
               {/* Product Approval Policy Settings */}
               <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
-                  🔒 Seller Product Submission Policy
+                  🔒 Seller Product Submission Policy (સેલર પ્રોડક્ટ અપ્રુવલ પોલિસી)
                 </label>
                 <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
-                  Control whether seller uploaded products require manual Admin approval before appearing live.
+                  નવા સેલર દ્વારા ઉમેરાતી પ્રોડક્ટ્સ એડમિન મંજૂરી બાદ જ લાઈવ થશે કે ઓટો-અપ્રુવ થશે તેનું સેટિંગ.
                 </p>
 
                 <div style={{ display: 'grid', gap: '10px' }}>
@@ -1827,11 +1843,14 @@ export default function Modals() {
                       name="approvalPolicy"
                       checked={requireProductApproval === true}
                       onChange={() => {
-                        if (setRequireProductApproval) setRequireProductApproval(true);
+                        if (setRequireProductApproval) {
+                          setRequireProductApproval(true);
+                          showLiveToast('🔒 Manual Admin Approval Policy Enabled!', 'info');
+                        }
                       }}
                     />
                     <div>
-                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (Recommended)</strong>
+                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (એડમિન મંજૂરી જરૂરી)</strong>
                       <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products remain in "Pending" until Admin reviews & approves.</span>
                     </div>
                   </label>
@@ -1842,11 +1861,14 @@ export default function Modals() {
                       name="approvalPolicy"
                       checked={requireProductApproval === false}
                       onChange={() => {
-                        if (setRequireProductApproval) setRequireProductApproval(false);
+                        if (setRequireProductApproval) {
+                          setRequireProductApproval(false);
+                          showLiveToast('⚡ Auto-Approve Seller Products Policy Enabled!', 'success');
+                        }
                       }}
                     />
                     <div>
-                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products</strong>
+                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products (ઓટો-અપ્રુવ)</strong>
                       <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products go live immediately upon upload without manual review.</span>
                     </div>
                   </label>
