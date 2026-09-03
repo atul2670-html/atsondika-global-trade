@@ -58,14 +58,20 @@ export default function RfqCartDrawer() {
     return acc + (price * (parseFloat(item.quantity) || 1));
   }, 0);
 
-  // Trigger Payment Modal for Local Trade
+  // Total amount calculation for Global Export Trade
+  const totalExportAmount = rfqCartItems.reduce((acc, item) => {
+    const priceUSD = item.priceUSD ? parseFloat(item.priceUSD) : (item.priceInr ? parseFloat(item.priceInr) / 86.45 : 12);
+    return acc + (priceUSD * (parseFloat(item.quantity) || 1));
+  }, 0);
+
+  // Trigger Payment Modal for Local & Global Trade
   const handleInitiatePayment = () => {
     if (rfqCartItems.length === 0) {
       alert(currentLang === 'gu' ? '🛒 તમારું કાર્ટ ખાલી છે!' : '🛒 Your Cart is empty!');
       return;
     }
-    if (!deliveryAddress || deliveryAddress.trim().length < 5) {
-      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું સંપૂર્ણ ડિલિવરી એડ્રેસ લખો.' : '⚠️ Please enter your complete delivery shipping address.');
+    if (!buyerName || buyerName.trim().length < 2) {
+      alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું નામ (Buyer Name) લખો.' : '⚠️ Please enter your name.');
       return;
     }
     if (!buyerPhone || buyerPhone.trim().length < 8) {
@@ -680,27 +686,47 @@ export default function RfqCartDrawer() {
               </div>
             </div>
 
-            {tradeMode === 'local' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              {/* PRIMARY PAY NOW BUTTON */}
               <button
                 className="btn-submit-rfq-whatsapp"
                 onClick={handleInitiatePayment}
                 style={{
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)'
+                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
+                  fontWeight: 900,
+                  fontSize: '0.92rem'
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `પેમેન્ટ કરીને ઓર્ડર પૂરું કરો (${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount})`
-                  : `Pay & Complete Order (${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount})`}
+                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? (convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount) : (convertPrice ? convertPrice(totalExportAmount) : '$' + totalExportAmount.toFixed(2))})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? (convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount) : (convertPrice ? convertPrice(totalExportAmount) : '$' + totalExportAmount.toFixed(2))})`}
               </button>
-            ) : (
+
+              {/* SECONDARY WHATSAPP BUTTON */}
               <button
-                className="btn-submit-rfq-whatsapp"
+                type="button"
                 onClick={handleSendRfqWhatsApp}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#e2e8f0',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
+                }}
               >
-                <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ક્વોટેશન મોકલો' : 'Submit Wholesale Order via WhatsApp'}
+                <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ક્વોટેશન મંગાવો (WhatsApp RFQ)' : 'Submit Wholesale Order via WhatsApp'}
               </button>
-            )}
+            </div>
           </div>
         )}
 
