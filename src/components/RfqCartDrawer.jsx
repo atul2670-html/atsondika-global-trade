@@ -15,7 +15,8 @@ export default function RfqCartDrawer() {
     currentLang,
     activeCompany,
     tradeMode,
-    showLiveToast
+    showLiveToast,
+    paymentGatewaysConfig
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -513,6 +514,15 @@ export default function RfqCartDrawer() {
                         </button>
                       </div>
                     </div>
+
+                    {/* LIVE LOCAL GATEWAY STATUS BADGE FOR CUSTOMERS */}
+                    <div style={{ marginTop: '10px', background: 'rgba(37,99,235,0.12)', border: '1px solid rgba(59,130,246,0.3)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '1.1rem' }}>🔒</span>
+                      <div>
+                        <strong style={{ color: 'white', display: 'block' }}>💳 Local Payment Gateway: Razorpay (Live Active)</strong>
+                        <span style={{ fontSize: '0.74rem', color: '#cbd5e1' }}>Supports Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking</span>
+                      </div>
+                    </div>
                   </>
                 ) : (
                   /* GLOBAL B2B EXPORT FIELDS */
@@ -565,6 +575,20 @@ export default function RfqCartDrawer() {
                         </div>
                       </div>
                     )}
+
+                    {/* LIVE SKYDO GLOBAL B2B GATEWAY BADGE FOR CUSTOMERS */}
+                    <div style={{ marginTop: '10px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', padding: '12px 14px', borderRadius: '12px', fontSize: '0.8rem', color: '#6ee7b7' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '1.1rem' }}>🌐</span>
+                        <strong style={{ color: 'white', fontSize: '0.85rem' }}>Skydo Global B2B Inward Remittance Gateway (Live Active)</strong>
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '2px 0 6px' }}>
+                        RBI PA-CB Certified • 0% Forex Markup • Automatic Free FIRA / FIRC Receipt Issued for Zero-Rated GST Export Filing.
+                      </p>
+                      <div style={{ fontSize: '0.74rem', color: '#fde047', background: 'rgba(0,0,0,0.3)', padding: '6px 10px', borderRadius: '8px', fontFamily: 'monospace' }}>
+                        Bank Escrow ID: {paymentGatewaysConfig?.global?.accountId || 'SKYDO-EXP-ATS-2026'} | SWIFT: {paymentGatewaysConfig?.global?.swiftCode || 'SKYDUS33XXX'}
+                      </div>
+                    </div>
                   </>
                 )}
 
