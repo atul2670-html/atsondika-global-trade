@@ -981,50 +981,51 @@ export function AppProvider({ children }) {
         }
 
         const serverTs = Number(data.updatedAt) || 0;
-        let localTs = Number(lastServerUpdate.current) || 0;
+        lastServerUpdate.current = Math.max(lastServerUpdate.current, serverTs);
+        try { localStorage.setItem('site_last_updated_at_v1', lastServerUpdate.current.toString()); } catch(e) {}
 
-        const isLocalMissingData = (!photoOverrides || Object.keys(photoOverrides).length === 0) || (!customProductsList || customProductsList.length === 0);
-
-        // Accept cloud data whenever serverTs > 0 and serverTs >= localTs, or if local is missing data or initial load
-        if (serverTs > 0 && (serverTs >= localTs || isLocalMissingData || !isInitialCloudLoadComplete.current)) {
-          isSyncing.current = true;
-          lastServerUpdate.current = serverTs;
-          try { localStorage.setItem('site_last_updated_at_v1', serverTs.toString()); } catch(e) {}
-
-          if (Array.isArray(data.companiesList) && data.companiesList.length > 0) {
-            setCompaniesList(data.companiesList);
-          }
-          if (Array.isArray(data.customProductsList)) {
-            setCustomProductsList(prev => {
-              const map = new Map();
-              data.customProductsList.forEach(p => { if (p && p.id) map.set(p.id, p); });
-              prev.forEach(p => { if (p && p.id) map.set(p.id, p); });
-              const merged = sanitizeCustomProductsList(Array.from(map.values()));
-              try {
-                localStorage.setItem('custom_added_products_v8', JSON.stringify(merged));
-                localStorage.setItem('custom_added_products_v7', JSON.stringify(merged));
-                localStorage.setItem('custom_added_products_v6', JSON.stringify(merged));
-                localStorage.setItem('custom_added_products_master', JSON.stringify(merged));
-              } catch(e) {}
-              return merged;
-            });
-          }
-          if (data.photoOverrides && typeof data.photoOverrides === 'object') {
-            setPhotoOverrides(prev => {
-              const merged = { ...data.photoOverrides, ...prev };
-              try { localStorage.setItem('site_product_photo_overrides_v1', JSON.stringify(merged)); } catch(e) {}
-              return merged;
-            });
-          }
-          if (Array.isArray(data.deletedBuiltInIds)) setDeletedBuiltInIds(data.deletedBuiltInIds);
-          if (Array.isArray(data.branchesList)) setBranchesList(data.branchesList);
-          if (Array.isArray(data.certificatesList)) setCertificatesList(data.certificatesList);
-          if (Array.isArray(data.freightRoutesList)) setFreightRoutesList(data.freightRoutesList);
-          if (data.heroBanner) setHeroBanner(data.heroBanner);
-          if (data.aboutData) setAboutData(data.aboutData);
-          isInitialCloudLoadComplete.current = true;
-          setTimeout(() => { isSyncing.current = false; }, 300);
+        if (Array.isArray(data.companiesList) && data.companiesList.length > 0) {
+          setCompaniesList(data.companiesList);
         }
+
+        if (Array.isArray(data.customProductsList) && data.customProductsList.length > 0) {
+          setCustomProductsList(prev => {
+            const map = new Map();
+            prev.forEach(p => { if (p && p.id) map.set(p.id, p); });
+            data.customProductsList.forEach(p => {
+              if (p && p.id) {
+                const existing = map.get(p.id);
+                if (!existing || JSON.stringify(existing) !== JSON.stringify(p)) {
+                  map.set(p.id, p);
+                }
+              }
+            });
+            const merged = sanitizeCustomProductsList(Array.from(map.values()));
+            try {
+              localStorage.setItem('custom_added_products_v8', JSON.stringify(merged));
+              localStorage.setItem('custom_added_products_v7', JSON.stringify(merged));
+              localStorage.setItem('custom_added_products_v6', JSON.stringify(merged));
+              localStorage.setItem('custom_added_products_master', JSON.stringify(merged));
+            } catch(e) {}
+            return merged;
+          });
+        }
+
+        if (data.photoOverrides && typeof data.photoOverrides === 'object') {
+          setPhotoOverrides(prev => {
+            const merged = { ...prev, ...data.photoOverrides };
+            try { localStorage.setItem('site_product_photo_overrides_v1', JSON.stringify(merged)); } catch(e) {}
+            return merged;
+          });
+        }
+
+        if (Array.isArray(data.deletedBuiltInIds)) setDeletedBuiltInIds(data.deletedBuiltInIds);
+        if (Array.isArray(data.branchesList)) setBranchesList(data.branchesList);
+        if (Array.isArray(data.certificatesList)) setCertificatesList(data.certificatesList);
+        if (Array.isArray(data.freightRoutesList)) setFreightRoutesList(data.freightRoutesList);
+        if (data.heroBanner) setHeroBanner(data.heroBanner);
+        if (data.aboutData) setAboutData(data.aboutData);
+        isInitialCloudLoadComplete.current = true;
       }
     } catch(e) {}
   };
