@@ -1030,10 +1030,27 @@ export function AppProvider({ children }) {
     } catch(e) {}
   };
 
+  const [syncVersion, setSyncVersion] = useState(0);
+
+  const triggerRealtimeRefresh = () => {
+    setSyncVersion(v => v + 1);
+  };
+
+  useEffect(() => {
+    const unsubscribe = realtimeEngine.subscribe(() => {
+      fetchServerData();
+      triggerRealtimeRefresh();
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Initial load + 3-second automated cloud poll across all global devices
   useEffect(() => {
     fetchServerData();
-    const timer = setInterval(fetchServerData, 3000);
+    const timer = setInterval(() => {
+      fetchServerData();
+      triggerRealtimeRefresh();
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 
@@ -1874,6 +1891,7 @@ export function AppProvider({ children }) {
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,
       exportDatabase, importDatabase,
+      syncVersion, triggerRealtimeRefresh,
       verifyAdminAccess, t
     }}>
       {children}

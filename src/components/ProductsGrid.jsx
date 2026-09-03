@@ -11,7 +11,7 @@ export default function ProductsGrid() {
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
     productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
-    currentMerchant
+    currentMerchant, syncVersion
   } = useApp();
 
   const [carouselIndices, setCarouselIndices] = useState({});
