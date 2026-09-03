@@ -1389,10 +1389,9 @@ export default function ProductsGrid() {
                               background: isSelected ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined
                             }}
                             onClick={() => {
-                              if (addRfqProduct) addRfqProduct(p);
-                              else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
-                              const contactSec = document.getElementById('contact');
-                              if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+                              if (addToRfqCart) addToRfqCart(p);
+                              else if (addRfqProduct) addRfqProduct(p);
+                              if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
                             }}
                             title="Request Quotation (RFQ)"
                           >
