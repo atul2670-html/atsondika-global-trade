@@ -374,14 +374,14 @@ export default function Navbar() {
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>            </ul>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {isScrolled && tradeMode === 'local' && (
+              {isScrolled && (
                 <button
                   type="button"
                   className="nav-rfq-cart-btn"
                   style={{
-                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    background: tradeMode === 'local' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'linear-gradient(135deg, #059669, #047857)',
                     color: '#ffffff',
-                    padding: '4px 10px',
+                    padding: '5px 12px',
                     borderRadius: '20px',
                     fontSize: '0.78rem',
                     fontWeight: 800,
@@ -390,12 +390,12 @@ export default function Navbar() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '5px',
-                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.4)'
+                    boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)'
                   }}
                   onClick={() => setIsRfqDrawerOpen(true)}
                   title="View Shopping Cart"
                 >
-                  🛒 <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 6px', borderRadius: '10px', fontSize: '0.72rem' }}>{rfqCartItems.length}</span>
+                  {tradeMode === 'local' ? '🛒' : '🌐'} <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 6px', borderRadius: '10px', fontSize: '0.72rem' }}>{rfqCartItems.length}</span>
                 </button>
               )}
 
@@ -625,18 +625,33 @@ export default function Navbar() {
                 📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
               </button>
 
-              {/* 2. Amazon / Flipkart Style Local Trade Shopping Cart Button (ONLY VISIBLE IN LOCAL TRADE B2C MODE) */}
-              {tradeMode === 'local' && (
-                <button
-                  type="button"
-                  className="nav-rfq-cart-btn"
-                  onClick={() => setIsRfqDrawerOpen(true)}
-                  title={currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ જુઓ' : 'View Shopping Cart (Local Trade)'}
-                >
-                  <span>🛒</span>
-                  <span className="rfq-cart-badge">{rfqCartItems.length}</span>
-                </button>
-              )}
+              {/* 2. Global B2B Export & Local Trade Cart Button (PERMANENTLY VISIBLE IN HEADER) */}
+              <button
+                type="button"
+                className="btn-primary nav-rfq-cart-btn"
+                style={{
+                  padding: '6px 14px',
+                  fontSize: '0.82rem',
+                  fontWeight: 900,
+                  borderRadius: '20px',
+                  background: tradeMode === 'local' ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                  border: '1px solid ' + (tradeMode === 'local' ? 'rgba(59,130,246,0.4)' : 'rgba(52,211,153,0.4)'),
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 0 12px ' + (tradeMode === 'local' ? 'rgba(37,99,235,0.4)' : 'rgba(16,185,129,0.4)')
+                }}
+                onClick={() => setIsRfqDrawerOpen(true)}
+                title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
+              >
+                <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
+                <span>{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
+                <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
+                  {rfqCartItems.length}
+                </span>
+              </button>
 
               {/* 3. Official Payment Receipts & Tax Invoice History Button */}
               <button
