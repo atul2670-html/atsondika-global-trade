@@ -805,7 +805,34 @@ export default function RfqCartDrawer() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ક્વોટેશન મંગાવો (WhatsApp RFQ)' : 'Submit Wholesale Order via WhatsApp'}
+                <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ઓફિશિયલ ક્વોટેશન મંગાવો' : 'Submit Official RFQ via WhatsApp'}
+              </button>
+
+              {/* TERTIARY WEBSITE INQUIRY FORM BUTTON */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRfqDrawerOpen(false);
+                  const contactSec = document.getElementById('contact');
+                  if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  borderRadius: '12px',
+                  background: 'transparent',
+                  border: '1px dashed rgba(56, 189, 248, 0.4)',
+                  color: '#38bdf8',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>📩</span> {currentLang === 'gu' ? '📩 વેબસાઈટ પર લાઈવ ઈન્ક્વાયરી ફોર્મ ભરો' : 'Fill Official Inquiry Form on Website'}
               </button>
             </div>
           </div>
