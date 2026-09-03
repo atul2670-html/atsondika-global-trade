@@ -192,6 +192,40 @@ export function AppProvider({ children }) {
     showLiveToast(`⚙️ Product Approval Policy updated: ${boolVal ? 'Manual Admin Approval Required' : 'Auto Approve'}`, 'info');
   };
 
+  // Payment Gateways Architecture State (Local: Razorpay | Global: Skydo)
+  const defaultPaymentGatewaysConfig = {
+    local: {
+      provider: 'razorpay',
+      status: 'active',
+      keyId: 'rzp_live_ATS_LOCAL_2026',
+      keySecret: '••••••••••••••••',
+      merchantName: 'Atsondika Local Trade'
+    },
+    global: {
+      provider: 'skydo',
+      status: 'active',
+      accountId: 'SKYDO-EXP-ATS-2026',
+      swiftCode: 'SKYDUS33XXX',
+      ibanVirtualAccount: 'US89 SKYD 1002 9984 001',
+      accountName: 'Atsondika Global Trade Export Escrow'
+    }
+  };
+
+  const [paymentGatewaysConfig, setPaymentGatewaysConfig] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_payment_gateways_config_v1');
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return defaultPaymentGatewaysConfig;
+  });
+
+  const savePaymentGatewaysConfig = (newConfig) => {
+    setPaymentGatewaysConfig(newConfig);
+    try { localStorage.setItem('site_payment_gateways_config_v1', JSON.stringify(newConfig)); } catch(e) {}
+    syncToServer({ paymentGatewaysConfig: newConfig });
+    showLiveToast('💳 Payment Gateways Configuration Saved & Active!', 'success');
+  };
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1025,6 +1059,10 @@ export function AppProvider({ children }) {
         if (Array.isArray(data.freightRoutesList)) setFreightRoutesList(data.freightRoutesList);
         if (data.heroBanner) setHeroBanner(data.heroBanner);
         if (data.aboutData) setAboutData(data.aboutData);
+        if (data.paymentGatewaysConfig && typeof data.paymentGatewaysConfig === 'object') {
+          setPaymentGatewaysConfig(data.paymentGatewaysConfig);
+          try { localStorage.setItem('site_payment_gateways_config_v1', JSON.stringify(data.paymentGatewaysConfig)); } catch(e) {}
+        }
         isInitialCloudLoadComplete.current = true;
       }
     } catch(e) {}
@@ -1891,6 +1929,7 @@ export function AppProvider({ children }) {
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,
       exportDatabase, importDatabase,
+      paymentGatewaysConfig, savePaymentGatewaysConfig,
       syncVersion, triggerRealtimeRefresh,
       verifyAdminAccess, t
     }}>

@@ -75,7 +75,8 @@ export default function Modals() {
     marketTickerList, saveMarketTickerList,
     customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
-    adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval
+    adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
+    paymentGatewaysConfig, savePaymentGatewaysConfig
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -84,6 +85,28 @@ export default function Modals() {
   const [adminProductApprovalFilter, setAdminProductApprovalFilter] = useState('pending'); // 'pending' | 'approved' | 'rejected' | 'all'
   const [adminProductSearch, setAdminProductSearch] = useState('');
   const [commissionInputRate, setCommissionInputRate] = useState(adminCommissionRate || 2.5);
+
+  const [localGateway, setLocalGateway] = useState(() => paymentGatewaysConfig?.local || {
+    provider: 'razorpay',
+    status: 'active',
+    keyId: 'rzp_live_ATS_LOCAL_2026',
+    keySecret: '••••••••••••••••',
+    merchantName: 'Atsondika Local Trade'
+  });
+
+  const [globalGateway, setGlobalGateway] = useState(() => paymentGatewaysConfig?.global || {
+    provider: 'skydo',
+    status: 'active',
+    accountId: 'SKYDO-EXP-ATS-2026',
+    swiftCode: 'SKYDUS33XXX',
+    ibanVirtualAccount: 'US89 SKYD 1002 9984 001',
+    accountName: 'Atsondika Global Trade Export Escrow'
+  });
+
+  useEffect(() => {
+    if (paymentGatewaysConfig?.local) setLocalGateway(paymentGatewaysConfig.local);
+    if (paymentGatewaysConfig?.global) setGlobalGateway(paymentGatewaysConfig.global);
+  }, [paymentGatewaysConfig]);
 
   useEffect(() => {
     if (adminCommissionRate !== undefined) {
@@ -1260,6 +1283,15 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
+                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+                onClick={() => setActiveModal('admin_payment_gateways')}
+              >
+                💳 Payment Gateways Setup — Razorpay (Local ₹) & Skydo (Global $)
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
                 style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0369a1, #075985)' }}
                 onClick={() => setActiveModal('admin_leads')}
               >
@@ -1890,6 +1922,185 @@ export default function Modals() {
                   <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Platform Rate</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3.5 ADMIN PAYMENT GATEWAYS SETUP MODAL */}
+      {activeModal === 'admin_payment_gateways' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '650px', borderRadius: '24px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', fontSize: '1.2rem', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', zIndex: 10 }}>✕</button>
+            <button className="modal-close" onClick={() => setActiveModal('admin_control')} style={{ position: 'absolute', top: '16px', left: '16px' }}>← Admin Panel</button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
+              <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💳</span>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                Payment Gateways & Banking Setup
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                ભારતીય ગ્રાહકો માટે Razorpay અને વિદેશી બાયર્સ માટે Skydo B2B Remittance એકાઉન્ટ લિંક કરો
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '20px' }}>
+              {/* 1. LOCAL TRADE GATEWAY (INR) */}
+              <div style={{ background: 'rgba(37,99,235,0.08)', padding: '18px', borderRadius: '18px', border: '1px solid rgba(37,99,235,0.25)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#60a5fa', margin: 0 }}>
+                    🇮🇳 Local Trade Gateway (ભારતીય ગ્રાહકો / ₹ INR)
+                  </h4>
+                  <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '12px', background: localGateway.status === 'active' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: localGateway.status === 'active' ? '#4ade80' : '#f87171', fontWeight: 800 }}>
+                    {localGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      ગેટવે પ્રોવાઈડર (Gateway Provider)
+                    </label>
+                    <select
+                      className="input-field"
+                      style={{ fontSize: '0.9rem', fontWeight: 700 }}
+                      value={localGateway.provider || 'razorpay'}
+                      onChange={(e) => setLocalGateway({ ...localGateway, provider: e.target.value })}
+                    >
+                      <option value="razorpay">Razorpay (Recommended — 0% Fee UPI, Cards, Netbanking)</option>
+                      <option value="cashfree">Cashfree Payments (Low Transaction Fee)</option>
+                      <option value="phonepe">PhonePe Business PG (0% Fee UPI)</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                        Razorpay Key ID (API Key)
+                      </label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        style={{ fontSize: '0.85rem' }}
+                        placeholder="rzp_live_..."
+                        value={localGateway.keyId || ''}
+                        onChange={(e) => setLocalGateway({ ...localGateway, keyId: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                        Razorpay Key Secret
+                      </label>
+                      <input
+                        type="password"
+                        className="input-field"
+                        style={{ fontSize: '0.85rem' }}
+                        placeholder="••••••••••••••••"
+                        value={localGateway.keySecret || ''}
+                        onChange={(e) => setLocalGateway({ ...localGateway, keySecret: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#93c5fd' }}>
+                    ✓ <strong>ગ્રાહક સપોર્ટ:</strong> Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking supported.
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. GLOBAL TRADE B2B EXPORT GATEWAY (USD/EUR) */}
+              <div style={{ background: 'rgba(16,185,129,0.08)', padding: '18px', borderRadius: '18px', border: '1px solid rgba(16,185,129,0.25)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#34d399', margin: 0 }}>
+                    🌐 Global Trade B2B Gateway (આંતરરાષ્ટ્રીય ગ્રાહકો / $ USD, € EUR)
+                  </h4>
+                  <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '12px', background: globalGateway.status === 'active' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: globalGateway.status === 'active' ? '#4ade80' : '#f87171', fontWeight: 800 }}>
+                    {globalGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      એક્સપોર્ટ ગેટવે પ્રોવાઈડર (Export Gateway)
+                    </label>
+                    <select
+                      className="input-field"
+                      style={{ fontSize: '0.9rem', fontWeight: 700 }}
+                      value={globalGateway.provider || 'skydo'}
+                      onChange={(e) => setGlobalGateway({ ...globalGateway, provider: e.target.value })}
+                    >
+                      <option value="skydo">Skydo Global Remittance (Recommended — 0% Forex, Flat Fee, Free FIRA)</option>
+                      <option value="wire_swift">Direct Wire Transfer / SWIFT IBAN</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                        Skydo Account ID / IBAN
+                      </label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        style={{ fontSize: '0.85rem' }}
+                        placeholder="SKYDO-EXP-..."
+                        value={globalGateway.accountId || ''}
+                        onChange={(e) => setGlobalGateway({ ...globalGateway, accountId: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                        SWIFT / BIC Code
+                      </label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        style={{ fontSize: '0.85rem' }}
+                        placeholder="SKYDUS33XXX"
+                        value={globalGateway.swiftCode || ''}
+                        onChange={(e) => setGlobalGateway({ ...globalGateway, swiftCode: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      Export Escrow Account Name
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      style={{ fontSize: '0.85rem' }}
+                      placeholder="Atsondika Global Trade Export Escrow Account"
+                      value={globalGateway.accountName || ''}
+                      onChange={(e) => setGlobalGateway({ ...globalGateway, accountName: e.target.value })}
+                    />
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#6ee7b7' }}>
+                    ✓ <strong>RBI Compliance:</strong> RBI PA-CB certified, 0% Forex Markup, Automated Free FIRA / FIRC generation for zero-rated GST export filing.
+                  </div>
+                </div>
+              </div>
+
+              {/* SAVE BUTTON */}
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ padding: '14px', fontSize: '1rem', fontWeight: 900, background: 'linear-gradient(135deg, #059669, #047857)', cursor: 'pointer', textAlign: 'center' }}
+                onClick={() => {
+                  if (savePaymentGatewaysConfig) {
+                    savePaymentGatewaysConfig({
+                      local: localGateway,
+                      global: globalGateway
+                    });
+                    setActiveModal(null);
+                  }
+                }}
+              >
+                💾 Save Payment Gateways Setup (સેવ કરો)
+              </button>
             </div>
           </div>
         </div>
