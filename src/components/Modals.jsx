@@ -497,6 +497,10 @@ export default function Modals() {
   const [localUnit, setLocalUnit] = useState('kg');
   const [localCurrency, setLocalCurrency] = useState('INR');
 
+  // Trade Scope Selection State (Global Export vs Local B2C Retail)
+  const [enableGlobalTrade, setEnableGlobalTrade] = useState(true);
+  const [enableLocalTrade, setEnableLocalTrade] = useState(true);
+
   // Live HS Code Search State
   const [hsSearchQuery, setHsSearchQuery] = useState('');
   const [showHsDropdown, setShowHsDropdown] = useState(false);
@@ -685,6 +689,9 @@ export default function Modals() {
           setLocalUnit(target.unit || 'kg');
           setLocalCurrency(target.currency || 'INR');
 
+          setEnableGlobalTrade(target.enableGlobalTrade !== false);
+          setEnableLocalTrade(target.enableLocalTrade !== false);
+
           let imgs = [];
           if (target.images && target.images.length > 0) {
             imgs = target.images.map(convertGoogleDriveUrl);
@@ -698,6 +705,8 @@ export default function Modals() {
 
       // Default values
       setParentSelect(firstParentCat);
+      setEnableGlobalTrade(true);
+      setEnableLocalTrade(true);
       setNameGu('');
       setNameEn('');
       setCatCodeInput('');
@@ -4047,6 +4056,8 @@ export default function Modals() {
                     category: catSlug,
                     parentId: null,
                     isSub: false,
+                    enableGlobalTrade,
+                    enableLocalTrade,
                     hsCode: '',
                     image: imgList[0],
                     images: imgList,
@@ -4213,6 +4224,8 @@ export default function Modals() {
                     category,
                     parentId: parentSelect || null,
                     isSub: true,
+                    enableGlobalTrade,
+                    enableLocalTrade,
                     hsCode: hsCode.trim(),
                     localHsn: localHsn ? localHsn.trim() : `${hsCode.trim()}10`,
                     image: imgList[0],
@@ -4338,6 +4351,31 @@ export default function Modals() {
                       <span style={{ fontSize: '0.74rem', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
                         Required
                       </span>
+                    </div>
+
+                    {/* Global Trade Enable Checkbox Option */}
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        background: enableGlobalTrade ? 'rgba(45, 212, 191, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid ' + (enableGlobalTrade ? '#2dd4bf' : 'rgba(255,255,255,0.2)'),
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={enableGlobalTrade}
+                          onChange={(e) => setEnableGlobalTrade(e.target.checked)}
+                          style={{ width: '16px', height: '16px', accentColor: '#2dd4bf', cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableGlobalTrade ? '#2dd4bf' : '#94a3b8' }}>
+                          🌐 Enable for Global Export Trade (આંતરરાષ્ટ્રીય ગ્લોબલ ટ્રેડમાં લાઈવ બતાવો)
+                        </span>
+                      </label>
                     </div>
 
                     {/* Live Search Tool with Online Internet Search Options */}
@@ -4627,7 +4665,7 @@ export default function Modals() {
                         border: '1px solid rgba(250, 204, 21, 0.35)',
                         marginBottom: '16px'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                           <span style={{ fontSize: '1.25rem' }}>🛍️</span>
                           <div>
                             <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#facc15' }}>
@@ -4637,6 +4675,31 @@ export default function Modals() {
                               (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🛍️ Local Trade મોડ ચાલુ કરે ત્યારે જ ડિસ્પલે થશે)
                             </span>
                           </div>
+                        </div>
+
+                        {/* Local Trade Enable Checkbox Option */}
+                        <div style={{ marginBottom: '12px' }}>
+                          <label style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            background: enableLocalTrade ? 'rgba(250, 204, 21, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                            padding: '6px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (enableLocalTrade ? '#facc15' : 'rgba(255,255,255,0.2)'),
+                            transition: 'all 0.2s ease'
+                          }}>
+                            <input
+                              type="checkbox"
+                              checked={enableLocalTrade}
+                              onChange={(e) => setEnableLocalTrade(e.target.checked)}
+                              style={{ width: '16px', height: '16px', accentColor: '#facc15', cursor: 'pointer' }}
+                            />
+                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableLocalTrade ? '#facc15' : '#94a3b8' }}>
+                              🛍️ Enable for Local B2C Retail Trade (લોકલ બીટુસી રીટેલ ટ્રેડમાં લાઈવ બતાવો)
+                            </span>
+                          </label>
                         </div>
 
                         {/* ROW 1: PRICING CURRENCY (FIRST FIELD) & PRODUCT UNIT */}

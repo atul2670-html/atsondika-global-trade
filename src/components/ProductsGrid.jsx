@@ -91,6 +91,8 @@ export default function ProductsGrid() {
   const getSubProductsForCategory = (catFilter) => {
     if (!catFilter || catFilter === 'all') return [];
     return allProds.filter(p => {
+      if (tradeMode === 'local' && p.enableLocalTrade === false) return false;
+      if (tradeMode !== 'local' && p.enableGlobalTrade === false) return false;
       if (p.category === catFilter || p.parentId === catFilter) return true;
       const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
       if (normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
@@ -111,6 +113,16 @@ export default function ProductsGrid() {
         }
         return false;
       });
+
+  // Filter products by Trade Mode scope (Global Export Trade vs Local B2C Retail Trade)
+  filtered = filtered.filter(p => {
+    if (tradeMode === 'local') {
+      if (p.enableLocalTrade === false) return false;
+    } else {
+      if (p.enableGlobalTrade === false) return false;
+    }
+    return true;
+  });
 
   // Filter out pending/rejected seller products for public visitors
   filtered = filtered.filter(p => {
