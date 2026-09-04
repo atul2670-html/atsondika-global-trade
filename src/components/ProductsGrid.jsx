@@ -702,29 +702,66 @@ export default function ProductsGrid() {
                         <div style={{ opacity: 0.85, fontSize: '0.75rem', marginTop: '2px' }}>{p.specifications?.en || 'High Export Quality'}</div>
                       </td>
                       <td style={{ padding: '12px', textAlign: 'center' }}>
-                        {tradeMode === 'local' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', minWidth: '150px' }}>
+                          {(() => {
+                            const isSelected = (selectedRfqProducts || []).some(sp => sp.id === p.id);
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (addToRfqCart) addToRfqCart(p, 1, tradeMode === 'local' ? 'pcs' : 'MT');
+                                  else if (addRfqProduct) addRfqProduct(p);
+                                  if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  background: isSelected
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : (tradeMode === 'local' ? 'linear-gradient(135deg, #ff9900, #e67e22)' : 'linear-gradient(135deg, #14b8a6, #0d9488)'),
+                                  color: (isSelected || tradeMode !== 'local') ? '#fff' : '#000',
+                                  border: 'none',
+                                  padding: '7px 12px',
+                                  borderRadius: '8px',
+                                  fontWeight: 800,
+                                  fontSize: '0.78rem',
+                                  cursor: 'pointer',
+                                  whiteSpace: 'nowrap'
+                                }}
+                                title="Request Quotation (RFQ)"
+                              >
+                                {isSelected
+                                  ? (currentLang === 'gu' ? `✔ ક્વોટેશન માં ઉમેરાયું (${selectedRfqProducts.length})` : (currentLang === 'hi' ? `✔ कोटेशन में जोड़ा गया (${selectedRfqProducts.length})` : `✔ Added to RFQ (${selectedRfqProducts.length})`))
+                                  : (tradeMode === 'local'
+                                      ? (currentLang === 'gu' ? '🛒 કાર્ટમાં ઉમેરો' : '🛒 Add to Cart')
+                                      : (currentLang === 'gu' ? '💬 કોટેશન વિગત (RFQ)' : '💬 Request Quote (RFQ)'))}
+                              </button>
+                            );
+                          })()}
+
                           <button
                             type="button"
-                            onClick={() => {
-                              addToRfqCart(p, 1, 'pcs');
-                              setIsRfqDrawerOpen(true);
+                            className="btn-secondary"
+                            style={{
+                              width: '100%',
+                              justifyContent: 'center',
+                              color: '#38bdf8',
+                              borderColor: 'rgba(56, 189, 248, 0.4)',
+                              background: 'rgba(15, 23, 42, 0.8)',
+                              padding: '6px 10px',
+                              fontSize: '0.76rem',
+                              fontWeight: 800,
+                              borderRadius: '8px',
+                              whiteSpace: 'nowrap'
                             }}
-                            style={{ background: 'linear-gradient(135deg, #ff9900, #e67e22)', color: '#000', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                          >
-                            🛒 Add to Cart
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
                             onClick={() => {
-                              addToRfqCart(p, 1, 'MT');
-                              setIsRfqDrawerOpen(true);
+                              if (setQuotationProduct) setQuotationProduct(p);
+                              if (setActiveModal) setActiveModal('quotation');
                             }}
-                            style={{ background: 'linear-gradient(135deg, #14b8a6, #0d9488)', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                            title="Auto-Generate Official Proforma Invoice Quotation"
                           >
-                            📲 Request Quote
+                            📄 {currentLang === 'gu' ? 'પરફોર્મા એક્ષપોર્ટ કોટ' : (currentLang === 'hi' ? 'परफॉर्मा एक्सपोर्ट कोट' : 'Proforma Export Quote')}
                           </button>
-                        )}
+                        </div>
                       </td>
                     </tr>
                   );
