@@ -6679,18 +6679,29 @@ export default function Modals() {
                       isDraggingRef.current = false;
                     }}
                     onMouseMove={(e) => {
-                      if (!isUltraZoom || isPdfDoc || e.buttons !== 1) return;
-                      const deltaX = e.clientX - dragStartRef.current.x;
-                      const deltaY = e.clientY - dragStartRef.current.y;
-                      if (Math.hypot(deltaX, deltaY) > 5) {
-                        isDraggingRef.current = true;
-                      }
-                      if (imgContainerRef.current) {
+                      if (!isUltraZoom || isPdfDoc || !imgContainerRef.current) return;
+                      if (e.buttons === 1) {
+                        // Mouse click & drag
+                        const deltaX = e.clientX - dragStartRef.current.x;
+                        const deltaY = e.clientY - dragStartRef.current.y;
+                        if (Math.hypot(deltaX, deltaY) > 5) {
+                          isDraggingRef.current = true;
+                        }
                         const rect = imgContainerRef.current.getBoundingClientRect();
                         const maxPanX = Math.max(80, rect.width * 0.6);
                         const maxPanY = Math.max(80, rect.height * 0.6);
                         const nextX = Math.max(-maxPanX, Math.min(maxPanX, panStartRef.current.x + deltaX));
                         const nextY = Math.max(-maxPanY, Math.min(maxPanY, panStartRef.current.y + deltaY));
+                        setPanPos({ x: nextX, y: nextY });
+                      } else {
+                        // Mouse hover cursor movement panning (Laptop / Desktop)
+                        const rect = imgContainerRef.current.getBoundingClientRect();
+                        const mouseRelX = (e.clientX - rect.left) / rect.width - 0.5;
+                        const mouseRelY = (e.clientY - rect.top) / rect.height - 0.5;
+                        const maxPanX = Math.max(80, rect.width * 0.6);
+                        const maxPanY = Math.max(80, rect.height * 0.6);
+                        const nextX = Math.max(-maxPanX, Math.min(maxPanX, -mouseRelX * maxPanX * 2));
+                        const nextY = Math.max(-maxPanY, Math.min(maxPanY, -mouseRelY * maxPanY * 2));
                         setPanPos({ x: nextX, y: nextY });
                       }
                     }}
@@ -6761,7 +6772,7 @@ export default function Modals() {
                           transform: isUltraZoom
                             ? `translate3d(${panPos.x}px, ${panPos.y}px, 0px) scale(2.2)`
                             : 'translate3d(0px, 0px, 0px) scale(1)',
-                          transition: isDraggingRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.1, 0.5, 0.1, 1)',
+                          transition: isDraggingRef.current ? 'none' : 'transform 0.12s cubic-bezier(0.1, 0.5, 0.1, 1)',
                           borderRadius: '8px',
                           userSelect: 'none',
                           WebkitUserDrag: 'none'
