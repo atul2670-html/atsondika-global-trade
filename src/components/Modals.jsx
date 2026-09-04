@@ -7034,7 +7034,7 @@ export default function Modals() {
                       {/* Bottom Total & Actions */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap', gap: '10px' }}>
                         <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
-                          Total Paid: {convertPrice ? convertPrice(ord.totalAmount) : '₹' + (ord.totalAmount ? ord.totalAmount.toLocaleString() : '0')}
+                          Total Paid: {'₹' + (ord.totalAmount ? Number(ord.totalAmount).toLocaleString('en-IN') : '0')}
                         </div>
 
                         <div style={{ display: 'flex', gap: '8px' }}>

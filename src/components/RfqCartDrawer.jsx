@@ -156,7 +156,7 @@ export default function RfqCartDrawer() {
     msg += `---------------------------------------\n`;
     msg += `🧾 *Order Receipt ID:* ${orderId}\n`;
     msg += `💳 *Payment Status:* ${orderData.paymentStatus}\n`;
-    msg += `💰 *Amount Paid:* ${convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount.toLocaleString()}\n`;
+    msg += `💰 *Amount Paid:* ₹${Number(totalLocalAmount).toLocaleString('en-IN')}\n`;
     msg += `👤 *Customer Name:* ${orderData.customerName}\n`;
     msg += `📞 *Phone/WhatsApp:* ${orderData.phone}\n`;
     msg += `🏠 *Delivery Address:* ${orderData.deliveryAddress}\n`;
@@ -334,7 +334,7 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price">
                             {tradeMode === 'local'
-                              ? (convertPrice ? convertPrice(itemPrice) : '₹' + itemPrice)
+                              ? '₹' + Number(itemPrice).toLocaleString('en-IN')
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
                         </div>
@@ -754,7 +754,7 @@ export default function RfqCartDrawer() {
                   <>
                     <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700, display: 'block' }}>🚚 FREE Delivery</span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
-                      Total: {convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount.toLocaleString()}
+                      Total: {tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)}
                     </span>
                   </>
                 ) : (
@@ -781,8 +781,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? (convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount) : (convertPrice ? convertPrice(totalExportAmount) : '$' + totalExportAmount.toFixed(2))})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? (convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount) : (convertPrice ? convertPrice(totalExportAmount) : '$' + totalExportAmount.toFixed(2))})`}
+                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
@@ -878,7 +878,7 @@ export default function RfqCartDrawer() {
             <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Total ({rfqCartItems.length} Products):</span>
-                <span style={{ fontWeight: 700, color: '#white' }}>{convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount}</span>
+                <span style={{ fontWeight: 700, color: '#white' }}>{'₹' + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Delivery Fee:</span>
@@ -887,7 +887,7 @@ export default function RfqCartDrawer() {
               <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
                 <span style={{ color: '#ffffff' }}>Payable Amount:</span>
-                <span style={{ color: '#facc15' }}>{convertPrice ? convertPrice(totalLocalAmount) : '₹' + totalLocalAmount}</span>
+                <span style={{ color: '#facc15' }}>{'₹' + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -1044,7 +1044,7 @@ export default function RfqCartDrawer() {
                     <div><b>Phone:</b> {completedOrderReceipt.phone}</div>
                     <div><b>Address:</b> {completedOrderReceipt.deliveryAddress}</div>
                     <div><b>Payment Status:</b> <span style={{ color: '#4ade80', fontWeight: 800 }}>{completedOrderReceipt.paymentStatus}</span></div>
-                    <div><b>Total Amount:</b> <span style={{ color: '#facc15', fontWeight: 800 }}>{convertPrice ? convertPrice(completedOrderReceipt.totalAmount) : '₹' + completedOrderReceipt.totalAmount}</span></div>
+                    <div><b>Total Amount:</b> <span style={{ color: '#facc15', fontWeight: 800 }}>{'₹' + Number(completedOrderReceipt.totalAmount || 0).toLocaleString('en-IN')}</span></div>
                   </div>
                 </div>
 

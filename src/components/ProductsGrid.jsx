@@ -676,7 +676,7 @@ export default function ProductsGrid() {
                     ? langTitle
                     : autoTranslateText(enTitle || langTitle, currentLang);
                   const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
-                  const formattedPrice = tradeMode === 'local' ? (convertPrice ? convertPrice(basePriceInr) : '₹' + basePriceInr) : (p.priceUSD ? convertPrice(p.priceUSD) : 'On Request');
+                  const formattedPrice = tradeMode === 'local' ? ('₹' + Number(basePriceInr).toLocaleString('en-IN')) : (p.priceUSD ? convertPrice(p.priceUSD) : 'On Request');
                   const mrpInr = Math.round(basePriceInr * 1.32);
 
                   return (

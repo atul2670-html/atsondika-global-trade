@@ -292,18 +292,16 @@ export function AppProvider({ children }) {
   };
 
   // Convert USD / INR price to currently selected currency
-  const convertPrice = (usdPriceVal) => {
+  const convertPrice = (usdPriceVal, inputCurrency = 'USD') => {
     if (usdPriceVal === null || usdPriceVal === undefined || usdPriceVal === '') return '';
-    if (typeof usdPriceVal === 'number') {
-      const num = usdPriceVal;
-      if (currentCurrency.code === 'USD') return `$${Math.round(num).toLocaleString('en-US')}`;
-      const converted = Math.round(num * (currentCurrency.rate || 1)).toLocaleString('en-US');
-      return `${currentCurrency.symbol || '₹'}${converted}`;
+    const num = typeof usdPriceVal === 'number' ? usdPriceVal : parseFloat(String(usdPriceVal).replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return String(usdPriceVal);
+
+    if (inputCurrency === 'INR') {
+      return `₹${Math.round(num).toLocaleString('en-IN')}`;
     }
-    const str = String(usdPriceVal);
-    if (currentCurrency.code === 'USD') return str;
-    const num = parseFloat(str.replace(/[^0-9.]/g, ''));
-    if (isNaN(num)) return str;
+
+    if (currentCurrency.code === 'USD') return `$${Math.round(num).toLocaleString('en-US')}`;
     const converted = Math.round(num * (currentCurrency.rate || 1)).toLocaleString('en-US');
     return `${currentCurrency.symbol || '₹'}${converted}`;
   };
