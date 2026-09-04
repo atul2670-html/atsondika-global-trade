@@ -25,6 +25,7 @@ export default function ContainerCalculator() {
   const [fromCurr, setFromCurr] = useState('USD');
   const [toCurr, setToCurr] = useState('INR');
   const [fluctuationPct, setFluctuationPct] = useState(2); // Default 2% Forex Risk Buffer
+  const [showSwastikForexPanel, setShowSwastikForexPanel] = useState(false); // Collapsible Swastik (卐) Toggle State
   const [rates, setRates] = useState(fallbackRates);
   const [currencyDict, setCurrencyDict] = useState(worldCurrencies);
   const [selectedRegion, setSelectedRegion] = useState('All');
@@ -426,99 +427,147 @@ export default function ContainerCalculator() {
                   />
                 </div>
 
-                {/* Currency Fluctuation Percentage (%) Control Dropdown */}
-                <div className="form-group" style={{ marginTop: '16px' }}>
-                  <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800 }}>
-                    <span>📈 Forex Risk / Fluctuation Buffer (%)</span>
-                    <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{fluctuationPct > 0 ? `+${fluctuationPct}%` : `${fluctuationPct}%`} Buffer Applied</span>
-                  </label>
+                {/* Swastik (卐) Toggle Button for Advanced Forex Risk Buffer Controls */}
+                <div style={{ marginTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowSwastikForexPanel(!showSwastikForexPanel)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 16px',
+                      background: showSwastikForexPanel ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid ' + (showSwastikForexPanel ? 'rgba(245, 158, 11, 0.5)' : 'rgba(255, 255, 255, 0.15)'),
+                      borderRadius: '12px',
+                      color: showSwastikForexPanel ? '#fbbf24' : '#cbd5e1',
+                      fontSize: '0.88rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      transition: 'all 0.25s ease'
+                    }}
+                    title="Swastik Forex Risk Buffer & Live Rate Controls"
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#f59e0b' }}>卐</span>
+                      <span>
+                        {currentLang === 'gu'
+                          ? '卐 એડવાન્સ ફોરેક્સ રિસ્ક બફર લાઈવ કંટ્રોલ્સ'
+                          : '卐 Advanced Forex Risk Buffer & Live Controls'}
+                      </span>
+                    </span>
+                    <span style={{ fontSize: '0.8rem', background: 'rgba(0,0,0,0.3)', padding: '3px 10px', borderRadius: '12px' }}>
+                      {showSwastikForexPanel ? (currentLang === 'gu' ? '▲ છુપાવો' : '▲ Hide') : (currentLang === 'gu' ? '▼ જુઓ (બતાવો)' : '▼ View Panel')}
+                    </span>
+                  </button>
 
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <select
-                      className="form-control"
-                      value={fluctuationPct}
-                      onChange={(e) => setFluctuationPct(Number(e.target.value))}
-                      style={{
-                        flex: 1,
-                        minWidth: '220px',
+                  {/* Collapsible Swastik Panel Content */}
+                  {showSwastikForexPanel && (
+                    <div style={{
+                      marginTop: '12px',
+                      padding: '16px',
+                      background: 'rgba(15, 23, 42, 0.85)',
+                      borderRadius: '14px',
+                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+                    }}>
+                      {/* Currency Fluctuation Percentage (%) Control Dropdown */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800 }}>
+                          <span>📈 Forex Risk / Fluctuation Buffer (%)</span>
+                          <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{fluctuationPct > 0 ? `+${fluctuationPct}%` : `${fluctuationPct}%`} Buffer Applied</span>
+                        </label>
+
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <select
+                            className="form-control"
+                            value={fluctuationPct}
+                            onChange={(e) => setFluctuationPct(Number(e.target.value))}
+                            style={{
+                              flex: 1,
+                              minWidth: '220px',
+                              padding: '10px 14px',
+                              fontSize: '0.88rem',
+                              fontWeight: 800,
+                              background: 'rgba(15, 23, 42, 0.95)',
+                              color: '#2dd4bf',
+                              border: '1px solid var(--border-glass)',
+                              borderRadius: 'var(--radius-sm)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <option value={0}>0% - Exact Spot Exchange Rate (0% Buffer)</option>
+                            <option value={0.5}>+0.5% - Low FX Risk Buffer (+0.5%)</option>
+                            <option value={1}>+1.0% - Standard Commercial Buffer (+1.0%)</option>
+                            <option value={1.5}>+1.5% - Moderate Volatility Hedge (+1.5%)</option>
+                            <option value={2}>+2.0% - Default Export Risk Hedge (+2.0%)</option>
+                            <option value={2.5}>+2.5% - High Volatility Protection (+2.5%)</option>
+                            <option value={3}>+3.0% - Extended Delivery Buffer (+3.0%)</option>
+                            <option value={4}>+4.0% - Emerging Market Hedge (+4.0%)</option>
+                            <option value={5}>+5.0% - Maximum Risk Protection (+5.0%)</option>
+                            <option value={7.5}>+7.5% - Long-Term Contract Buffer (+7.5%)</option>
+                            <option value={10}>+10.0% - High Volatility Hedge (+10.0%)</option>
+                          </select>
+
+                          {/* Quick Preset Pills */}
+                          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                            {[0, 1, 2, 3, 5].map(pct => (
+                              <button
+                                key={pct}
+                                type="button"
+                                onClick={() => setFluctuationPct(pct)}
+                                className={`tab-btn ${fluctuationPct === pct ? 'active' : ''}`}
+                                style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: 800 }}
+                              >
+                                {pct === 0 ? '0% Exact' : `+${pct}%`}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Forex Risk Buffer Impact Badge - Placed ABOVE Realtime Base Live Rate Capsule */}
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'rgba(234, 179, 8, 0.12)',
+                        border: '1px solid rgba(234, 179, 8, 0.3)',
                         padding: '10px 14px',
-                        fontSize: '0.88rem',
+                        borderRadius: '12px',
+                        fontSize: '0.86rem',
+                        marginTop: '12px'
+                      }}>
+                        <span style={{ color: '#fde047', fontWeight: 800 }}>
+                          🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}
+                        </span>
+                        <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171', fontWeight: 900, fontSize: '0.92rem' }}>
+                          {getBufferDifferenceFormatted()} {toCurrCode}
+                        </strong>
+                      </div>
+
+                      {/* Realtime Base Live Rate Capsule */}
+                      <div style={{
+                        background: 'rgba(16, 185, 129, 0.12)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        padding: '10px 14px',
+                        borderRadius: '12px',
+                        fontSize: '0.84rem',
+                        color: '#4ade80',
                         fontWeight: 800,
-                        background: 'rgba(15, 23, 42, 0.95)',
-                        color: '#2dd4bf',
-                        border: '1px solid var(--border-glass)',
-                        borderRadius: 'var(--radius-sm)',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value={0}>0% - Exact Spot Exchange Rate (0% Buffer)</option>
-                      <option value={0.5}>+0.5% - Low FX Risk Buffer (+0.5%)</option>
-                      <option value={1}>+1.0% - Standard Commercial Buffer (+1.0%)</option>
-                      <option value={1.5}>+1.5% - Moderate Volatility Hedge (+1.5%)</option>
-                      <option value={2}>+2.0% - Default Export Risk Hedge (+2.0%)</option>
-                      <option value={2.5}>+2.5% - High Volatility Protection (+2.5%)</option>
-                      <option value={3}>+3.0% - Extended Delivery Buffer (+3.0%)</option>
-                      <option value={4}>+4.0% - Emerging Market Hedge (+4.0%)</option>
-                      <option value={5}>+5.0% - Maximum Risk Protection (+5.0%)</option>
-                      <option value={7.5}>+7.5% - Long-Term Contract Buffer (+7.5%)</option>
-                      <option value={10}>+10.0% - High Volatility Hedge (+10.0%)</option>
-                    </select>
-
-                    {/* Quick Preset Pills */}
-                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                      {[0, 1, 2, 3, 5].map(pct => (
-                        <button
-                          key={pct}
-                          type="button"
-                          onClick={() => setFluctuationPct(pct)}
-                          className={`tab-btn ${fluctuationPct === pct ? 'active' : ''}`}
-                          style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: 800 }}
-                        >
-                          {pct === 0 ? '0% Exact' : `+${pct}%`}
-                        </button>
-                      ))}
+                        marginTop: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '8px'
+                      }}>
+                        <span>⚡ {currentLang === 'gu' ? `રિયલટાઈમ Base Live Rate (${sortedCurrencyCodes.length} ચલણ લાઈવ)` : `Realtime Base Live Rate (${sortedCurrencyCodes.length} World Currencies)`}</span>
+                        <span style={{ fontSize: '0.78rem', color: '#6ee7b7' }}>{lastUpdated}</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                {/* Forex Risk Buffer Impact Badge - Placed ABOVE Realtime Base Live Rate Capsule */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: 'rgba(234, 179, 8, 0.12)',
-                  border: '1px solid rgba(234, 179, 8, 0.3)',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  fontSize: '0.86rem',
-                  marginTop: '12px'
-                }}>
-                  <span style={{ color: '#fde047', fontWeight: 800 }}>
-                    🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}
-                  </span>
-                  <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171', fontWeight: 900, fontSize: '0.92rem' }}>
-                    {getBufferDifferenceFormatted()} {toCurrCode}
-                  </strong>
-                </div>
-
-                {/* Realtime Base Live Rate Capsule */}
-                <div style={{
-                  background: 'rgba(16, 185, 129, 0.12)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  fontSize: '0.84rem',
-                  color: '#4ade80',
-                  fontWeight: 800,
-                  marginTop: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '8px'
-                }}>
-                  <span>⚡ {currentLang === 'gu' ? `રિયલટાઈમ Base Live Rate (${sortedCurrencyCodes.length} ચલણ લાઈવ)` : `Realtime Base Live Rate (${sortedCurrencyCodes.length} World Currencies)`}</span>
-                  <span style={{ fontSize: '0.78rem', color: '#6ee7b7' }}>{lastUpdated}</span>
+                  )}
                 </div>
               </div>
 
