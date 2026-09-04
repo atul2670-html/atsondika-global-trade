@@ -7,7 +7,8 @@ import { useApp } from '../context/AppContext.jsx';
 export default function ContainerCalculator() {
   const {
     freightRoutesList, deleteFreightRoute,
-    isAdminLoggedIn, verifyAdminAccess, setActiveModal, setEditingRouteId
+    isAdminLoggedIn, verifyAdminAccess, setActiveModal, setEditingRouteId,
+    currentLang
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('container'); // 'container' | 'currency' | 'routes'
@@ -30,33 +31,53 @@ export default function ContainerCalculator() {
   const [transportMode, setTransportMode] = useState('all'); // 'all' | 'sea' | 'air'
   const [lastUpdated, setLastUpdated] = useState('Live Forex');
 
-  // Fetch live exchange rates on mount for ALL world currencies
+  // Fetch live exchange rates on mount for ALL world currencies with dual failover
   useEffect(() => {
-    fetch('https://open.er-api.com/v6/latest/USD')
+    const primaryApi = 'https://open.er-api.com/v6/latest/USD';
+    const secondaryApi = 'https://api.exchangerate-api.com/v4/latest/USD';
+
+    const applyLiveRates = (data, sourceName) => {
+      if (data && data.rates) {
+        setRates(prev => ({ ...prev, ...data.rates }));
+        const timeStr = data.time_last_update_utc
+          ? new Date(data.time_last_update_utc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setLastUpdated(`✅ Verified Realtime Base Live Rate (${timeStr}) • ${sourceName}`);
+
+        setCurrencyDict(prevDict => {
+          const updated = { ...prevDict };
+          Object.keys(data.rates).forEach(code => {
+            if (!updated[code]) {
+              updated[code] = {
+                name: `${code} Currency`,
+                symbol: code,
+                flag: '🌐'
+              };
+            }
+          });
+          return updated;
+        });
+        return true;
+      }
+      return false;
+    };
+
+    fetch(primaryApi)
       .then(res => res.json())
       .then(data => {
-        if (data && data.rates) {
-          setRates(prev => ({ ...prev, ...data.rates }));
-          setLastUpdated('Live Rates Updated');
-
-          // Dynamically incorporate any missing currencies from live API
-          setCurrencyDict(prevDict => {
-            const updated = { ...prevDict };
-            Object.keys(data.rates).forEach(code => {
-              if (!updated[code]) {
-                updated[code] = {
-                  name: `${code} Currency`,
-                  symbol: code,
-                  flag: '🌐'
-                };
-              }
-            });
-            return updated;
-          });
+        if (!applyLiveRates(data, 'Open Exchange API')) {
+          fetch(secondaryApi)
+            .then(res => res.json())
+            .then(secData => applyLiveRates(secData, 'ExchangeRate API'));
         }
       })
       .catch(() => {
-        setLastUpdated('Standard Commercial Rates');
+        fetch(secondaryApi)
+          .then(res => res.json())
+          .then(secData => applyLiveRates(secData, 'ExchangeRate API'))
+          .catch(() => {
+            setLastUpdated('Standard Commercial Rates (Offline Backup)');
+          });
       });
   }, []);
 
@@ -460,15 +481,30 @@ export default function ContainerCalculator() {
                   </div>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-sub)', marginTop: '8px' }}>
-                  ⚡ Live Exchange Rates ({sortedCurrencyCodes.length} World Currencies Loaded) • {lastUpdated}
+                <div style={{
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  fontSize: '0.84rem',
+                  color: '#4ade80',
+                  fontWeight: 800,
+                  marginTop: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  <span>⚡ {currentLang === 'gu' ? `રિયલટાઈમ Base Live Rate (${sortedCurrencyCodes.length} ચલણ લાઈવ)` : `Realtime Base Live Rate (${sortedCurrencyCodes.length} World Currencies)`}</span>
+                  <span style={{ fontSize: '0.78rem', color: '#6ee7b7' }}>{lastUpdated}</span>
                 </div>
               </div>
 
               {/* Conversion Result Display with Fluctuation Analysis */}
               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '26px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', textAlignment: 'center' }}>
                 <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
-                  Hedged Valuation ({fluctuationPct > 0 ? `+${fluctuationPct}% Risk Buffer` : `${fluctuationPct}% Buffer`})
+                  {currentLang === 'gu' ? `હેજ્ડ કેલ્ક્યુલેશન મૂલ્યાંકન (${fluctuationPct > 0 ? `+${fluctuationPct}% રિસ્ક બફર` : `${fluctuationPct}% બફર`})` : `Hedged Valuation (${fluctuationPct > 0 ? `+${fluctuationPct}% Risk Buffer` : `${fluctuationPct}% Buffer`})`}
                 </div>
 
                 {/* Hedged Main Converted Amount */}
@@ -477,19 +513,34 @@ export default function ContainerCalculator() {
                 </div>
 
                 {/* Fluctuation Breakdown Box */}
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-glass)', margin: '14px 0', fontSize: '0.85rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--text-sub)' }}>Base Live Rate (0% Buffer):</span>
-                    <strong>{currencyDict[toCurrCode]?.symbol || ''} {getRawBaseConvertedFormatted()} {toCurrCode}</strong>
-                  </div>
-                  
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--text-sub)' }}>Exchange Rate:</span>
-                    <span>1 {fromCurrCode} = <strong style={{ color: 'var(--accent-gold)' }}>{getAdjustedRate()} {toCurrCode}</strong> {fluctuationPct !== 0 && `(Base: ${getSingleRate()})`}</span>
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--border-glass)', margin: '14px 0', fontSize: '0.86rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>
+                      🌐 {currentLang === 'gu' ? 'મુખ્ય રિયલટાઈમ Base Live Rate (0% બફર):' : 'Realtime Base Live Rate (0% Spot):'}
+                    </span>
+                    <strong style={{ color: '#38bdf8' }}>
+                      1 {fromCurrCode} = {getSingleRate()} {toCurrCode}
+                    </strong>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px dashed var(--border-glass)' }}>
-                    <span style={{ color: 'var(--text-sub)' }}>Forex Risk Buffer Impact:</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>
+                      💰 {currentLang === 'gu' ? 'મૂળ રિયલટાઈમ મૂલ્ય (0% બફર):' : 'Base Raw Amount (0% Buffer):'}
+                    </span>
+                    <strong>{currencyDict[toCurrCode]?.symbol || ''} {getRawBaseConvertedFormatted()} {toCurrCode}</strong>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>
+                      📈 {currentLang === 'gu' ? 'બફર સાથેનો દરો (Hedged Rate):' : 'Hedged Forex Rate:'}
+                    </span>
+                    <span>1 {fromCurrCode} = <strong style={{ color: 'var(--accent-gold)' }}>{getAdjustedRate()} {toCurrCode}</strong></span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '6px', borderTop: '1px dashed var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>
+                      🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}
+                    </span>
                     <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171' }}>
                       {getBufferDifferenceFormatted()} {toCurrCode}
                     </strong>
@@ -503,13 +554,13 @@ export default function ContainerCalculator() {
                   onClick={() => {
                     const rfqMsg = document.getElementById('rfqMsg');
                     if (rfqMsg) {
-                      rfqMsg.value = `[Hedged Currency Valuation]\nBudget: ${amount} ${fromCurrCode} = ${convertAmount()} ${toCurrCode}\n(Base: ${getRawBaseConvertedFormatted()} ${toCurrCode} | Forex Buffer: ${fluctuationPct}% | Impact: ${getBufferDifferenceFormatted()} ${toCurrCode})`;
+                      rfqMsg.value = `[Hedged Currency Valuation]\nBudget: ${amount} ${fromCurrCode} = ${convertAmount()} ${toCurrCode}\n(Realtime Base Live Rate: 1 ${fromCurrCode} = ${getSingleRate()} ${toCurrCode} | Raw Base: ${getRawBaseConvertedFormatted()} ${toCurrCode} | Forex Buffer: ${fluctuationPct}% | Impact: ${getBufferDifferenceFormatted()} ${toCurrCode})`;
                     }
                     const contactSec = document.getElementById('contact');
                     if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  📩 Send RFQ with Hedged Valuation
+                  📩 {currentLang === 'gu' ? 'હેજ્ડ મૂલ્યાંકન સાથે RFQ મોકલો' : 'Send RFQ with Hedged Valuation'}
                 </button>
               </div>
             </div>
