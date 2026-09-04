@@ -81,9 +81,12 @@ export default function ContainerCalculator() {
   const percentFull = Math.min(100, Math.max(((tonnage / curCont.maxWeight) * 100), ((totalCbm / curCont.maxCbm) * 100))).toFixed(1);
 
   // Currency Converter Logic with Fluctuation Buffer
+  const fromCurrCode = typeof fromCurr === 'object' && fromCurr ? (fromCurr.code || 'USD') : (fromCurr || 'USD');
+  const toCurrCode = typeof toCurr === 'object' && toCurr ? (toCurr.code || 'INR') : (toCurr || 'INR');
+
   const getRawBaseConverted = () => {
-    const rateFrom = rates[fromCurr] || 1;
-    const rateTo = rates[toCurr] || 1;
+    const rateFrom = rates[fromCurrCode] || 1;
+    const rateTo = rates[toCurrCode] || 1;
     return (amount / rateFrom) * rateTo;
   };
 
@@ -107,8 +110,8 @@ export default function ContainerCalculator() {
   };
 
   const getSingleRate = () => {
-    const rateFrom = rates[fromCurr] || 1;
-    const rateTo = rates[toCurr] || 1;
+    const rateFrom = rates[fromCurrCode] || 1;
+    const rateTo = rates[toCurrCode] || 1;
     const single = (1 / rateFrom) * rateTo;
     return single.toFixed(4);
   };
@@ -119,8 +122,8 @@ export default function ContainerCalculator() {
   };
 
   const swapCurrencies = () => {
-    const temp = fromCurr;
-    setFromCurr(toCurr);
+    const temp = fromCurrCode;
+    setFromCurr(toCurrCode);
     setToCurr(temp);
   };
 
@@ -377,8 +380,8 @@ export default function ContainerCalculator() {
                 <div className="form-row" style={{ alignItems: 'flex-end' }}>
                   <SearchableCurrencySelect
                     label="From Currency (Type or Select)"
-                    value={fromCurr}
-                    onChange={setFromCurr}
+                    value={fromCurrCode}
+                    onChange={(selected) => setFromCurr(typeof selected === 'object' && selected ? (selected.code || 'USD') : (selected || 'USD'))}
                     currencyDict={currencyDict}
                   />
 
@@ -396,8 +399,8 @@ export default function ContainerCalculator() {
 
                   <SearchableCurrencySelect
                     label="To Currency (Type or Select)"
-                    value={toCurr}
-                    onChange={setToCurr}
+                    value={toCurrCode}
+                    onChange={(selected) => setToCurr(typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR'))}
                     currencyDict={currencyDict}
                   />
                 </div>
@@ -470,25 +473,25 @@ export default function ContainerCalculator() {
 
                 {/* Hedged Main Converted Amount */}
                 <div style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--primary-teal-glow)', margin: '10px 0 4px 0' }}>
-                  {currencyDict[toCurr]?.symbol || ''} {convertAmount()} <span style={{ fontSize: '1.1rem', color: 'white' }}>{toCurr}</span>
+                  {currencyDict[toCurrCode]?.symbol || ''} {convertAmount()} <span style={{ fontSize: '1.1rem', color: 'white' }}>{toCurrCode}</span>
                 </div>
 
                 {/* Fluctuation Breakdown Box */}
                 <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-glass)', margin: '14px 0', fontSize: '0.85rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <span style={{ color: 'var(--text-sub)' }}>Base Live Rate (0% Buffer):</span>
-                    <strong>{currencyDict[toCurr]?.symbol || ''} {getRawBaseConvertedFormatted()} {toCurr}</strong>
+                    <strong>{currencyDict[toCurrCode]?.symbol || ''} {getRawBaseConvertedFormatted()} {toCurrCode}</strong>
                   </div>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <span style={{ color: 'var(--text-sub)' }}>Exchange Rate:</span>
-                    <span>1 {fromCurr} = <strong style={{ color: 'var(--accent-gold)' }}>{getAdjustedRate()} {toCurr}</strong> {fluctuationPct !== 0 && `(Base: ${getSingleRate()})`}</span>
+                    <span>1 {fromCurrCode} = <strong style={{ color: 'var(--accent-gold)' }}>{getAdjustedRate()} {toCurrCode}</strong> {fluctuationPct !== 0 && `(Base: ${getSingleRate()})`}</span>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px dashed var(--border-glass)' }}>
                     <span style={{ color: 'var(--text-sub)' }}>Forex Risk Buffer Impact:</span>
                     <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171' }}>
-                      {getBufferDifferenceFormatted()} {toCurr}
+                      {getBufferDifferenceFormatted()} {toCurrCode}
                     </strong>
                   </div>
                 </div>
@@ -500,7 +503,7 @@ export default function ContainerCalculator() {
                   onClick={() => {
                     const rfqMsg = document.getElementById('rfqMsg');
                     if (rfqMsg) {
-                      rfqMsg.value = `[Hedged Currency Valuation]\nBudget: ${amount} ${fromCurr} = ${convertAmount()} ${toCurr}\n(Base: ${getRawBaseConvertedFormatted()} ${toCurr} | Forex Buffer: ${fluctuationPct}% | Impact: ${getBufferDifferenceFormatted()} ${toCurr})`;
+                      rfqMsg.value = `[Hedged Currency Valuation]\nBudget: ${amount} ${fromCurrCode} = ${convertAmount()} ${toCurrCode}\n(Base: ${getRawBaseConvertedFormatted()} ${toCurrCode} | Forex Buffer: ${fluctuationPct}% | Impact: ${getBufferDifferenceFormatted()} ${toCurrCode})`;
                     }
                     const contactSec = document.getElementById('contact');
                     if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
