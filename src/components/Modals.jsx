@@ -434,16 +434,18 @@ export default function Modals() {
   // Lightbox Image Preview State
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [isUltraZoom, setIsUltraZoom] = useState(false);
-  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
-  const touchStartRef = useRef({ x: 0, y: 0 });
-  const isTouchDraggingRef = useRef(false);
+  const [panPos, setPanPos] = useState({ x: 0, y: 0 });
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
+  const imgContainerRef = useRef(null);
 
   useEffect(() => {
     if (activeModal === 'image_preview' && imagePreviewData) {
       setActivePreviewIdx(imagePreviewData.activeIndex || 0);
       setIsUltraZoom(false);
-      setZoomPos({ x: 50, y: 50 });
-      isTouchDraggingRef.current = false;
+      setPanPos({ x: 0, y: 0 });
+      isDraggingRef.current = false;
     }
   }, [activeModal, imagePreviewData]);
 
@@ -6614,7 +6616,10 @@ export default function Modals() {
                     color: isUltraZoom ? '#4ade80' : '#38bdf8',
                     borderColor: isUltraZoom ? 'rgba(74, 222, 128, 0.4)' : 'rgba(56, 189, 248, 0.4)'
                   }}
-                  onClick={() => setIsUltraZoom(!isUltraZoom)}
+                  onClick={() => {
+                    setIsUltraZoom(!isUltraZoom);
+                    setPanPos({ x: 0, y: 0 });
+                  }}
                 >
                   {isUltraZoom ? '🔍 1X Normal View' : '🔍 2X Ultra Zoom'}
                 </button>
@@ -6651,6 +6656,7 @@ export default function Modals() {
               return (
                 <div>
                   <div
+                    ref={imgContainerRef}
                     style={{
                       position: 'relative',
                       background: 'rgba(0,0,0,0.85)',
@@ -6662,56 +6668,66 @@ export default function Modals() {
                       minHeight: '420px',
                       maxHeight: '75vh',
                       border: '1px solid var(--border-glass)',
-                      cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'zoom-out' : 'zoom-in'),
+                      cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'grab' : 'zoom-in'),
                       userSelect: 'none',
                       touchAction: isUltraZoom ? 'none' : 'manipulation'
                     }}
-                    onMouseMove={(e) => {
+                    onMouseDown={(e) => {
                       if (!isUltraZoom || isPdfDoc) return;
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                      const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-                      setZoomPos({ x, y });
+                      dragStartRef.current = { x: e.clientX, y: e.clientY };
+                      panStartRef.current = { ...panPos };
+                      isDraggingRef.current = false;
+                    }}
+                    onMouseMove={(e) => {
+                      if (!isUltraZoom || isPdfDoc || e.buttons !== 1) return;
+                      const deltaX = e.clientX - dragStartRef.current.x;
+                      const deltaY = e.clientY - dragStartRef.current.y;
+                      if (Math.hypot(deltaX, deltaY) > 5) {
+                        isDraggingRef.current = true;
+                      }
+                      if (imgContainerRef.current) {
+                        const rect = imgContainerRef.current.getBoundingClientRect();
+                        const maxPanX = Math.max(80, rect.width * 0.6);
+                        const maxPanY = Math.max(80, rect.height * 0.6);
+                        const nextX = Math.max(-maxPanX, Math.min(maxPanX, panStartRef.current.x + deltaX));
+                        const nextY = Math.max(-maxPanY, Math.min(maxPanY, panStartRef.current.y + deltaY));
+                        setPanPos({ x: nextX, y: nextY });
+                      }
                     }}
                     onTouchStart={(e) => {
                       if (isPdfDoc || !e.touches || e.touches.length === 0) return;
                       const touch = e.touches[0];
-                      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-                      isTouchDraggingRef.current = false;
-                      if (isUltraZoom) {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
-                        const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
-                        setZoomPos({ x, y });
-                      }
+                      dragStartRef.current = { x: touch.clientX, y: touch.clientY };
+                      panStartRef.current = { ...panPos };
+                      isDraggingRef.current = false;
                     }}
                     onTouchMove={(e) => {
                       if (!isUltraZoom || isPdfDoc || !e.touches || e.touches.length === 0) return;
                       const touch = e.touches[0];
-                      const dist = Math.hypot(touch.clientX - touchStartRef.current.x, touch.clientY - touchStartRef.current.y);
-                      if (dist > 6) {
-                        isTouchDraggingRef.current = true;
+                      const deltaX = touch.clientX - dragStartRef.current.x;
+                      const deltaY = touch.clientY - dragStartRef.current.y;
+                      if (Math.hypot(deltaX, deltaY) > 5) {
+                        isDraggingRef.current = true;
                       }
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
-                      const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
-                      setZoomPos({ x, y });
+                      if (imgContainerRef.current) {
+                        const rect = imgContainerRef.current.getBoundingClientRect();
+                        const maxPanX = Math.max(80, rect.width * 0.6);
+                        const maxPanY = Math.max(80, rect.height * 0.6);
+                        const nextX = Math.max(-maxPanX, Math.min(maxPanX, panStartRef.current.x + deltaX));
+                        const nextY = Math.max(-maxPanY, Math.min(maxPanY, panStartRef.current.y + deltaY));
+                        setPanPos({ x: nextX, y: nextY });
+                      }
                     }}
-                    onClick={(e) => {
+                    onClick={() => {
                       if (isPdfDoc) return;
-                      if (isTouchDraggingRef.current) {
-                        isTouchDraggingRef.current = false;
+                      if (isDraggingRef.current) {
+                        isDraggingRef.current = false;
                         return;
                       }
                       const nextZoom = !isUltraZoom;
                       setIsUltraZoom(nextZoom);
-                      if (nextZoom) {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-                        setZoomPos({ x, y });
-                      } else {
-                        setZoomPos({ x: 50, y: 50 });
+                      if (!nextZoom) {
+                        setPanPos({ x: 0, y: 0 });
                       }
                     }}
                   >
@@ -6742,10 +6758,13 @@ export default function Modals() {
                           maxWidth: '100%',
                           maxHeight: '65vh',
                           objectFit: 'contain',
-                          transform: isUltraZoom ? 'scale(2.2)' : 'scale(1)',
-                          transformOrigin: isUltraZoom ? `${zoomPos.x}% ${zoomPos.y}%` : 'center center',
-                          transition: isUltraZoom ? 'transform-origin 0.04s ease-out, transform 0.25s ease' : 'transform 0.25s ease',
-                          borderRadius: '8px'
+                          transform: isUltraZoom
+                            ? `translate3d(${panPos.x}px, ${panPos.y}px, 0px) scale(2.2)`
+                            : 'translate3d(0px, 0px, 0px) scale(1)',
+                          transition: isDraggingRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.1, 0.5, 0.1, 1)',
+                          borderRadius: '8px',
+                          userSelect: 'none',
+                          WebkitUserDrag: 'none'
                         }}
                         onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
                       />
@@ -6761,6 +6780,8 @@ export default function Modals() {
                           onClick={(e) => {
                             e.stopPropagation();
                             setActivePreviewIdx((prev) => (prev > 0 ? prev - 1 : currentImages.length - 1));
+                            setIsUltraZoom(false);
+                            setPanPos({ x: 0, y: 0 });
                           }}
                         >
                           ‹
@@ -6772,6 +6793,8 @@ export default function Modals() {
                           onClick={(e) => {
                             e.stopPropagation();
                             setActivePreviewIdx((prev) => (prev < currentImages.length - 1 ? prev + 1 : 0));
+                            setIsUltraZoom(false);
+                            setPanPos({ x: 0, y: 0 });
                           }}
                         >
                           ›
@@ -6780,7 +6803,7 @@ export default function Modals() {
                     )}
 
                     <div style={{ position: 'absolute', bottom: '12px', left: '16px', background: 'rgba(15,23,42,0.85)', padding: '4px 12px', borderRadius: '20px', border: '1px solid var(--border-glass)', fontSize: '0.76rem', color: 'white' }}>
-                      💡 {isUltraZoom ? '🔍 2X Zoom Mode (Touch & Drag to Pan, Tap to shrink)' : '🔍 Click/Tap Photo to Zoom 2X'}
+                      💡 {isUltraZoom ? '🔍 2X Ultra Zoom (Drag with finger/mouse to Pan)' : '🔍 Click/Tap Photo to Zoom 2X'}
                     </div>
                   </div>
 
@@ -6802,7 +6825,11 @@ export default function Modals() {
                             opacity: idx === activePreviewIdx ? 1 : 0.65,
                             transition: 'all 0.2s'
                           }}
-                          onClick={() => setActivePreviewIdx(idx)}
+                          onClick={() => {
+                            setActivePreviewIdx(idx);
+                            setIsUltraZoom(false);
+                            setPanPos({ x: 0, y: 0 });
+                          }}
                           onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
                         />
                       ))}
