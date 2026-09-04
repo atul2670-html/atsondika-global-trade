@@ -2,6 +2,18 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
 
+const currSymbolMap = {
+  INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ', CAD: 'C$', AUD: 'A$',
+  JPY: '¥', CHF: 'CHF ', SGD: 'S$', NZD: 'NZ$', HKD: 'HK$', SAR: 'SR ',
+  QAR: 'QR ', KWD: 'KD ', OMR: 'OMR ', BHD: 'BD ', CNY: '¥', RUB: '₽', BRL: 'R$',
+  MXN: 'Mex$', ZAR: 'R ', SEK: 'kr ', NOK: 'kr ', DKK: 'kr ', PLN: 'zł ',
+  TRY: '₺', THB: '฿', IDR: 'Rp ', MYR: 'RM ', PHP: '₱', EGP: 'E£ '
+};
+const getCurrencySymbol = (code) => {
+  if (!code) return '₹';
+  return currSymbolMap[code] || (code + ' ');
+};
+
 export default function RfqCartDrawer() {
   const {
     isRfqDrawerOpen,
@@ -63,6 +75,9 @@ export default function RfqCartDrawer() {
     const price = item.localPrice || (item.priceInr ? parseFloat(item.priceInr) : 499);
     return acc + (price * (parseFloat(item.quantity) || 1));
   }, 0);
+
+  const cartCurrency = rfqCartItems[0]?.currency || 'INR';
+  const cartCurrSym = getCurrencySymbol(cartCurrency);
 
   // Total amount calculation for Global Export Trade
   const totalExportAmount = rfqCartItems.reduce((acc, item) => {
@@ -334,7 +349,7 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price">
                             {tradeMode === 'local'
-                              ? '₹' + Number(itemPrice).toLocaleString('en-IN')
+                              ? getCurrencySymbol(item.currency || 'INR') + Number(itemPrice).toLocaleString('en-IN')
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
                         </div>
@@ -754,7 +769,7 @@ export default function RfqCartDrawer() {
                   <>
                     <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700, display: 'block' }}>🚚 FREE Delivery</span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
-                      Total: {tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)}
+                      Total: {tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)}
                     </span>
                   </>
                 ) : (
@@ -781,8 +796,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? '₹' + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`}
+                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
@@ -878,7 +893,7 @@ export default function RfqCartDrawer() {
             <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Total ({rfqCartItems.length} Products):</span>
-                <span style={{ fontWeight: 700, color: '#white' }}>{'₹' + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
+                <span style={{ fontWeight: 700, color: '#white' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Delivery Fee:</span>
@@ -887,7 +902,7 @@ export default function RfqCartDrawer() {
               <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
                 <span style={{ color: '#ffffff' }}>Payable Amount:</span>
-                <span style={{ color: '#facc15' }}>{'₹' + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
+                <span style={{ color: '#facc15' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
               </div>
             </div>
 

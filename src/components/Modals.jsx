@@ -4,6 +4,7 @@ import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
+import SearchableCurrencySelect from './SearchableCurrencySelect';
 import FlagIcon from './FlagIcon';
 
 // INTERNATIONAL WCO (6-DIGIT) & LOCAL CUSTOMS/GST (8-DIGIT) HARMONIZED SYSTEM DICTIONARY
@@ -4802,23 +4803,13 @@ export default function Modals() {
                         </select>
                       </div>
 
-                      {/* Pricing Currency Selection */}
+                      {/* Pricing Currency Selection (Searchable World Currencies) */}
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
-                          💱 Pricing Currency (કરન્સી સિલેક્શન) *
-                        </label>
-                        <select
-                          className="form-control"
+                        <SearchableCurrencySelect
+                          label="💱 Pricing Currency (કરન્સી સિલેક્શન) *"
                           value={localCurrency}
-                          onChange={(e) => setLocalCurrency(e.target.value)}
-                          style={{ fontWeight: 800, background: '#0f172a', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.5)' }}
-                        >
-                          <option value="INR">🇮🇳 ₹ INR (Indian Rupee)</option>
-                          <option value="USD">🇺🇸 $ USD (US Dollar)</option>
-                          <option value="EUR">🇪🇺 € EUR (Euro)</option>
-                          <option value="GBP">🇬🇧 £ GBP (British Pound)</option>
-                          <option value="AED">🇦🇪 د.إ AED (UAE Dirham)</option>
-                        </select>
+                          onChange={(selected) => setLocalCurrency(typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR'))}
+                        />
                       </div>
                     </div>
                   </div>

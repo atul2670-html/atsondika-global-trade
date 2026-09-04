@@ -864,9 +864,15 @@ export default function ProductsGrid() {
                 const rating = (4.3 + (idx % 6) * 0.1).toFixed(1);
                 const reviews = (150 + idx * 132).toLocaleString();
 
-                const currSymbolMap = { INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ' };
+                const currSymbolMap = {
+                  INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ', CAD: 'C$', AUD: 'A$',
+                  JPY: '¥', CHF: 'CHF ', SGD: 'S$', NZD: 'NZ$', HKD: 'HK$', SAR: 'SR ',
+                  QAR: 'QR ', KWD: 'KD ', OMR: 'OMR ', BHD: 'BD ', CNY: '¥', RUB: '₽', BRL: 'R$',
+                  MXN: 'Mex$', ZAR: 'R ', SEK: 'kr ', NOK: 'kr ', DKK: 'kr ', PLN: 'zł ',
+                  TRY: '₺', THB: '฿', IDR: 'Rp ', MYR: 'RM ', PHP: '₱', EGP: 'E£ '
+                };
                 const itemCurrency = p.currency || 'INR';
-                const currSym = currSymbolMap[itemCurrency] || '₹';
+                const currSym = currSymbolMap[itemCurrency] || (itemCurrency + ' ');
                 const itemUnit = p.unit || 'pcs';
 
                 return (
