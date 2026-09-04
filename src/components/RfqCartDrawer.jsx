@@ -382,7 +382,7 @@ export default function RfqCartDrawer() {
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                               {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Pack</span>}
                               {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.courierCharge} Courier</span>}
-                              {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(Incl. {item.localGstRate}% GST)</span>}
+                              {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
                             </div>
                           )}
                         </div>
