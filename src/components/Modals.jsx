@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
@@ -435,12 +435,15 @@ export default function Modals() {
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [isUltraZoom, setIsUltraZoom] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const isTouchDraggingRef = useRef(false);
 
   useEffect(() => {
     if (activeModal === 'image_preview' && imagePreviewData) {
       setActivePreviewIdx(imagePreviewData.activeIndex || 0);
       setIsUltraZoom(false);
       setZoomPos({ x: 50, y: 50 });
+      isTouchDraggingRef.current = false;
     }
   }, [activeModal, imagePreviewData]);
 
@@ -6660,7 +6663,8 @@ export default function Modals() {
                       maxHeight: '75vh',
                       border: '1px solid var(--border-glass)',
                       cursor: isPdfDoc ? 'default' : (isUltraZoom ? 'zoom-out' : 'zoom-in'),
-                      userSelect: 'none'
+                      userSelect: 'none',
+                      touchAction: isUltraZoom ? 'none' : 'manipulation'
                     }}
                     onMouseMove={(e) => {
                       if (!isUltraZoom || isPdfDoc) return;
@@ -6669,12 +6673,45 @@ export default function Modals() {
                       const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
                       setZoomPos({ x, y });
                     }}
-                    onClick={() => {
-                      if (!isPdfDoc) {
-                        setIsUltraZoom(!isUltraZoom);
-                        if (isUltraZoom) {
-                          setZoomPos({ x: 50, y: 50 });
-                        }
+                    onTouchStart={(e) => {
+                      if (isPdfDoc || !e.touches || e.touches.length === 0) return;
+                      const touch = e.touches[0];
+                      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+                      isTouchDraggingRef.current = false;
+                      if (isUltraZoom) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+                        const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+                        setZoomPos({ x, y });
+                      }
+                    }}
+                    onTouchMove={(e) => {
+                      if (!isUltraZoom || isPdfDoc || !e.touches || e.touches.length === 0) return;
+                      const touch = e.touches[0];
+                      const dist = Math.hypot(touch.clientX - touchStartRef.current.x, touch.clientY - touchStartRef.current.y);
+                      if (dist > 6) {
+                        isTouchDraggingRef.current = true;
+                      }
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+                      const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+                      setZoomPos({ x, y });
+                    }}
+                    onClick={(e) => {
+                      if (isPdfDoc) return;
+                      if (isTouchDraggingRef.current) {
+                        isTouchDraggingRef.current = false;
+                        return;
+                      }
+                      const nextZoom = !isUltraZoom;
+                      setIsUltraZoom(nextZoom);
+                      if (nextZoom) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                        setZoomPos({ x, y });
+                      } else {
+                        setZoomPos({ x: 50, y: 50 });
                       }
                     }}
                   >
@@ -6743,7 +6780,7 @@ export default function Modals() {
                     )}
 
                     <div style={{ position: 'absolute', bottom: '12px', left: '16px', background: 'rgba(15,23,42,0.85)', padding: '4px 12px', borderRadius: '20px', border: '1px solid var(--border-glass)', fontSize: '0.76rem', color: 'white' }}>
-                      💡 {isUltraZoom ? '🔍 1.5X Zoom Mode (Click to shrink)' : '🔍 Click Photo to Zoom 1.5X'}
+                      💡 {isUltraZoom ? '🔍 2X Zoom Mode (Touch & Drag to Pan, Tap to shrink)' : '🔍 Click/Tap Photo to Zoom 2X'}
                     </div>
                   </div>
 
