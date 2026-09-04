@@ -1151,7 +1151,7 @@ export default function ProductsGrid() {
                           {/* GST Rate */}
                           {p.localGstRate && (
                             <span style={{ fontSize: '0.68rem', color: '#0284c7', background: '#e0f2fe', border: '1px solid #bae6fd', padding: '1px 6px', borderRadius: '4px', fontWeight: 800 }}>
-                              Incl. {p.localGstRate}% GST
+                              + {p.localGstRate}% GST
                             </span>
                           )}
 

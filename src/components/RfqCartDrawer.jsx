@@ -99,8 +99,8 @@ export default function RfqCartDrawer() {
     return acc + ((price * qty) * (gstRate / 100));
   }, 0);
 
-  // 5. Grand Total (Items Subtotal + Packing Charge + Courier Charge)
-  const totalLocalAmount = itemsSubtotal + totalPackingCharge + totalCourierCharge;
+  // 5. Grand Total (Items Subtotal + GST + Packing Charge + Courier Charge)
+  const totalLocalAmount = itemsSubtotal + totalGstAmount + totalPackingCharge + totalCourierCharge;
 
   const cartCurrency = rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(cartCurrency);
@@ -803,6 +803,7 @@ export default function RfqCartDrawer() {
                     <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
                       {totalCourierCharge > 0 ? `🚚 Courier: ${cartCurrSym}${totalCourierCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '🚚 FREE Delivery'}
                       {totalPackingCharge > 0 ? ` • 📦 Pack: ${cartCurrSym}${totalPackingCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
+                      {totalGstAmount > 0 ? ` • 🏛️ GST: +${cartCurrSym}${totalGstAmount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
                     </span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
                       Total: {cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
@@ -948,8 +949,8 @@ export default function RfqCartDrawer() {
 
               {totalGstAmount > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.78rem' }}>
-                  <span style={{ color: '#94a3b8' }}>🏛️ Included GST Tax Breakdown:</span>
-                  <span style={{ color: '#4ade80', fontWeight: 700 }}>{cartCurrSym + Number(totalGstAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                  <span style={{ color: '#94a3b8' }}>🏛️ GST Tax (+ GST Extra):</span>
+                  <span style={{ color: '#facc15', fontWeight: 700 }}>+ {cartCurrSym + Number(totalGstAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
                 </div>
               )}
 
