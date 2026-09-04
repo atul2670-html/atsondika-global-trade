@@ -4342,15 +4342,18 @@ export default function Modals() {
                     />
                   </div>
 
-                  {/* 5. MANDATORY INTERNATIONAL HS CODE WITH LIVE SEARCH LOOKUP TOOL */}
-                  <div className="form-group" style={{ background: 'rgba(20, 184, 166, 0.05)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(45, 212, 191, 0.3)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <label className="form-label" style={{ fontWeight: 800, margin: 0, color: 'var(--primary-teal-glow)' }}>
-                        🌐 International HS Code * (Mandatory / ફરજીયાત)
-                      </label>
-                      <span style={{ fontSize: '0.74rem', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                        Required
-                      </span>
+                  {/* 5. GLOBAL EXPORT TRADE OPTIONS (MANDATORY INTERNATIONAL HS CODE WITH LIVE SEARCH LOOKUP TOOL) */}
+                  <div className="form-group" style={{ background: 'rgba(20, 184, 166, 0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(45, 212, 191, 0.35)', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '1.25rem' }}>🌐</span>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary-teal-glow)' }}>
+                          Global Export Trade Options (ગ્લોબલ એક્ષપોર્ટ વેચાણ & HS કોડ વિગત)
+                        </h4>
+                        <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                          (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🌐 Global Trade (B2B Export) મોડ ચાલુ કરે ત્યારે ડિસ્પલે થશે)
+                        </span>
+                      </div>
                     </div>
 
                     {/* Global Trade Enable Checkbox Option */}
@@ -4376,6 +4379,15 @@ export default function Modals() {
                           🌐 Enable for Global Export Trade (આંતરરાષ્ટ્રીય ગ્લોબલ ટ્રેડમાં લાઈવ બતાવો)
                         </span>
                       </label>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#e2e8f0', fontSize: '0.84rem' }}>
+                        🌐 International HS Code * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                      </label>
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        Required
+                      </span>
                     </div>
 
                     {/* Live Search Tool with Online Internet Search Options */}
