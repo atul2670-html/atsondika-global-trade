@@ -72,7 +72,7 @@ export default function RfqCartDrawer() {
 
   // Total amount calculation for Local Trade
   const totalLocalAmount = rfqCartItems.reduce((acc, item) => {
-    const price = item.localPrice || (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
     return acc + (price * (parseFloat(item.quantity) || 1));
   }, 0);
 
@@ -331,7 +331,7 @@ export default function RfqCartDrawer() {
               <div className="rfq-cart-list">
                 {rfqCartItems.map((item) => {
                   const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
-                  const itemPrice = item.localPrice || (item.priceInr ? parseFloat(item.priceInr) : 499);
+                  const itemPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
 
                   return (
                     <div key={item.id} className="rfq-cart-item">

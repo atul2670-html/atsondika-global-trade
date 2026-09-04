@@ -260,13 +260,22 @@ export function AppProvider({ children }) {
     setTimeout(() => setLiveToast(null), 4000);
   };
 
-  const addToRfqCart = (product, quantity = 1, unit = 'MT', incoterm = 'FOB') => {
+  const addToRfqCart = (product, quantity = 1, unit = 'pcs', incoterm = 'FOB') => {
     setRfqCartItems(prev => {
       const existing = prev.find(item => item.id === product.id && item.incoterm === incoterm);
       if (existing) {
-        return prev.map(item => item.id === product.id && item.incoterm === incoterm ? { ...item, quantity: item.quantity + quantity } : item);
+        return prev.map(item => item.id === product.id && item.incoterm === incoterm
+          ? {
+              ...item,
+              ...product,
+              quantity: item.quantity + quantity,
+              localPrice: product.localPrice !== undefined ? product.localPrice : item.localPrice,
+              currency: product.currency || item.currency || 'INR'
+            }
+          : item
+        );
       }
-      return [...prev, { ...product, quantity, unit, incoterm, addedAt: Date.now() }];
+      return [...prev, { ...product, quantity, unit: unit || product.unit || 'pcs', incoterm, addedAt: Date.now() }];
     });
     showLiveToast(`🛒 Added "${product.names?.[currentLang] || product.names?.en || product.name}" to Quote Cart!`, 'success');
   };
