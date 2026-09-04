@@ -4348,7 +4348,7 @@ export default function Modals() {
                       <span style={{ fontSize: '1.25rem' }}>🌐</span>
                       <div>
                         <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary-teal-glow)' }}>
-                          Global Export Trade Options (ગ્લોબલ એક્ષપોર્ટ વેચાણ & HS કોડ વિગત)
+                          Global B2B Export Trade Options (ગ્લોબલ એક્ષપોર્ટ વેચાણ & HS કોડ વિગત)
                         </h4>
                         <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
                           (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🌐 Global Trade (B2B Export) મોડ ચાલુ કરે ત્યારે ડિસ્પલે થશે)
