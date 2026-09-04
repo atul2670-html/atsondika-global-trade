@@ -380,7 +380,7 @@ export default function RfqCartDrawer() {
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Pack</span>}
+                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Packing</span>}
                               {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.courierCharge} Courier</span>}
                               {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
                             </div>
@@ -802,7 +802,7 @@ export default function RfqCartDrawer() {
                   <>
                     <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
                       {totalCourierCharge > 0 ? `🚚 Courier: ${cartCurrSym}${totalCourierCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '🚚 FREE Delivery'}
-                      {totalPackingCharge > 0 ? ` • 📦 Pack: ${cartCurrSym}${totalPackingCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
+                      {totalPackingCharge > 0 ? ` • 📦 Packing: ${cartCurrSym}${totalPackingCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
                       {totalGstAmount > 0 ? ` • 🏛️ GST: +${cartCurrSym}${totalGstAmount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
                     </span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
