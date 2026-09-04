@@ -481,6 +481,27 @@ export default function ContainerCalculator() {
                   </div>
                 </div>
 
+                {/* Forex Risk Buffer Impact Badge - Placed ABOVE Realtime Base Live Rate Capsule */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: 'rgba(234, 179, 8, 0.12)',
+                  border: '1px solid rgba(234, 179, 8, 0.3)',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  fontSize: '0.86rem',
+                  marginTop: '12px'
+                }}>
+                  <span style={{ color: '#fde047', fontWeight: 800 }}>
+                    🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}
+                  </span>
+                  <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171', fontWeight: 900, fontSize: '0.92rem' }}>
+                    {getBufferDifferenceFormatted()} {toCurrCode}
+                  </strong>
+                </div>
+
+                {/* Realtime Base Live Rate Capsule */}
                 <div style={{
                   background: 'rgba(16, 185, 129, 0.12)',
                   border: '1px solid rgba(16, 185, 129, 0.3)',
@@ -489,7 +510,7 @@ export default function ContainerCalculator() {
                   fontSize: '0.84rem',
                   color: '#4ade80',
                   fontWeight: 800,
-                  marginTop: '12px',
+                  marginTop: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -530,20 +551,11 @@ export default function ContainerCalculator() {
                     <strong>{currencyDict[toCurrCode]?.symbol || ''} {getRawBaseConvertedFormatted()} {toCurrCode}</strong>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-sub)' }}>
                       📈 {currentLang === 'gu' ? 'બફર સાથેનો દરો (Hedged Rate):' : 'Hedged Forex Rate:'}
                     </span>
                     <span>1 {fromCurrCode} = <strong style={{ color: 'var(--accent-gold)' }}>{getAdjustedRate()} {toCurrCode}</strong></span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '6px', borderTop: '1px dashed var(--border-glass)' }}>
-                    <span style={{ color: 'var(--text-sub)' }}>
-                      🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}
-                    </span>
-                    <strong style={{ color: fluctuationPct >= 0 ? '#4ade80' : '#f87171' }}>
-                      {getBufferDifferenceFormatted()} {toCurrCode}
-                    </strong>
                   </div>
                 </div>
 
