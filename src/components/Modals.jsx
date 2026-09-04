@@ -501,9 +501,13 @@ export default function Modals() {
   const [enableGlobalTrade, setEnableGlobalTrade] = useState(true);
   const [enableLocalTrade, setEnableLocalTrade] = useState(true);
 
-  // Live HS Code Search State
+  // Live HS Code & Local HSN Code Search State
   const [hsSearchQuery, setHsSearchQuery] = useState('');
   const [showHsDropdown, setShowHsDropdown] = useState(false);
+  const [localHsnSearchQuery, setLocalHsnSearchQuery] = useState('');
+  const [showLocalHsnDropdown, setShowLocalHsnDropdown] = useState(false);
+
+
 
   // Branch Modal State
   const [cityInput, setCityInput] = useState('');
@@ -728,6 +732,8 @@ export default function Modals() {
       setNewUrlInput('');
       setHsSearchQuery('');
       setShowHsDropdown(false);
+      setLocalHsnSearchQuery('');
+      setShowLocalHsnDropdown(false);
     }
   }, [activeModal, editingProductId]);
 
@@ -1015,6 +1021,15 @@ export default function Modals() {
       )
     : hsCodeDictionary.slice(0, 8);
 
+  const filteredLocalHsCodes = localHsnSearchQuery.trim()
+    ? hsCodeDictionary.filter(item =>
+        (item.localHsn && item.localHsn.includes(localHsnSearchQuery.trim())) ||
+        item.code.includes(localHsnSearchQuery.trim()) ||
+        item.name.toLowerCase().includes(localHsnSearchQuery.toLowerCase().trim()) ||
+        item.cat.toLowerCase().includes(localHsnSearchQuery.toLowerCase().trim())
+      )
+    : hsCodeDictionary.slice(0, 8);
+
   // Helper photo handlers
   const handleAddUrl = () => {
     if (!newUrlInput.trim()) return;
@@ -1036,7 +1051,8 @@ export default function Modals() {
   };
 
   const handleOnlineHsSearch = (queryStr, mode = 'international') => {
-    const q = (queryStr || hsSearchQuery || nameEn || nameGu || 'Product').trim();
+    const fallbackQuery = mode === 'local' ? (localHsnSearchQuery || nameGu || nameEn) : (hsSearchQuery || nameEn || nameGu);
+    const q = (queryStr || fallbackQuery || 'Product').trim();
     if (!q) {
       alert("⚠️ Please type a product name in the search bar to search online on the internet!");
       return;
@@ -1239,6 +1255,8 @@ export default function Modals() {
       )}
     </div>
   );
+
+
 
   return (
     <>
@@ -4341,8 +4359,6 @@ export default function Modals() {
                       onChange={(e) => setNameGu(e.target.value)}
                     />
                   </div>
-
-                  {/* 5. GLOBAL EXPORT TRADE OPTIONS (MANDATORY INTERNATIONAL HS CODE WITH LIVE SEARCH LOOKUP TOOL) */}
                   <div className="form-group" style={{ background: 'rgba(20, 184, 166, 0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(45, 212, 191, 0.35)', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                       <span style={{ fontSize: '1.25rem' }}>🌐</span>
@@ -4383,20 +4399,17 @@ export default function Modals() {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#e2e8f0', fontSize: '0.84rem' }}>
-                        🌐 International HS Code * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                        🌐 Global Int'l HS Code Search <span style={{ color: '#2dd4bf', fontWeight: 700 }}>(WCO 6-Digit Online Tool)</span>
                       </label>
-                      <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                        Required
-                      </span>
                     </div>
 
-                    {/* Live Search Tool with Online Internet Search Options */}
-                    <div style={{ position: 'relative', marginBottom: '8px' }}>
+                    {/* Live Search Tool for Global Int'l HS Code */}
+                    <div style={{ position: 'relative', marginBottom: '12px' }}>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="🔍 Type product name (e.g. Cumin, Rice, Bolts, Textile)..."
+                          placeholder="🔍 Type Global product name (e.g. Cumin, Rice, Bolts, Textile)..."
                           value={hsSearchQuery}
                           onChange={(e) => {
                             setHsSearchQuery(e.target.value);
@@ -4410,7 +4423,7 @@ export default function Modals() {
                           onClick={() => handleOnlineHsSearch(hsSearchQuery, 'international')}
                           className="btn-primary"
                           style={{
-                            padding: '0 10px',
+                            padding: '0 12px',
                             flexShrink: 0,
                             fontSize: '0.78rem',
                             fontWeight: 800,
@@ -4420,24 +4433,7 @@ export default function Modals() {
                           }}
                           title="Search 6-Digit International HS Code Online"
                         >
-                          🌐 Int'l Search
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOnlineHsSearch(hsSearchQuery, 'local')}
-                          className="btn-secondary"
-                          style={{
-                            padding: '0 10px',
-                            flexShrink: 0,
-                            fontSize: '0.78rem',
-                            fontWeight: 800,
-                            color: '#f59e0b',
-                            borderColor: 'rgba(245, 158, 11, 0.4)',
-                            whiteSpace: 'nowrap'
-                          }}
-                          title="Search 8-Digit Indian Local HSN Code Online"
-                        >
-                          🇮🇳 Local HSN
+                          🌐 Int'l HS Search
                         </button>
                         {hsSearchQuery && (
                           <button
@@ -4458,7 +4454,7 @@ export default function Modals() {
                           top: 'calc(100% + 4px)',
                           left: 0,
                           width: '100%',
-                          maxHeight: '260px',
+                          maxHeight: '240px',
                           overflowY: 'auto',
                           zIndex: 100,
                           background: 'rgba(15, 23, 42, 0.98)',
@@ -4468,103 +4464,56 @@ export default function Modals() {
                           boxShadow: '0 15px 40px rgba(0,0,0,0.6)',
                           padding: '6px'
                         }}>
-                          {/* Top Actions: Direct Internet Search Buttons for International vs Local */}
-                          <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                            <div
-                              onClick={() => {
-                                handleOnlineHsSearch(hsSearchQuery, 'international');
-                                setShowHsDropdown(false);
-                              }}
-                              style={{
-                                flex: 1,
-                                padding: '8px',
-                                borderRadius: 'var(--radius-sm)',
-                                cursor: 'pointer',
-                                fontSize: '0.78rem',
-                                fontWeight: 800,
-                                background: 'rgba(2, 132, 199, 0.18)',
-                                color: '#38bdf8',
-                                border: '1px solid rgba(56, 189, 248, 0.3)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                            >
-                              <span>🌐 Int'l (6-Digit) Online</span>
-                              <span style={{ fontSize: '0.7rem', background: '#0284c7', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
-                            </div>
-
-                            <div
-                              onClick={() => {
-                                handleOnlineHsSearch(hsSearchQuery, 'local');
-                                setShowHsDropdown(false);
-                              }}
-                              style={{
-                                flex: 1,
-                                padding: '8px',
-                                borderRadius: 'var(--radius-sm)',
-                                cursor: 'pointer',
-                                fontSize: '0.78rem',
-                                fontWeight: 800,
-                                background: 'rgba(245, 158, 11, 0.15)',
-                                color: '#f59e0b',
-                                border: '1px solid rgba(245, 158, 11, 0.3)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                            >
-                              <span>🇮🇳 Local HSN (8-Digit) Online</span>
-                              <span style={{ fontSize: '0.7rem', background: '#d97706', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
-                            </div>
+                          <div
+                            onClick={() => {
+                              handleOnlineHsSearch(hsSearchQuery, 'international');
+                              setShowHsDropdown(false);
+                            }}
+                            style={{
+                              padding: '8px',
+                              borderRadius: 'var(--radius-sm)',
+                              cursor: 'pointer',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              background: 'rgba(2, 132, 199, 0.18)',
+                              color: '#38bdf8',
+                              border: '1px solid rgba(56, 189, 248, 0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justify: 'space-between',
+                              marginBottom: '8px'
+                            }}
+                          >
+                            <span>🌐 Search "{hsSearchQuery || 'Product'}" Int'l 6-Digit HS Code Online</span>
+                            <span style={{ fontSize: '0.7rem', background: '#0284c7', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
                           </div>
 
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', padding: '4px 8px', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '4px' }}>
-                            👇 Quick Auto-Fill (Int'l WCO 6-Digit & Local 8-Digit HSN):
+                            👇 Quick Auto-Fill Int'l WCO 6-Digit HS Code:
                           </div>
 
                           {filteredHsCodes.length === 0 ? (
-                            <div style={{ padding: '12px', textAlign: 'center' }}>
-                              <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '8px' }}>
+                            <div style={{ padding: '10px', textAlign: 'center' }}>
+                              <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '6px' }}>
                                 No matching local database HS Code found for "{hsSearchQuery}".
                               </p>
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                  type="button"
-                                  className="btn-primary"
-                                  style={{
-                                    flex: 1,
-                                    fontSize: '0.78rem',
-                                    padding: '6px',
-                                    background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                                    justify: 'center'
-                                  }}
-                                  onClick={() => {
-                                    handleOnlineHsSearch(hsSearchQuery, 'international');
-                                    setShowHsDropdown(false);
-                                  }}
-                                >
-                                  🌐 Search Int'l 6-Digit
-                                </button>
-                                <button
-                                  type="button"
-                                  className="btn-secondary"
-                                  style={{
-                                    flex: 1,
-                                    fontSize: '0.78rem',
-                                    padding: '6px',
-                                    color: '#f59e0b',
-                                    borderColor: '#f59e0b',
-                                    justify: 'center'
-                                  }}
-                                  onClick={() => {
-                                    handleOnlineHsSearch(hsSearchQuery, 'local');
-                                    setShowHsDropdown(false);
-                                  }}
-                                >
-                                  🇮🇳 Search Local 8-Digit HSN
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                className="btn-primary"
+                                style={{
+                                  width: '100%',
+                                  fontSize: '0.78rem',
+                                  padding: '6px',
+                                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                                  justify: 'center'
+                                }}
+                                onClick={() => {
+                                  handleOnlineHsSearch(hsSearchQuery, 'international');
+                                  setShowHsDropdown(false);
+                                }}
+                              >
+                                🌐 Search Int'l 6-Digit HS Code Online
+                              </button>
                             </div>
                           ) : (
                             filteredHsCodes.map((item, idx) => (
@@ -4572,8 +4521,7 @@ export default function Modals() {
                                 key={idx}
                                 onClick={() => {
                                   setHsCode(item.code);
-                                  if (item.localHsn) setLocalHsn(item.localHsn);
-                                  setHsSearchQuery(`${item.code} | HSN ${item.localHsn || ''} - ${item.name}`);
+                                  setHsSearchQuery(`${item.code} - ${item.name}`);
                                   setShowHsDropdown(false);
                                 }}
                                 style={{
@@ -4582,7 +4530,7 @@ export default function Modals() {
                                   cursor: 'pointer',
                                   fontSize: '0.82rem',
                                   display: 'flex',
-                                  justifyContent: 'space-between',
+                                  justify: 'space-between',
                                   alignItems: 'center',
                                   borderBottom: '1px solid rgba(255,255,255,0.05)',
                                   transition: 'background 0.2s'
@@ -4594,11 +4542,6 @@ export default function Modals() {
                                   <span style={{ fontWeight: 900, color: '#4ade80', marginRight: '6px' }}>
                                     🌐 {item.code}
                                   </span>
-                                  {item.localHsn && (
-                                    <span style={{ fontWeight: 800, color: '#f59e0b', marginRight: '8px', fontSize: '0.78rem' }}>
-                                      (🇮🇳 {item.localHsn})
-                                    </span>
-                                  )}
                                   <span style={{ color: 'var(--text-main)' }}>{item.name}</span>
                                 </div>
                                 <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', color: 'var(--text-sub)', padding: '2px 6px', borderRadius: '4px' }}>
@@ -4614,7 +4557,7 @@ export default function Modals() {
                     <div className="form-row">
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
-                          🌐 Int'l HS Code (6-Digit WCO) *
+                          🌐 Int'l HS Code (6-Digit WCO) * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
                         </label>
                         <input
                           type="text"
@@ -4624,20 +4567,6 @@ export default function Modals() {
                           onChange={(e) => setHsCode(e.target.value)}
                           required
                           style={{ fontWeight: 800, color: 'var(--primary-teal-glow)' }}
-                        />
-                      </div>
-
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
-                          🇮🇳 Local HSN Code (8-Digit Customs)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="e.g. 09093110"
-                          value={localHsn}
-                          onChange={(e) => setLocalHsn(e.target.value)}
-                          style={{ fontWeight: 800, color: '#f59e0b' }}
                         />
                       </div>
 
@@ -4714,12 +4643,186 @@ export default function Modals() {
                           </label>
                         </div>
 
-                        {/* ROW 1: PRICING CURRENCY (FIRST FIELD) & PRODUCT UNIT */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                        {/* Local HSN Code Live Online Search Tool */}
+                        <div style={{ position: 'relative', marginBottom: '12px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, margin: 0 }}>
+                              🇮🇳 Local HSN Code Search <span style={{ color: '#94a3b8', fontWeight: 600 }}>(Indian Customs 8-Digit Tool)</span>
+                            </label>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="🔍 Type Local product name (e.g. જીરૂં, ઘઉં, ગારમેન્ટ્સ, Bolts)..."
+                              value={localHsnSearchQuery}
+                              onChange={(e) => {
+                                setLocalHsnSearchQuery(e.target.value);
+                                setShowLocalHsnDropdown(true);
+                              }}
+                              onFocus={() => setShowLocalHsnDropdown(true)}
+                              style={{ fontSize: '0.86rem', flex: 1, borderColor: 'rgba(250, 204, 21, 0.4)' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleOnlineHsSearch(localHsnSearchQuery, 'local')}
+                              className="btn-secondary"
+                              style={{
+                                padding: '0 12px',
+                                flexShrink: 0,
+                                fontSize: '0.78rem',
+                                fontWeight: 800,
+                                color: '#facc15',
+                                borderColor: '#facc15',
+                                background: 'rgba(250, 204, 21, 0.15)',
+                                whiteSpace: 'nowrap'
+                              }}
+                              title="Search 8-Digit Indian Local HSN Code Online"
+                            >
+                              🇮🇳 Local HSN Search
+                            </button>
+                            {localHsnSearchQuery && (
+                              <button
+                                type="button"
+                                onClick={() => { setLocalHsnSearchQuery(''); setShowLocalHsnDropdown(false); }}
+                                className="btn-secondary"
+                                style={{ padding: '0 8px', flexShrink: 0 }}
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Local Dropdown Results */}
+                          {showLocalHsnDropdown && (
+                            <div className="glass-card" style={{
+                              position: 'absolute',
+                              top: 'calc(100% + 4px)',
+                              left: 0,
+                              width: '100%',
+                              maxHeight: '240px',
+                              overflowY: 'auto',
+                              zIndex: 100,
+                              background: 'rgba(15, 23, 42, 0.98)',
+                              backdropFilter: 'blur(24px)',
+                              border: '1px solid #facc15',
+                              borderRadius: 'var(--radius-md)',
+                              boxShadow: '0 15px 40px rgba(0,0,0,0.6)',
+                              padding: '6px'
+                            }}>
+                              <div
+                                onClick={() => {
+                                  handleOnlineHsSearch(localHsnSearchQuery, 'local');
+                                  setShowLocalHsnDropdown(false);
+                                }}
+                                style={{
+                                  padding: '8px',
+                                  borderRadius: 'var(--radius-sm)',
+                                  cursor: 'pointer',
+                                  fontSize: '0.78rem',
+                                  fontWeight: 800,
+                                  background: 'rgba(245, 158, 11, 0.15)',
+                                  color: '#f59e0b',
+                                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justify: 'space-between',
+                                  marginBottom: '8px'
+                                }}
+                              >
+                                <span>🇮🇳 Search "{localHsnSearchQuery || 'Product'}" Indian 8-Digit HSN Code Online</span>
+                                <span style={{ fontSize: '0.7rem', background: '#d97706', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
+                              </div>
+
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', padding: '4px 8px', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '4px' }}>
+                                👇 Quick Auto-Fill Indian 8-Digit HSN Code:
+                              </div>
+
+                              {filteredLocalHsCodes.length === 0 ? (
+                                <div style={{ padding: '10px', textAlign: 'center' }}>
+                                  <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '6px' }}>
+                                    No matching local database HSN Code found for "{localHsnSearchQuery}".
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    style={{
+                                      width: '100%',
+                                      fontSize: '0.78rem',
+                                      padding: '6px',
+                                      color: '#facc15',
+                                      borderColor: '#facc15',
+                                      justify: 'center'
+                                    }}
+                                    onClick={() => {
+                                      handleOnlineHsSearch(localHsnSearchQuery, 'local');
+                                      setShowLocalHsnDropdown(false);
+                                    }}
+                                  >
+                                    🇮🇳 Search Local 8-Digit HSN Code Online
+                                  </button>
+                                </div>
+                              ) : (
+                                filteredLocalHsCodes.map((item, idx) => (
+                                  <div
+                                    key={idx}
+                                    onClick={() => {
+                                      if (item.localHsn) setLocalHsn(item.localHsn);
+                                      else setLocalHsn(`${item.code}10`);
+                                      setLocalHsnSearchQuery(`HSN ${item.localHsn || item.code} - ${item.name}`);
+                                      setShowLocalHsnDropdown(false);
+                                    }}
+                                    style={{
+                                      padding: '8px 10px',
+                                      borderRadius: 'var(--radius-sm)',
+                                      cursor: 'pointer',
+                                      fontSize: '0.82rem',
+                                      display: 'flex',
+                                      justify: 'space-between',
+                                      alignItems: 'center',
+                                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                      transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(250, 204, 21, 0.2)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    <div>
+                                      <span style={{ fontWeight: 900, color: '#facc15', marginRight: '6px' }}>
+                                        🇮🇳 {item.localHsn || `${item.code}10`}
+                                      </span>
+                                      <span style={{ color: 'var(--text-main)' }}>{item.name}</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', color: 'var(--text-sub)', padding: '2px 6px', borderRadius: '4px' }}>
+                                      {item.cat}
+                                    </span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ROW 1: LOCAL HSN CODE, PRICING CURRENCY & PRODUCT UNIT */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                          {/* Local HSN Code (8-Digit Customs) */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              🇮🇳 Local HSN Code (8-Digit)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="e.g. 09093110"
+                              value={localHsn}
+                              onChange={(e) => setLocalHsn(e.target.value)}
+                              style={{ fontWeight: 800, color: '#facc15', background: '#0f172a', border: '1px solid rgba(250, 204, 21, 0.5)' }}
+                            />
+                          </div>
+
                           {/* Pricing Currency Selection (Searchable World Currencies FIRST) */}
                           <div className="form-group" style={{ marginBottom: 0 }}>
                             <SearchableCurrencySelect
-                              label="💱 1. Pricing Currency (સૌથી પહેલા કરન્સી સિલેક્ટ કરો) *"
+                              label="💱 1. Currency *"
                               value={localCurrency}
                               onChange={(selected) => setLocalCurrency(typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR'))}
                             />
@@ -4728,7 +4831,7 @@ export default function Modals() {
                           {/* Product Unit Selection */}
                           <div className="form-group" style={{ marginBottom: 0 }}>
                             <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
-                              📐 Product Unit (યુનિટ પસંદગી) *
+                              📐 Product Unit *
                             </label>
                             <select
                               className="form-control"
