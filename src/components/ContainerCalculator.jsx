@@ -152,21 +152,23 @@ export default function ContainerCalculator() {
   const sortedCurrencyCodes = Object.keys(currencyDict).sort();
 
   // Domestic India Truck Freight Calc State
-  const [truckType, setTruckType] = useState('12_wheeler');
+  const [truckType, setTruckType] = useState('4_wheeler_tempo');
   const [domesticRoute, setDomesticRoute] = useState('surat_mumbai');
 
   const domesticTruckRoutes = {
-    surat_mumbai: { name: 'Surat (GJ) ➔ Mumbai / Bhiwandi (MH)', dist: '280 km', time: '8 - 10 Hours', rate10: 22000, rate12: 28000, rate14: 36000, rate32ft: 34000 },
-    surat_delhi: { name: 'Surat (GJ) ➔ Delhi NCR / Gurgaon / Faridabad', dist: '1,150 km', time: '36 - 42 Hours', rate10: 65000, rate12: 82000, rate14: 105000, rate32ft: 95000 },
-    surat_blore: { name: 'Surat (GJ) ➔ Bengaluru / Electronic City (KA)', dist: '1,250 km', time: '40 - 48 Hours', rate10: 72000, rate12: 90000, rate14: 115000, rate32ft: 102000 },
-    surat_ahmedabad: { name: 'Surat (GJ) ➔ Ahmedabad / Changodar (Local GJ)', dist: '260 km', time: '6 - 8 Hours', rate10: 18000, rate12: 23000, rate14: 30000, rate32ft: 28000 },
-    surat_kolkata: { name: 'Surat (GJ) ➔ Kolkata / Dankuni (WB)', dist: '1,850 km', time: '60 - 72 Hours', rate10: 95000, rate12: 120000, rate14: 155000, rate32ft: 140000 },
-    surat_hyderabad: { name: 'Surat (GJ) ➔ Hyderabad / Patancheru (TS)', dist: '980 km', time: '30 - 36 Hours', rate10: 54000, rate12: 68000, rate14: 86000, rate32ft: 78000 },
-    surat_jaipur: { name: 'Surat (GJ) ➔ Jaipur / Vishwakarma (RJ)', dist: '860 km', time: '26 - 30 Hours', rate10: 48000, rate12: 60000, rate14: 76000, rate32ft: 70000 }
+    surat_mumbai: { name: 'Surat (GJ) ➔ Mumbai / Bhiwandi (MH)', dist: '280 km', time: '8 - 10 Hours', rate4tempo: 7500, rate6eicher: 13500, rate10: 22000, rate12: 28000, rate14: 36000, rate32ft: 34000 },
+    surat_delhi: { name: 'Surat (GJ) ➔ Delhi NCR / Gurgaon / Faridabad', dist: '1,150 km', time: '36 - 42 Hours', rate4tempo: 21000, rate6eicher: 38000, rate10: 65000, rate12: 82000, rate14: 105000, rate32ft: 95000 },
+    surat_blore: { name: 'Surat (GJ) ➔ Bengaluru / Electronic City (KA)', dist: '1,250 km', time: '40 - 48 Hours', rate4tempo: 23500, rate6eicher: 42000, rate10: 72000, rate12: 90000, rate14: 115000, rate32ft: 102000 },
+    surat_ahmedabad: { name: 'Surat (GJ) ➔ Ahmedabad / Changodar (Local GJ)', dist: '260 km', time: '6 - 8 Hours', rate4tempo: 6000, rate6eicher: 11000, rate10: 18000, rate12: 23000, rate14: 30000, rate32ft: 28000 },
+    surat_kolkata: { name: 'Surat (GJ) ➔ Kolkata / Dankuni (WB)', dist: '1,850 km', time: '60 - 72 Hours', rate4tempo: 31000, rate6eicher: 55000, rate10: 95000, rate12: 120000, rate14: 155000, rate32ft: 140000 },
+    surat_hyderabad: { name: 'Surat (GJ) ➔ Hyderabad / Patancheru (TS)', dist: '980 km', time: '30 - 36 Hours', rate4tempo: 17500, rate6eicher: 31500, rate10: 54000, rate12: 68000, rate14: 86000, rate32ft: 78000 },
+    surat_jaipur: { name: 'Surat (GJ) ➔ Jaipur / Vishwakarma (RJ)', dist: '860 km', time: '26 - 30 Hours', rate4tempo: 15500, rate6eicher: 28000, rate10: 48000, rate12: 60000, rate14: 76000, rate32ft: 70000 }
   };
 
   const getTruckEstFare = () => {
     const route = domesticTruckRoutes[domesticRoute] || domesticTruckRoutes.surat_mumbai;
+    if (truckType === '4_wheeler_tempo') return route.rate4tempo;
+    if (truckType === '6_wheeler_truck') return route.rate6eicher;
     if (truckType === '10_wheeler') return route.rate10;
     if (truckType === '12_wheeler') return route.rate12;
     if (truckType === '14_wheeler') return route.rate14;
@@ -318,10 +320,12 @@ export default function ContainerCalculator() {
                     className="form-control"
                     style={{ fontWeight: 800 }}
                   >
-                    <option value="10_wheeler">🚚 10 Wheeler Truck (16 - 18 Metric Tons Capacity)</option>
-                    <option value="12_wheeler">🚛 12 Wheeler Heavy Duty Truck (21 - 25 Metric Tons Capacity)</option>
-                    <option value="14_wheeler">🚛 14 Wheeler Multi-Axle Truck (30 - 32 Metric Tons Capacity)</option>
-                    <option value="32ft_mxl">📦 32ft MXL Container Truck (14 - 15 Tons High Volume)</option>
+                    <option value="4_wheeler_tempo">🛻 4 Wheeler Tempo / Pickup (1.5 – 2.5 Metric Tons Capacity)</option>
+                    <option value="6_wheeler_truck">🚛 6 Wheeler Light Eicher Truck (4 – 7 Metric Tons Capacity)</option>
+                    <option value="10_wheeler">🚚 10 Wheeler Truck (16 – 18 Metric Tons Capacity)</option>
+                    <option value="12_wheeler">🚛 12 Wheeler Heavy Duty Truck (21 – 25 Metric Tons Capacity)</option>
+                    <option value="14_wheeler">🚛 14 Wheeler Multi-Axle Truck (30 – 32 Metric Tons Capacity)</option>
+                    <option value="32ft_mxl">📦 32ft MXL Container Truck (14 – 15 Tons High Volume)</option>
                   </select>
                 </div>
 
