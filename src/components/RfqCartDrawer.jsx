@@ -70,11 +70,37 @@ export default function RfqCartDrawer() {
 
   const totalQuantity = rfqCartItems.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1), 0);
 
-  // Total amount calculation for Local Trade
-  const totalLocalAmount = rfqCartItems.reduce((acc, item) => {
+  // 1. Items Base Price Subtotal (Selling Price * Quantity)
+  const itemsSubtotal = rfqCartItems.reduce((acc, item) => {
     const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
-    return acc + (price * (parseFloat(item.quantity) || 1));
+    const qty = parseFloat(item.quantity) || 1;
+    return acc + (price * qty);
   }, 0);
+
+  // 2. Total Packing Charge
+  const totalPackingCharge = rfqCartItems.reduce((acc, item) => {
+    const pack = parseFloat(item.packingCharge) || 0;
+    const qty = parseFloat(item.quantity) || 1;
+    return acc + (pack * qty);
+  }, 0);
+
+  // 3. Total Courier Delivery Charge
+  const totalCourierCharge = rfqCartItems.reduce((acc, item) => {
+    const cour = parseFloat(item.courierCharge) || 0;
+    const qty = parseFloat(item.quantity) || 1;
+    return acc + (cour * qty);
+  }, 0);
+
+  // 4. Total GST Amount (Included Tax breakdown)
+  const totalGstAmount = rfqCartItems.reduce((acc, item) => {
+    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const qty = parseFloat(item.quantity) || 1;
+    const gstRate = parseFloat(item.localGstRate) || 0;
+    return acc + ((price * qty) * (gstRate / 100));
+  }, 0);
+
+  // 5. Grand Total (Items Subtotal + Packing Charge + Courier Charge)
+  const totalLocalAmount = itemsSubtotal + totalPackingCharge + totalCourierCharge;
 
   const cartCurrency = rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(cartCurrency);
@@ -349,9 +375,16 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price">
                             {tradeMode === 'local'
-                              ? getCurrencySymbol(item.currency || 'INR') + Number(itemPrice).toLocaleString('en-IN')
+                              ? getCurrencySymbol(item.currency || 'INR') + Number(itemPrice).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
+                          {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Pack</span>}
+                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.courierCharge} Courier</span>}
+                              {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(Incl. {item.localGstRate}% GST)</span>}
+                            </div>
+                          )}
                         </div>
 
                         {/* Quantity Controls */}
@@ -767,9 +800,12 @@ export default function RfqCartDrawer() {
               <div style={{ textAlign: 'right' }}>
                 {tradeMode === 'local' ? (
                   <>
-                    <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700, display: 'block' }}>🚚 FREE Delivery</span>
+                    <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
+                      {totalCourierCharge > 0 ? `🚚 Courier: ${cartCurrSym}${totalCourierCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '🚚 FREE Delivery'}
+                      {totalPackingCharge > 0 ? ` • 📦 Pack: ${cartCurrSym}${totalPackingCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
+                    </span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
-                      Total: {tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)}
+                      Total: {cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                     </span>
                   </>
                 ) : (
@@ -892,17 +928,36 @@ export default function RfqCartDrawer() {
             {/* Order Amount Summary */}
             <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Total ({rfqCartItems.length} Products):</span>
-                <span style={{ fontWeight: 700, color: '#white' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Subtotal ({rfqCartItems.length} Products):</span>
+                <span style={{ fontWeight: 700, color: '#ffffff' }}>{cartCurrSym + Number(itemsSubtotal).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
               </div>
+
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Delivery Fee:</span>
-                <span style={{ fontWeight: 800, color: '#4ade80' }}>FREE</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>📦 Packing Charge:</span>
+                <span style={{ fontWeight: 800, color: totalPackingCharge > 0 ? '#f59e0b' : '#4ade80' }}>
+                  {totalPackingCharge > 0 ? cartCurrSym + Number(totalPackingCharge).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'FREE (0)'}
+                </span>
               </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>🚚 Courier Delivery Charge:</span>
+                <span style={{ fontWeight: 800, color: totalCourierCharge > 0 ? '#38bdf8' : '#4ade80' }}>
+                  {totalCourierCharge > 0 ? cartCurrSym + Number(totalCourierCharge).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'FREE (0)'}
+                </span>
+              </div>
+
+              {totalGstAmount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.78rem' }}>
+                  <span style={{ color: '#94a3b8' }}>🏛️ Included GST Tax Breakdown:</span>
+                  <span style={{ color: '#4ade80', fontWeight: 700 }}>{cartCurrSym + Number(totalGstAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                </div>
+              )}
+
               <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
+
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
                 <span style={{ color: '#ffffff' }}>Payable Amount:</span>
-                <span style={{ color: '#facc15' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN')}</span>
+                <span style={{ color: '#facc15' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
               </div>
             </div>
 
