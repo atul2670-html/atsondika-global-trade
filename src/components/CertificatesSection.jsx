@@ -116,8 +116,10 @@ export default function CertificatesSection() {
                     style={{ width: '100%', justifyContent: 'center', marginTop: '14px', fontSize: '0.85rem' }}
                     onClick={() => {
                       if (c.fileUrl && openImagePreview) {
+                        const iconDisplay = (c.icon && !c.icon.startsWith('data:image') && !c.icon.startsWith('http') && !c.icon.startsWith('/') && !c.icon.includes('.')) ? c.icon : '';
+                        const cleanTitle = iconDisplay ? `${iconDisplay} ${c.title}` : c.title;
                         openImagePreview({
-                          title: `${c.icon || '📜'} ${c.title}`,
+                          title: cleanTitle,
                           url: c.fileUrl,
                           category: c.reg ? `Reg No: ${c.reg}` : 'Official Accreditation & Certificate Document',
                           fileType: c.fileType

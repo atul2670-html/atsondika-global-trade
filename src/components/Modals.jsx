@@ -5360,8 +5360,10 @@ export default function Modals() {
                   className="btn-primary"
                   style={{ fontSize: '0.8rem', padding: '6px 14px' }}
                   onClick={() => {
+                    const iconText = (selectedCertForView.icon && !selectedCertForView.icon.startsWith('data:image') && !selectedCertForView.icon.startsWith('http') && !selectedCertForView.icon.startsWith('/') && !selectedCertForView.icon.includes('.')) ? selectedCertForView.icon : '';
+                    const cleanTitle = iconText ? `${iconText} ${selectedCertForView.title}` : selectedCertForView.title;
                     openImagePreview({
-                      title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                      title: cleanTitle,
                       url: selectedCertForView.fileUrl,
                       category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
                       fileType: selectedCertForView.fileType
@@ -5401,8 +5403,10 @@ export default function Modals() {
                         cursor: 'pointer'
                       }}
                       onClick={() => {
+                        const iconText = (selectedCertForView.icon && !selectedCertForView.icon.startsWith('data:image') && !selectedCertForView.icon.startsWith('http') && !selectedCertForView.icon.startsWith('/') && !selectedCertForView.icon.includes('.')) ? selectedCertForView.icon : '';
+                        const cleanTitle = iconText ? `${iconText} ${selectedCertForView.title}` : selectedCertForView.title;
                         openImagePreview({
-                          title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                          title: cleanTitle,
                           url: selectedCertForView.fileUrl,
                           category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
                           fileType: selectedCertForView.fileType
@@ -5421,8 +5425,10 @@ export default function Modals() {
                         className="btn-primary"
                         style={{ fontSize: '0.85rem', padding: '8px 18px' }}
                         onClick={() => {
+                          const iconText = (selectedCertForView.icon && !selectedCertForView.icon.startsWith('data:image') && !selectedCertForView.icon.startsWith('http') && !selectedCertForView.icon.startsWith('/') && !selectedCertForView.icon.includes('.')) ? selectedCertForView.icon : '';
+                          const cleanTitle = iconText ? `${iconText} ${selectedCertForView.title}` : selectedCertForView.title;
                           openImagePreview({
-                            title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                            title: cleanTitle,
                             url: selectedCertForView.fileUrl,
                             category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
                             fileType: selectedCertForView.fileType
@@ -6946,15 +6952,15 @@ export default function Modals() {
             </button>
 
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', paddingRight: '48px', flexWrap: 'wrap', gap: '10px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', paddingRight: '48px', flexWrap: 'wrap', gap: '10px', maxWidth: '100%', overflow: 'hidden' }}>
+              <div style={{ maxWidth: 'calc(100% - 220px)', minWidth: '260px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '1.4rem' }}>🔍</span>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', margin: 0 }}>
-                    {imagePreviewData.title}
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', margin: 0, wordBreak: 'break-word', overflowWrap: 'anywhere', maxWidth: '100%' }}>
+                    {imagePreviewData.title ? imagePreviewData.title.replace(/data:image\/[^;]+;base64,[^\s]+/g, '').trim() : ''}
                   </h3>
                 </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-sub)', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-sub)', flexWrap: 'wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                   <span>{imagePreviewData.category}</span>
                   {imagePreviewData.hsCode && <span>• 🌐 HS Code: <strong style={{ color: '#38bdf8' }}>{imagePreviewData.hsCode}</strong></span>}
                   <span>• 🖼️ High-Res Original Photo</span>
