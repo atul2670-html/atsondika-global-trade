@@ -5200,15 +5200,101 @@ export default function Modals() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Icon Emoji</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="📜"
-                  value={certIcon}
-                  onChange={(e) => setCertIcon(e.target.value)}
-                />
+              {/* Certificate Icon / Emoji Picker & Image Upload */}
+              <div className="form-group" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '14px', border: '1px solid var(--border-glass)' }}>
+                <label className="form-label" style={{ fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                  <span>🖼️ Certificate Icon / Emoji (એમોજી સિલેક્ટ કરો અથવા આઇકન ફોટો અપલોડ કરો)</span>
+                  {certIcon && (
+                    <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700 }}>
+                      {certIcon.startsWith('data:image') || certIcon.startsWith('http') || certIcon.includes('.') ? '🖼️ Custom Image Icon' : `Selected: ${certIcon}`}
+                    </span>
+                  )}
+                </label>
+
+                {/* Quick Emoji Presets */}
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                  {['📜', '🏅', '🌾', '🌿', '🛡️', '⭐', '🌐', '🏭', '📄', '📋', '🏆', '🏷️'].map(emoji => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      style={{
+                        background: certIcon === emoji ? 'rgba(56, 189, 248, 0.3)' : 'rgba(255, 255, 255, 0.08)',
+                        border: certIcon === emoji ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '8px',
+                        padding: '6px 10px',
+                        fontSize: '1.2rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onClick={() => setCertIcon(emoji)}
+                      title={`Select ${emoji}`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter emoji e.g. 📜"
+                    value={certIcon.startsWith('data:image') ? '[Custom Image Uploaded]' : certIcon}
+                    onChange={(e) => setCertIcon(e.target.value)}
+                  />
+
+                  {/* Custom Icon Image File Upload Button */}
+                  <label
+                    className="btn-secondary"
+                    style={{
+                      fontSize: '0.8rem',
+                      padding: '8px 14px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      whiteSpace: 'nowrap',
+                      background: 'rgba(16, 185, 129, 0.15)',
+                      color: '#4ade80',
+                      borderColor: 'rgba(16, 185, 129, 0.3)',
+                      fontWeight: 700
+                    }}
+                  >
+                    📁 Upload Icon Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            setCertIcon(evt.target.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* Icon Image Preview Box if image is uploaded */}
+                {certIcon && (certIcon.startsWith('data:image') || certIcon.startsWith('http') || certIcon.includes('.')) && (
+                  <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.3)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <img src={certIcon} alt="Icon Preview" style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px', background: 'white', padding: '2px' }} />
+                    <div style={{ flex: 1, fontSize: '0.8rem', color: '#4ade80', fontWeight: 700 }}>
+                      ✅ Custom Icon Photo Attached!
+                    </div>
+                    <button
+                      type="button"
+                      style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}
+                      onClick={() => setCertIcon('📜')}
+                    >
+                      ✕ Reset to 📜
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* PDF Document File Upload */}
@@ -5255,8 +5341,13 @@ export default function Modals() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px', paddingRight: '36px' }}>
               <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white', margin: 0 }}>
-                  {selectedCertForView.icon} {selectedCertForView.title}
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {selectedCertForView.icon && (selectedCertForView.icon.startsWith('data:image') || selectedCertForView.icon.startsWith('http') || selectedCertForView.icon.startsWith('/') || selectedCertForView.icon.includes('.')) ? (
+                    <img src={selectedCertForView.icon} alt={selectedCertForView.title} style={{ width: '32px', height: '32px', objectFit: 'contain', borderRadius: '6px' }} />
+                  ) : (
+                    selectedCertForView.icon || '📜'
+                  )}{' '}
+                  {selectedCertForView.title}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', margin: '4px 0 0 0' }}>
                   {selectedCertForView.reg}

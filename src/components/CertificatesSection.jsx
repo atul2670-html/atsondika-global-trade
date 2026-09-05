@@ -83,7 +83,13 @@ export default function CertificatesSection() {
             return (
               <div key={c.id} className="glass-card cert-card">
                 <div>
-                  <span className="cert-icon">{c.icon || '📜'}</span>
+                  <span className="cert-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {c.icon && (c.icon.startsWith('data:image') || c.icon.startsWith('http') || c.icon.startsWith('/') || c.icon.includes('.')) ? (
+                      <img src={c.icon} alt={c.title} style={{ width: '42px', height: '42px', objectFit: 'contain', borderRadius: '8px' }} />
+                    ) : (
+                      c.icon || '📜'
+                    )}
+                  </span>
                   <div className="cert-title">{c.title}</div>
                   <div className="cert-reg">{c.reg}</div>
                   {fileBadge && (
