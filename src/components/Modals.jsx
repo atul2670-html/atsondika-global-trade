@@ -5250,26 +5250,103 @@ export default function Modals() {
       {/* View Certificate Document Modal */}
       {activeModal === 'viewCert' && selectedCertForView && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '800px', width: '90%' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '900px', width: '92%' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '14px' }}>
-              {selectedCertForView.icon} {selectedCertForView.title}
-            </h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-sub)', marginBottom: '18px' }}>
-              {selectedCertForView.reg}
-            </p>
 
-            <div style={{ minHeight: '400px', background: '#000', borderRadius: 'var(--radius-md)', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px', paddingRight: '36px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white', margin: 0 }}>
+                  {selectedCertForView.icon} {selectedCertForView.title}
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', margin: '4px 0 0 0' }}>
+                  {selectedCertForView.reg}
+                </p>
+              </div>
+
+              {selectedCertForView.fileUrl && (
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+                  onClick={() => {
+                    openImagePreview({
+                      title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                      url: selectedCertForView.fileUrl,
+                      category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
+                      fileType: selectedCertForView.fileType
+                    });
+                  }}
+                >
+                  🔍 Open Fullscreen 2X Zoom (૨X ઝુમ લાઇટબોક્ષ જુઓ)
+                </button>
+              )}
+            </div>
+
+            <div style={{ minHeight: '420px', background: 'rgba(0,0,0,0.85)', borderRadius: 'var(--radius-md)', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '1px solid var(--border-glass)' }}>
               {selectedCertForView.fileUrl ? (
-                selectedCertForView.fileType === 'pdf' ? (
-                  <iframe src={selectedCertForView.fileUrl} style={{ width: '100%', height: '500px', border: 'none' }} title="Certificate PDF"></iframe>
-) : (
-                  <img src={selectedCertForView.fileUrl} alt={selectedCertForView.title} style={{ maxWidth: '100%', maxHeight: '500px', objectFit: 'contain' }} />
+                (selectedCertForView.fileType === 'pdf' || selectedCertForView.fileUrl.includes('application/pdf') || selectedCertForView.fileUrl.toLowerCase().endsWith('.pdf')) ? (
+                  <div style={{ width: '100%', height: '580px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <iframe src={selectedCertForView.fileUrl} style={{ width: '100%', height: '100%', border: 'none', background: 'white' }} title="Certificate PDF"></iframe>
+                    <div style={{ padding: '12px', background: 'rgba(15, 23, 42, 0.95)', width: '100%', textAlign: 'center' }}>
+                      <a href={selectedCertForView.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '10px 22px', fontSize: '0.88rem' }}>
+                        📄 Open / Download PDF Document (નવા ટેબમાં PDF ખોલો)
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ width: '100%', textAlign: 'center', padding: '16px' }}>
+                    <div style={{ marginBottom: '10px', fontSize: '0.82rem', color: '#4ade80', fontWeight: 700 }}>
+                      🔍 2X Ultra Zoom Photo Preview (કર્સર વડે ડાબે, જમણે, ઉપર, નીચે મુવ કરી શકાશે)
+                    </div>
+                    <div
+                      style={{
+                        position: 'relative',
+                        maxHeight: '60vh',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '12px',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => {
+                        openImagePreview({
+                          title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                          url: selectedCertForView.fileUrl,
+                          category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
+                          fileType: selectedCertForView.fileType
+                        });
+                      }}
+                    >
+                      <img
+                        src={selectedCertForView.fileUrl}
+                        alt={selectedCertForView.title}
+                        style={{ maxWidth: '100%', maxHeight: '55vh', objectFit: 'contain', borderRadius: '8px' }}
+                      />
+                    </div>
+                    <div style={{ marginTop: '12px' }}>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        style={{ fontSize: '0.85rem', padding: '8px 18px' }}
+                        onClick={() => {
+                          openImagePreview({
+                            title: `${selectedCertForView.icon || '📜'} ${selectedCertForView.title}`,
+                            url: selectedCertForView.fileUrl,
+                            category: selectedCertForView.reg || 'Official Accreditation & Certificate Document',
+                            fileType: selectedCertForView.fileType
+                          });
+                        }}
+                      >
+                        🔍 2X Ultra Zoom (અહીં ક્લિક કરી 2X ઝુમ મોડમાં મુવ કરો)
+                      </button>
+                    </div>
+                  </div>
                 )
               ) : (
-                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-sub)' }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '12px' }}>📜</div>
-                  <h4>Official Certification Document Verified</h4>
+                <div style={{ padding: '45px 20px', textAlign: 'center', color: 'var(--text-sub)' }}>
+                  <div style={{ fontSize: '3.5rem', marginBottom: '12px' }}>📜</div>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>Official Certification Document Verified</h4>
                   <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Registration ID: {selectedCertForView.reg}</p>
                 </div>
               )}

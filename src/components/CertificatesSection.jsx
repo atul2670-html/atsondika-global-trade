@@ -4,7 +4,8 @@ import { useApp } from '../context/AppContext';
 export default function CertificatesSection() {
   const {
     t, currentLang, certificatesList, deleteCertificate,
-    verifyAdminAccess, setActiveModal, setEditingCertId, setSelectedCertForView, isAdminLoggedIn, activeCompany
+    verifyAdminAccess, setActiveModal, setEditingCertId, setSelectedCertForView, isAdminLoggedIn, activeCompany,
+    openImagePreview
   } = useApp();
 
   return (
@@ -77,7 +78,7 @@ export default function CertificatesSection() {
             </div>
           ) : (
             certificatesList.map(c => {
-            const fileBadge = c.fileUrl ? (c.fileType === 'pdf' ? '📄 PDF Document' : '🖼️ Image Certificate') : '';
+            const fileBadge = c.fileUrl ? (c.fileType === 'pdf' ? '📄 PDF Document' : '🖼️ 2X Zoomable Photo') : '';
 
             return (
               <div key={c.id} className="glass-card cert-card">
@@ -108,8 +109,17 @@ export default function CertificatesSection() {
                     className="btn-primary"
                     style={{ width: '100%', justifyContent: 'center', marginTop: '14px', fontSize: '0.85rem' }}
                     onClick={() => {
-                      setSelectedCertForView(c);
-                      setActiveModal('viewCert');
+                      if (c.fileUrl && openImagePreview) {
+                        openImagePreview({
+                          title: `${c.icon || '📜'} ${c.title}`,
+                          url: c.fileUrl,
+                          category: c.reg ? `Reg No: ${c.reg}` : 'Official Accreditation & Certificate Document',
+                          fileType: c.fileType
+                        });
+                      } else {
+                        setSelectedCertForView(c);
+                        setActiveModal('viewCert');
+                      }
                     }}
                   >
                     👁️ View Certificate
