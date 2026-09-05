@@ -5379,11 +5379,32 @@ export default function Modals() {
               {selectedCertForView.fileUrl ? (
                 (selectedCertForView.fileType === 'pdf' || selectedCertForView.fileUrl.includes('application/pdf') || selectedCertForView.fileUrl.toLowerCase().endsWith('.pdf')) ? (
                   <div style={{ width: '100%', height: '580px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <iframe src={selectedCertForView.fileUrl} style={{ width: '100%', height: '100%', border: 'none', background: 'white' }} title="Certificate PDF"></iframe>
+                    <iframe
+                      src={isAdminLoggedIn ? selectedCertForView.fileUrl : `${selectedCertForView.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                      style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
+                      title="Certificate PDF"
+                    ></iframe>
                     <div style={{ padding: '12px', background: 'rgba(15, 23, 42, 0.95)', width: '100%', textAlign: 'center' }}>
-                      <a href={selectedCertForView.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '10px 22px', fontSize: '0.88rem' }}>
-                        📄 Open / Download PDF Document (નવા ટેબમાં PDF ખોલો)
-                      </a>
+                      {isAdminLoggedIn ? (
+                        <a href={selectedCertForView.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '10px 22px', fontSize: '0.88rem' }}>
+                          📄 Open / Download PDF Document (નવા ટેબમાં PDF ખોલો)
+                        </a>
+                      ) : (
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          background: 'rgba(245, 158, 11, 0.15)',
+                          border: '1px solid rgba(245, 158, 11, 0.3)',
+                          color: '#f59e0b',
+                          padding: '8px 18px',
+                          borderRadius: 'var(--radius-pill)',
+                          fontSize: '0.85rem',
+                          fontWeight: 700
+                        }}>
+                          🔐 {currentLang === 'gu' ? 'સર્ટિફિકેટ PDF ડાઉનલોડ કરવા માટે એડમિન લોગીન કરો.' : 'Official Certificate Document (Admin Login Required to Download)'}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -7106,20 +7127,37 @@ export default function Modals() {
                     {isPdfDoc ? (
                       <div style={{ width: '100%', height: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                         <iframe
-                          src={currentImgUrl}
+                          src={isAdminLoggedIn ? currentImgUrl : `${currentImgUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                           title={imagePreviewData.title}
                           style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px', background: 'white' }}
                         />
                         <div style={{ padding: '8px' }}>
-                          <a
-                            href={currentImgUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-primary"
-                            style={{ textDecoration: 'none', padding: '8px 18px', fontSize: '0.86rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                          >
-                            📄 Open / Download Full PDF Document (નવા ટેબમાં PDF ખોલો)
-                          </a>
+                          {isAdminLoggedIn ? (
+                            <a
+                              href={currentImgUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-primary"
+                              style={{ textDecoration: 'none', padding: '8px 18px', fontSize: '0.86rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                            >
+                              📄 Open / Download Full PDF Document (નવા ટેબમાં PDF ખોલો)
+                            </a>
+                          ) : (
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              background: 'rgba(245, 158, 11, 0.15)',
+                              border: '1px solid rgba(245, 158, 11, 0.3)',
+                              color: '#f59e0b',
+                              padding: '8px 18px',
+                              borderRadius: 'var(--radius-pill)',
+                              fontSize: '0.85rem',
+                              fontWeight: 700
+                            }}>
+                              🔐 {currentLang === 'gu' ? 'સર્ટિફિકેટ PDF ડાઉનલોડ કરવા માટે એડમિન લોગીન કરો.' : 'Official Certificate Document (Admin Login Required to Download)'}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
