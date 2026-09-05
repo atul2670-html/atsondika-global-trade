@@ -4064,51 +4064,64 @@ export default function Modals() {
             {/* ======================================================== */}
             {prodType === 'main' ? (
               <div>
+                <div style={{
+                  background: 'rgba(56, 189, 248, 0.12)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  padding: '12px 16px',
+                  borderRadius: '14px',
+                  marginBottom: '16px',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-main)',
+                  lineHeight: '1.5'
+                }}>
+                  🏷️ <strong>Main Category Group (મેઈન કેટેગરી ગ્રુપ):</strong> આ ફોર્મ ફક્ત મેઈન પ્રોડક્ટ કેટેગરી ગ્રુપ (જેમ કે: એગ્રો પ્રોડક્ટ્સ, ઇલેક્ટ્રોનિક્સ, ટેક્સટાઇલ વગેરે) ઉમેરવા માટે છે. પ્રોડક્ટના ફોટો, HSN કોડ, પેકિંગ અને ભાવ <strong>'2. Sub-Product Form'</strong> માં ઉમેરાશે.
+                </div>
+
                 <form onSubmit={(e) => {
                   e.preventDefault();
-                  if (!nameGu) return;
-                  const imgList = imageUrls.length ? [...imageUrls] : ['images/agro_spices_grains.png'];
+                  if (!nameGu && !nameEn) return;
                   const catSlug = catCodeInput.trim() ? catCodeInput.trim().toLowerCase().replace(/\s+/g, '_') : `cat-custom-${Date.now()}`;
 
                   saveProduct({
                     category: catSlug,
                     parentId: null,
                     isSub: false,
-                    enableGlobalTrade,
-                    enableLocalTrade,
+                    enableGlobalTrade: true,
+                    enableLocalTrade: true,
                     hsCode: '',
-                    image: imgList[0],
-                    images: imgList,
-                    names: { gu: nameGu, en: nameEn || nameGu, hi: nameGu, fr: nameEn || nameGu },
-                    spec: mainDescInput || 'Premium Category',
+                    image: '',
+                    images: [],
+                    names: { gu: nameGu || nameEn, en: nameEn || nameGu, hi: nameGu || nameEn, fr: nameEn || nameGu },
+                    spec: mainDescInput || 'Main Product Category Group',
                     packaging: '', moq: '',
                     isCustom: true
                   });
-                  alert(`✅ Main Category "${nameEn || nameGu}" created successfully!`);
+                  alert(`✅ Main Category Group "${nameEn || nameGu}" created successfully!`);
+                  setActiveModal(null);
                 }}>
                   {/* 1. SELECT PRODUCT TYPE */}
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 800 }}>Select Product Type *</label>
+                    <label className="form-label" style={{ fontWeight: 800 }}>Select Product Form Type *</label>
                     <select className="form-control" value={prodType} onChange={(e) => setProdType(e.target.value)}>
-                      <option value="main">1. Add Main Product / Category (e.g., Grains, Fasteners, Spices)</option>
-                      <option value="sub">2. Add Sub-Product (Full Specs & Packaging)</option>
+                      <option value="main">1. Add Main Category Group (e.g. Agro, Electronics, Textiles)</option>
+                      <option value="sub">2. Add Sub-Product (Photos, HSN Code, Specs & Pricing)</option>
                     </select>
                   </div>
 
-                  {/* 2. PRODUCT NAME (ENGLISH - PRIMARY BASE LANGUAGE) */}
+                  {/* 2. CATEGORY NAME (ENGLISH - PRIMARY BASE LANGUAGE) */}
                   <div className="form-group">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
-                        Product Name (English) * <span style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700 }}>(Primary Base Language)</span>
+                        Main Category Name (English) * <span style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700 }}>(e.g. Agro & Spices Products)</span>
                       </label>
                       <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                        🌐 Main Global Name
+                        🌐 Main Category Title
                       </span>
                     </div>
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="e.g. Agro & Spices Products / Fasteners / Readymade Garments"
+                      placeholder="e.g. Agro Products / Electronics / Textile & Garments"
                       value={nameEn}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -4124,11 +4137,11 @@ export default function Modals() {
                     />
                   </div>
 
-                  {/* 3. PRODUCT NAME (GUJARATI - AUTO-TRANSLATED IN REAL-TIME) */}
+                  {/* 3. CATEGORY NAME (GUJARATI - AUTO-TRANSLATED IN REAL-TIME) */}
                   <div className="form-group">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
-                        Product Name (Gujarati) <span style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 700 }}>(⚡ Real-Time Auto-Translated)</span>
+                        Category Name (Gujarati) <span style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 700 }}>(⚡ Real-Time Auto-Translated)</span>
                       </label>
                       <button
                         type="button"
@@ -4176,36 +4189,33 @@ export default function Modals() {
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label" style={{ fontWeight: 800 }}>Category Description</label>
+                      <label className="form-label" style={{ fontWeight: 800 }}>Category Description / Tagline</label>
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="e.g. Premium export quality"
+                        placeholder="e.g. Premium export quality commodities"
                         value={mainDescInput}
                         onChange={(e) => setMainDescInput(e.target.value)}
                       />
                     </div>
                   </div>
 
-                  {/* 5. MULTI-IMAGE PHOTO GALLERY MANAGER */}
-                  {renderMultiImageGalleryManager()}
-
-                  {/* 6. SAVE BUTTON */}
+                  {/* 5. SAVE BUTTON FOR MAIN CATEGORY */}
                   <button
                     type="submit"
                     className="btn-primary"
                     style={{
                       width: '100%',
-                      justify: 'center',
+                      justifyContent: 'center',
                       padding: '14px',
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      background: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',
                       borderRadius: 'var(--radius-pill)',
                       fontSize: '1rem',
                       fontWeight: 800,
                       marginTop: '10px'
                     }}
                   >
-                    💾 Save Product
+                    🏷️ Save Main Category Group (મેઈન કેટેગરી ઉમેરો)
                   </button>
                 </form>
               </div>
