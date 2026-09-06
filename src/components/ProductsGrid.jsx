@@ -512,7 +512,9 @@ export default function ProductsGrid() {
 
           {/* Cleaned Custom Category Tabs with Edit & Delete options */}
           {customMains.map(p => {
-            const title = p.names[currentLang] || p.names['en'] || p.names['gu'];
+            const rawTitle = p.names[currentLang] || p.names['en'] || p.names['gu'];
+            const iconEmoji = p.icon || '🏷️';
+            const title = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : `${iconEmoji} ${rawTitle}`;
             const subProds = getSubProductsForCategory(p.category);
             const isHovered = hoveredTab === p.category && subProds.length > 0;
 

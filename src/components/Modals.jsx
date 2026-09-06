@@ -478,6 +478,7 @@ export default function Modals() {
   const [nameEn, setNameEn] = useState('');
   const [catCodeInput, setCatCodeInput] = useState('');
   const [mainDescInput, setMainDescInput] = useState('');
+  const [catIconInput, setCatIconInput] = useState('🏷️');
   const [hsCode, setHsCode] = useState('520811');
   const [localHsn, setLocalHsn] = useState('52081110');
   const [moq, setMoq] = useState('1 Unit / Container');
@@ -553,29 +554,45 @@ export default function Modals() {
     }
   }, [activeModal, editingRouteId, freightRoutesList]);
 
+  // Helper function to detect smart category icons
+  const getSmartCategoryIcon = (catSlug = '', nameText = '', customIcon = '') => {
+    if (customIcon && customIcon.trim()) return customIcon.trim();
+    const s = (catSlug + ' ' + nameText).toLowerCase();
+    if (s.includes('agro') || s.includes('spices') || s.includes('grain') || s.includes('rice') || s.includes('મસાલા') || s.includes('ચોખા')) return '🌾';
+    if (s.includes('dairy') || s.includes('ghee') || s.includes('milk') || s.includes('ડેરી')) return '🥛';
+    if (s.includes('textile') || s.includes('fabric') || s.includes('saree') || s.includes('yarn') || s.includes('ટેક્ષટાઈલ')) return '🧵';
+    if (s.includes('garment') || s.includes('apparel') || s.includes('shirt') || s.includes('kurti') || s.includes('denim') || s.includes('ગારમેન્ટ્સ')) return '👕';
+    if (s.includes('packag') || s.includes('jute') || s.includes('bag') || s.includes('પેકેજિંગ')) return '📦';
+    if (s.includes('electron') || s.includes('ઈલેક્ટ્રોનિક્સ')) return '⚡';
+    if (s.includes('auto') || s.includes('car') || s.includes('vehicle') || s.includes('ઓટોમોબાઈલ')) return '🚗';
+    if (s.includes('machin') || s.includes('plant') || s.includes('મશીનરી')) return '🏭';
+    if (s.includes('industr') || s.includes('fastener') || s.includes('bolt') || s.includes('nut') || s.includes('ઔદ્યોગિક')) return '⚙️';
+    return '🏷️';
+  };
+
   // Helper function to return official Main Categories + custom ones
   const getMainProductCategoryOptions = () => {
     let mainCategories = [];
     if (activeCompanyId === 'comp_4') {
       mainCategories = [
-        { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક ઓટોમેશન અને ઈલેક્ટ્રોનિક્સ', nameEn: 'Industrial Automation & Electronics' },
-        { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Sustainable Materials' },
-        { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી અને ઓટોમેશન સિસ્ટમ્સ', nameEn: 'New Machinery & Automation Systems' },
-        { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી ઔદ્યોગિક મશીનરી', nameEn: 'Used Industrial Machinery' }
+        { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક ઓટોમેશન અને ઈલેક્ટ્રોનિક્સ', nameEn: 'Industrial Automation & Electronics', icon: '⚡' },
+        { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Sustainable Materials', icon: '📦' },
+        { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી અને ઓટોમેશન સિસ્ટમ્સ', nameEn: 'New Machinery & Automation Systems', icon: '🏭' },
+        { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી ઔદ્યોગિક મશીનરી', nameEn: 'Used Industrial Machinery', icon: '🏗️' }
       ];
     } else if (activeCompanyId === 'comp_3') {
       mainCategories = [
-        { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક માલ અને ફાસ્ટનર્સ (બોલ્ટ્સ, નટ્સ, પાઇપ)', nameEn: 'Industrial Goods & Fasteners (Bolts, Nuts, Pipes)' },
-        { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી (CNC, લેથ, સોર્ટકેસ)', nameEn: 'New Machinery (CNC, Lathe, Sortex)' },
-        { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી મશીનરી (ઔદ્યોગિક પ્લાન્ટસ)', nameEn: 'Used Machinery (Industrial Plants)' }
+        { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક માલ અને ફાસ્ટનર્સ (બોલ્ટ્સ, નટ્સ, પાઇપ)', nameEn: 'Industrial Goods & Fasteners (Bolts, Nuts, Pipes)', icon: '⚙️' },
+        { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી (CNC, લેથ, સોર્ટકેસ)', nameEn: 'New Machinery (CNC, Lathe, Sortex)', icon: '🏭' },
+        { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી મશીનરી (ઔદ્યોગિક પ્લાન્ટસ)', nameEn: 'Used Machinery (Industrial Plants)', icon: '🏗️' }
       ];
     } else {
       mainCategories = [
-        { id: 'agro', category: 'agro', nameGu: 'એગ્રો કોમોડિટીઝ (મસાલા, ચોખા, તેલીબિયાં)', nameEn: 'Agro Commodities (Spices, Rice, Oilseeds)' },
-        { id: 'dairy', category: 'dairy', nameGu: 'ડેરી પ્રોડક્ટ્સ (શુદ્ધ ઘી, સ્કિમ્ડ મિલ્ક પાઉડર - SMP)', nameEn: 'Dairy Products (Pure Ghee, Skimmed Milk Powder - SMP)' },
-        { id: 'textiles', category: 'textiles', nameGu: 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (સુરત ફેબ્રિક્સ, સાડીઓ, કોટન યાર્ન)', nameEn: 'Textile Products (Surat Fabrics, Designer Sarees, Cotton Yarn)' },
-        { id: 'garments', category: 'garments', nameGu: 'રેડિ-મેડ ગારમેન્ટ્સ (ટી-શર્ટ્સ, શર્ટ્સ, કુર્તીઓ, ડેનિમ)', nameEn: 'Readymade Garments (T-Shirts, Shirts, Kurtis, Denim)' },
-        { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Jute Bags' }
+        { id: 'agro', category: 'agro', nameGu: 'એગ્રો કોમોડિટીઝ (મસાલા, ચોખા, તેલીબિયાં)', nameEn: 'Agro Commodities (Spices, Rice, Oilseeds)', icon: '🌾' },
+        { id: 'dairy', category: 'dairy', nameGu: 'ડેરી પ્રોડક્ટ્સ (શુદ્ધ ઘી, સ્કિમ્ડ મિલ્ક પાઉડર - SMP)', nameEn: 'Dairy Products (Pure Ghee, Skimmed Milk Powder - SMP)', icon: '🥛' },
+        { id: 'textiles', category: 'textiles', nameGu: 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (સુરત ફેબ્રિક્સ, સાડીઓ, કોટન યાર્ન)', nameEn: 'Textile Products (Surat Fabrics, Designer Sarees, Cotton Yarn)', icon: '🧵' },
+        { id: 'garments', category: 'garments', nameGu: 'રેડિ-મેડ ગારમેન્ટ્સ (ટી-શર્ટ્સ, શર્ટ્સ, કુર્તીઓ, ડેનિમ)', nameEn: 'Readymade Garments (T-Shirts, Shirts, Kurtis, Denim)', icon: '👕' },
+        { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Jute Bags', icon: '📦' }
       ];
     }
 
@@ -585,13 +602,15 @@ export default function Modals() {
       const titleEn = (cm.names?.en || cm.names?.gu || '').trim();
       const titleGu = (cm.names?.gu || cm.names?.en || '').trim();
       const catSlug = cm.category || cm.id;
+      const iconVal = cm.icon || getSmartCategoryIcon(catSlug, titleEn);
 
       if (!mainCategories.some(m => m.category === catSlug || m.id === cm.id)) {
         mainCategories.push({
           id: cm.id,
           category: catSlug,
           nameGu: titleGu,
-          nameEn: titleEn
+          nameEn: titleEn,
+          icon: iconVal
         });
       }
     });
@@ -4093,6 +4112,7 @@ export default function Modals() {
                     images: [],
                     names: { gu: nameGu || nameEn, en: nameEn || nameGu, hi: nameGu || nameEn, fr: nameEn || nameGu },
                     spec: mainDescInput || 'Main Product Category Group',
+                    icon: catIconInput || '🏷️',
                     packaging: '', moq: '',
                     isCustom: true
                   });
@@ -4173,6 +4193,64 @@ export default function Modals() {
                       placeholder="e.g. એગ્રો અને મસાલા પ્રોડક્ટ્સ"
                       value={nameGu}
                       onChange={(e) => setNameGu(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 3. CATEGORY ICON / EMOJI PICKER */}
+                  <div className="form-group" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '14px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Category Icon / Emoji (કેટેગરીનું ઈમોજી પસંદ કરો) *
+                      </label>
+                      <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                        Selected Emoji: <span style={{ fontSize: '1.3rem', marginLeft: '6px' }}>{catIconInput || '🏷️'}</span>
+                      </span>
+                    </div>
+
+                    {/* Quick Emoji Presets Bar */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                      {[
+                        { emoji: '🌾', label: 'Agro / Spices' },
+                        { emoji: '🥛', label: 'Dairy' },
+                        { emoji: '🧵', label: 'Textiles' },
+                        { emoji: '👕', label: 'Garments' },
+                        { emoji: '📦', label: 'Packaging' },
+                        { emoji: '⚡', label: 'Electronics' },
+                        { emoji: '🚗', label: 'Automobiles' },
+                        { emoji: '⚙️', label: 'Industrial' },
+                        { emoji: '🏭', label: 'New Machinery' },
+                        { emoji: '🏗️', label: 'Used Machinery' },
+                        { emoji: '☕', label: 'Beverages / Tea' },
+                        { emoji: '🍯', label: 'Honey / Organic' },
+                        { emoji: '🧱', label: 'Hardware' },
+                        { emoji: '🏷️', label: 'General Category' }
+                      ].map(item => (
+                        <button
+                          key={item.emoji}
+                          type="button"
+                          style={{
+                            background: catIconInput === item.emoji ? 'rgba(56, 189, 248, 0.35)' : 'rgba(255, 255, 255, 0.08)',
+                            border: catIconInput === item.emoji ? '2px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '10px',
+                            padding: '6px 12px',
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                          onClick={() => setCatIconInput(item.emoji)}
+                          title={item.label}
+                        >
+                          {item.emoji}
+                        </button>
+                      ))}
+                    </div>
+
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Type custom emoji e.g. 🚗, ⚡, 📱"
+                      value={catIconInput}
+                      onChange={(e) => setCatIconInput(e.target.value)}
                     />
                   </div>
 
@@ -4296,7 +4374,7 @@ export default function Modals() {
                     >
                       {getMainProductCategoryOptions().map(cat => (
                         <option key={cat.id} value={cat.category}>
-                          🌿 {currentLang === 'gu' ? cat.nameGu : cat.nameEn}
+                          {cat.icon || '🏷️'} {currentLang === 'gu' ? cat.nameGu : cat.nameEn}
                         </option>
                       ))}
                     </select>
