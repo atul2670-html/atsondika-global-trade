@@ -1043,10 +1043,15 @@ export function AppProvider({ children }) {
 
         if (Array.isArray(data.customProductsList) && data.customProductsList.length > 0) {
           setCustomProductsList(prev => {
+            const currentDeleted = new Set(JSON.parse(localStorage.getItem('deleted_built_in_ids') || '[]'));
             const map = new Map();
-            prev.forEach(p => { if (p && p.id) map.set(p.id, p); });
+            prev.forEach(p => {
+              if (p && p.id && !currentDeleted.has(p.id) && !currentDeleted.has(p.category) && !currentDeleted.has(p.parentId)) {
+                map.set(p.id, p);
+              }
+            });
             data.customProductsList.forEach(p => {
-              if (p && p.id) {
+              if (p && p.id && !currentDeleted.has(p.id) && !currentDeleted.has(p.category) && !currentDeleted.has(p.parentId)) {
                 const existing = map.get(p.id);
                 if (!existing || JSON.stringify(existing) !== JSON.stringify(p)) {
                   map.set(p.id, p);
@@ -1181,16 +1186,17 @@ export function AppProvider({ children }) {
   }, [activeCompanyId]);
 
   const getAllProducts = () => {
+    const deletedSet = new Set(deletedBuiltInIds);
     const customIds = new Set(customProductsList.map(p => p.id));
     const activeBuiltIn = initialProductsData
-      .filter(p => !deletedBuiltInIds.includes(p.id))
+      .filter(p => !deletedSet.has(p.id) && !deletedSet.has(p.category) && !deletedSet.has(p.parentId))
       .filter(p => !customIds.has(p.id))
       .map(p => ({ ...p, companyId: p.companyId || 'comp_1' }));
 
     const rawList = [...activeBuiltIn, ...customProductsList];
 
-    // Exclude any product whose specific ID is present in deletedBuiltInIds
-    const nonDeleted = rawList.filter(p => !deletedBuiltInIds.includes(p.id));
+    // Exclude any product whose specific ID, category code, or parentId is present in deletedBuiltInIds
+    const nonDeleted = rawList.filter(p => !deletedSet.has(p.id) && !deletedSet.has(p.category) && !deletedSet.has(p.parentId));
 
     // Filter products strictly belonging to the active company
     const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
@@ -1319,34 +1325,40 @@ export function AppProvider({ children }) {
       if (confirm(`🗑️ Are you sure you want to delete "${categoryName}"?`)) {
         // 1. Mark as deleted in built-in registry
         let nextDeleted = [...deletedBuiltInIds];
-        if (!nextDeleted.includes(id)) nextDeleted.push(id);
+        if (id && !nextDeleted.includes(id)) nextDeleted.push(id);
         if (categoryCode && !nextDeleted.includes(categoryCode)) nextDeleted.push(categoryCode);
 
-        // Also mark ALL sub-products under this category in built-in data as deleted
-        initialProductsData.forEach(bp => {
-          const bpTitle = (bp.names?.en || bp.names?.gu || '').trim().toLowerCase();
-          const catTitle = (categoryName || '').trim().toLowerCase();
-          if (bp.id === id || bp.category === categoryCode || bp.parentId === id || bp.parentId === categoryCode || bpTitle === catTitle) {
-            if (!nextDeleted.includes(bp.id)) nextDeleted.push(bp.id);
+        // Also mark ALL sub-products under this category in built-in & custom data as deleted
+        const catTitle = (categoryName || '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toLowerCase();
+        [...initialProductsData, ...customProductsList].forEach(bp => {
+          if (!bp) return;
+          const bpTitle = (bp.names?.en || bp.names?.gu || bp.name || '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toLowerCase();
+          const matchesCat = (categoryCode && bp.category === categoryCode) ||
+                             (id && (bp.parentId === id || bp.category === id)) ||
+                             (categoryCode && bp.parentId === categoryCode) ||
+                             (catTitle && (bpTitle === catTitle || bp.category === catTitle));
+          if (bp.id === id || matchesCat) {
+            if (bp.id && !nextDeleted.includes(bp.id)) nextDeleted.push(bp.id);
+            if (bp.category && !nextDeleted.includes(bp.category)) nextDeleted.push(bp.category);
           }
         });
 
         setDeletedBuiltInIds(nextDeleted);
         try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
 
-        // 2. Remove photo overrides for this product ID
+        // 2. Remove photo overrides for deleted IDs
         let nextPhotoOverrides = { ...photoOverrides };
-        delete nextPhotoOverrides[id];
+        nextDeleted.forEach(dId => { delete nextPhotoOverrides[dId]; });
         setPhotoOverrides(nextPhotoOverrides);
         try { localStorage.setItem('site_product_photo_overrides_v1', JSON.stringify(nextPhotoOverrides)); } catch(e) {}
 
-        // 3. ALWAYS purge from custom products list (handles edited items & custom entries)
+        // 3. ALWAYS purge from custom products list
         const nextProducts = customProductsList.filter(p => {
-          if (p.id === id) return false;
+          if (!p) return false;
+          if (nextDeleted.includes(p.id)) return false;
           if (isMainCategory) {
-            const pTitle = (p.names?.en || p.names?.gu || '').trim().toLowerCase();
-            const catTitle = (categoryName || '').trim().toLowerCase();
-            if (p.category === categoryCode || pTitle === catTitle) return false;
+            const pTitle = (p.names?.en || p.names?.gu || p.name || '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toLowerCase();
+            if (p.category === categoryCode || p.category === id || p.parentId === id || p.parentId === categoryCode || (catTitle && pTitle === catTitle)) return false;
           }
           return true;
         });
@@ -1371,14 +1383,21 @@ export function AppProvider({ children }) {
           };
         } catch(e) {}
 
-        // 5. Global Cloud Microsecond Deletion Sync
+        // 5. Lock sync flag during network propagation to prevent race conditions & background fetch overwrite
+        isSyncing.current = true;
+        lastServerUpdate.current = Date.now();
+
+        // 6. Global Cloud Microsecond Deletion Sync
         syncToServer({
           deletedBuiltInIds: nextDeleted,
           customProductsList: nextProducts,
-          photoOverrides: nextPhotoOverrides
+          photoOverrides: nextPhotoOverrides,
+          updatedAt: Date.now()
         });
 
-        // 6. Broadcast deletion event to all open tabs & devices globally
+        setTimeout(() => { isSyncing.current = false; }, 10000);
+
+        // 7. Broadcast deletion event to all open tabs & devices globally
         try {
           realtimeEngine.broadcast('PRODUCT_UPDATE', {
             productId: id,
@@ -1387,7 +1406,7 @@ export function AppProvider({ children }) {
         } catch(e) {}
 
         // If a Main Category Tab was deleted, switch to 'all' tab
-        if (isMainCategory && currentCategory === categoryCode) {
+        if (isMainCategory && (currentCategory === categoryCode || currentCategory === id)) {
           setCurrentCategory('all');
         }
 
