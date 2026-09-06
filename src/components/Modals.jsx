@@ -4378,18 +4378,22 @@ export default function Modals() {
                       onChange={(e) => setParentSelect(e.target.value)}
                       required
                     >
-                      {getMainProductCategoryOptions().map(cat => {
-                        const isBase64OrUrl = cat.icon && (cat.icon.startsWith('data:') || cat.icon.startsWith('http') || cat.icon.length > 30);
-                        const safeIcon = isBase64OrUrl ? (getSmartCategoryIcon(cat.category, cat.nameEn) || '🏷️') : (cat.icon || '🏷️');
-                        const safeName = (currentLang === 'gu' ? cat.nameGu : cat.nameEn) || cat.category;
-                        const cleanName = typeof safeName === 'string' && safeName.startsWith('data:') ? 'Custom Category' : safeName;
+                      {getMainProductCategoryOptions()
+                        .filter(cat => cat.category && !String(cat.category).startsWith('data:') && !String(cat.id).startsWith('data:'))
+                        .map(cat => {
+                          const isBase64OrUrl = cat.icon && (cat.icon.startsWith('data:') || cat.icon.startsWith('http') || cat.icon.length > 30);
+                          const safeIcon = isBase64OrUrl ? (getSmartCategoryIcon(cat.category, cat.nameEn) || '🏷️') : (cat.icon || '🏷️');
+                          let cleanName = (currentLang === 'gu' ? (cat.nameGu || cat.nameEn) : (cat.nameEn || cat.nameGu)) || cat.category || 'Category';
+                          if (typeof cleanName === 'string' && (cleanName.startsWith('data:') || cleanName.length > 80)) {
+                            cleanName = 'Custom Category';
+                          }
 
-                        return (
-                          <option key={cat.id} value={cat.category}>
-                            {safeIcon} {cleanName}
-                          </option>
-                        );
-                      })}
+                          return (
+                            <option key={cat.id} value={cat.category}>
+                              {safeIcon} {cleanName}
+                            </option>
+                          );
+                        })}
                     </select>
                   </div>
 

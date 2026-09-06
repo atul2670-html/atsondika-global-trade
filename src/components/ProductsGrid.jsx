@@ -97,6 +97,10 @@ export default function ProductsGrid() {
     if (!catFilter || catFilter === 'all') return [];
     return allProds.filter(p => {
       if (p.isSub === false) return false;
+      const titleEn = (p.names?.en || p.name || '').trim().toLowerCase();
+      const catSlug = (p.category || p.id || '').trim().toLowerCase();
+      if (titleEn === catSlug && !p.hsCode && !p.isSub) return false;
+
       if (tradeMode === 'local' && p.enableLocalTrade === false) return false;
       if (tradeMode !== 'local' && p.enableGlobalTrade === false) return false;
       if (p.category === catFilter || p.parentId === catFilter) return true;
@@ -402,7 +406,7 @@ export default function ProductsGrid() {
         <div className="tab-bar" style={{ position: 'relative', zIndex: 50, overflow: 'visible' }}>
           {defaultTabs.map(tab => {
             const subProds = getSubProductsForCategory(tab.filter);
-            const isHovered = hoveredTab === tab.filter && subProds.length > 0;
+            const isHovered = hoveredTab === tab.filter && tab.filter !== 'all';
 
             return (
               <div
@@ -420,7 +424,7 @@ export default function ProductsGrid() {
                   }}
                 >
                   {tab.title}
-                  {subProds.length > 0 && <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>}
+                  <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>
                 </button>
 
                 {/* SUB-PRODUCTS MEGA DROPDOWN POPUP ON HOVER */}
@@ -448,60 +452,74 @@ export default function ProductsGrid() {
                       <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>⚡ Quick Select</span>
                     </div>
 
-                    {subProds.map(subP => {
-                      const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
-                      const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
-                      const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
-                        ? langTitle
-                        : autoTranslateText(enTitle || langTitle, currentLang);
-                      const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
+                    {subProds.length > 0 ? (
+                      subProds.map(subP => {
+                        const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
+                        const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
+                        const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
+                          ? langTitle
+                          : autoTranslateText(enTitle || langTitle, currentLang);
+                        const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
 
-                      return (
-                        <div
-                          key={subP.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentCategory(tab.filter);
-                            setSearchFilterQuery(enTitle || subTitle);
-                            setHoveredTab(null);
-                            setTimeout(() => {
-                              const el = document.getElementById(`prod-card-${subP.id}`);
-                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 100);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '6px 8px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            marginBottom: '4px',
-                            background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
-                            border: '1px solid transparent'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
-                            e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent';
-                            e.currentTarget.style.borderColor = 'transparent';
-                          }}
-                        >
-                          <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
-                          <div style={{ overflow: 'hidden' }}>
-                            <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {subTitle}
-                            </strong>
-                            <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
-                              HS: {subP.hsCode || '090931'}
-                            </span>
+                        return (
+                          <div
+                            key={subP.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentCategory(tab.filter);
+                              setSearchFilterQuery(enTitle || subTitle);
+                              setHoveredTab(null);
+                              setTimeout(() => {
+                                const el = document.getElementById(`prod-card-${subP.id}`);
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 100);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '6px 8px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease',
+                              marginBottom: '4px',
+                              background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
+                              border: '1px solid transparent'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
+                              e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.borderColor = 'transparent';
+                            }}
+                          >
+                            <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+                            <div style={{ overflow: 'hidden' }}>
+                              <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {subTitle}
+                              </strong>
+                              <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
+                                HS: {subP.hsCode || '090931'}
+                              </span>
+                            </div>
                           </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '14px 8px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', margin: '4px 0' }}>
+                        <div style={{ fontSize: '1.6rem', marginBottom: '4px' }}>📦</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f87171', marginBottom: '4px' }}>
+                          {currentLang === 'gu' ? '0 પ્રોડક્ટ્સ (હજુ કોઈ સબ-પ્રોડક્ટ ઉમેરેલ નથી)' : '0 Products (No Sub-Products Added)'}
                         </div>
-                      );
-                    })}
+                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: '1.35' }}>
+                          {currentLang === 'gu'
+                            ? 'આ મેઈન પ્રોડક્ટમાં હજુ કોઈ સબ-પ્રોડક્ટ ઉમેરેલ નથી.'
+                            : 'No sub-products added for this category yet.'}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -518,7 +536,7 @@ export default function ProductsGrid() {
             const displayTitle = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : (isImageIcon ? rawTitle : `${iconEmoji} ${rawTitle}`);
             const title = displayTitle;
             const subProds = getSubProductsForCategory(p.category);
-            const isHovered = hoveredTab === p.category && subProds.length > 0;
+            const isHovered = hoveredTab === p.category;
 
             return (
               <div
@@ -541,7 +559,7 @@ export default function ProductsGrid() {
                     )}
                     {displayTitle}
                   </span>
-                  {subProds.length > 0 && <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>}
+                  <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>
                   {isAdminLoggedIn && (
                     <>
                       <span
@@ -596,60 +614,74 @@ export default function ProductsGrid() {
                       <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>⚡ Quick Select</span>
                     </div>
 
-                    {subProds.map(subP => {
-                      const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
-                      const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
-                      const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
-                        ? langTitle
-                        : autoTranslateText(enTitle || langTitle, currentLang);
-                      const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
+                    {subProds.length > 0 ? (
+                      subProds.map(subP => {
+                        const enTitle = (subP.names && typeof subP.names === 'object') ? (subP.names['en'] || subP.name || '') : (subP.name || '');
+                        const langTitle = (subP.names && typeof subP.names === 'object') ? (subP.names[currentLang] || '') : '';
+                        const subTitle = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય'))
+                          ? langTitle
+                          : autoTranslateText(enTitle || langTitle, currentLang);
+                        const thumb = convertGoogleDriveUrl((subP.images && subP.images[0]) || subP.image || 'images/agro_spices_grains.png');
 
-                      return (
-                        <div
-                          key={subP.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentCategory(p.category);
-                            setSearchFilterQuery(enTitle || subTitle);
-                            setHoveredTab(null);
-                            setTimeout(() => {
-                              const el = document.getElementById(`prod-card-${subP.id}`);
-                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 100);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '6px 8px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                            marginBottom: '4px',
-                            background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
-                            border: '1px solid transparent'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
-                            e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent';
-                            e.currentTarget.style.borderColor = 'transparent';
-                          }}
-                        >
-                          <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
-                          <div style={{ overflow: 'hidden' }}>
-                            <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {subTitle}
-                            </strong>
-                            <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
-                              HS: {subP.hsCode || '090931'}
-                            </span>
+                        return (
+                          <div
+                            key={subP.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentCategory(p.category);
+                              setSearchFilterQuery(enTitle || subTitle);
+                              setHoveredTab(null);
+                              setTimeout(() => {
+                                const el = document.getElementById(`prod-card-${subP.id}`);
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 100);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '6px 8px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease',
+                              marginBottom: '4px',
+                              background: searchFilterQuery.toLowerCase() === (enTitle || subTitle).toLowerCase() ? 'rgba(45, 212, 191, 0.25)' : 'transparent',
+                              border: '1px solid transparent'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(45, 212, 191, 0.25)';
+                              e.currentTarget.style.borderColor = 'rgba(45, 212, 191, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.borderColor = 'transparent';
+                            }}
+                          >
+                            <img src={thumb} alt={subTitle} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+                            <div style={{ overflow: 'hidden' }}>
+                              <strong style={{ display: 'block', fontSize: '0.82rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {subTitle}
+                              </strong>
+                              <span style={{ fontSize: '0.72rem', color: '#38bdf8' }}>
+                                HS: {subP.hsCode || '090931'}
+                              </span>
+                            </div>
                           </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '14px 8px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', margin: '4px 0' }}>
+                        <div style={{ fontSize: '1.6rem', marginBottom: '4px' }}>📦</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f87171', marginBottom: '4px' }}>
+                          {currentLang === 'gu' ? '0 પ્રોડક્ટ્સ (હજુ કોઈ સબ-પ્રોડક્ટ ઉમેરેલ નથી)' : '0 Products (No Sub-Products Added)'}
                         </div>
-                      );
-                    })}
+                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: '1.35' }}>
+                          {currentLang === 'gu'
+                            ? 'આ મેઈન પ્રોડક્ટમાં હજુ કોઈ સબ-પ્રોડક્ટ ઉમેરેલ નથી.'
+                            : 'No sub-products added for this category yet.'}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
