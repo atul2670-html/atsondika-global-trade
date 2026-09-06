@@ -108,16 +108,8 @@ export default function ProductsGrid() {
   };
   const q = searchFilterQuery.toLowerCase().trim();
   let filtered = currentCategory === 'all'
-    ? allProds
-    : allProds.filter(p => {
-        if (p.category === currentCategory || p.parentId === currentCategory) return true;
-        const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
-        // Ghee, Butter, Milk, Dairy, Chocolates belong to 'dairy' and 'agro' tabs!
-        if (normTitle.includes('ghee') || normTitle.includes('ઘી') || normTitle.includes('butter') || normTitle.includes('milk') || normTitle.includes('dairy') || normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
-          if (currentCategory === 'dairy' || currentCategory === 'agro') return true;
-        }
-        return false;
-      });
+    ? allProds.filter(p => p.isSub !== false)
+    : allProds.filter(p => p.isSub !== false && (p.category === currentCategory || p.parentId === currentCategory));
 
   // Filter products by Trade Mode scope (Global Export Trade vs Local B2C Retail Trade)
   filtered = filtered.filter(p => {
