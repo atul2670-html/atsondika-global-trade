@@ -96,6 +96,7 @@ export default function ProductsGrid() {
   const getSubProductsForCategory = (catFilter) => {
     if (!catFilter || catFilter === 'all') return [];
     return allProds.filter(p => {
+      if (p.isSub === false) return false;
       if (tradeMode === 'local' && p.enableLocalTrade === false) return false;
       if (tradeMode !== 'local' && p.enableGlobalTrade === false) return false;
       if (p.category === catFilter || p.parentId === catFilter) return true;

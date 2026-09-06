@@ -599,10 +599,16 @@ export default function Modals() {
     // Add custom main categories created for this active company
     const customMains = customProductsList.filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId);
     customMains.forEach(cm => {
-      const titleEn = (cm.names?.en || cm.names?.gu || '').trim();
-      const titleGu = (cm.names?.gu || cm.names?.en || '').trim();
+      let titleEn = (cm.names?.en || cm.names?.gu || '').trim();
+      let titleGu = (cm.names?.gu || cm.names?.en || '').trim();
+      if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
+      if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
+
       const catSlug = cm.category || cm.id;
-      const iconVal = cm.icon || getSmartCategoryIcon(catSlug, titleEn);
+      let iconVal = cm.icon || getSmartCategoryIcon(catSlug, titleEn);
+      if (typeof iconVal === 'string' && (iconVal.startsWith('data:') || iconVal.startsWith('http') || iconVal.length > 30)) {
+        iconVal = getSmartCategoryIcon(catSlug, titleEn) || '🏷️';
+      }
 
       if (!mainCategories.some(m => m.category === catSlug || m.id === cm.id)) {
         mainCategories.push({
@@ -610,7 +616,7 @@ export default function Modals() {
           category: catSlug,
           nameGu: titleGu,
           nameEn: titleEn,
-          icon: iconVal
+          icon: iconVal || '🏷️'
         });
       }
     });
@@ -4372,11 +4378,18 @@ export default function Modals() {
                       onChange={(e) => setParentSelect(e.target.value)}
                       required
                     >
-                      {getMainProductCategoryOptions().map(cat => (
-                        <option key={cat.id} value={cat.category}>
-                          {cat.icon || '🏷️'} {currentLang === 'gu' ? cat.nameGu : cat.nameEn}
-                        </option>
-                      ))}
+                      {getMainProductCategoryOptions().map(cat => {
+                        const isBase64OrUrl = cat.icon && (cat.icon.startsWith('data:') || cat.icon.startsWith('http') || cat.icon.length > 30);
+                        const safeIcon = isBase64OrUrl ? (getSmartCategoryIcon(cat.category, cat.nameEn) || '🏷️') : (cat.icon || '🏷️');
+                        const safeName = (currentLang === 'gu' ? cat.nameGu : cat.nameEn) || cat.category;
+                        const cleanName = typeof safeName === 'string' && safeName.startsWith('data:') ? 'Custom Category' : safeName;
+
+                        return (
+                          <option key={cat.id} value={cat.category}>
+                            {safeIcon} {cleanName}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
 

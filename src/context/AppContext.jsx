@@ -606,6 +606,9 @@ export function AppProvider({ children }) {
       if (typeof copy.category === 'string' && copy.category.startsWith('data:')) {
         return;
       }
+      if (typeof copy.icon === 'string' && copy.icon.startsWith('data:')) {
+        copy.icon = '🏷️';
+      }
       if (typeof copy.name === 'string' && copy.name.startsWith('data:')) {
         copy.name = 'Custom Product';
       }
