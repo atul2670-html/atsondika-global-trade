@@ -597,10 +597,22 @@ export function AppProvider({ children }) {
     const cleaned = [];
 
     list.forEach(item => {
-      if (!item || !item.id) return;
+      if (!item || !item.id || String(item.id).startsWith('data:')) return;
       const copy = { ...item };
       const compId = copy.companyId || 'comp_1';
       copy.companyId = compId;
+
+      // Purge corrupted items with base64 data URLs as category slugs
+      if (typeof copy.category === 'string' && copy.category.startsWith('data:')) {
+        return;
+      }
+      if (typeof copy.name === 'string' && copy.name.startsWith('data:')) {
+        copy.name = 'Custom Product';
+      }
+      if (copy.names && typeof copy.names === 'object') {
+        if (typeof copy.names.en === 'string' && copy.names.en.startsWith('data:')) copy.names.en = 'Custom Product';
+        if (typeof copy.names.gu === 'string' && copy.names.gu.startsWith('data:')) copy.names.gu = 'કસ્ટમ પ્રોડક્ટ';
+      }
 
       const guTitle = (copy.names?.gu || '').toLowerCase();
       const enTitle = (copy.names?.en || copy.name || '').toLowerCase();

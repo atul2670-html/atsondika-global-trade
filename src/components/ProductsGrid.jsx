@@ -64,27 +64,32 @@ export default function ProductsGrid() {
   const seenCatNames = new Set();
   const defaultFilterSet = new Set(defaultTabs.map(t => t.filter));
 
-  customProductsList.filter(p => (p.companyId || 'comp_1') === activeCompId).forEach(p => {
-    const titleEn = (p.names?.en || '').trim();
-    const titleGu = (p.names?.gu || '').trim();
-    const normTitle = (titleEn || titleGu).toLowerCase();
-    const catSlug = (p.category || '').toLowerCase();
+  customProductsList
+    .filter(p => !p.isSub)
+    .filter(p => (p.companyId || 'comp_1') === activeCompId)
+    .forEach(p => {
+      let catSlug = (p.category || p.id || '').trim().toLowerCase();
+      if (!catSlug || catSlug.startsWith('data:') || catSlug.startsWith('http') || defaultFilterSet.has(catSlug)) return;
 
-    if (!catSlug || defaultFilterSet.has(catSlug)) return;
+      let titleEn = (p.names?.en || '').trim();
+      let titleGu = (p.names?.gu || '').trim();
+      if (titleEn.startsWith('data:') || titleGu.startsWith('data:')) return;
 
-    if (
-      catSlug === 'agro' ||
-      catSlug.includes('grain') || catSlug.includes('seed') ||
-      normTitle.includes('grains and seeds') || normTitle.includes('grains & seeds') || normTitle.includes('અનાજ')
-    ) {
-      return;
-    }
+      const normTitle = (titleEn || titleGu || catSlug).toLowerCase();
 
-    if (!seenCatNames.has(catSlug)) {
-      seenCatNames.add(catSlug);
-      customMains.push(p);
-    }
-  });
+      if (
+        catSlug === 'agro' ||
+        catSlug.includes('grain') || catSlug.includes('seed') ||
+        normTitle.includes('grains and seeds') || normTitle.includes('grains & seeds') || normTitle.includes('અનાજ')
+      ) {
+        return;
+      }
+
+      if (!seenCatNames.has(catSlug)) {
+        seenCatNames.add(catSlug);
+        customMains.push(p);
+      }
+    });
 
   const allProds = getAllProducts();
 
@@ -512,9 +517,13 @@ export default function ProductsGrid() {
 
           {/* Cleaned Custom Category Tabs with Edit & Delete options */}
           {customMains.map(p => {
-            const rawTitle = p.names[currentLang] || p.names['en'] || p.names['gu'];
-            const iconEmoji = p.icon || '🏷️';
-            const title = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : `${iconEmoji} ${rawTitle}`;
+            let rawTitle = p.names?.[currentLang] || p.names?.['en'] || p.names?.['gu'] || p.name || p.category || 'Category';
+            if (rawTitle.startsWith('data:')) rawTitle = 'Custom Category';
+
+            const iconEmoji = (p.icon && !p.icon.startsWith('data:')) ? p.icon : '🏷️';
+            const isImageIcon = p.icon && (p.icon.startsWith('data:image') || p.icon.startsWith('http') || p.icon.includes('/'));
+            const displayTitle = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : (isImageIcon ? rawTitle : `${iconEmoji} ${rawTitle}`);
+            const title = displayTitle;
             const subProds = getSubProductsForCategory(p.category);
             const isHovered = hoveredTab === p.category && subProds.length > 0;
 
@@ -533,7 +542,12 @@ export default function ProductsGrid() {
                     setSearchFilterQuery('');
                   }}
                 >
-                  <span>{title}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    {isImageIcon && (
+                      <img src={p.icon} alt="icon" style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px', verticalAlign: 'middle' }} />
+                    )}
+                    {displayTitle}
+                  </span>
                   {subProds.length > 0 && <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>}
                   {isAdminLoggedIn && (
                     <>
