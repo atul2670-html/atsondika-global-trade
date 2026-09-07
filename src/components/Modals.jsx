@@ -693,6 +693,7 @@ export default function Modals() {
           setNameEn(target.names?.en || '');
           setCatCodeInput(target.category || `cat-${Date.now()}`);
           setMainDescInput(typeof target.spec === 'string' ? target.spec : 'Premium Main Product Category');
+          setCatIconInput(target.icon || '🏷️');
           setHsCode(target.hsCode || '520811');
           setLocalHsn(target.localHsn || `${target.hsCode || '520811'}10`);
           setMoq(target.moq || '1 Unit / Container');
@@ -4202,19 +4203,21 @@ export default function Modals() {
                     />
                   </div>
 
-                  {/* 3. CATEGORY ICON / EMOJI PICKER */}
+                  {/* 3. CATEGORY ICON / EMOJI PICKER & IMAGE UPLOAD */}
                   <div className="form-group" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '14px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
-                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
-                        Category Icon / Emoji (કેટેગરીનું ઈમોજી પસંદ કરો) *
-                      </label>
-                      <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
-                        Selected Emoji: <span style={{ fontSize: '1.3rem', marginLeft: '6px' }}>{catIconInput || '🏷️'}</span>
-                      </span>
-                    </div>
+                    <label className="form-label" style={{ fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                      <span>🖼️ Category Icon / Emoji (એમોજી સિલેક્ટ કરો અથવા આઇકન ફોટો અપલોડ કરો) *</span>
+                      {catIconInput && (
+                        <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                          {catIconInput.startsWith('data:image') || catIconInput.startsWith('http') || catIconInput.includes('/')
+                            ? '🖼️ Custom Image Icon'
+                            : `Selected Emoji: ${catIconInput}`}
+                        </span>
+                      )}
+                    </label>
 
                     {/* Quick Emoji Presets Bar */}
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
                       {[
                         { emoji: '🌾', label: 'Agro / Spices' },
                         { emoji: '🥛', label: 'Dairy' },
@@ -4251,13 +4254,67 @@ export default function Modals() {
                       ))}
                     </div>
 
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Type custom emoji e.g. 🚗, ⚡, 📱"
-                      value={catIconInput}
-                      onChange={(e) => setCatIconInput(e.target.value)}
-                    />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Type custom emoji e.g. 🚗, ⚡, 📱"
+                        value={catIconInput && (catIconInput.startsWith('data:image') || catIconInput.startsWith('http')) ? '[Custom Image Uploaded]' : catIconInput}
+                        onChange={(e) => setCatIconInput(e.target.value)}
+                      />
+
+                      {/* Custom Icon Image File Upload Button */}
+                      <label
+                        className="btn-secondary"
+                        style={{
+                          fontSize: '0.8rem',
+                          padding: '8px 14px',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          whiteSpace: 'nowrap',
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          color: '#4ade80',
+                          borderColor: 'rgba(16, 185, 129, 0.3)',
+                          fontWeight: 800
+                        }}
+                      >
+                        📁 Upload Icon Image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (evt) => {
+                                setCatIconInput(evt.target.result);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Icon Image Preview Box if custom image is uploaded */}
+                    {catIconInput && (catIconInput.startsWith('data:image') || catIconInput.startsWith('http') || catIconInput.includes('/')) && (
+                      <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.4)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+                        <img src={catIconInput} alt="Category Icon Preview" style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px', background: 'white', padding: '2px' }} />
+                        <div style={{ flex: 1, fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                          ✅ Custom Icon Photo Attached!
+                        </div>
+                        <button
+                          type="button"
+                          style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 800 }}
+                          onClick={() => setCatIconInput('🏷️')}
+                        >
+                          ✕ Reset to 🏷️
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* 4. CATEGORY CODE & DESCRIPTION */}
