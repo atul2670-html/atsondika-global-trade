@@ -447,6 +447,7 @@ export default function RfqCartDrawer() {
                 {rfqCartItems.map((item) => {
                   const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
                   const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+                  const baseCurrencyCode = item.currency || (rawPrice < 100 ? 'EUR' : 'INR');
                   const displayItemPrice = getPriceInActiveCurrency(rawPrice, item.currency);
                   const displayPacking = getPriceInActiveCurrency(item.packingCharge, item.currency);
                   const displayCourier = getPriceInActiveCurrency(item.courierCharge, item.currency);
@@ -469,6 +470,9 @@ export default function RfqCartDrawer() {
                             {tradeMode === 'local'
                               ? cartCurrSym + Number(displayItemPrice).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginLeft: '6px' }}>
+                            (Base: {getCurrencySymbol(baseCurrencyCode)}{rawPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} {baseCurrencyCode})
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
