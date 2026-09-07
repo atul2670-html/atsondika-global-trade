@@ -73,34 +73,36 @@ export default function RfqCartDrawer() {
   // Get FX exchange rate relative to USD (where USD rate = 1.0)
   const getFxRate = (code) => {
     if (!code || code === 'USD') return 1.0;
-    if (code === 'INR') {
-      const inrObj = currenciesList?.find(c => c.code === 'INR');
-      return inrObj?.rate || 86.45;
-    }
     const found = currenciesList?.find(c => c.code === code);
-    return found?.rate || 1.0;
+    if (found?.rate) return found.rate;
+    if (code === 'INR') return 86.45;
+    if (code === 'EUR') return 0.92;
+    if (code === 'GBP') return 0.79;
+    if (code === 'AED') return 3.67;
+    if (code === 'CAD') return 1.36;
+    if (code === 'AUD') return 1.48;
+    return 1.0;
   };
 
   const inrRate = getFxRate('INR');
   const currRate = currentCurrency?.rate || getFxRate(currentCurrency?.code);
   const isNonInr = currentCurrency?.code !== 'INR';
 
-  // Helper to convert item price / charge to current active currency (currentCurrency)
+  // Helper to convert item price / charge from product's Base Currency into Buyer's Selected Target Currency
   const getPriceInActiveCurrency = (rawAmount, itemCurrencyCode) => {
     const val = parseFloat(rawAmount) || 0;
     if (val === 0) return 0;
 
     let baseCode = itemCurrencyCode;
     if (!baseCode) {
-      baseCode = val < 100 ? 'USD' : 'INR';
-    }
-    if (val < 100 && baseCode === 'INR') {
-      baseCode = 'USD';
+      baseCode = val < 100 ? 'EUR' : 'INR';
     }
 
     const baseRate = getFxRate(baseCode);
-    const amountInUsd = val / baseRate;
-    return amountInUsd * currRate;
+    const targetRate = currRate;
+    
+    // Amount in Selected Target Currency = (val / baseRate) * targetRate
+    return (val / baseRate) * targetRate;
   };
 
   // 1. Items Base Price Subtotal (Selling Price * Quantity converted to active currency)
