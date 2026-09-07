@@ -344,7 +344,18 @@ export default function RfqCartDrawer() {
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {/* Searchable World Currency Dropdown Selector */}
+            <div style={{ minWidth: '160px', maxWidth: '210px' }}>
+              <SearchableCurrencySelect
+                value={currentCurrency}
+                onChange={(selectedCurr) => {
+                  setCurrentCurrency(selectedCurr);
+                  if (showLiveToast) showLiveToast(currentLang === 'gu' ? `💱 કરંસી ${selectedCurr.code} (${selectedCurr.symbol}) માં બદલાઈ ગઈ છે` : `💱 Currency switched to ${selectedCurr.code} (${selectedCurr.symbol})`, 'success');
+                }}
+                currenciesList={currenciesList}
+              />
+            </div>
             {isNonInr && (
               <button
                 type="button"
@@ -357,7 +368,7 @@ export default function RfqCartDrawer() {
                   background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(234, 88, 12, 0.25))',
                   border: '1px solid rgba(245, 158, 11, 0.5)',
                   color: '#fef08a',
-                  padding: '5px 10px',
+                  padding: '6px 12px',
                   borderRadius: '20px',
                   fontSize: '0.76rem',
                   fontWeight: 700,
@@ -366,7 +377,7 @@ export default function RfqCartDrawer() {
                 }}
                 title="Click to view all cart prices directly in Indian Rupees (₹ INR)"
               >
-                🇮🇳 {currentLang === 'gu' ? '₹ INR માં ફેરવો' : 'Switch to ₹ INR'}
+                🇮🇳 {currentLang === 'gu' ? '₹ INR' : '₹ INR'}
               </button>
             )}
             <button
@@ -920,8 +931,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`}
+                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : convertPrice(totalExportAmount)})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : convertPrice(totalExportAmount)})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
