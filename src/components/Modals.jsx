@@ -592,6 +592,9 @@ export default function Modals() {
         { id: 'dairy', category: 'dairy', nameGu: 'ડેરી પ્રોડક્ટ્સ (શુદ્ધ ઘી, સ્કિમ્ડ મિલ્ક પાઉડર - SMP)', nameEn: 'Dairy Products (Pure Ghee, Skimmed Milk Powder - SMP)', icon: '🥛' },
         { id: 'textiles', category: 'textiles', nameGu: 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (સુરત ફેબ્રિક્સ, સાડીઓ, કોટન યાર્ન)', nameEn: 'Textile Products (Surat Fabrics, Designer Sarees, Cotton Yarn)', icon: '🧵' },
         { id: 'garments', category: 'garments', nameGu: 'રેડિ-મેડ ગારમેન્ટ્સ (ટી-શર્ટ્સ, શર્ટ્સ, કુર્તીઓ, ડેનિમ)', nameEn: 'Readymade Garments (T-Shirts, Shirts, Kurtis, Denim)', icon: '👕' },
+        { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી મશીનરી (Used Machinery & Industrial Plants)', nameEn: 'Used & Refurbished Industrial Machinery', icon: '🏗️' },
+        { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી (New Machinery & Automation)', nameEn: 'New Machinery & Automation Systems', icon: '🏭' },
+        { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક માલ અને ફાસ્ટનર્સ (Industrial Goods & Fasteners)', nameEn: 'Industrial Goods & Fasteners (Bolts, Nuts, Pipes)', icon: '⚙️' },
         { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Jute Bags', icon: '📦' }
       ];
     }
