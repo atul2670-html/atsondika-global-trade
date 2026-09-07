@@ -154,11 +154,27 @@ export default function RfqCartDrawer() {
   const cartCurrency = currentCurrency?.code || rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(currentCurrency?.code || cartCurrency);
 
-  // Extract distinct Product Base Currencies imported directly from product cards in cart
-  const productBaseCurrencies = Array.from(new Set(rfqCartItems.map(item => item.currency || 'INR')));
-  const baseCurrencySummaryText = productBaseCurrencies.length > 0
-    ? productBaseCurrencies.map(c => `${c} (${getCurrencySymbol(c)})`).join(', ')
-    : 'INR (₹)';
+  // Calculate total original listing prices in seller's base currency per currency in cart
+  const baseCurrencyTotals = rfqCartItems.reduce((acc, item) => {
+    const code = item.currency || 'INR';
+    const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const rawPack = parseFloat(item.packingCharge) || 0;
+    const rawCour = parseFloat(item.courierCharge) || 0;
+    const gstRate = parseFloat(item.localGstRate) || 0;
+    const qty = parseFloat(item.quantity) || 1;
+
+    const itemTotalBase = (rawPrice * qty) + ((rawPrice * qty) * (gstRate / 100)) + (rawPack * qty) + (rawCour * qty);
+    acc[code] = (acc[code] || 0) + itemTotalBase;
+    return acc;
+  }, {});
+
+  const sellerBasePriceText = Object.keys(baseCurrencyTotals).length > 0
+    ? Object.keys(baseCurrencyTotals).map(code => {
+        const sym = getCurrencySymbol(code);
+        const amount = baseCurrencyTotals[code];
+        return `${sym}${amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${code}`;
+      }).join(' + ')
+    : '₹0 INR';
 
   // Total amount calculation for Global Export Trade
   const totalExportAmount = rfqCartItems.reduce((acc, item) => {
@@ -374,7 +390,7 @@ export default function RfqCartDrawer() {
                 fontSize: '0.78rem',
                 fontWeight: 800
               }}>
-                {baseCurrencySummaryText}
+                {sellerBasePriceText}
               </span>
             </div>
 
