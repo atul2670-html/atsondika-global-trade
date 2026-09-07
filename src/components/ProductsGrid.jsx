@@ -531,9 +531,9 @@ export default function ProductsGrid() {
             let rawTitle = p.names?.[currentLang] || p.names?.['en'] || p.names?.['gu'] || p.name || p.category || 'Category';
             if (rawTitle.startsWith('data:')) rawTitle = 'Custom Category';
 
-            const iconEmoji = (p.icon && !p.icon.startsWith('data:')) ? p.icon : '🏷️';
-            const isImageIcon = p.icon && (p.icon.startsWith('data:image') || p.icon.startsWith('http') || p.icon.includes('/'));
-            const displayTitle = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : (isImageIcon ? rawTitle : `${iconEmoji} ${rawTitle}`);
+            const isImageIcon = p.icon && typeof p.icon === 'string' && (p.icon.startsWith('data:image') || p.icon.startsWith('http') || p.icon.includes('/'));
+            const iconEmoji = (!isImageIcon && p.icon) ? p.icon : '🏷️';
+            const displayTitle = rawTitle;
             const title = displayTitle;
             const subProds = getSubProductsForCategory(p.category);
             const isHovered = hoveredTab === p.category;
@@ -554,8 +554,10 @@ export default function ProductsGrid() {
                   }}
                 >
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    {isImageIcon && (
-                      <img src={p.icon} alt="icon" style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px', verticalAlign: 'middle' }} />
+                    {isImageIcon ? (
+                      <img src={p.icon} alt="icon" style={{ width: '22px', height: '22px', objectFit: 'contain', borderRadius: '4px', verticalAlign: 'middle', background: 'rgba(255,255,255,0.2)', padding: '1px' }} />
+                    ) : (
+                      <span>{iconEmoji}</span>
                     )}
                     {displayTitle}
                   </span>
