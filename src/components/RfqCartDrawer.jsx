@@ -163,16 +163,29 @@ export default function RfqCartDrawer() {
     const gstRate = parseFloat(item.localGstRate) || 0;
     const qty = parseFloat(item.quantity) || 1;
 
-    const itemTotalBase = (rawPrice * qty) + ((rawPrice * qty) * (gstRate / 100)) + (rawPack * qty) + (rawCour * qty);
-    acc[code] = (acc[code] || 0) + itemTotalBase;
+    const baseCardPrice = rawPrice * qty;
+    const itemTotalBase = baseCardPrice + (baseCardPrice * (gstRate / 100)) + (rawPack * qty) + (rawCour * qty);
+
+    if (!acc[code]) {
+      acc[code] = { baseCardPrice: 0, itemTotalBase: 0 };
+    }
+    acc[code].baseCardPrice += baseCardPrice;
+    acc[code].itemTotalBase += itemTotalBase;
     return acc;
   }, {});
 
   const sellerBasePriceText = Object.keys(baseCurrencyTotals).length > 0
     ? Object.keys(baseCurrencyTotals).map(code => {
         const sym = getCurrencySymbol(code);
-        const amount = baseCurrencyTotals[code];
-        return `${sym}${amount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${code}`;
+        const cardPrice = baseCurrencyTotals[code].baseCardPrice;
+        const totalBase = baseCurrencyTotals[code].itemTotalBase;
+        const formattedCard = `${sym}${cardPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${code}`;
+        const formattedTotal = `${sym}${totalBase.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${code}`;
+
+        if (Math.abs(totalBase - cardPrice) > 0.001) {
+          return `${formattedCard} (Total: ${formattedTotal})`;
+        }
+        return formattedCard;
       }).join(' + ')
     : '₹0 INR';
 
