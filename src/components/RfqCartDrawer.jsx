@@ -93,11 +93,8 @@ export default function RfqCartDrawer() {
     const val = parseFloat(rawAmount) || 0;
     if (val === 0) return 0;
 
-    let baseCode = itemCurrencyCode;
-    if (!baseCode) {
-      baseCode = val < 100 ? 'EUR' : 'INR';
-    }
-
+    // Strict Currency Resolution: Use explicit item base currency, or default to 'INR'
+    const baseCode = itemCurrencyCode || 'INR';
     const baseRate = getFxRate(baseCode);
     const targetRate = currRate;
     
@@ -447,7 +444,7 @@ export default function RfqCartDrawer() {
                 {rfqCartItems.map((item) => {
                   const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
                   const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
-                  const baseCurrencyCode = item.currency || (rawPrice < 100 ? 'EUR' : 'INR');
+                  const baseCurrencyCode = item.currency || 'INR';
                   const displayItemPrice = getPriceInActiveCurrency(rawPrice, item.currency);
                   const displayPacking = getPriceInActiveCurrency(item.packingCharge, item.currency);
                   const displayCourier = getPriceInActiveCurrency(item.courierCharge, item.currency);

@@ -1240,7 +1240,8 @@ export default function ProductsGrid() {
                         <button
                           type="button"
                           onClick={() => {
-                            addToRfqCart(p, 1, 'pcs', 'LOCAL');
+                            const cardCurrency = p.currency || itemCurrency || 'INR';
+                            addToRfqCart({ ...p, currency: cardCurrency }, 1, 'pcs', 'LOCAL');
                             setIsRfqDrawerOpen(true);
                           }}
                           style={{
