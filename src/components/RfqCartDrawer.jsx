@@ -154,6 +154,12 @@ export default function RfqCartDrawer() {
   const cartCurrency = currentCurrency?.code || rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(currentCurrency?.code || cartCurrency);
 
+  // Extract distinct Product Base Currencies imported directly from product cards in cart
+  const productBaseCurrencies = Array.from(new Set(rfqCartItems.map(item => item.currency || 'INR')));
+  const baseCurrencySummaryText = productBaseCurrencies.length > 0
+    ? productBaseCurrencies.map(c => `${c} (${getCurrencySymbol(c)})`).join(', ')
+    : 'INR (₹)';
+
   // Total amount calculation for Global Export Trade
   const totalExportAmount = rfqCartItems.reduce((acc, item) => {
     const priceUSD = item.priceUSD ? parseFloat(item.priceUSD) : (item.priceInr ? parseFloat(item.priceInr) / 86.45 : 12);
@@ -329,32 +335,50 @@ export default function RfqCartDrawer() {
     <div className="rfq-drawer-overlay" onClick={() => setIsRfqDrawerOpen(false)}>
       <div className="rfq-drawer-content" onClick={(e) => e.stopPropagation()}>
         {/* Drawer Header */}
-        <div className="rfq-drawer-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '1.8rem' }}>🛒</span>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                {tradeMode === 'local'
-                  ? (currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ (Local Cart)' : '🛍️ Local Trade Shopping Cart')
-                  : (rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart')}
-              </h3>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં સેવ થયેલ છે' : 'Products Saved in Cart'}
+        <div className="rfq-drawer-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '1.8rem' }}>🛒</span>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                  {tradeMode === 'local'
+                    ? (currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ (Local Cart)' : '🛍️ Local Trade Shopping Cart')
+                    : (rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart')}
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
+                  {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં સેવ થયેલ છે' : 'Products Saved in Cart'}
+                </span>
+              </div>
+            </div>
+            <button
+              className="drawer-close-btn"
+              onClick={() => setIsRfqDrawerOpen(false)}
+              aria-label="Close Drawer"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* TOP CAPSULE BADGE: Product Base Currency imported directly from product cards */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', background: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 700 }}>
+                🏷️ {currentLang === 'gu' ? 'પ્રોડક્ટ કાર્ડ બેઝ કરંસી (Seller Listing Currency):' : 'Seller Product Base Currency:'}
+              </span>
+              <span style={{
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(234, 88, 12, 0.25))',
+                border: '1px solid rgba(245, 158, 11, 0.5)',
+                color: '#fef08a',
+                padding: '3px 10px',
+                borderRadius: '16px',
+                fontSize: '0.78rem',
+                fontWeight: 800
+              }}>
+                {baseCurrencySummaryText}
               </span>
             </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            {/* Searchable World Currency Dropdown Selector */}
-            <div style={{ minWidth: '160px', maxWidth: '210px' }}>
-              <SearchableCurrencySelect
-                value={currentCurrency}
-                onChange={(selectedCurr) => {
-                  setCurrentCurrency(selectedCurr);
-                  if (showLiveToast) showLiveToast(currentLang === 'gu' ? `💱 કરંસી ${selectedCurr.code} (${selectedCurr.symbol}) માં બદલાઈ ગઈ છે` : `💱 Currency switched to ${selectedCurr.code} (${selectedCurr.symbol})`, 'success');
-                }}
-                currenciesList={currenciesList}
-              />
-            </div>
+
+            {/* Quick 1-Click INR Switch Button */}
             {isNonInr && (
               <button
                 type="button"
@@ -364,28 +388,36 @@ export default function RfqCartDrawer() {
                   if (showLiveToast) showLiveToast(currentLang === 'gu' ? '🇮🇳 કરંસી ₹ INR માં બદલાઈ ગઈ છે' : '🇮🇳 Currency switched to ₹ INR', 'success');
                 }}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(234, 88, 12, 0.25))',
-                  border: '1px solid rgba(245, 158, 11, 0.5)',
-                  color: '#fef08a',
-                  padding: '6px 12px',
-                  borderRadius: '20px',
-                  fontSize: '0.76rem',
-                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  border: 'none',
+                  color: '#ffffff',
+                  padding: '4px 10px',
+                  borderRadius: '16px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap'
                 }}
-                title="Click to view all cart prices directly in Indian Rupees (₹ INR)"
+                title="Click to switch payment currency directly to Indian Rupees (₹ INR)"
               >
-                🇮🇳 {currentLang === 'gu' ? '₹ INR' : '₹ INR'}
+                🇮🇳 {currentLang === 'gu' ? '₹ INR માં ફેરવો' : 'Switch to ₹ INR'}
               </button>
             )}
-            <button
-              className="drawer-close-btn"
-              onClick={() => setIsRfqDrawerOpen(false)}
-              aria-label="Close Drawer"
-            >
-              ✕
-            </button>
+          </div>
+
+          {/* CURRENCY DROPDOWN SELECTOR BELOW CAPSULE: Buyer Selects Payment Currency */}
+          <div style={{ marginTop: '2px' }}>
+            <label style={{ fontSize: '0.76rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+              💳 {currentLang === 'gu' ? 'ખરીદનાર જે કરંસીમાં પેમેન્ટ કરવા માગે તે કરંસી અહીં પસંદ કરો (Select Payment Currency):' : 'Select Buyer Payment Currency:'}
+            </label>
+            <SearchableCurrencySelect
+              value={currentCurrency}
+              onChange={(selectedCurr) => {
+                setCurrentCurrency(selectedCurr);
+                if (showLiveToast) showLiveToast(currentLang === 'gu' ? `💱 પેમેન્ટ કરંસી ${selectedCurr.code} (${selectedCurr.symbol}) માં બદલાઈ ગઈ છે` : `💱 Payment currency set to ${selectedCurr.code} (${selectedCurr.symbol})`, 'success');
+              }}
+              currenciesList={currenciesList}
+            />
           </div>
         </div>
 
