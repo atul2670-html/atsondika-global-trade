@@ -70,48 +70,79 @@ export default function RfqCartDrawer() {
 
   const totalQuantity = rfqCartItems.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1), 0);
 
-  // 1. Items Base Price Subtotal (Selling Price * Quantity)
+  // Get FX exchange rate relative to USD (where USD rate = 1.0)
+  const getFxRate = (code) => {
+    if (!code || code === 'USD') return 1.0;
+    if (code === 'INR') {
+      const inrObj = currenciesList?.find(c => c.code === 'INR');
+      return inrObj?.rate || 86.45;
+    }
+    const found = currenciesList?.find(c => c.code === code);
+    return found?.rate || 1.0;
+  };
+
+  const inrRate = getFxRate('INR');
+  const currRate = currentCurrency?.rate || getFxRate(currentCurrency?.code);
+  const isNonInr = currentCurrency?.code !== 'INR';
+
+  // Helper to convert item price / charge to current active currency (currentCurrency)
+  const getPriceInActiveCurrency = (rawAmount, itemCurrencyCode) => {
+    const val = parseFloat(rawAmount) || 0;
+    if (val === 0) return 0;
+
+    let baseCode = itemCurrencyCode;
+    if (!baseCode) {
+      baseCode = val < 100 ? 'USD' : 'INR';
+    }
+    if (val < 100 && baseCode === 'INR') {
+      baseCode = 'USD';
+    }
+
+    const baseRate = getFxRate(baseCode);
+    const amountInUsd = val / baseRate;
+    return amountInUsd * currRate;
+  };
+
+  // 1. Items Base Price Subtotal (Selling Price * Quantity converted to active currency)
   const itemsSubtotal = rfqCartItems.reduce((acc, item) => {
-    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const price = getPriceInActiveCurrency(rawPrice, item.currency);
     const qty = parseFloat(item.quantity) || 1;
     return acc + (price * qty);
   }, 0);
 
-  // 2. Total Packing Charge
+  // 2. Total Packing Charge (converted to active currency)
   const totalPackingCharge = rfqCartItems.reduce((acc, item) => {
-    const pack = parseFloat(item.packingCharge) || 0;
+    const rawPack = parseFloat(item.packingCharge) || 0;
+    const pack = getPriceInActiveCurrency(rawPack, item.currency);
     const qty = parseFloat(item.quantity) || 1;
     return acc + (pack * qty);
   }, 0);
 
-  // 3. Total Courier Delivery Charge
+  // 3. Total Courier Delivery Charge (converted to active currency)
   const totalCourierCharge = rfqCartItems.reduce((acc, item) => {
-    const cour = parseFloat(item.courierCharge) || 0;
+    const rawCour = parseFloat(item.courierCharge) || 0;
+    const cour = getPriceInActiveCurrency(rawCour, item.currency);
     const qty = parseFloat(item.quantity) || 1;
     return acc + (cour * qty);
   }, 0);
 
-  // 4. Total GST Amount (Included Tax breakdown)
+  // 4. Total GST Amount (Included Tax breakdown in active currency)
   const totalGstAmount = rfqCartItems.reduce((acc, item) => {
-    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+    const price = getPriceInActiveCurrency(rawPrice, item.currency);
     const qty = parseFloat(item.quantity) || 1;
     const gstRate = parseFloat(item.localGstRate) || 0;
     return acc + ((price * qty) * (gstRate / 100));
   }, 0);
 
-  // 5. Grand Total (Items Subtotal + GST + Packing Charge + Courier Charge)
+  // 5. Grand Total in Current Active Currency
   const totalLocalAmount = itemsSubtotal + totalGstAmount + totalPackingCharge + totalCourierCharge;
-
-  // Live Currency Exchange Conversion Math to Indian Rupee (₹ INR)
-  const inrObj = currenciesList?.find(c => c.code === 'INR');
-  const inrRate = inrObj?.rate || 86.45;
-  const currRate = currentCurrency?.rate || 1.0;
-  const isNonInr = currentCurrency?.code !== 'INR';
 
   // Live converted total in Indian Rupees (₹ INR)
   const totalInrAmount = isNonInr
     ? Math.round((totalLocalAmount / currRate) * inrRate * 100) / 100
-    : totalLocalAmount;
+    : Math.round(totalLocalAmount * 100) / 100;
 
   // Rate text e.g. "1 EUR = ₹93.97 INR"
   const liveInrRateText = isNonInr
@@ -119,9 +150,9 @@ export default function RfqCartDrawer() {
     : '';
 
   // Amount for UPI QR Code (UPI requires amount strictly in INR)
-  const upiPayAmount = isNonInr ? totalInrAmount.toFixed(2) : Number(totalLocalAmount).toFixed(2);
+  const upiPayAmount = totalInrAmount.toFixed(2);
 
-  const cartCurrency = rfqCartItems[0]?.currency || currentCurrency?.code || 'INR';
+  const cartCurrency = currentCurrency?.code || rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(currentCurrency?.code || cartCurrency);
 
   // Total amount calculation for Global Export Trade
@@ -402,7 +433,10 @@ export default function RfqCartDrawer() {
               <div className="rfq-cart-list">
                 {rfqCartItems.map((item) => {
                   const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
-                  const itemPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+                  const rawPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+                  const displayItemPrice = getPriceInActiveCurrency(rawPrice, item.currency);
+                  const displayPacking = getPriceInActiveCurrency(item.packingCharge, item.currency);
+                  const displayCourier = getPriceInActiveCurrency(item.courierCharge, item.currency);
 
                   return (
                     <div key={item.id} className="rfq-cart-item">
@@ -420,13 +454,13 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price">
                             {tradeMode === 'local'
-                              ? getCurrencySymbol(item.currency || 'INR') + Number(itemPrice).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                              ? cartCurrSym + Number(displayItemPrice).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Packing</span>}
-                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.courierCharge} Courier</span>}
+                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {cartCurrSym}{displayPacking.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} Packing</span>}
+                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {cartCurrSym}{displayCourier.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} Courier</span>}
                               {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
                             </div>
                           )}
