@@ -102,8 +102,27 @@ export default function RfqCartDrawer() {
   // 5. Grand Total (Items Subtotal + GST + Packing Charge + Courier Charge)
   const totalLocalAmount = itemsSubtotal + totalGstAmount + totalPackingCharge + totalCourierCharge;
 
-  const cartCurrency = rfqCartItems[0]?.currency || 'INR';
-  const cartCurrSym = getCurrencySymbol(cartCurrency);
+  // Live Currency Exchange Conversion Math to Indian Rupee (₹ INR)
+  const inrObj = currenciesList?.find(c => c.code === 'INR');
+  const inrRate = inrObj?.rate || 86.45;
+  const currRate = currentCurrency?.rate || 1.0;
+  const isNonInr = currentCurrency?.code !== 'INR';
+
+  // Live converted total in Indian Rupees (₹ INR)
+  const totalInrAmount = isNonInr
+    ? Math.round((totalLocalAmount / currRate) * inrRate * 100) / 100
+    : totalLocalAmount;
+
+  // Rate text e.g. "1 EUR = ₹93.97 INR"
+  const liveInrRateText = isNonInr
+    ? `1 ${currentCurrency?.code || 'EUR'} = ₹${((1 / currRate) * inrRate).toFixed(2)} INR`
+    : '';
+
+  // Amount for UPI QR Code (UPI requires amount strictly in INR)
+  const upiPayAmount = isNonInr ? totalInrAmount.toFixed(2) : Number(totalLocalAmount).toFixed(2);
+
+  const cartCurrency = rfqCartItems[0]?.currency || currentCurrency?.code || 'INR';
+  const cartCurrSym = getCurrencySymbol(currentCurrency?.code || cartCurrency);
 
   // Total amount calculation for Global Export Trade
   const totalExportAmount = rfqCartItems.reduce((acc, item) => {
@@ -294,13 +313,39 @@ export default function RfqCartDrawer() {
               </span>
             </div>
           </div>
-          <button
-            className="drawer-close-btn"
-            onClick={() => setIsRfqDrawerOpen(false)}
-            aria-label="Close Drawer"
-          >
-            ✕
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isNonInr && (
+              <button
+                type="button"
+                onClick={() => {
+                  const inr = currenciesList?.find(c => c.code === 'INR') || { code: 'INR', symbol: '₹', name: 'Indian Rupee', rate: 86.45 };
+                  setCurrentCurrency(inr);
+                  if (showLiveToast) showLiveToast(currentLang === 'gu' ? '🇮🇳 કરંસી ₹ INR માં બદલાઈ ગઈ છે' : '🇮🇳 Currency switched to ₹ INR', 'success');
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(234, 88, 12, 0.25))',
+                  border: '1px solid rgba(245, 158, 11, 0.5)',
+                  color: '#fef08a',
+                  padding: '5px 10px',
+                  borderRadius: '20px',
+                  fontSize: '0.76rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+                title="Click to view all cart prices directly in Indian Rupees (₹ INR)"
+              >
+                🇮🇳 {currentLang === 'gu' ? '₹ INR માં ફેરવો' : 'Switch to ₹ INR'}
+              </button>
+            )}
+            <button
+              className="drawer-close-btn"
+              onClick={() => setIsRfqDrawerOpen(false)}
+              aria-label="Close Drawer"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Drawer Body */}
@@ -808,6 +853,14 @@ export default function RfqCartDrawer() {
                     <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
                       Total: {cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                     </span>
+                    {isNonInr && (
+                      <div style={{ fontSize: '0.8rem', color: '#4ade80', fontWeight: 800, marginTop: '2px' }}>
+                        🇮🇳 Live INR Equivalent: ₹{totalInrAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
+                        <span style={{ fontSize: '0.68rem', opacity: 0.85, display: 'block', color: '#94a3b8', fontWeight: 500 }}>
+                          (Live FX Rate: {liveInrRateText})
+                        </span>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
@@ -957,9 +1010,25 @@ export default function RfqCartDrawer() {
               <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '8px 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
-                <span style={{ color: '#ffffff' }}>Payable Amount:</span>
+                <span style={{ color: '#ffffff' }}>Payable Amount ({currentCurrency?.code || 'EUR'}):</span>
                 <span style={{ color: '#facc15' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
               </div>
+
+              {isNonInr && (
+                <div style={{ background: 'rgba(74, 222, 128, 0.12)', border: '1px solid rgba(74, 222, 128, 0.4)', borderRadius: '10px', padding: '10px 12px', marginTop: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.84rem', color: '#4ade80', fontWeight: 800 }}>
+                      🇮🇳 Indian Rupee Live Converted Amount:
+                    </span>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#4ade80' }}>
+                      ₹{totalInrAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px', textAlign: 'right' }}>
+                    Live FX Bank Rate: {liveInrRateText}
+                  </div>
+                </div>
+              )}
             </div>
 
             {paymentStep === 'pay' && (
@@ -968,15 +1037,19 @@ export default function RfqCartDrawer() {
                 {paymentMethod === 'upi' && (
                   <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
                     <h5 style={{ margin: '0 0 10px 0', color: '#4ade80', fontSize: '0.95rem' }}>
-                      📱 Scan QR Code to Pay via GPay / PhonePe / Paytm
+                      📱 Scan QR Code to Pay via GPay / PhonePe / Paytm / BHIM
                     </h5>
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${totalLocalAmount}&cu=INR`)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${upiPayAmount}&cu=INR`)}`}
                       alt="UPI QR Code"
                       style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)', width: '160px', height: '160px' }}
                     />
-                    <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 700 }}>
-                      UPI ID: <span style={{ color: '#38bdf8' }}>7861997755@ybl</span>
+                    <div style={{ marginTop: '10px', fontSize: '0.9rem', color: '#e2e8f0', fontWeight: 800 }}>
+                      Payable INR Amount: <span style={{ color: '#facc15', fontSize: '1.08rem' }}>₹{totalInrAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR</span>
+                      {isNonInr && <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', fontWeight: 500 }}>(Converted from {cartCurrSym}{totalLocalAmount.toFixed(2)} at live rate)</span>}
+                    </div>
+                    <div style={{ marginTop: '4px', fontSize: '0.82rem', color: '#38bdf8' }}>
+                      UPI ID: <span style={{ fontWeight: 800, color: '#ffffff' }}>7861997755@ybl</span>
                     </div>
 
                     <div style={{ marginTop: '14px' }}>
