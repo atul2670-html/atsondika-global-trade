@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { convertGoogleDriveUrl } from '../utils/address';
-import { autoTranslateText } from '../utils/translator';
+import { autoTranslateText, getCategoryTabTitle } from '../utils/translator';
 
 const getCardUiText = (key, lang, extra = {}) => {
   const norm = (lang || 'en').split('-')[0].toLowerCase();
@@ -239,40 +239,40 @@ export default function ProductsGrid() {
 
   if (activeCompId === 'comp_4') {
     defaultTabs = [
-      { filter: 'all', title: t.tab_all },
-      { filter: 'industrial', title: currentLang === 'gu' ? '🔩 ઔદ્યોગિક ઓટોમેશન & ઈલેક્ટ્રોનિક્સ' : '🔩 Industrial Automation & Electronics' },
-      { filter: 'packaging', title: currentLang === 'gu' ? '🛍️ ઇકો પેકેજિંગ & જુટ બેગ્સ' : '🛍️ Eco Packaging & Sustainable Materials' },
-      { filter: 'new_machinery', title: currentLang === 'gu' ? '🏗️ નવી મશીનરી & સિસ્ટમ્સ' : '🏗️ New Machinery Systems' },
-      { filter: 'used_machinery', title: currentLang === 'gu' ? '⚙️ વપરાયેલી ઔદ્યોગિક મશીનરી' : '⚙️ Used Industrial Machinery' }
+      { filter: 'all', title: getCategoryTabTitle('all', currentLang) },
+      { filter: 'industrial', title: getCategoryTabTitle('industrial', currentLang) },
+      { filter: 'packaging', title: getCategoryTabTitle('packaging', currentLang) },
+      { filter: 'new_machinery', title: getCategoryTabTitle('new_machinery', currentLang) },
+      { filter: 'used_machinery', title: getCategoryTabTitle('used_machinery', currentLang) }
     ];
   } else if (activeCompId === 'comp_3') {
     defaultTabs = [
-      { filter: 'all', title: t.tab_all },
-      { filter: 'industrial', title: t.tab_ind },
-      { filter: 'new_machinery', title: t.tab_new },
-      { filter: 'used_machinery', title: t.tab_used },
-      { filter: 'packaging', title: t.tab_eco }
+      { filter: 'all', title: getCategoryTabTitle('all', currentLang) },
+      { filter: 'industrial', title: getCategoryTabTitle('industrial', currentLang) },
+      { filter: 'new_machinery', title: getCategoryTabTitle('new_machinery', currentLang) },
+      { filter: 'used_machinery', title: getCategoryTabTitle('used_machinery', currentLang) },
+      { filter: 'packaging', title: getCategoryTabTitle('packaging', currentLang) }
     ];
   } else if (activeCompId === 'comp_2') {
     defaultTabs = [
-      { filter: 'all', title: t.tab_all },
-      { filter: 'agro', title: t.tab_agro },
-      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ (Dairy Products)' : '🥛 Dairy Products' },
-      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)' : '🧵 Textile Products' },
-      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : '👕 Readymade Garments' },
-      { filter: 'packaging', title: t.tab_eco }
+      { filter: 'all', title: getCategoryTabTitle('all', currentLang) },
+      { filter: 'agro', title: getCategoryTabTitle('agro', currentLang) },
+      { filter: 'dairy', title: getCategoryTabTitle('dairy', currentLang) },
+      { filter: 'textiles', title: getCategoryTabTitle('textiles', currentLang) },
+      { filter: 'garments', title: getCategoryTabTitle('garments', currentLang) },
+      { filter: 'packaging', title: getCategoryTabTitle('packaging', currentLang) }
     ];
   } else {
     defaultTabs = [
-      { filter: 'all', title: t.tab_all },
-      { filter: 'agro', title: t.tab_agro },
-      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ' : (currentLang === 'hi' ? '🥛 डेयरी उत्पाद' : (currentLang === 'fr' ? '🥛 Produits Laitiers' : (currentLang === 'ar' ? '🥛 منتجات الألبان' : '🥛 Dairy Products'))) },
-      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ' : (currentLang === 'hi' ? '🧵 कपड़ा उत्पाद' : (currentLang === 'fr' ? '🧵 Produits Textiles' : (currentLang === 'ar' ? '🧵 منتجات المنسوجات' : '🧵 Textile Products'))) },
-      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ' : (currentLang === 'hi' ? '👕 रेडीमेड गारमेंट्स' : (currentLang === 'fr' ? '👕 Vêtements Confectionnés' : (currentLang === 'ar' ? '👕 الملابس الجاهزة' : '👕 Readymade Garments'))) },
-      { filter: 'used_machinery', title: t.tab_used },
-      { filter: 'new_machinery', title: t.tab_new },
-      { filter: 'industrial', title: t.tab_ind },
-      { filter: 'packaging', title: t.tab_eco }
+      { filter: 'all', title: getCategoryTabTitle('all', currentLang) },
+      { filter: 'agro', title: getCategoryTabTitle('agro', currentLang) },
+      { filter: 'dairy', title: getCategoryTabTitle('dairy', currentLang) },
+      { filter: 'textiles', title: getCategoryTabTitle('textiles', currentLang) },
+      { filter: 'garments', title: getCategoryTabTitle('garments', currentLang) },
+      { filter: 'used_machinery', title: getCategoryTabTitle('used_machinery', currentLang) },
+      { filter: 'new_machinery', title: getCategoryTabTitle('new_machinery', currentLang) },
+      { filter: 'industrial', title: getCategoryTabTitle('industrial', currentLang) },
+      { filter: 'packaging', title: getCategoryTabTitle('packaging', currentLang) }
     ];
   }
 
@@ -635,7 +635,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
+                  className={`tab-btn notranslate ${currentCategory === tab.filter ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(tab.filter);
                     setSearchFilterQuery('');
@@ -746,7 +746,7 @@ export default function ProductsGrid() {
 
           {/* Cleaned Custom Category Tabs with Edit & Delete options */}
           {customMains.map(p => {
-            let rawTitle = p.names?.[currentLang] || p.names?.['en'] || p.names?.['gu'] || p.name || p.category || 'Category';
+            let rawTitle = getCategoryTabTitle(p.category || p.id, currentLang) || p.names?.[currentLang] || p.names?.['en'] || p.names?.['gu'] || p.name || 'Category';
             if (rawTitle.startsWith('data:')) rawTitle = 'Custom Category';
 
             const isImageIcon = p.icon && typeof p.icon === 'string' && (p.icon.startsWith('data:image') || p.icon.startsWith('http') || p.icon.includes('/'));

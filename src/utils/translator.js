@@ -204,6 +204,210 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   { en: /Verified Exporter/gi, gu: 'પ્રમાણિત નિકાસકાર', hi: 'सत्यापित निर्यातक', fr: 'Exportateur Vérifié' }
 ];
 
+export const CATEGORY_TAB_DICTIONARY = {
+  all: {
+    en: 'All Products',
+    gu: 'બધી પ્રોડક્ટ્સ',
+    hi: 'सभी उत्पाद',
+    fr: 'Tous les Produits',
+    ar: 'جميع المنتجات',
+    es: 'Todos los Productos',
+    de: 'Alle Produkte',
+    ru: 'Все товары',
+    zh: '所有产品',
+    ja: '全商品',
+    ko: '전체 상품',
+    pt: 'Todos os Produtos',
+    it: 'Tutti i Prodotti',
+    tr: 'Tüm Ürünler'
+  },
+  agro: {
+    en: '🌾 Agro Commodities & Food',
+    gu: '🌾 એગ્રો કોમોડિટીઝ & ફૂડ',
+    hi: '🌾 कृषि एवं खाद्य उत्पाद',
+    fr: '🌾 Produits Agricoles & Alimentaires',
+    ar: '🌾 المنتجات الزراعية والغذائية',
+    es: '🌾 Productos Agrícolas y Alimenticios',
+    de: '🌾 Agrar- & Lebensmittelprodukte',
+    ru: '🌾 Сельхозпродукция и продукты питания',
+    zh: '🌾 农产品与食品',
+    ja: '🌾 農産物・食品',
+    ko: '🌾 농산물 및 식품',
+    pt: '🌾 Produtos Agrícolas e Alimentícios',
+    it: '🌾 Prodotti Agricoli e Alimentari',
+    tr: '🌾 Tarım ve Gıda Ürünleri'
+  },
+  dairy: {
+    en: '🥛 Dairy Products',
+    gu: '🥛 ડેરી પ્રોડક્ટ્સ',
+    hi: '🥛 डेयरी उत्पाद',
+    fr: '🥛 Produits Laitiers',
+    ar: '🥛 منتجات الألبان',
+    es: '🥛 Productos Lácteos',
+    de: '🥛 Molkereiprodukte',
+    ru: '🥛 Молочная продукция',
+    zh: '🥛 乳制品',
+    ja: '🥛 乳製品',
+    ko: '🥛 유제품',
+    pt: '🥛 Lacticínios',
+    it: '🥛 Prodotti Lattiero-Caseari',
+    tr: '🥛 Süt Ürünleri'
+  },
+  textiles: {
+    en: '🧵 Surat Textile Products',
+    gu: '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ',
+    hi: '🧵 कपड़ा उत्पाद (Textiles)',
+    fr: '🧵 Produits Textiles de Surat',
+    ar: '🧵 منتجات المنسوجات والأقمشة',
+    es: '🧵 Productos Textiles de Surat',
+    de: '🧵 Surat Textilprodukte',
+    ru: '🧵 Текстильная продукция',
+    zh: '🧵 素拉特纺织品',
+    ja: '🧵 繊維製品・テキスタイル',
+    ko: '🧵 텍스타일 제품',
+    pt: '🧵 Produtos Têxteis de Surat',
+    it: '🧵 Prodotti Tessili Surat',
+    tr: '🧵 Dokuma ve Tekstil Ürünleri'
+  },
+  garments: {
+    en: '👕 Readymade Garments',
+    gu: '👕 રેડીમેડ ગારમેન્ટ્સ',
+    hi: '👕 रेडीमेड गारमेंट्स',
+    fr: '👕 Vêtements Confectionnés',
+    ar: '👕 الملابس الجاهزة',
+    es: '👕 Ropa Confeccionada',
+    de: '👕 Konfektionskleidung',
+    ru: '👕 Готовая одежда',
+    zh: '👕 成衣服装',
+    ja: '👕 既製服・アパレル',
+    ko: '👕 기성복',
+    pt: '👕 Vestuário Pronto',
+    it: '👕 Abbigliamento Confezionato',
+    tr: '👕 Hazır Giyim'
+  },
+  used_machinery: {
+    en: '⚙️ Used Industrial Machinery',
+    gu: '⚙️ વપરાયેલી ઔદ્યોગિક મશીનરી',
+    hi: '⚙️ पुरानी औद्योगिक मशीनरी',
+    fr: '⚙️ Machines Industrielles d\'Occasion',
+    ar: '⚙️ المعدات الصناعية المستعملة',
+    es: '⚙️ Maquinaria Industrial Usada',
+    de: '⚙️ Gebrauchte Industriemaschinen',
+    ru: '⚙️ Б/У промышленное оборудование',
+    zh: '⚙️ 二手工业机械',
+    ja: '⚙️ 中古産業機械',
+    ko: '⚙️ 중고 산업 기계',
+    pt: '⚙️ Maquinaria Industrial Usada',
+    it: '⚙️ Macchinari Industriali Usati',
+    tr: '⚙️ İkinci El Sanayi Makineleri'
+  },
+  new_machinery: {
+    en: '🏗️ New Machinery Systems',
+    gu: '🏗️ નવી મશીનરી સિસ્ટમ્સ',
+    hi: '🏗️ नई मशीनरी और सिस्टम',
+    fr: '🏗️ Nouvelles Machines Industrielles',
+    ar: '🏗️ معدات وأنظمة جديدة',
+    es: '🏗️ Nuevos Sistemas de Maquinaria',
+    de: '🏗️ Neue Maschinensysteme',
+    ru: '🏗️ Новое промышленное оборудование',
+    zh: '🏗️ 新型机械系统',
+    ja: '🏗️ 新品産業機械',
+    ko: '🏗️ 신형 기계 시스템',
+    pt: '🏗️ Novos Sistemas de Maquinaria',
+    it: '🏗️ Nuovi Macchinari Industriali',
+    tr: '🏗️ Yeni Makine Sistemleri'
+  },
+  industrial: {
+    en: '🔩 Industrial Goods & Fasteners',
+    gu: '🔩 ઔદ્યોગિક માલ & ફાસ્ટનર્સ',
+    hi: '🔩 औद्योगिक सामान और फास्टनर',
+    fr: '🔩 Biens Industriels & Boulonnerie',
+    ar: '🔩 المعدات الصناعية وأدوات التثبيت',
+    es: '🔩 Productos Industriales y Sujetadores',
+    de: '🔩 Industriegüter & Befestigungstechnik',
+    ru: '🔩 Промышленные товары и крепеж',
+    zh: '🔩 工业品与紧固件',
+    ja: '🔩 産業用品＆ファスナー',
+    ko: '🔩 산업용품 및 패스너',
+    pt: '🔩 Produtos Industriais e Fixadores',
+    it: '🔩 Beni Industriali e Bulloneria',
+    tr: '🔩 Sanayi Ürünleri ve Bağlantı Elemanları'
+  },
+  packaging: {
+    en: '🛍️ Eco Packaging & Jute Bags',
+    gu: '🛍️ ઇકો પેકેજિંગ & જૂટ બેગ્સ',
+    hi: '🛍️ इको पैकेजिंग और जूट बैग',
+    fr: '🛍️ Emballage Écologique & Sacs Jute',
+    ar: '🛍️ التغليف البيئي وأكياس الخيش',
+    es: '🛍️ Embalaje Ecológico y Bolsas de Yute',
+    de: '🛍️ Öko-Verpackungen & Jutebeutel',
+    ru: '🛍️ Эко-упаковка и джутовые мешки',
+    zh: '🛍️ 环保包装与黄麻袋',
+    ja: '🛍️ エコ包装＆ジュートバッグ',
+    ko: '🛍️ 친환경 포장 및 황마 가방',
+    pt: '🛍️ Embalagem Ecológica e Sacos de Juta',
+    it: '🛍️ Imballaggio Ecologico e Sacchi in Juta',
+    tr: '🛍️ Çevre Dostu Ambalaj ve Jüt Çantalar'
+  },
+  electronic: {
+    en: '📟 Electronic Products',
+    gu: '📟 ઈલેક્ટ્રોનિક પ્રોડક્ટ્સ',
+    hi: '📟 इलेक्ट्रॉनिक उत्पाद',
+    fr: '📟 Produits Électroniques',
+    ar: '📟 المنتجات الإلكترونية',
+    es: '📟 Productos Electrónicos',
+    de: '📟 Elektronische Produkte',
+    ru: '📟 Электронные товары',
+    zh: '📟 电子产品',
+    ja: '📟 電子製品',
+    ko: '📟 전자 제품',
+    pt: '📟 Produtos Eletrônicos',
+    it: '📟 Prodotti Elettronici',
+    tr: '📟 Elektronik Ürünler'
+  },
+  automobile: {
+    en: '🚗 Automobile Products',
+    gu: '🚗 ઓટોમોબાઈલ પ્રોડક્ટ્સ',
+    hi: '🚗 ऑटोमोबाइल उत्पाद',
+    fr: '🚗 Produits Automobiles',
+    ar: '🚗 منتجات السيارات',
+    es: '🚗 Productos Automotrices',
+    de: '🚗 Automobilprodukte',
+    ru: '🚗 Автомобильная продукция',
+    zh: '🚗 汽车用品及配件',
+    ja: '🚗 自動車関連用品',
+    ko: '🚗 자동차 용품',
+    pt: '🚗 Produtos Automotivos',
+    it: '🚗 Prodotti Automobilistici',
+    tr: '🚗 Otomotiv Ürünleri'
+  }
+};
+
+export function getCategoryTabTitle(catKey, lang = 'en') {
+  if (!catKey) return '';
+  const normKey = String(catKey).trim().toLowerCase();
+  
+  let keyMatch = normKey;
+  if (normKey.includes('agro') || normKey.includes('food')) keyMatch = 'agro';
+  else if (normKey.includes('dairy') || normKey.includes('ghee') || normKey.includes('milk')) keyMatch = 'dairy';
+  else if (normKey.includes('textile') || normKey.includes('fabric')) keyMatch = 'textiles';
+  else if (normKey.includes('garment') || normKey.includes('apparel') || normKey.includes('suit')) keyMatch = 'garments';
+  else if (normKey.includes('used') || normKey.includes('refurbish')) keyMatch = 'used_machinery';
+  else if (normKey.includes('new') || normKey.includes('machinery')) keyMatch = 'new_machinery';
+  else if (normKey.includes('indus') || normKey.includes('fasten') || normKey.includes('bolt')) keyMatch = 'industrial';
+  else if (normKey.includes('pack') || normKey.includes('jute') || normKey.includes('eco')) keyMatch = 'packaging';
+  else if (normKey.includes('electron') || normKey.includes('digital')) keyMatch = 'electronic';
+  else if (normKey.includes('auto') || normKey.includes('vehicle') || normKey.includes('car')) keyMatch = 'automobile';
+  else if (normKey === 'all' || normKey.includes('all')) keyMatch = 'all';
+
+  const entry = CATEGORY_TAB_DICTIONARY[keyMatch];
+  if (entry) {
+    const langCode = (lang || 'en').split('-')[0].toLowerCase();
+    return entry[langCode] || entry.en;
+  }
+  return catKey;
+}
+
 export function matchTradeDictionary(text, lang) {
   if (!text || typeof text !== 'string') return text || '';
   let str = text;
