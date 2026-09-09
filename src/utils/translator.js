@@ -179,7 +179,7 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   { en: /CNC Machine|CNC Machinery/gi, gu: 'સી.એન.સી. મશીન', hi: 'सीएनसी मशीन', fr: 'Machine CNC' },
   { en: /Paper Bag & Box Packaging Material/gi, gu: 'પેપર બેગ અને બોક્સનું પેકેજિંગ મટીરીયલ', hi: 'पेपर बैग और बॉक्स पैकेजिंग सामग्री', fr: 'Matériel d\'emballage sacs en papier et boîtes' },
   { en: /New Machinery & Systems|New Machinery Systems|New Machinery|New Machine/gi, gu: 'નવી મશીનરી', hi: 'नई मशीनरी', fr: 'Nouvelles Machines' },
-  { en: /Used Industrial Machinery|Used Machinery|Used Machine/gi, gu: 'જૂની અને વપરાયેલી મશીનરી', hi: 'पुरानी मशीनरी', fr: 'Machines d\'Occasion' },
+  { en: /Refurbished|Used Industrial Machinery|Used Machinery|Used Machine|Used/gi, gu: 'જૂની અને વપરાયેલી મશીનરી', hi: 'पुरानी मशीनरी', fr: 'Machines d\'Occasion' },
   { en: /Industrial Automation & Electronics|Industrial Automation/gi, gu: 'ઔદ્યોગિક ઓટોમેશન અને ઈલેક્ટ્રોનિક્સ', hi: 'औद्योगिक स्वचालन और इलेक्ट्रॉनिक्स', fr: 'Automation Industrielle & Électronique' },
 
   // Fasteners & Industrial

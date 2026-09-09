@@ -765,7 +765,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn ${currentCategory === p.category ? 'active' : ''}`}
+                  className={`tab-btn notranslate ${currentCategory === p.category ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(p.category);
                     setSearchFilterQuery('');
@@ -812,7 +812,7 @@ export default function ProductsGrid() {
                 {/* SUB-PRODUCTS HOVER DROPDOWN FOR CUSTOM CATEGORIES */}
                 {isHovered && (
                   <div
-                    className="sub-product-hover-dropdown"
+                    className="sub-product-hover-dropdown notranslate"
                     style={{
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
