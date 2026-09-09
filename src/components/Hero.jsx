@@ -88,7 +88,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              🌐 {currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ (Global Trade)' : (currentLang === 'hi' ? 'ग्लोबल ट्रेड (Global Trade)' : 'Global Trade')}
+              🌐 {currentLang === 'gu' ? 'વૈશ્વિક વેપાર' : (currentLang === 'hi' ? 'वैश्विक व्यापार' : (currentLang === 'fr' ? 'Commerce Mondial' : 'Global Trade'))}
             </button>
 
             {/* 2. Explore Products (Center) */}
@@ -110,7 +110,7 @@ export default function Hero() {
                 textDecoration: 'none'
               }}
             >
-              📦 {t.btn_explore || 'Explore Products'}
+              📦 {currentLang === 'gu' ? 'ઉત્પાદન જુઓ' : (currentLang === 'hi' ? 'उत्पाद देखें' : (currentLang === 'fr' ? 'Explorer les Produits' : 'Explore Products'))}
             </a>
 
             {/* 3. Local Trade (Right) */}
@@ -138,7 +138,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              🛍️ {currentLang === 'gu' ? 'લોકલ ટ્રેડ (Local Trade)' : (currentLang === 'hi' ? 'लोकल ट्रेड (Local Trade)' : 'Local Trade')}
+              🛍️ {currentLang === 'gu' ? 'સ્થાનિક વેપાર' : (currentLang === 'hi' ? 'स्थानीय व्यापार' : (currentLang === 'fr' ? 'Commerce Local' : 'Local Trade'))}
             </button>
           </div>
         </div>
