@@ -104,8 +104,48 @@ const getCardUiText = (key, lang, extra = {}) => {
       fr: `Vous payez ${extra.sym}${extra.amount} avec coupon`,
       es: `Pagas ${extra.sym}${extra.amount} con cupón`,
       de: `Sie zahlen ${extra.sym}${extra.amount} mit Gutschein`,
-      ru: `К оплаته ${extra.sym}${extra.amount} с купоном`,
+      ru: `К оплате ${extra.sym}${extra.amount} с купоном`,
       ar: `تدفع ${extra.sym}${extra.amount} مع الكوبون`
+    },
+    editProduct: {
+      en: '✏️ Edit Product',
+      gu: '✏️ એડિટ પ્રોડક્ટ',
+      hi: '✏️ एडिट उत्पाद',
+      fr: '✏️ Modifier',
+      es: '✏️ Editar',
+      de: '✏️ Bearbeiten',
+      ru: '✏️ Редактировать',
+      ar: '✏️ تعديل المنتج'
+    },
+    deleteProduct: {
+      en: '🗑️ Delete',
+      gu: '🗑️ કાઢી નાખો',
+      hi: '🗑️ हटाएं',
+      fr: '🗑️ Supprimer',
+      es: '🗑️ Eliminar',
+      de: '🗑️ Löschen',
+      ru: '🗑️ Удалить',
+      ar: '🗑️ حذف'
+    },
+    mrpText: {
+      en: 'M.R.P.:',
+      gu: 'M.R.P.:',
+      hi: 'M.R.P.:',
+      fr: 'Prix M.R.P. :',
+      es: 'P.V.P.:',
+      de: 'UVP:',
+      ru: 'М.Р.Ц.:',
+      ar: 'السعر الأصلي:'
+    },
+    offText: {
+      en: 'off',
+      gu: 'બચત',
+      hi: 'छूट',
+      fr: 'de réduc.',
+      es: 'de desc.',
+      de: 'Rabatt',
+      ru: 'скидка',
+      ar: 'خصم'
     }
   };
 
@@ -1263,9 +1303,9 @@ export default function ProductsGrid() {
                       {/* Ratings & Reviews Stars Bar */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
                         <div style={{ color: '#de7921', fontSize: '0.78rem', fontWeight: 800 }}>
-                          ★★★★☆ <span style={{ color: '#007185', fontWeight: 700, marginLeft: '2px' }}>{rating}</span>
+                          ★★★★☆ <span className="notranslate" style={{ color: '#007185', fontWeight: 700, marginLeft: '2px' }}>{rating}</span>
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#565959' }}>
+                        <span className="notranslate" style={{ fontSize: '0.72rem', color: '#565959' }}>
                           ({reviews})
                         </span>
                         <span style={{
@@ -1284,18 +1324,18 @@ export default function ProductsGrid() {
                       {/* Price Section with Exact Currency & Selected Unit */}
                       <div style={{ margin: '4px 0 8px 0' }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F1111' }}>
+                          <span className="notranslate" style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F1111' }}>
                             {currSym}{basePriceInr.toLocaleString()}
                           </span>
                           <span style={{ fontSize: '0.76rem', color: '#565959', fontWeight: 800 }}>
-                            / 1 {itemUnit}
+                            / 1 <span className="notranslate">{itemUnit}</span>
                           </span>
-                          <span style={{ fontSize: '0.74rem', color: '#565959', textDecoration: 'line-through' }}>
-                            M.R.P.: {currSym}{mrpInr.toLocaleString()}
+                          <span style={{ fontSize: '0.74rem', color: '#565959' }}>
+                            {getCardUiText('mrpText', currentLang)} <span className="notranslate" style={{ textDecoration: 'line-through' }}>{currSym}{mrpInr.toLocaleString()}</span>
                           </span>
                           {displayDiscountPct > 0 && (
                             <span style={{ fontSize: '0.76rem', color: '#CC0C39', fontWeight: 800 }}>
-                              ({displayDiscountPct}% off)
+                              (<span className="notranslate">{displayDiscountPct}%</span> {getCardUiText('offText', currentLang)})
                             </span>
                           )}
                         </div>
@@ -1305,7 +1345,7 @@ export default function ProductsGrid() {
                           {/* Offer Badge */}
                           {p.couponBadge ? (
                             <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, display: 'inline-block' }}>
-                              🏷️ {p.couponBadge}
+                              🏷️ <span className="notranslate">{p.couponBadge}</span>
                             </div>
                           ) : (
                             <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, display: 'inline-block' }}>
@@ -1316,7 +1356,7 @@ export default function ProductsGrid() {
                           {/* GST Rate */}
                           {p.localGstRate && (
                             <span style={{ fontSize: '0.68rem', color: '#0284c7', background: '#e0f2fe', border: '1px solid #bae6fd', padding: '1px 6px', borderRadius: '4px', fontWeight: 800 }}>
-                              + {p.localGstRate}% GST
+                              + <span className="notranslate">{p.localGstRate}%</span> GST
                             </span>
                           )}
 
@@ -1407,7 +1447,7 @@ export default function ProductsGrid() {
                               }}
                               title="Edit Sub-Product Details"
                             >
-                              ✏️ {currentLang === 'gu' ? 'એડિટ પ્રોડક્ટ' : 'Edit Product'}
+                              {getCardUiText('editProduct', currentLang)}
                             </button>
 
                             <button
@@ -1429,7 +1469,7 @@ export default function ProductsGrid() {
                               }}
                               title="Delete Product from Catalog"
                             >
-                              🗑️ {currentLang === 'gu' ? 'ડિલીટ' : 'Delete'}
+                              {getCardUiText('deleteProduct', currentLang)}
                             </button>
                           </div>
                         )}
