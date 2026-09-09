@@ -12,6 +12,7 @@ export async function translateWholePage(targetLang = 'en') {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
   const langCode = normalizeLangCode(targetLang);
+  document.documentElement.lang = langCode || 'en';
 
   let gLang = langCode;
   if (gLang === 'zh') gLang = 'zh-CN';

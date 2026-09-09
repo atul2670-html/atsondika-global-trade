@@ -15,7 +15,13 @@ const getCardUiText = (key, lang, extra = {}) => {
       es: '🛒 Añadir al carrito',
       de: '🛒 In den Warenkorb',
       ru: '🛒 Добавить в корзину',
-      ar: '🛒 أضف إلى السلة'
+      ar: '🛒 أضف إلى السلة',
+      zh: '🛒 加入购物车',
+      ja: '🛒 カートに追加',
+      ko: '🛒 장바구니에 담기',
+      pt: '🛒 Adicionar ao carrinho',
+      it: '🛒 Aggiungi al carrello',
+      tr: '🛒 Sepete Ekle'
     },
     natural100: {
       en: '🟢 100% Natural',
@@ -25,17 +31,29 @@ const getCardUiText = (key, lang, extra = {}) => {
       es: '🟢 100% Natural',
       de: '🟢 100% Natürlich',
       ru: '🟢 100% Натурально',
-      ar: '🟢 100% طبيعي'
+      ar: '🟢 100% طبيعي',
+      zh: '🟢 100% 纯天然',
+      ja: '🟢 100% 天然成分',
+      ko: '🟢 100% 천연',
+      pt: '🟢 100% Natural',
+      it: '🟢 100% Naturale',
+      tr: '🟢 %100 Doğal'
     },
     estDelivery: {
       en: 'Est. Delivery: 2-3 Days',
       gu: 'અંદાજિત ડિલિવરી: 2-3 દિવસ',
       hi: 'अनुमानित डिलीवरी: 2-3 दिन',
-      fr: 'Livraison estimée : 2-3 jours',
+      fr: 'Livraison estimée : 2 à 3 jours',
       es: 'Entrega estimada: 2-3 días',
       de: 'Voraussichtliche Lieferung: 2-3 Tage',
       ru: 'Ориентировочная доставка: 2-3 дня',
-      ar: 'التسليم المقدر: 2-3 أيام'
+      ar: 'التسليم المقدر: 2-3 أيام',
+      zh: '预计送达时间：2-3 天',
+      ja: 'お届け予定日：2〜3日',
+      ko: '예상 배송 기간: 2-3일',
+      pt: 'Entrega estimada: 2-3 dias',
+      it: 'Consegna stimata: 2-3 giorni',
+      tr: 'Tahmini Teslimat: 2-3 Gün'
     },
     watchText: {
       en: 'Watch',
@@ -45,7 +63,13 @@ const getCardUiText = (key, lang, extra = {}) => {
       es: 'Ver vídeo',
       de: 'Ansehen',
       ru: 'Смотреть',
-      ar: 'شاهد'
+      ar: 'شاهد',
+      zh: '观看视频',
+      ja: '動画を見る',
+      ko: '영상 보기',
+      pt: 'Assistir',
+      it: 'Guarda',
+      tr: 'İzle'
     },
     freeDelivery: {
       en: '🚚 FREE delivery',
@@ -55,17 +79,29 @@ const getCardUiText = (key, lang, extra = {}) => {
       es: '🚚 Envío GRATIS',
       de: '🚚 Kostenlose Lieferung',
       ru: '🚚 Бесплатная доставка',
-      ar: '🚚 توصيل مجاني'
+      ar: '🚚 توصيل مجاني',
+      zh: '🚚 包邮 / 免运费',
+      ja: '🚚 送料無料',
+      ko: '🚚 무료 배송',
+      pt: '🚚 Frete GRÁTIS',
+      it: '🚚 Spedizione GRATUITA',
+      tr: '🚚 Ücretsiz Kargo'
     },
     courierCharge: {
       en: `🚚 Courier: ${extra.sym}${extra.charge}`,
       gu: `🚚 કુરિયર: ${extra.sym}${extra.charge}`,
       hi: `🚚 कूरियर: ${extra.sym}${extra.charge}`,
-      fr: `🚚 Coursier: ${extra.sym}${extra.charge}`,
+      fr: `🚚 Coursier : ${extra.sym}${extra.charge}`,
       es: `🚚 Mensajería: ${extra.sym}${extra.charge}`,
       de: `🚚 Kurier: ${extra.sym}${extra.charge}`,
-      ru: `🚚 Курьер: ${extra.sym}${extra.charge}`,
-      ar: `🚚 الشحن: ${extra.sym}${extra.charge}`
+      ru: `🚚 Доставка курьером: ${extra.sym}${extra.charge}`,
+      ar: `🚚 الشحن السريع: ${extra.sym}${extra.charge}`,
+      zh: `🚚 快递费：${extra.sym}${extra.charge}`,
+      ja: `🚚 配送料：${extra.sym}${extra.charge}`,
+      ko: `🚚 택배비: ${extra.sym}${extra.charge}`,
+      pt: `🚚 Frete: ${extra.sym}${extra.charge}`,
+      it: `🚚 Corriere: ${extra.sym}${extra.charge}`,
+      tr: `🚚 Kargo: ${extra.sym}${extra.charge}`
     },
     freePacking: {
       en: '📦 FREE Packing',
@@ -75,47 +111,77 @@ const getCardUiText = (key, lang, extra = {}) => {
       es: '📦 Embalaje GRATIS',
       de: '📦 Kostenlose Verpackung',
       ru: '📦 Бесплатная упаковка',
-      ar: '📦 تغليف مجاني'
+      ar: '📦 تغليف مجاني',
+      zh: '📦 免费包装',
+      ja: '📦 包装無料',
+      ko: '📦 무료 포장',
+      pt: '📦 Embalagem GRÁTIS',
+      it: '📦 Imballaggio GRATUITO',
+      tr: '📦 Ücretsiz Paketleme'
     },
     packingCharge: {
       en: `📦 Packing: ${extra.sym}${extra.charge}`,
       gu: `📦 પેકિંગ: ${extra.sym}${extra.charge}`,
       hi: `📦 पैकिंग: ${extra.sym}${extra.charge}`,
-      fr: `📦 Emballage: ${extra.sym}${extra.charge}`,
+      fr: `📦 Emballage : ${extra.sym}${extra.charge}`,
       es: `📦 Embalaje: ${extra.sym}${extra.charge}`,
       de: `📦 Verpackung: ${extra.sym}${extra.charge}`,
       ru: `📦 Упаковка: ${extra.sym}${extra.charge}`,
-      ar: `📦 التعبئة: ${extra.sym}${extra.charge}`
+      ar: `📦 التعبئة: ${extra.sym}${extra.charge}`,
+      zh: `📦 包装费：${extra.sym}${extra.charge}`,
+      ja: `📦 梱包料：${extra.sym}${extra.charge}`,
+      ko: `📦 포장비: ${extra.sym}${extra.charge}`,
+      pt: `📦 Embalagem: ${extra.sym}${extra.charge}`,
+      it: `📦 Imballaggio: ${extra.sym}${extra.charge}`,
+      tr: `📦 Paketleme: ${extra.sym}${extra.charge}`
     },
     stockText: {
       en: `Stock: ${extra.stock} ${extra.unit}`,
       gu: `સ્ટોક: ${extra.stock} ${extra.unit}`,
       hi: `स्टॉक: ${extra.stock} ${extra.unit}`,
-      fr: `Stock: ${extra.stock} ${extra.unit}`,
-      es: `Stock: ${extra.stock} ${extra.unit}`,
+      fr: `En stock : ${extra.stock} ${extra.unit}`,
+      es: `Stock disponible: ${extra.stock} ${extra.unit}`,
       de: `Lagerbestand: ${extra.stock} ${extra.unit}`,
       ru: `В наличии: ${extra.stock} ${extra.unit}`,
-      ar: `المخزون: ${extra.stock} ${extra.unit}`
+      ar: `المخزون المتوفر: ${extra.stock} ${extra.unit}`,
+      zh: `库存：${extra.stock} ${extra.unit}`,
+      ja: `在庫：${extra.stock} ${extra.unit}`,
+      ko: `재고: ${extra.stock} ${extra.unit}`,
+      pt: `Estoque: ${extra.stock} ${extra.unit}`,
+      it: `Disponibilità: ${extra.stock} ${extra.unit}`,
+      tr: `Stok: ${extra.stock} ${extra.unit}`
     },
     youPayCoupon: {
       en: `You pay ${extra.sym}${extra.amount} with coupon`,
       gu: `તમારે આપવાના ${extra.sym}${extra.amount} કૂપન સાથે`,
-      hi: `आप देंगे ${extra.sym}${extra.amount} कूपन के साथ`,
-      fr: `Vous payez ${extra.sym}${extra.amount} avec coupon`,
-      es: `Pagas ${extra.sym}${extra.amount} con cupón`,
-      de: `Sie zahlen ${extra.sym}${extra.amount} mit Gutschein`,
-      ru: `К оплате ${extra.sym}${extra.amount} с купоном`,
-      ar: `تدفع ${extra.sym}${extra.amount} مع الكوبون`
+      hi: `कूपन लागू करने के बाद केवल ${extra.sym}${extra.amount}`,
+      fr: `Prix avec coupon : ${extra.sym}${extra.amount}`,
+      es: `Precio con cupón: ${extra.sym}${extra.amount}`,
+      de: `Preis mit Gutschein: ${extra.sym}${extra.amount}`,
+      ru: `Цена с купоном: ${extra.sym}${extra.amount}`,
+      ar: `السعر بعد الكوبون: ${extra.sym}${extra.amount}`,
+      zh: `用券后价格：${extra.sym}${extra.amount}`,
+      ja: `クーポン適用後：${extra.sym}${extra.amount}`,
+      ko: `쿠폰 적용가: ${extra.sym}${extra.amount}`,
+      pt: `Preço com cupom: ${extra.sym}${extra.amount}`,
+      it: `Prezzo con coupon: ${extra.sym}${extra.amount}`,
+      tr: `Kuponlu Fiyat: ${extra.sym}${extra.amount}`
     },
     editProduct: {
       en: '✏️ Edit Product',
       gu: '✏️ એડિટ પ્રોડક્ટ',
       hi: '✏️ एडिट उत्पाद',
-      fr: '✏️ Modifier',
-      es: '✏️ Editar',
-      de: '✏️ Bearbeiten',
-      ru: '✏️ Редактировать',
-      ar: '✏️ تعديل المنتج'
+      fr: '✏️ Modifier le produit',
+      es: '✏️ Editar producto',
+      de: '✏️ Produkt bearbeiten',
+      ru: '✏️ Редактировать товар',
+      ar: '✏️ تعديل المنتج',
+      zh: '✏️ 编辑商品',
+      ja: '✏️ 商品を編集',
+      ko: '✏️ 상품 수정',
+      pt: '✏️ Editar produto',
+      it: '✏️ Modifica prodotto',
+      tr: '✏️ Ürünü Düzenle'
     },
     deleteProduct: {
       en: '🗑️ Delete',
