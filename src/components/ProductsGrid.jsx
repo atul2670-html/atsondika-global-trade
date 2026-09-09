@@ -635,7 +635,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
+                  className={`tab-btn notranslate ${currentCategory === tab.filter ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(tab.filter);
                     setSearchFilterQuery('');
