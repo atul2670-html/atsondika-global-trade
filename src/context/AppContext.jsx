@@ -409,14 +409,14 @@ export function AppProvider({ children }) {
       en: "Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40+ countries.",
       gu: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતો ૪૦+ દેશોમાં વિશ્વસનીય ભારતીય નિકાસકાર.",
       hi: "मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, और इको पैकेजिंग में विशेषज्ञता वाला 40+ से अधिक देशों में विश्वसनीय भारतीय निर्यातक।",
-      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les oléagineux, la boulonnerie, les machines neuves et d'occasion et les emballages écologiques vers 40+ pays."
+      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les graines oléagineuses, la boulonnerie, les machines neuves et d'occasion et les emballages écologiques vers plus de 40 pays."
     },
     image: "images/hero_export_shipping.png"
   };
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v7') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v8') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { en: stored.title, gu: defaultHeroBanner.title.gu, hi: defaultHeroBanner.title.hi, fr: defaultHeroBanner.title.fr }
