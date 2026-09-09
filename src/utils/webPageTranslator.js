@@ -171,6 +171,13 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
 export function initGoogleTranslateScript() {
   if (typeof window === 'undefined') return;
 
+  if (!document.getElementById('google_translate_element')) {
+    const el = document.createElement('div');
+    el.id = 'google_translate_element';
+    el.style.display = 'none';
+    document.body.appendChild(el);
+  }
+
   if (!document.getElementById('google-translate-script')) {
     window.googleTranslateElementInit = function() {
       try {
