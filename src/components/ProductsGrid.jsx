@@ -3,6 +3,117 @@ import { useApp } from '../context/AppContext';
 import { convertGoogleDriveUrl } from '../utils/address';
 import { autoTranslateText } from '../utils/translator';
 
+const getCardUiText = (key, lang, extra = {}) => {
+  const norm = (lang || 'en').split('-')[0].toLowerCase();
+
+  const translations = {
+    addToCart: {
+      en: '🛒 Add to cart',
+      gu: '🛒 કાર્ટમાં ઉમેરો',
+      hi: '🛒 कार्ट में जोड़ें',
+      fr: '🛒 Ajouter au panier',
+      es: '🛒 Añadir al carrito',
+      de: '🛒 In den Warenkorb',
+      ru: '🛒 Добавить в корзину',
+      ar: '🛒 أضف إلى السلة'
+    },
+    natural100: {
+      en: '🟢 100% Natural',
+      gu: '🟢 100% કુદરતી',
+      hi: '🟢 100% प्राकृतिक',
+      fr: '🟢 100% Naturel',
+      es: '🟢 100% Natural',
+      de: '🟢 100% Natürlich',
+      ru: '🟢 100% Натурально',
+      ar: '🟢 100% طبيعي'
+    },
+    estDelivery: {
+      en: 'Est. Delivery: 2-3 Days',
+      gu: 'અંદાજિત ડિલિવરી: 2-3 દિવસ',
+      hi: 'अनुमानित डिलीवरी: 2-3 दिन',
+      fr: 'Livraison estimée : 2-3 jours',
+      es: 'Entrega estimada: 2-3 días',
+      de: 'Voraussichtliche Lieferung: 2-3 Tage',
+      ru: 'Ориентировочная доставка: 2-3 дня',
+      ar: 'التسليم المقدر: 2-3 أيام'
+    },
+    watchText: {
+      en: 'Watch',
+      gu: 'જુઓ',
+      hi: 'देखें',
+      fr: 'Regarder',
+      es: 'Ver vídeo',
+      de: 'Ansehen',
+      ru: 'Смотреть',
+      ar: 'شاهد'
+    },
+    freeDelivery: {
+      en: '🚚 FREE delivery',
+      gu: '🚚 મફત ડિલિવરી',
+      hi: '🚚 मुफ़्त डिलीवरी',
+      fr: '🚚 Livraison GRATUITE',
+      es: '🚚 Envío GRATIS',
+      de: '🚚 Kostenlose Lieferung',
+      ru: '🚚 Бесплатная доставка',
+      ar: '🚚 توصيل مجاني'
+    },
+    courierCharge: {
+      en: `🚚 Courier: ${extra.sym}${extra.charge}`,
+      gu: `🚚 કુરિયર: ${extra.sym}${extra.charge}`,
+      hi: `🚚 कूरियर: ${extra.sym}${extra.charge}`,
+      fr: `🚚 Coursier: ${extra.sym}${extra.charge}`,
+      es: `🚚 Mensajería: ${extra.sym}${extra.charge}`,
+      de: `🚚 Kurier: ${extra.sym}${extra.charge}`,
+      ru: `🚚 Курьер: ${extra.sym}${extra.charge}`,
+      ar: `🚚 الشحن: ${extra.sym}${extra.charge}`
+    },
+    freePacking: {
+      en: '📦 FREE Packing',
+      gu: '📦 મફત પેકિંગ',
+      hi: '📦 मुफ़्त पैकिंग',
+      fr: '📦 Emballage GRATUIT',
+      es: '📦 Embalaje GRATIS',
+      de: '📦 Kostenlose Verpackung',
+      ru: '📦 Бесплатная упаковка',
+      ar: '📦 تغليف مجاني'
+    },
+    packingCharge: {
+      en: `📦 Packing: ${extra.sym}${extra.charge}`,
+      gu: `📦 પેકિંગ: ${extra.sym}${extra.charge}`,
+      hi: `📦 पैकिंग: ${extra.sym}${extra.charge}`,
+      fr: `📦 Emballage: ${extra.sym}${extra.charge}`,
+      es: `📦 Embalaje: ${extra.sym}${extra.charge}`,
+      de: `📦 Verpackung: ${extra.sym}${extra.charge}`,
+      ru: `📦 Упаковка: ${extra.sym}${extra.charge}`,
+      ar: `📦 التعبئة: ${extra.sym}${extra.charge}`
+    },
+    stockText: {
+      en: `Stock: ${extra.stock} ${extra.unit}`,
+      gu: `સ્ટોક: ${extra.stock} ${extra.unit}`,
+      hi: `स्टॉक: ${extra.stock} ${extra.unit}`,
+      fr: `Stock: ${extra.stock} ${extra.unit}`,
+      es: `Stock: ${extra.stock} ${extra.unit}`,
+      de: `Lagerbestand: ${extra.stock} ${extra.unit}`,
+      ru: `В наличии: ${extra.stock} ${extra.unit}`,
+      ar: `المخزون: ${extra.stock} ${extra.unit}`
+    },
+    youPayCoupon: {
+      en: `You pay ${extra.sym}${extra.amount} with coupon`,
+      gu: `તમારે આપવાના ${extra.sym}${extra.amount} કૂપન સાથે`,
+      hi: `आप देंगे ${extra.sym}${extra.amount} कूपन के साथ`,
+      fr: `Vous payez ${extra.sym}${extra.amount} avec coupon`,
+      es: `Pagas ${extra.sym}${extra.amount} con cupón`,
+      de: `Sie zahlen ${extra.sym}${extra.amount} mit Gutschein`,
+      ru: `К оплаته ${extra.sym}${extra.amount} с купоном`,
+      ar: `تدفع ${extra.sym}${extra.amount} مع الكوبون`
+    }
+  };
+
+  const map = translations[key];
+  if (!map) return '';
+  return map[norm] || map.en;
+};
+
 export default function ProductsGrid() {
   const {
     t, currentLang, currentCategory, setCurrentCategory,
@@ -1126,7 +1237,7 @@ export default function ProductsGrid() {
                         gap: '4px',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}>
-                        <span style={{ fontSize: '0.6rem', color: '#0086ff' }}>▶</span> Watch
+                        <span style={{ fontSize: '0.6rem', color: '#0086ff' }}>▶</span> {getCardUiText('watchText', currentLang)}
                       </div>
                     </div>
 
@@ -1166,7 +1277,7 @@ export default function ProductsGrid() {
                           borderRadius: '4px',
                           fontWeight: 700
                         }}>
-                          🟢 100% Natural
+                          {getCardUiText('natural100', currentLang)}
                         </span>
                       </div>
 
@@ -1198,8 +1309,7 @@ export default function ProductsGrid() {
                             </div>
                           ) : (
                             <div style={{ fontSize: '0.7rem', color: '#007600', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, display: 'inline-block' }}>
-                              <span style={{ background: '#007600', color: 'white', padding: '0 4px', borderRadius: '2px', marginRight: '4px', fontSize: '0.62rem' }}>You pay</span>
-                              {currSym}{couponPay.toLocaleString()} with coupon
+                              {getCardUiText('youPayCoupon', currentLang, { sym: currSym, amount: couponPay.toLocaleString() })}
                             </div>
                           )}
 
@@ -1213,7 +1323,7 @@ export default function ProductsGrid() {
                           {/* Stock Quantity */}
                           {p.localStock && (
                             <span style={{ fontSize: '0.68rem', color: '#16a34a', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                              Stock: {p.localStock} {itemUnit}
+                              {getCardUiText('stockText', currentLang, { stock: p.localStock, unit: itemUnit })}
                             </span>
                           )}
                         </div>
@@ -1221,17 +1331,17 @@ export default function ProductsGrid() {
                         {/* Delivery & Packing Charge Tag */}
                         <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {parseFloat(p.courierCharge) > 0 ? (
-                            <span style={{ color: '#0284c7', fontWeight: 800 }}>🚚 Courier: {currSym}{p.courierCharge}</span>
+                            <span style={{ color: '#0284c7', fontWeight: 800 }}>{getCardUiText('courierCharge', currentLang, { sym: currSym, charge: p.courierCharge })}</span>
                           ) : (
-                            <span style={{ color: '#007600', fontWeight: 800 }}>🚚 FREE delivery</span>
+                            <span style={{ color: '#007600', fontWeight: 800 }}>{getCardUiText('freeDelivery', currentLang)}</span>
                           )}
 
                           {parseFloat(p.packingCharge) > 0 ? (
-                            <span style={{ color: '#d97706', fontWeight: 800 }}>📦 Packing: {currSym}{p.packingCharge}</span>
+                            <span style={{ color: '#d97706', fontWeight: 800 }}>{getCardUiText('packingCharge', currentLang, { sym: currSym, charge: p.packingCharge })}</span>
                           ) : (
-                            <span style={{ color: '#059669', fontWeight: 700 }}>📦 FREE Packing</span>
+                            <span style={{ color: '#059669', fontWeight: 700 }}>{getCardUiText('freePacking', currentLang)}</span>
                           )}
-                          <span>• <b>Est. Delivery: 2-3 Days</b></span>
+                          <span>• <b>{getCardUiText('estDelivery', currentLang)}</b></span>
                         </div>
                       </div>
 
@@ -1260,7 +1370,7 @@ export default function ProductsGrid() {
                           onMouseOver={(e) => e.target.style.background = '#f7ca00'}
                           onMouseOut={(e) => e.target.style.background = '#ffd814'}
                         >
-                          {currentLang === 'gu' ? '🛒 અત્યારે ખરીદો / કાર્ટમાં ઉમેરો' : 'Add to cart'}
+                          {getCardUiText('addToCart', currentLang)}
                         </button>
 
                         {/* ADMIN EDIT & DELETE CONTROLS (VISIBLE ONLY WHEN LOGGED IN AS ADMIN) */}
