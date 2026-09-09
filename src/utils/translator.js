@@ -211,6 +211,16 @@ function matchTradeDictionary(text, lang) {
   MASTER_TRADE_GRAMMAR_DICTIONARY.forEach(rule => {
     if (rule[lang]) {
       str = str.replace(rule.en, rule[lang]);
+    } else if (lang !== 'gu' && lang !== 'hi' && lang !== 'fr') {
+      // For all other 100+ languages (ru, ar, de, es, zh, ja, etc.), convert Gujarati/Hindi back to clean English
+      if (rule.gu && typeof rule.gu === 'string' && str.includes(rule.gu)) {
+        const enVal = (rule.en instanceof RegExp) ? rule.en.source.replace(/\\|\/|gi/g, '') : rule.en;
+        str = str.split(rule.gu).join(enVal);
+      }
+      if (rule.hi && typeof rule.hi === 'string' && str.includes(rule.hi)) {
+        const enVal = (rule.en instanceof RegExp) ? rule.en.source.replace(/\\|\/|gi/g, '') : rule.en;
+        str = str.split(rule.hi).join(enVal);
+      }
     }
   });
 
@@ -226,7 +236,13 @@ export function autoTranslateText(text, lang = 'en') {
     return transliterationCache.get(cacheKey);
   }
 
-  const dictResult = matchTradeDictionary(text, lang);
+  let dictResult = matchTradeDictionary(text, lang);
+  
+  // If target language is outside gu/hi/fr and text contains Gujarati script (\u0A80-\u0AFF), convert digits and clean up
+  if (lang !== 'gu' && lang !== 'hi' && lang !== 'fr' && /[\u0A80-\u0AFF]/.test(dictResult)) {
+    dictResult = convertDigits(dictResult, 'en');
+  }
+
   if (dictResult && dictResult !== text) {
     transliterationCache.set(cacheKey, dictResult);
     return dictResult;
