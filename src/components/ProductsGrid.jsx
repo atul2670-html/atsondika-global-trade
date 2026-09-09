@@ -266,9 +266,9 @@ export default function ProductsGrid() {
     defaultTabs = [
       { filter: 'all', title: t.tab_all },
       { filter: 'agro', title: t.tab_agro },
-      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ (Dairy Products)' : '🥛 Dairy Products' },
-      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)' : '🧵 Textile Products' },
-      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : '👕 Readymade Garments' },
+      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ' : (currentLang === 'hi' ? '🥛 डेयरी उत्पाद' : (currentLang === 'fr' ? '🥛 Produits Laitiers' : (currentLang === 'ar' ? '🥛 منتجات الألبان' : '🥛 Dairy Products'))) },
+      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ' : (currentLang === 'hi' ? '🧵 कपड़ा उत्पाद' : (currentLang === 'fr' ? '🧵 Produits Textiles' : (currentLang === 'ar' ? '🧵 منتجات المنسوجات' : '🧵 Textile Products'))) },
+      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ' : (currentLang === 'hi' ? '👕 रेडीमेड गारमेंट्स' : (currentLang === 'fr' ? '👕 Vêtements Confectionnés' : (currentLang === 'ar' ? '👕 الملابس الجاهزة' : '👕 Readymade Garments'))) },
       { filter: 'used_machinery', title: t.tab_used },
       { filter: 'new_machinery', title: t.tab_new },
       { filter: 'industrial', title: t.tab_ind },
@@ -635,7 +635,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn notranslate ${currentCategory === tab.filter ? 'active' : ''}`}
+                  className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(tab.filter);
                     setSearchFilterQuery('');
