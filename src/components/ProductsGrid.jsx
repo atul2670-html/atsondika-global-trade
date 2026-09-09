@@ -357,11 +357,12 @@ export default function ProductsGrid() {
 
   if (q) {
     filtered = filtered.filter(p => {
-      const titleGu = (p.names.gu || '').toLowerCase();
-      const titleEn = (p.names.en || '').toLowerCase();
+      const titleGu = (p.names?.gu || p.nameGu || '').toLowerCase();
+      const titleEn = (p.names?.en || p.name || '').toLowerCase();
       const hs = (p.hsCode || '').toLowerCase();
       const specText = (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : p.spec || '').toLowerCase();
-      return titleGu.includes(q) || titleEn.includes(q) || hs.includes(q) || specText.includes(q);
+      const catSlug = (p.category || p.parentId || '').toLowerCase();
+      return titleGu.includes(q) || titleEn.includes(q) || hs.includes(q) || specText.includes(q) || catSlug.includes(q);
     });
   }
 

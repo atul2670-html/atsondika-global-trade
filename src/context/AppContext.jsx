@@ -1201,11 +1201,12 @@ export function AppProvider({ children }) {
     // Exclude any product whose specific ID, category code, or parentId is present in deletedBuiltInIds
     const nonDeleted = rawList.filter(p => !deletedSet.has(p.id) && !deletedSet.has(p.category) && !deletedSet.has(p.parentId));
 
-    // Filter products strictly belonging to the active company
+    // Filter products belonging to the active company (fall back to master catalog if none assigned)
     const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
+    const targetProducts = companyProducts.length > 0 ? companyProducts : nonDeleted;
 
     // Apply persistent photo overrides (custom saved photos take absolute priority)
-    const withPhotos = companyProducts.map(prod => {
+    const withPhotos = targetProducts.map(prod => {
       const override = photoOverrides[prod.id];
       if (override && override.image) {
         return {
