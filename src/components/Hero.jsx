@@ -88,7 +88,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              🌐 {t.btn_global_trade || 'Global Trade'}
+              <span className="notranslate">🌐</span> <span className="notranslate">{currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ' : (currentLang === 'hi' ? 'ग्लोबल ट्रेड' : (currentLang === 'fr' ? 'Commerce Mondial' : (currentLang === 'ar' ? 'التجارة العالمية' : (currentLang === 'zh' ? '全球贸易' : 'Global Trade'))))}</span>
             </button>
 
             {/* 2. Explore Products (Center) */}
@@ -110,7 +110,7 @@ export default function Hero() {
                 textDecoration: 'none'
               }}
             >
-              📦 {t.btn_explore || 'Explore Products'}
+              <span className="notranslate">📦</span> <span className="notranslate">{t.hero_btn_products || (currentLang === 'gu' ? 'પ્રોડક્ટ્સ જુઓ' : (currentLang === 'hi' ? 'उत्पाद देखें' : (currentLang === 'fr' ? 'Explorer les Produits' : (currentLang === 'ar' ? 'استكشاف المنتجات' : (currentLang === 'zh' ? '浏览所有产品' : 'Explore Products')))))}</span>
             </a>
 
             {/* 3. Local Trade (Right) */}
@@ -138,7 +138,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              🛍️ {t.btn_local_trade || 'Local Trade'}
+              <span className="notranslate">🛍️</span> <span className="notranslate">{currentLang === 'gu' ? 'લોકલ ટ્રેડ' : (currentLang === 'hi' ? 'लोकल ट्रेड' : (currentLang === 'fr' ? 'Commerce Local' : (currentLang === 'ar' ? 'التجارة المحلية' : (currentLang === 'zh' ? '本地零售' : 'Local Trade'))))}</span>
             </button>
           </div>
         </div>
