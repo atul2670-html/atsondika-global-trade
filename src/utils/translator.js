@@ -96,9 +96,9 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   },
   {
     en: /Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40\+ countries/gi,
-    gu: 'મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, ડેરી, કાપડ અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતા ૪૦+ દેશોમાં અગ્રણી ભારતીય નિકાસકાર.',
-    hi: 'मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, डेयरी, कपड़े और इको पैकेजिंग में विशेषज्ञता वाला प्रमुख भारतीय निर्यातक.',
-    fr: 'Exportateur indien de confiance spécialisé dans les épices, le riz, les machines neuves et d\'occasion, les vêtements et les emballages écologiques vers 40+ pays.'
+    gu: 'મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતો ૪૦+ દેશોમાં વિશ્વસનીય ભારતીય નિકાસકાર.',
+    hi: 'मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, और इको पैकेजिंग में विशेषज्ञता वाला 40+ से अधिक देशों में विश्वसनीय भारतीय निर्यातक।',
+    fr: 'Exportateur indien de confiance spécialisé dans les épices, le riz, les oléagineux, la boulonnerie, les machines neuves et d\'occasion et les emballages écologiques vers plus de 40 pays.'
   },
 
   // Specifications & Descriptors
