@@ -1,5 +1,6 @@
 // High-Performance Dual-Engine Full Page Web Translator for ATSondika Global Trade
 import { normalizeLangCode } from './universalTranslator';
+import { matchTradeDictionary } from './translator';
 
 const translationCache = new Map();
 
@@ -128,7 +129,12 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
     }
     const orig = node._originalText.trim();
     const cacheKey = `${gLang}:${orig}`;
-    if (!translationCache.has(cacheKey) && orig.length > 1) {
+
+    // Check trade dictionary first for native human grammar override
+    const dictMatch = matchTradeDictionary(orig, gLang);
+    if (dictMatch && dictMatch !== orig) {
+      translationCache.set(cacheKey, dictMatch);
+    } else if (!translationCache.has(cacheKey) && orig.length > 1) {
       if (!stringsToTranslate.includes(orig)) {
         stringsToTranslate.push(orig);
       }

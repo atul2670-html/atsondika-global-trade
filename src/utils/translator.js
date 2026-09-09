@@ -204,7 +204,7 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   { en: /Verified Exporter/gi, gu: 'પ્રમાણિત નિકાસકાર', hi: 'सत्यापित निर्यातक', fr: 'Exportateur Vérifié' }
 ];
 
-function matchTradeDictionary(text, lang) {
+export function matchTradeDictionary(text, lang) {
   if (!text || typeof text !== 'string') return text || '';
   let str = text;
 
