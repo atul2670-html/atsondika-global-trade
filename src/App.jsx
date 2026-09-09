@@ -12,7 +12,7 @@ import Modals from './components/Modals';
 import RfqCartDrawer from './components/RfqCartDrawer';
 import OrderTrackerModal from './components/OrderTrackerModal';
 import { useApp } from './context/AppContext';
-import { translateWholePage, initGoogleTranslateScript } from './utils/webPageTranslator';
+import { translateWholePage, initGoogleTranslateScript, translateDomTextNodes } from './utils/webPageTranslator';
 
 export default function App() {
   const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast } = useApp();
