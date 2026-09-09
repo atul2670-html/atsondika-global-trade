@@ -14,6 +14,14 @@
         for (var name of names) caches.delete(name);
       });
     }
+    // Always purge googtrans cookies on fresh page load to guarantee 100% English startup
+    try {
+      var d = window.location.hostname;
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + d + ";";
+      document.cookie = "googtrans=/en/en; path=/;";
+      document.cookie = "googtrans=/en/en; path=/; domain=" + d + ";";
+    } catch(e) {}
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Atsondika Global Trade | Premium Global Exporter | Surat, Gujarat</title>
