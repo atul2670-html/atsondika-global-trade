@@ -1436,7 +1436,7 @@ export default function ProductsGrid() {
                         </div>
 
                         {/* Delivery & Packing Charge Tag */}
-                        <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div className="notranslate" style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {parseFloat(p.courierCharge) > 0 ? (
                             <span style={{ color: '#0284c7', fontWeight: 800 }}>{getCardUiText('courierCharge', currentLang, { sym: currSym, charge: p.courierCharge })}</span>
                           ) : (
@@ -1456,6 +1456,7 @@ export default function ProductsGrid() {
                       <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
                         <button
                           type="button"
+                          className="notranslate"
                           onClick={() => {
                             const cardCurrency = p.currency || itemCurrency || 'INR';
                             addToRfqCart({ ...p, currency: cardCurrency }, 1, 'pcs', 'LOCAL');
