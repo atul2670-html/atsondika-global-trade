@@ -552,7 +552,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_hero_banner_v2', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v6', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
 

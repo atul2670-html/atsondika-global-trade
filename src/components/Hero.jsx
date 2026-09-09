@@ -53,11 +53,11 @@ export default function Hero() {
             )}
           </div>
 
-          <h1 className="hero-title">
+          <h1 className="hero-title notranslate">
             {currentTitle}
           </h1>
           
-          <p className="hero-subtitle">
+          <p className="hero-subtitle notranslate">
             {currentSubtitle}
           </p>
 
