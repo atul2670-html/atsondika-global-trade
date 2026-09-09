@@ -535,7 +535,7 @@ export function AppProvider({ children }) {
 
   const [aboutData, setAboutData] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_about_data_v5') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_about_data_v6') || 'null');
       if (stored) {
         return {
           ...defaultAboutData,
@@ -564,7 +564,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_about_data_v1', JSON.stringify(aboutData));
+      localStorage.setItem('site_about_data_v6', JSON.stringify(aboutData));
     } catch(e) {}
   }, [aboutData]);
 

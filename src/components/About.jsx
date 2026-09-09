@@ -57,7 +57,7 @@ export default function About() {
         <div className="about-grid">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
-              <span style={{ color: 'var(--primary-teal-glow)', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+              <span className="notranslate" style={{ color: 'var(--primary-teal-glow)', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                 {currentBadge}
               </span>
               {isAdminLoggedIn && (
@@ -86,13 +86,13 @@ export default function About() {
               )}
             </div>
 
-            <h2 className="section-title" style={{ textAlign: 'left', marginTop: '8px' }}>
+            <h2 className="section-title notranslate" style={{ textAlign: 'left', marginTop: '8px' }}>
               {currentTitle}
             </h2>
-            <p style={{ color: 'var(--text-sub)', marginBottom: '18px' }}>
+            <p className="notranslate" style={{ color: 'var(--text-sub)', marginBottom: '18px' }}>
               {currentDesc}
             </p>
-            <div style={{ display: 'grid', gap: '12px' }}>
+            <div className="notranslate" style={{ display: 'grid', gap: '12px' }}>
               <div>{currentFeat1}</div>
               <div>{currentFeat2}</div>
               <div>{currentFeat3}</div>
@@ -100,25 +100,25 @@ export default function About() {
           </div>
 
           <div className="glass-card about-card" style={{ position: 'relative' }}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '20px' }}>
+            <h3 className="notranslate" style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '20px' }}>
               {currentStatsTitle}
             </h3>
             <div className="about-stats">
               <div className="stat-box">
-                <div className="stat-number">{convertDigits(counts.exp, currentLang)}+</div>
-                <div className="stat-label">{currentStat1Label}</div>
+                <div className="stat-number notranslate">{convertDigits(counts.exp, currentLang)}+</div>
+                <div className="stat-label notranslate">{currentStat1Label}</div>
               </div>
               <div className="stat-box">
-                <div className="stat-number">{convertDigits(counts.countries, currentLang)}+</div>
-                <div className="stat-label">{currentStat2Label}</div>
+                <div className="stat-number notranslate">{convertDigits(counts.countries, currentLang)}+</div>
+                <div className="stat-label notranslate">{currentStat2Label}</div>
               </div>
               <div className="stat-box">
-                <div className="stat-number">{convertDigits(Number(counts.shipments).toLocaleString(), currentLang)}+</div>
-                <div className="stat-label">{currentStat3Label}</div>
+                <div className="stat-number notranslate">{convertDigits(Number(counts.shipments).toLocaleString(), currentLang)}+</div>
+                <div className="stat-label notranslate">{currentStat3Label}</div>
               </div>
               <div className="stat-box">
-                <div className="stat-number">{convertDigits(counts.clients, currentLang)}+</div>
-                <div className="stat-label">{currentStat4Label}</div>
+                <div className="stat-number notranslate">{convertDigits(counts.clients, currentLang)}+</div>
+                <div className="stat-label notranslate">{currentStat4Label}</div>
               </div>
             </div>
           </div>
