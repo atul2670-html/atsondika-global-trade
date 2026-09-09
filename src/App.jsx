@@ -19,6 +19,8 @@ export default function App() {
 
   useEffect(() => {
     initGoogleTranslateScript();
+    // Record original English text nodes immediately on initial mount
+    translateDomTextNodes('en');
   }, []);
 
   useEffect(() => {

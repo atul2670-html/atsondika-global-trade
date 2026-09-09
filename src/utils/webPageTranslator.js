@@ -43,7 +43,12 @@ export async function translateWholePage(targetLang = 'en') {
     try {
       const googleSelect = document.querySelector('.goog-te-combo');
       if (googleSelect) {
-        const targetVal = (langCode === 'en') ? 'en' : gLang;
+        let targetVal = gLang;
+        if (langCode === 'en') {
+          // Find whether Google Translate combo uses '' or 'en' for original English
+          const hasEnOption = Array.from(googleSelect.options).some(opt => opt.value === 'en');
+          targetVal = hasEnOption ? 'en' : '';
+        }
         if (googleSelect.value !== targetVal) {
           googleSelect.value = targetVal;
           googleSelect.dispatchEvent(new Event('change', { bubbles: true }));
@@ -106,7 +111,9 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
 
   if (langCode === 'en') {
     textNodes.forEach(node => {
-      if (node._originalText !== undefined) {
+      if (node._originalText === undefined) {
+        node._originalText = node.textContent;
+      } else {
         node.textContent = node._originalText;
       }
     });
