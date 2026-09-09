@@ -401,22 +401,22 @@ export function AppProvider({ children }) {
     badge: "APEDA & ISO 9001:2015 REGISTERED EXPORTER",
     title: {
       en: "Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World.",
-      gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વિશ્વ સાથે જોડતી અગ્રણી કંપની.",
-      hi: "प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।",
-      fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde."
+      gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઈલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલી મશીનરી, ઔદ્યોગિક માલસામાન અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.",
+      hi: "उच्च गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, रेडीमेड गारमेंट्स, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को वैश्विक बाजारों से जोड़ने वाला प्रमुख भारतीय निर्यातक।",
+      fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements sur mesure, machines neuves et d'occasion, biens industriels & boulonnerie de qualité supérieure aux marchés mondiaux."
     },
     subtitle: {
       en: "Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40+ countries.",
-      gu: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, ડેરી, કાપડ અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતા ૪૦+ દેશોમાં અગ્રણી ભારતીય નિકાસકાર.",
-      hi: "मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, डेयरी, कपड़े और इको पैकेजिंग में विशेषज्ञता वाला प्रमुख भारतीय निर्यातक।",
-      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les machines neuves et d'occasion, les vêtements et les emballages écologiques vers 40+ pays."
+      gu: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, ડેરી, કાપડ અને ઇકો-ફ્રેન્ડલી પેકેજિંગમાં વિશિષ્ટતા ધરાવતા ૪૦+ દેશોમાં વિશ્વસનીય ભારતીય નિકાસકાર.",
+      hi: "मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, डेयरी, कपड़े और इको पैकेजिंग में विशेषज्ञता वाला 40+ देशों में विश्वसनीय भारतीय निर्यातक।",
+      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les oléagineux, la boulonnerie, les machines neuves et d'occasion et les emballages écologiques vers 40+ pays."
     },
     image: "images/hero_export_shipping.png"
   };
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v4') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v6') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { en: stored.title, gu: defaultHeroBanner.title.gu, hi: defaultHeroBanner.title.hi, fr: defaultHeroBanner.title.fr }

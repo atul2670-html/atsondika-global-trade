@@ -466,6 +466,8 @@ export const translations = {
     hero_btn_quote: "Request Quotation",
     btn_explore: "Explore Products",
     btn_rfq: "Request Quotation (RFQ)",
+    btn_global_trade: "Global Trade",
+    btn_local_trade: "Local Trade",
 
     about_badge: "Leading Exporter from Surat, India",
     about_title: "Delivering Excellence from Indian Soil to Global Markets",
@@ -554,12 +556,14 @@ export const translations = {
     nav_quote: "ત્વરિત ક્વોટ મેળવો",
 
     hero_badge: "APEDA અને ISO 9001:2015 નોંધાયેલ નિકાસકાર",
-    hero_title: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ઔદ્યોગિક માલ અને મશીનરીને વિશ્વ સાથે જોડતી અગ્રણી કંપની",
-    hero_subtitle: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી અને ઇકો પેકેજિંગમાં વિશિષ્ટ ભારતીય નિકાસકાર.",
+    hero_title: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઈલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલી મશીનરી, ઔદ્યોગિક માલસામાન અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની",
+    hero_subtitle: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, ડેરી, કાપડ અને ઇકો-ફ્રેન્ડલી પેકેજિંગમાં વિશિષ્ટતા ધરાવતા ૪૦+ દેશોમાં વિશ્વસનીય ભારતીય નિકાસકાર.",
     hero_btn_products: "ઉત્પાદનો જુઓ",
     hero_btn_quote: "ભાવ પત્રક મેળવો",
     btn_explore: "ઉત્પાદનો જુઓ",
     btn_rfq: "ભાવ પત્રક મેળવો (RFQ)",
+    btn_global_trade: "ગ્લોબલ ટ્રેડ",
+    btn_local_trade: "લોકલ ટ્રેડ",
 
     about_badge: "સુરત, ભારતથી અગ્રણી નિકાસકાર",
     about_title: "ભારતીય ભૂમિથી વૈશ્વિક બજારો સુધી ઉત્કૃષ્ટતા પહોંચાડવી",
