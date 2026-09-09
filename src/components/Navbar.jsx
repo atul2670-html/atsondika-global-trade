@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
 import { translateFullWebsiteData } from '../utils/masterWebsiteTranslator';
 import FlagIcon from './FlagIcon';
+import LanguageSearchDropdown from './LanguageSearchDropdown';
 
 export default function Navbar() {
   const {
@@ -194,136 +195,13 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* ATTACHED UNIFIED LANGUAGE CONTROL CAPSULE */}
-            <div className="lang-box-grouped" ref={langRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(45, 212, 191, 0.45)', borderRadius: '20px', padding: '2px 4px', boxShadow: '0 0 12px rgba(45, 212, 191, 0.25)' }}>
-              {/* 1. Main Language Dropdown Switcher */}
-              <button
-                type="button"
-                className="lang-btn"
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
-                style={{ padding: '3px 8px', fontSize: '0.75rem', background: 'transparent', border: 'none', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
-                title="Select Display Language"
-              >
-                <FlagIcon code={currentLang} />
-                <span style={{ fontWeight: 800 }}>{shortMap[currentLang]}</span>
-                <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>▼</span>
-              </button>
-
-              <span style={{ height: '14px', width: '1px', background: 'rgba(255, 255, 255, 0.2)', margin: '0 2px' }}></span>
-
-              {/* 2. Directly Attached 1-Click Auto-Translate Button */}
-              <button
-                type="button"
-                disabled={isFullTranslating}
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '3px 10px',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.5)'
-                }}
-                onClick={async () => {
-                  const confirmTr = window.confirm("⚡ 🔄 Auto-Translate ENTIRE WEBSITE (Hero, About Us, All Products, Specifications & Sections) into Gujarati (GU), Hindi (HI), and French (FR)?");
-                  if (confirmTr) {
-                    setIsFullTranslating(true);
-                    try {
-                      await translateFullWebsiteData({
-                        heroBanner, saveHeroBanner,
-                        aboutData, saveAboutData,
-                        customProductsList, saveProduct,
-                        certificatesList, saveCertificate,
-                        branchesList, saveBranch,
-                        liveToast
-                      });
-                      alert("✅ FULL WEBSITE AUTO-TRANSLATION COMPLETE!\n\nAll Products, Hero Banner, About Us, Specifications & Sections have been auto-translated into Gujarati, Hindi, and French!");
-                    } catch(e) {
-                      alert("✅ Entire website auto-translation completed and synced!");
-                    } finally {
-                      setIsFullTranslating(false);
-                    }
-                  }
-                }}
-                title="1-Click Auto-Translate Master English to All 4 Languages"
-              >
-                {isFullTranslating ? '⏳ Translating...' : '🔄 Auto-Translate'}
-              </button>
-
-              {/* 3. Dropdown Menu containing Language Options AND Top 1-Click Auto-Translate Action */}
-              {langMenuOpen && (
-                <div className="lang-menu show" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', zIndex: 1200, minWidth: '220px', padding: '6px', background: '#0b0f19', border: '1px solid rgba(45, 212, 191, 0.4)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
-                  {/* Featured 1-Click Action Inside Dropdown */}
-                  <button
-                    type="button"
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '8px 10px',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%)',
-                      color: '#34d399',
-                      border: '1px solid rgba(52, 211, 153, 0.4)',
-                      borderRadius: '8px',
-                      marginBottom: '6px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                    onClick={async () => {
-                      setLangMenuOpen(false);
-                      const confirmTr = window.confirm("⚡ 🔄 Auto-Translate ENTIRE WEBSITE (Hero, About Us, All Products, Specifications & Sections) into Gujarati (GU), Hindi (HI), and French (FR)?");
-                      if (confirmTr) {
-                        setIsFullTranslating(true);
-                        try {
-                          await translateFullWebsiteData({
-                            heroBanner, saveHeroBanner,
-                            aboutData, saveAboutData,
-                            customProductsList, saveProduct,
-                            certificatesList, saveCertificate,
-                            branchesList, saveBranch,
-                            liveToast
-                          });
-                          alert("✅ FULL WEBSITE AUTO-TRANSLATION COMPLETE!\n\nAll Products, Hero Banner, About Us, Specifications & Sections have been auto-translated into Gujarati, Hindi, and French!");
-                        } catch(e) {
-                          alert("✅ Entire website auto-translation completed!");
-                        } finally {
-                          setIsFullTranslating(false);
-                        }
-                      }
-                    }}
-                  >
-                    ⚡ 🔄 1-Click Master Auto-Translate
-                  </button>
-
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-sub)', padding: '4px 6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                    Select Language:
-                  </div>
-
-                  {['en', 'gu', 'hi', 'fr'].map((lang) => (
-                    <button
-                      key={lang}
-                      className={`lang-item ${currentLang === lang ? 'active' : ''}`}
-                      onClick={() => {
-                        setCurrentLang(lang);
-                        setLangMenuOpen(false);
-                      }}
-                      style={{ width: '100%', padding: '6px 10px', fontSize: '0.82rem', display: 'flex', alignItems: 'center' }}
-                    >
-                      <FlagIcon code={lang} />
-                      <span>{nameMap[lang]}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+            {/* 100+ WORLD LANGUAGES SEARCHABLE DROPDOWN & LIVE PAGE TRANSLATOR */}
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+              <LanguageSearchDropdown
+                currentLanguage={currentLang}
+                setCurrentLanguage={setCurrentLang}
+                isHeader={true}
+              />
             </div>
 
             <button type="button" className="theme-btn" onClick={toggleTheme} title="Theme Toggle" style={{ width: '28px', height: '28px', fontSize: '0.8rem' }}>

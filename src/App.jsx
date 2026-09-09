@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -12,9 +12,24 @@ import Modals from './components/Modals';
 import RfqCartDrawer from './components/RfqCartDrawer';
 import OrderTrackerModal from './components/OrderTrackerModal';
 import { useApp } from './context/AppContext';
+import { translateWholePage, initGoogleTranslateScript } from './utils/webPageTranslator';
 
 export default function App() {
   const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast } = useApp();
+
+  useEffect(() => {
+    initGoogleTranslateScript();
+  }, []);
+
+  useEffect(() => {
+    translateWholePage(currentLang);
+    const timer1 = setTimeout(() => translateWholePage(currentLang), 150);
+    const timer2 = setTimeout(() => translateWholePage(currentLang), 500);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [currentLang]);
 
   return (
     <>
