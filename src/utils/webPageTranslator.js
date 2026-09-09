@@ -129,28 +129,24 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
   });
 
   if (stringsToTranslate.length > 0) {
-    const chunkSize = 20;
-    for (let i = 0; i < stringsToTranslate.length; i += chunkSize) {
-      const chunk = stringsToTranslate.slice(i, i + chunkSize);
-      const combined = chunk.join(' \n ');
-      try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(gLang)}&dt=t&q=${encodeURIComponent(combined)}`;
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data[0]) {
-            const translatedCombined = data[0].map(item => item[0]).join('');
-            const translatedArray = translatedCombined.split(' \n ');
-
-            chunk.forEach((origStr, idx) => {
-              const transStr = translatedArray[idx] ? translatedArray[idx].trim() : origStr;
+    const batchSize = 12;
+    for (let i = 0; i < stringsToTranslate.length; i += batchSize) {
+      const chunk = stringsToTranslate.slice(i, i + batchSize);
+      await Promise.all(chunk.map(async (origStr) => {
+        try {
+          const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${encodeURIComponent(gLang)}&dt=t&q=${encodeURIComponent(origStr)}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data[0] && Array.isArray(data[0])) {
+              const transStr = data[0].map(item => item[0]).join('').trim();
               if (transStr) {
                 translationCache.set(`${gLang}:${origStr}`, transStr);
               }
-            });
+            }
           }
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }));
     }
   }
 
