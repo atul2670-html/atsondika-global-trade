@@ -89,9 +89,9 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
     fr: 'Exportateur Mondial Certifié APEDA & ISO | Surat, Gujarat'
   },
   {
-    en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World/gi,
-    gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વિશ્વ સાથે જોડતી અગ્રણી કંપની.',
-    hi: 'प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।',
+    en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, (Ready-made|Readymade) Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World\.?/gi,
+    gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી કંપની.',
+    hi: 'प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों (रेडीमेड गारमेंट्स), नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।',
     fr: 'Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d\'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde.'
   },
   {

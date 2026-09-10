@@ -242,7 +242,7 @@ export default function Navbar() {
               </div>
             </a>
 
-            <ul className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
+            <ul className={`nav-menu notranslate ${mobileMenuOpen ? 'active' : ''}`}>
               <li><a href="#home" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>{t.nav_home}</a></li>
               <li><a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_about}</a></li>
               <li><a href="#products" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_products}</a></li>

@@ -32,7 +32,7 @@ export default function Hero() {
       <div className="hero-container">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
-            <div className="hero-badge" style={{ marginBottom: 0 }}>
+            <div className="hero-badge notranslate" style={{ marginBottom: 0 }}>
               <span>✨</span> {heroBanner.badge}
             </div>
 
@@ -40,7 +40,7 @@ export default function Hero() {
             {isAdminLoggedIn && (
               <button
                 type="button"
-                className="admin-hero-edit-btn"
+                className="admin-hero-edit-btn notranslate"
                 onClick={() => {
                   verifyAdminAccess(() => {
                     setActiveModal('hero');
@@ -53,11 +53,11 @@ export default function Hero() {
             )}
           </div>
 
-          <h1 className="hero-title">
+          <h1 className="hero-title notranslate">
             {currentTitle}
           </h1>
           
-          <p className="hero-subtitle">
+          <p className="hero-subtitle notranslate">
             {currentSubtitle}
           </p>
 
