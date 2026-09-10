@@ -635,10 +635,10 @@ export default function Modals() {
       setHeroLangTab(currentLang || 'en');
 
       const defaultTitles = {
-        en: "Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World.",
-        gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વિશ્વ સાથે જોડતી અગ્રણી કંપની.",
-        hi: "प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।",
-        fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde."
+        en: "Connecting Premium Quality Agro Commodities Products, Dairy Products, Textile Products, Ready-made Garments Products, Used Machinery, New Machinery, Industrial Goods Products & Fasteners To The World.",
+        gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ પ્રોડક્ટ્સ (કૃષિ ઉત્પાદનો), ડેરી પ્રોડક્ટ્સ (ડેરી ઉત્પાદનો), ટેક્સટાઇલ પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો), રેડીમેડ ગારમેન્ટ્સ પ્રોડક્ટ્સ (તૈયાર વસ્ત્ર ઉત્પાદનો), નવી અને વપરાયેલી મશીનરી, ઔદ્યોગિક માલસામાન પ્રોડક્ટ્સ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.",
+        hi: "उच्च गुणवत्ता वाले कृषि उत्पादों (एग्रो कमोडिटीज), डेयरी उत्पादों (डेयरी प्रोडक्ट्स), कपड़ा उत्पादों (टेक्सटाइल प्रोडक्ट्स), रेडीमेड गारमेंट्स उत्पादों (तैयार वस्त्र), नई और पुरानी मशीनरी, औद्योगिक सामान उत्पादों और फास्टनरों को वैश्विक बाजारों से जोड़ने वाला प्रमुख भारतीय निर्यातक।",
+        fr: "Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier."
       };
 
       const defaultSubtitles = {

@@ -89,7 +89,7 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
     fr: 'Exportateur Mondial Certifié APEDA & ISO | Surat, Gujarat'
   },
   {
-    en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, (Ready-made|Readymade) Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World\.?/gi,
+    en: /Connecting Premium Quality (Agro Commodities Products|Agro Commodities), Dairy Products, Textile Products, (Ready-made Garments Products|Readymade Garments Products|Ready-made Garments|Readymade Garments), Used Machinery, New Machinery, (Industrial Goods Products|Industrial Goods) & Fasteners To The World\.?/gi,
     gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ પ્રોડક્ટ્સ (કૃષિ ઉત્પાદનો), ડેરી પ્રોડક્ટ્સ (ડેરી ઉત્પાદનો), ટેક્સટાઇલ પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો), રેડીમેડ ગારમેન્ટ્સ પ્રોડક્ટ્સ (તૈયાર વસ્ત્ર ઉત્પાદનો), નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલસામાન પ્રોડક્ટ્સ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.',
     hi: 'उच्च गुणवत्ता वाले कृषि उत्पादों (एग्रो कमोडिटीज), डेयरी उत्पादों (डेयरी प्रोडक्ट्स), कपड़ा उत्पादों (टेक्सटाइल प्रोडक्ट्स), रेडीमेड गारमेंट्स उत्पादों (तैयार वस्त्र), नई और पुरानी मशीनरी, औद्योगिक सामान उत्पादों और फास्टनरों को दुनिया से जोड़ना।',
     fr: 'Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d\'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.',
@@ -443,6 +443,35 @@ export function matchTradeDictionary(text, lang) {
   return str;
 }
 
+export function sanitizeGrammarAndNouns(text, lang = 'gu') {
+  if (!text || typeof text !== 'string') return text || '';
+  let str = text;
+
+  // 1. Gujarati Grammar Rules
+  if (lang === 'gu') {
+    str = str.replace(/ડેરી પ્રોડક્ટ્સ,\s*ટેક્સટાઇલ,/gi, 'ડેરી પ્રોડક્ટ્સ (ડેરી ઉત્પાદનો), ટેક્સટાઇલ પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો),');
+    str = str.replace(/ડેરી પ્રોડક્ટ્સ,\s*ટેક્સટાઇલ\b(?! પ્રોડક્ટ્સ| ઉત્પાદનો)/gi, 'ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ પ્રોડક્ટ્સ');
+    str = str.replace(/\bટેક્સટાઇલ\b(?! પ્રોડક્ટ્સ| ઉત્પાદનો| ફેબ્રિક્સ| લૂમ્સ| માર્કેટ| હબ)/gi, 'ટેક્સટાઇલ પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો)');
+    str = str.replace(/રેડીમેડ ગારમેન્ટ્સ\b(?! પ્રોડક્ટ્સ| ઉત્પાદનો)/gi, 'રેડીમેડ ગારમેન્ટ્સ પ્રોડક્ટ્સ (તૈયાર વસ્ત્ર ઉત્પાદનો)');
+  }
+
+  // 2. Hindi Grammar Rules
+  if (lang === 'hi') {
+    str = str.replace(/डेयरी उत्पादों,\s*कपड़ा,/gi, 'डेयरी उत्पादों (डेयरी प्रोडक्ट्स), कपड़ा उत्पादों (टेक्सटाइल प्रोडक्ट्स),');
+    str = str.replace(/डेयरी उत्पादों,\s*कपड़ा\b(?! उत्पादों| प्रोडक्ट्स)/gi, 'डेयरी उत्पादों, कपड़ा उत्पादों');
+    str = str.replace(/\bकपड़ा\b(?! उत्पादों| प्रोडक्ट्स| उद्योग| बाजार| लूम)/gi, 'कपड़ा उत्पाद (टेक्सटाइल प्रोडक्ट्स)');
+    str = str.replace(/रेडीमेड गारमेंट्स\b(?! उत्पादों| प्रोडक्ट्स)/gi, 'रेडीमेड गारमेंट्स उत्पाद');
+  }
+
+  // 3. French Grammar Rules
+  if (lang === 'fr') {
+    str = str.replace(/produits laitiers,\s*textiles,/gi, 'produits laitiers, produits textiles,');
+    str = str.replace(/produits laitiers,\s*textiles\b(?! textiles| de)/gi, 'produits laitiers, produits textiles');
+  }
+
+  return str;
+}
+
 export function autoTranslateText(text, lang = 'en') {
   if (!text || typeof text !== 'string') return text || '';
   if (lang === 'en') return text;
@@ -453,6 +482,7 @@ export function autoTranslateText(text, lang = 'en') {
   }
 
   let dictResult = matchTradeDictionary(text, lang);
+  dictResult = sanitizeGrammarAndNouns(dictResult, lang);
   
   // If target language is outside gu/hi/fr and text contains Gujarati script (\u0A80-\u0AFF), convert digits and clean up
   if (lang !== 'gu' && lang !== 'hi' && lang !== 'fr' && /[\u0A80-\u0AFF]/.test(dictResult)) {
@@ -486,8 +516,9 @@ export async function fetchGoogleTransliteration(text, lang = 'gu') {
           tText = txtEl.value;
         }
         if (tText && tText.toLowerCase() !== clean.toLowerCase() && !tText.includes('MYMEMORY WARNING')) {
-          transliterationCache.set(cacheKey, tText);
-          return tText;
+          const sanitized = sanitizeGrammarAndNouns(tText, lang);
+          transliterationCache.set(cacheKey, sanitized);
+          return sanitized;
         }
       }
     }
@@ -501,7 +532,7 @@ export async function fetchGoogleTransliteration(text, lang = 'gu') {
       if (res.ok) {
         const data = await res.json();
         if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
-          const translated = data[1][0][1][0];
+          const translated = sanitizeGrammarAndNouns(data[1][0][1][0], lang);
           transliterationCache.set(cacheKey, translated);
           return translated;
         }
@@ -532,7 +563,7 @@ export async function autoTranslateFullObject(englishText) {
           const txtEl = document.createElement('textarea');
           txtEl.innerHTML = text;
           text = txtEl.value;
-          if (text) obj[l] = text;
+          if (text) obj[l] = sanitizeGrammarAndNouns(text, l);
         } else {
           obj[l] = autoTranslateText(clean, l);
         }
