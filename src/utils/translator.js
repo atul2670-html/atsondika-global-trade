@@ -481,10 +481,17 @@ export function autoTranslateText(text, lang = 'en') {
     return transliterationCache.get(cacheKey);
   }
 
+  // Step 1: Try full sentence / string match via MASTER_TRADE_GRAMMAR_DICTIONARY
   let dictResult = matchTradeDictionary(text, lang);
-  dictResult = sanitizeGrammarAndNouns(dictResult, lang);
 
-  // Guarantee every single item after a comma (,) is individually translated
+  // Step 2: If a master sentence rule matched, sanitize and return immediately without chopping up by comma
+  if (dictResult && dictResult !== text) {
+    dictResult = sanitizeGrammarAndNouns(dictResult, lang);
+    transliterationCache.set(cacheKey, dictResult);
+    return dictResult;
+  }
+
+  // Step 3: ONLY if full sentence did NOT match AND string has commas, translate each comma-separated item cleanly
   if (text.includes(',')) {
     const parts = text.split(',');
     const translatedParts = parts.map(part => {
@@ -493,13 +500,6 @@ export function autoTranslateText(text, lang = 'en') {
 
       let partResult = matchTradeDictionary(trimmed, lang);
       partResult = sanitizeGrammarAndNouns(partResult, lang);
-
-      MASTER_TRADE_GRAMMAR_DICTIONARY.forEach(rule => {
-        if (rule[lang] && rule.en) {
-          partResult = partResult.replace(rule.en, rule[lang]);
-        }
-      });
-
       return partResult;
     });
 
@@ -508,6 +508,8 @@ export function autoTranslateText(text, lang = 'en') {
       dictResult = commaJoined;
     }
   }
+
+  dictResult = sanitizeGrammarAndNouns(dictResult, lang);
   
   // If target language is outside gu/hi/fr and text contains Gujarati script (\u0A80-\u0AFF), convert digits and clean up
   if (lang !== 'gu' && lang !== 'hi' && lang !== 'fr' && /[\u0A80-\u0AFF]/.test(dictResult)) {

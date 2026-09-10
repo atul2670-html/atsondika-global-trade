@@ -427,11 +427,11 @@ export function AppProvider({ children }) {
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
       // Purge stale local storage cache versions to prevent old cached titles
-      ['site_hero_banner_v1', 'site_hero_banner_v2', 'site_hero_banner_v3', 'site_hero_banner_v4', 'site_hero_banner_v5', 'site_hero_banner_v6', 'site_hero_banner_v7', 'site_hero_banner_v8', 'site_hero_banner_v9', 'site_hero_banner_v10', 'site_hero_banner_v11', 'site_hero_banner_v12', 'site_hero_banner_v13', 'site_hero_banner_v14', 'site_hero_banner_v15', 'site_hero_banner_v16'].forEach(k => {
+      ['site_hero_banner_v1', 'site_hero_banner_v2', 'site_hero_banner_v3', 'site_hero_banner_v4', 'site_hero_banner_v5', 'site_hero_banner_v6', 'site_hero_banner_v7', 'site_hero_banner_v8', 'site_hero_banner_v9', 'site_hero_banner_v10', 'site_hero_banner_v11', 'site_hero_banner_v12', 'site_hero_banner_v13', 'site_hero_banner_v14', 'site_hero_banner_v15', 'site_hero_banner_v16', 'site_hero_banner_v17'].forEach(k => {
         try { localStorage.removeItem(k); } catch(e) {}
       });
 
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v17') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v18') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { ...defaultHeroBanner.title }
@@ -586,7 +586,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_hero_banner_v17', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v18', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
 
