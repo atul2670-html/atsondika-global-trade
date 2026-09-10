@@ -90,9 +90,9 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   },
   {
     en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, (Ready-made|Readymade) Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World\.?/gi,
-    gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી કંપની.',
-    hi: 'प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों (रेडीमेड गारमेंट्स), नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।',
-    fr: 'Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d\'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde.'
+    gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ પ્રોડક્ટ્સ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ પ્રોડક્ટ્સ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલસામાન અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.',
+    hi: 'उच्च गुणवत्ता वाले कृषि उत्पाद, डेयरी उत्पाद, कपड़ा एवं टेक्सटाइल उत्पाद, रेडीमेड गारमेंट्स, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को वैश्विक बाजारों से जोड़ने वाला प्रमुख भारतीय निर्यातक।',
+    fr: 'Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d\'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.'
   },
   {
     en: /Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40\+ countries/gi,

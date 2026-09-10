@@ -399,11 +399,11 @@ export function AppProvider({ children }) {
     const defaultHeroBanner = {
     badge: "APEDA & ISO 9001:2015 REGISTERED EXPORTER",
     title: {
-      en: "Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World.",
-      gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઈલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલી મશીનરી, ઔદ્યોગિક માલસામાન અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.",
-      hi: "उच्च गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, रेडीमेड गारमेंट्स, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को वैश्विक बाजारों से जोड़ने वाला प्रमुख भारतीय निर्यातक।",
-      fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements sur mesure, machines neuves et d'occasion, biens industriels & boulonnerie de qualité supérieure aux marchés mondiaux.",
-      ar: "ربط المنتجات الزراعية والغذائية عالية الجودة، ومنتجات الألبان، والمنسوجات، والملابس الجاهزة، والمعدات المستعملة والجديدة، والبضائع الصناعية والتثبيت بالأسواق العالمية."
+      en: "Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Ready-made Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World.",
+      gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ પ્રોડક્ટ્સ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ પ્રોડક્ટ્સ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલી મશીનરી, ઔદ્યોગિક માલસામાન પ્રોડક્ટ્સ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.",
+      hi: "उच्च गुणवत्ता वाले कृषि उत्पाद, डेयरी उत्पाद, कपड़ा एवं टेक्सटाइल उत्पाद, रेडीमेड गारमेंट्स, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को वैश्विक बाजारों से जोड़ने वाला प्रमुख भारतीय निर्यातक।",
+      fr: "Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.",
+      ar: "ربط المنتجات الزراعية والغذائية عالية الجودة، ومنتجات الألبان، والمنتجات النسيجية، والملابس الجاهزة، والمعدات الجديدة والمستعملة، والبضائع الصناعية بالتثبيت بالأسواق العالمية."
     },
     subtitle: {
       en: "Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40+ countries.",

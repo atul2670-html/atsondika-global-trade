@@ -292,7 +292,7 @@ export const translations = {
     nav_quote: "Obtenir un Devis",
 
     hero_title_1: "Connecter les Produits de Qualité Supérieure",
-    hero_title_2: "Produits Agricoles, Laitiers, Textiles, Vêtements, Machines d'Occasion & Neuves, Biens Industriels & Boulonnerie",
+    hero_title_2: "Produits Agro-alimentaires, Produits Laitiers, Produits Textiles, Vêtements Prêts-à-Porter, Machines Neuves & d'Occasion, Produits Industriels & Boulonnerie",
     hero_title_3: "Au Monde Entier",
     hero_subtitle: "Exportateur indien de confiance spécialisé dans les épices, le riz, les graines oléagineuses, la boulonnerie, les machines neuves et d'occasion et les emballages écologiques vers plus de 40 pays.",
     hero_btn_products: "Explorer les Produits",
