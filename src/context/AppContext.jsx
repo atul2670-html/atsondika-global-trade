@@ -426,11 +426,24 @@ export function AppProvider({ children }) {
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v9') || 'null');
+      // Purge stale local storage cache versions to prevent old cached titles
+      ['site_hero_banner_v1', 'site_hero_banner_v2', 'site_hero_banner_v3', 'site_hero_banner_v4', 'site_hero_banner_v5', 'site_hero_banner_v6', 'site_hero_banner_v7', 'site_hero_banner_v8', 'site_hero_banner_v9'].forEach(k => {
+        try { localStorage.removeItem(k); } catch(e) {}
+      });
+
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v15') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
-          ? { en: stored.title, gu: defaultHeroBanner.title.gu, hi: defaultHeroBanner.title.hi, fr: defaultHeroBanner.title.fr, ar: defaultHeroBanner.title.ar }
+          ? { ...defaultHeroBanner.title }
           : { ...defaultHeroBanner.title, ...stored.title };
+
+        // Guarantee Gujarati and Hindi title strings always contain full "પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો)" and "कपड़ा उत्पादों"
+        if (!titleObj.gu || titleObj.gu.includes('ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ,') || !titleObj.gu.includes('ટેક્સટાઇલ પ્રોડક્ટ્સ')) {
+          titleObj.gu = defaultHeroBanner.title.gu;
+        }
+        if (!titleObj.hi || titleObj.hi.includes('डेयरी उत्पादों, कपड़ा,') || !titleObj.hi.includes('कपड़ा उत्पादों')) {
+          titleObj.hi = defaultHeroBanner.title.hi;
+        }
 
         const subObj = typeof stored.subtitle === 'string'
           ? { en: stored.subtitle, gu: defaultHeroBanner.subtitle.gu, hi: defaultHeroBanner.subtitle.hi, fr: defaultHeroBanner.subtitle.fr, ar: defaultHeroBanner.subtitle.ar }
@@ -573,7 +586,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_hero_banner_v6', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v15', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
 
