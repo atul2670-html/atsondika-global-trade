@@ -213,7 +213,36 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
   { en: /Proforma Export Quote/gi, gu: 'પ્રોફોર્મા એક્સપોર્ટ ક્વોટ (PDF)', hi: 'प्रोफॉर्म िनर्यात कोटेशन (PDF)', fr: 'Devis Proforma Export' },
   { en: /Minimum Order Quantity|MOQ/gi, gu: 'ન્યૂનતમ ઓર્ડર જથ્થો (MOQ)', hi: 'न्यूनतम ऑर्डर मात्रा (MOQ)', fr: 'Quantité Minimale de Commande (MOQ)' },
   { en: /HS Code/gi, gu: 'એચ.એસ. કોડ (HS Code)', hi: 'एचएस कोड (HS Code)', fr: 'Code SH (HS Code)' },
-  { en: /Verified Exporter/gi, gu: 'પ્રમાણિત નિકાસકાર', hi: 'सत्यापित निर्यातक', fr: 'Exportateur Vérifié' }
+  { en: /Verified Exporter/gi, gu: 'પ્રમાણિત નિકાસકાર', hi: 'सत्यापित निर्यातक', fr: 'Exportateur Vérifié' },
+
+  // Standalone Comma-Separated Trade Items
+  { en: /\bOilseeds\b/gi, gu: 'તેલીબિયાં', hi: 'तिलहन', fr: 'Graines Oléagineuses', de: 'Ölsamen', es: 'Semillas Oleaginosas', ru: 'Масличные культуры', ar: 'البذور الزيتية', zh: '油籽', ja: '油糧種子', ko: '유지 종자', pt: 'Sementes Oleaginosas', it: 'Semi Oleosi', tr: 'Yağlı Tohumlar' },
+  { en: /\bFasteners\b/gi, gu: 'ફાસ્ટનર્સ (ઔદ્યોગિક ફાસ્ટનર પ્રોડક્ટ્સ)', hi: 'फास्टनर (औद्योगिक फास्टनर उत्पाद)', fr: 'Fixations & Boulonnerie', de: 'Befestigungselemente', es: 'Sujetadores e Industriales', ru: 'Крепежные изделия', ar: 'أدوات التثبيت والصواميل', zh: '紧固件与螺栓', ja: 'ファスナー・ボルト製品', ko: '패스너 제품', pt: 'Fixadores e Parafusos', it: 'Elementi di Fissaggio', tr: 'Bağlantı Elemanları' },
+  { en: /\bSpices\b/gi, gu: 'મસાલા', hi: 'मसाले', fr: 'Épices', de: 'Gewürze', es: 'Especias', ru: 'Специи', ar: 'توابل', zh: '香料', ja: 'スパイス', ko: '향신료', pt: 'Especiarias', it: 'Spezie', tr: 'Baharatlar' },
+  { en: /\bRice\b/gi, gu: 'ચોખા', hi: 'चावल', fr: 'Riz', de: 'Reis', es: 'Arroz', ru: 'Рис', ar: 'أرز', zh: '大米', ja: '米', ko: '쌀', pt: 'Arroz', it: 'Riso', tr: 'Pirinç' },
+
+  // Locations & Destinations After Commas
+  { en: /Surat,\s*Gujarat/gi, gu: 'સુરત, ગુજરાત', hi: 'सूरत, गुजरात', fr: 'Surat, Gujarat', ar: 'سورات، غوجارات', es: 'Surat, Gujarat', de: 'Surat, Gujarat', ru: 'Сурат, Гуджарат', zh: '素拉特，古吉拉特', ja: 'スラト、グジャラート', ko: '수라트, 구자라트' },
+  { en: /\bSurat\b/gi, gu: 'સુરત', hi: 'सूरत', fr: 'Surat', de: 'Surat', es: 'Surat', ru: 'Сурат', ar: 'سورات', zh: '素拉特', ja: 'スラト', ko: '수라트' },
+  { en: /\bGujarat\b/gi, gu: 'ગુજરાત', hi: 'गुजरात', fr: 'Gujarat', de: 'Gujarat', es: 'Gujarat', ru: 'Гуджарат', ar: 'غوجارات', zh: '古吉拉特', ja: 'グジャラート', ko: '구자라트' },
+  { en: /\bIndia\b/gi, gu: 'ભારત', hi: 'भारत', fr: 'Inde', de: 'Indien', es: 'India', ru: 'Индия', ar: 'الهند', zh: '印度', ja: 'インド', ko: '인도' },
+  { en: /\bUAE\b|United Arab Emirates/gi, gu: 'યુએઈ (UAE)', hi: 'संयुक्त अरब अमीरात (UAE)', fr: 'Émirats Arabes Unis (ÉAU)', ar: 'الإمارات العربية المتحدة' },
+  { en: /Saudi Arabia/gi, gu: 'સાઉદી અરેબિયા', hi: 'सऊदी अरब', fr: 'Arabie Saoudite', ar: 'المملكة العربية السعودية' },
+  { en: /\bOman\b/gi, gu: 'ઓમાન', hi: 'ओमान', fr: 'Oman', ar: 'عُمان' },
+  { en: /\bQatar\b/gi, gu: 'કતાર', hi: 'कतर', fr: 'Qatar', ar: 'قطر' },
+  { en: /\bUK\b|United Kingdom/gi, gu: 'યુકે', hi: 'यूके', fr: 'Royaume-Uni', ar: 'المملكة المتحدة' },
+  { en: /\bGermany\b/gi, gu: 'જર્મની', hi: 'जर्मनी', fr: 'Allemagne', ar: 'ألمانيا' },
+  { en: /\bNetherlands\b/gi, gu: 'નેધરલેન્ડ', hi: 'नीदरलैंड', fr: 'Pays-Bas', ar: 'هولندا' },
+  { en: /\bFrance\b/gi, gu: 'ફ્રાન્સ', hi: 'फ्रांस', fr: 'France', ar: 'فرنسا' },
+  { en: /\bUSA\b|United States/gi, gu: 'અમેરિકા (USA)', hi: 'अमेरिका (USA)', fr: 'États-Unis', ar: 'الولايات المتحدة الأمريكية' },
+  { en: /\bCanada\b/gi, gu: 'કેનેડા', hi: 'कनाडा', fr: 'Canada', ar: 'كندا' },
+  { en: /\bBrazil\b/gi, gu: 'બ્રાઝિલ', hi: 'ब्राजील', fr: 'Brésil', ar: 'البرازيل' },
+  { en: /\bSingapore\b/gi, gu: 'સિંગાપોર', hi: 'सिंगापुर', fr: 'Singapour', ar: 'سنغافورة' },
+  { en: /\bMalaysia\b/gi, gu: 'મલેશિયા', hi: 'मलेशिया', fr: 'Malaisie', ar: 'ماليزيا' },
+  { en: /\bVietnam\b/gi, gu: 'વિયેટનામ', hi: 'वियतनाम', fr: 'Viêt Nam', ar: 'فيتنام' },
+  { en: /\bEgypt\b/gi, gu: 'ઈજિપ્ત', hi: 'मिस्र', fr: 'Égypte', ar: 'مصر' },
+  { en: /\bKenya\b/gi, gu: 'કેન્યા', hi: 'केन्या', fr: 'Kenya', ar: 'كينيا' },
+  { en: /South Africa/gi, gu: 'દક્ષિણ આફ્રિકા', hi: 'दक्षिण अफ्रीका', fr: 'Afrique du Sud', ar: 'جنوب إفريقيا' }
 ];
 
 export const CATEGORY_TAB_DICTIONARY = {
@@ -498,9 +527,22 @@ export function autoTranslateText(text, lang = 'en') {
       const trimmed = part.trim();
       if (!trimmed) return part;
 
-      let partResult = matchTradeDictionary(trimmed, lang);
+      // Handle 'and' / '&' prefix in comma-separated item lists (e.g. "and Eco Packaging")
+      let prefix = '';
+      let cleanWord = trimmed;
+
+      if (/^(and|\&)\s+/i.test(trimmed)) {
+        cleanWord = trimmed.replace(/^(and|\&)\s+/i, '');
+        if (lang === 'gu') prefix = 'અને ';
+        else if (lang === 'hi') prefix = 'और ';
+        else if (lang === 'fr') prefix = 'et ';
+        else prefix = 'and ';
+      }
+
+      let partResult = matchTradeDictionary(cleanWord, lang);
       partResult = sanitizeGrammarAndNouns(partResult, lang);
-      return partResult;
+
+      return prefix + partResult;
     });
 
     const commaJoined = translatedParts.join(', ');
