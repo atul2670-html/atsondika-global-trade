@@ -92,7 +92,17 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
     en: /Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, (Ready-made|Readymade) Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World\.?/gi,
     gu: 'શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ પ્રોડક્ટ્સ (કૃષિ ઉત્પાદનો), ડેરી પ્રોડક્ટ્સ (ડેરી ઉત્પાદનો), ટેક્સટાઇલ પ્રોડક્ટ્સ (કાપડ ઉત્પાદનો), રેડીમેડ ગારમેન્ટ્સ પ્રોડક્ટ્સ (તૈયાર વસ્ત્ર ઉત્પાદનો), નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલસામાન પ્રોડક્ટ્સ અને ફાસ્ટનર્સને વૈશ્વિક બજારો સાથે જોડતી અગ્રણી ભારતીય નિકાસકાર કંપની.',
     hi: 'उच्च गुणवत्ता वाले कृषि उत्पादों (एग्रो कमोडिटीज), डेयरी उत्पादों (डेयरी प्रोडक्ट्स), कपड़ा उत्पादों (टेक्सटाइल प्रोडक्ट्स), रेडीमेड गारमेंट्स उत्पादों (तैयार वस्त्र), नई और पुरानी मशीनरी, औद्योगिक सामान उत्पादों और फास्टनरों को दुनिया से जोड़ना।',
-    fr: 'Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d\'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.'
+    fr: 'Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d\'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.',
+    ar: 'ربط المنتجات الزراعية والغذائية عالية الجودة، ومنتجات الألبان، والمنتجات النسيجية، ومنتجات الملابس الجاهزة، والمعدات الجديدة والمستعملة، والمنتجات الصناعية وأدوات التثبيت بالأسواق العالمية.',
+    es: 'Conectando productos agrícolas de calidad superior, productos lácteos, productos textiles, productos de ropa confeccionada, maquinaria nueva y usada, productos industriales y sujetadores con el mundo.',
+    de: 'Verbindung von erstklassigen Agrarprodukten, Molkereiprodukten, Textilprodukten, Konfektionskleidungsprodukten, neuen und gebrauchten Maschinen, Industriegüterprodukten und Befestigungselementen mit der Welt.',
+    ru: 'Поставка сельскохозяйственной продукции высшего качества, молочной продукции, текстильной продукции, изделий готовой одежды, нового и б/у оборудования, промышленной продукции и крепежа по всему миру.',
+    zh: '将优质农产品、乳制品、纺织品产品、成衣服装产品、二手及新型机械、工业品与紧固件产品连接至全球。',
+    ja: '高品質な農産物製品、乳製品、繊維製品（テキスタイル）、既製服アパレル製品、中古および新品の産業機械、産業用品・ファスナー製品を世界へ届ける。',
+    ko: '고품질 농산물 제품, 유제품, 텍스타일 섬유 제품, 기성복 의류 제품, 중고 및 신형 기계, 산업용품 및 패스너 제품을 전 세계로 연결합니다.',
+    pt: 'Conectando produtos agrícolas de qualidade superior, produtos lácteos, produtos têxteis, produtos de vestuário pronto, maquinaria nova e usada, produtos industriais e fixadores ao mundo.',
+    it: 'Collegare prodotti agricoli di qualità superiore, prodotti lattiero-caseari, prodotti tessili, prodotti di abbigliamento confezionato, macchinari nuovi e usati, prodotti industriali e bulloneria al mondo.',
+    tr: 'Üstün kaliteli tarım ürünlerini, süt ürünlerini, tekstil ürünlerini, hazır giyim ürünlerini, yeni ve ikinci el makineleri, sanayi ürünlerini ve bağlantı elemanlarını dünyaya bağlamak.'
   },
   {
     en: /Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40\+ countries/gi,
