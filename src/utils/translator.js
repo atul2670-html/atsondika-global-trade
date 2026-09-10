@@ -483,6 +483,31 @@ export function autoTranslateText(text, lang = 'en') {
 
   let dictResult = matchTradeDictionary(text, lang);
   dictResult = sanitizeGrammarAndNouns(dictResult, lang);
+
+  // Guarantee every single item after a comma (,) is individually translated
+  if (text.includes(',')) {
+    const parts = text.split(',');
+    const translatedParts = parts.map(part => {
+      const trimmed = part.trim();
+      if (!trimmed) return part;
+
+      let partResult = matchTradeDictionary(trimmed, lang);
+      partResult = sanitizeGrammarAndNouns(partResult, lang);
+
+      MASTER_TRADE_GRAMMAR_DICTIONARY.forEach(rule => {
+        if (rule[lang] && rule.en) {
+          partResult = partResult.replace(rule.en, rule[lang]);
+        }
+      });
+
+      return partResult;
+    });
+
+    const commaJoined = translatedParts.join(', ');
+    if (commaJoined && commaJoined !== text) {
+      dictResult = commaJoined;
+    }
+  }
   
   // If target language is outside gu/hi/fr and text contains Gujarati script (\u0A80-\u0AFF), convert digits and clean up
   if (lang !== 'gu' && lang !== 'hi' && lang !== 'fr' && /[\u0A80-\u0AFF]/.test(dictResult)) {
