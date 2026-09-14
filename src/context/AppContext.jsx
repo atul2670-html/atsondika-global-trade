@@ -426,13 +426,13 @@ export function AppProvider({ children }) {
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      // Purge all stale local storage cache versions up to v50
-      for (let i = 1; i <= 50; i++) {
+      // Purge all stale local storage cache versions up to v51
+      for (let i = 1; i <= 51; i++) {
         try { localStorage.removeItem(`site_hero_banner_v${i}`); } catch(e) {}
       }
       try { localStorage.removeItem('site_hero_banner'); } catch(e) {}
 
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v51') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v52') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { ...defaultHeroBanner.title }
@@ -576,15 +576,27 @@ export function AppProvider({ children }) {
 
   const [aboutData, setAboutData] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_about_data_v6') || 'null');
+      // Purge old cache up to v6
+      for (let i = 1; i <= 6; i++) {
+        try { localStorage.removeItem(`site_about_data_v${i}`); } catch(e) {}
+      }
+
+      const stored = JSON.parse(localStorage.getItem('site_about_data_v7') || 'null');
       if (stored) {
         return {
           ...defaultAboutData,
           ...stored,
-          stat1Label: typeof stored.stat1Label === 'object' ? stored.stat1Label : defaultAboutData.stat1Label,
-          stat2Label: typeof stored.stat2Label === 'object' ? stored.stat2Label : defaultAboutData.stat2Label,
-          stat3Label: typeof stored.stat3Label === 'object' ? stored.stat3Label : defaultAboutData.stat3Label,
-          stat4Label: typeof stored.stat4Label === 'object' ? stored.stat4Label : defaultAboutData.stat4Label
+          badge: typeof stored.badge === 'object' ? { ...defaultAboutData.badge, ...stored.badge } : stored.badge,
+          title: typeof stored.title === 'object' ? { ...defaultAboutData.title, ...stored.title } : stored.title,
+          desc: typeof stored.desc === 'object' ? { ...defaultAboutData.desc, ...stored.desc } : stored.desc,
+          feat1: typeof stored.feat1 === 'object' ? { ...defaultAboutData.feat1, ...stored.feat1 } : stored.feat1,
+          feat2: typeof stored.feat2 === 'object' ? { ...defaultAboutData.feat2, ...stored.feat2 } : stored.feat2,
+          feat3: typeof stored.feat3 === 'object' ? { ...defaultAboutData.feat3, ...stored.feat3 } : stored.feat3,
+          statsTitle: typeof stored.statsTitle === 'object' ? { ...defaultAboutData.statsTitle, ...stored.statsTitle } : stored.statsTitle,
+          stat1Label: typeof stored.stat1Label === 'object' ? { ...defaultAboutData.stat1Label, ...stored.stat1Label } : defaultAboutData.stat1Label,
+          stat2Label: typeof stored.stat2Label === 'object' ? { ...defaultAboutData.stat2Label, ...stored.stat2Label } : defaultAboutData.stat2Label,
+          stat3Label: typeof stored.stat3Label === 'object' ? { ...defaultAboutData.stat3Label, ...stored.stat3Label } : defaultAboutData.stat3Label,
+          stat4Label: typeof stored.stat4Label === 'object' ? { ...defaultAboutData.stat4Label, ...stored.stat4Label } : defaultAboutData.stat4Label
         };
       }
     } catch(e) {}
@@ -593,7 +605,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_hero_banner_v51', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v52', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
 
@@ -605,7 +617,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_about_data_v6', JSON.stringify(aboutData));
+      localStorage.setItem('site_about_data_v7', JSON.stringify(aboutData));
     } catch(e) {}
   }, [aboutData]);
 

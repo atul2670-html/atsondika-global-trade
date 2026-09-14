@@ -29,7 +29,7 @@ export default function Hero() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
             <div className="hero-badge" style={{ marginBottom: 0 }}>
-              <span>✨</span> {heroBanner.badge}
+              <span>✨</span> {currentBadge}
             </div>
 
             {/* Admin Edit Hero Banner Note Button (Only visible to Admin) */}
