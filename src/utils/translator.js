@@ -59,8 +59,18 @@ export function convertDigits(numOrStr, lang = 'en') {
   if (numOrStr === undefined || numOrStr === null) return '';
   const str = String(numOrStr);
   if (lang === 'en' || lang === 'fr') return str;
+  const digitsMap = {
+    gu: ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'],
+    hi: ['०', '१', '२', '३', '४', '५', '६', '७', '૮', '९'],
+    ar: ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
+  };
+  const map = digitsMap[lang];
+  if (!map) return str;
+  return str.replace(/\d/g, d => map[parseInt(d, 10)]);
+}
 
-   {
+export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
+  {
     en: /APEDA & ISO 9001:2015 REGISTERED EXPORTER|APEDA & ISO Certified Premium Global Exporter \| Surat, Gujarat/gi,
     gu: 'APEDA અને ISO 9001:2015 પ્રમાણિત અગ્રણી વૈશ્વિક નિકાસકાર | સુરત, ગુજરાત',
     hi: 'APEDA और ISO 9001:2015 प्रमाणित प्रीमियम वैश्विक निर्यातक | सूरत, गुजरात',
@@ -234,7 +244,9 @@ export function convertDigits(numOrStr, lang = 'en') {
     de: 'Globale Importeure',
     ru: 'Мировых импортеров',
     zh: '全球合作进口商'
-  },العالمية.',
+  },
+  {
+    en: /Connecting Premium Quality Agro Commodities/gi,
     es: 'Conectando productos agrícolas de calidad superior, productos lácteos, productos textiles, productos de ropa confeccionada, maquinaria nueva y usada, productos industriales y sujetadores con el mundo.',
     de: 'Verbindung von erstklassigen Agrarprodukten, Molkereiprodukten, Textilprodukten, Konfektionskleidungsprodukten, neuen und gebrauchten Maschinen, Industriegüterprodukten und Befestigungselementen mit der Welt.',
     ru: 'Поставка сельскохозяйственной продукции высшего качества, молочной продукции, текстильной продукции, изделий готовой одежды, нового и б/у оборудования, промышленной продукции и крепежа по всему миру.',
