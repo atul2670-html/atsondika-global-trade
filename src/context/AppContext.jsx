@@ -426,13 +426,13 @@ export function AppProvider({ children }) {
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      // Purge all stale local storage cache versions up to v49
-      for (let i = 1; i < 50; i++) {
+      // Purge all stale local storage cache versions up to v50
+      for (let i = 1; i <= 50; i++) {
         try { localStorage.removeItem(`site_hero_banner_v${i}`); } catch(e) {}
       }
       try { localStorage.removeItem('site_hero_banner'); } catch(e) {}
 
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v50') || 'null');
+      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v51') || 'null');
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { ...defaultHeroBanner.title }
@@ -593,7 +593,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_hero_banner_v50', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v51', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
 

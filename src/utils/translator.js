@@ -60,34 +60,19 @@ export function convertDigits(numOrStr, lang = 'en') {
   const str = String(numOrStr);
   if (lang === 'en' || lang === 'fr') return str;
 
-  const guDigits = ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'];
-  const hiDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-
-  const targetDigits = lang === 'gu' ? guDigits : (lang === 'hi' ? hiDigits : null);
-  if (!targetDigits) return str;
-
-  return str.replace(/\d/g, digit => targetDigits[parseInt(digit, 10)]);
-}
-
-export function translateNumberWord(numInput, lang = 'en') {
-  const num = parseInt(numInput, 10);
-  if (NUMBER_WORDS_MAP[num] && NUMBER_WORDS_MAP[num][lang]) {
-    return NUMBER_WORDS_MAP[num][lang];
-  }
-  return String(numInput);
-}
-
-/**
- * Master 4-Language Trade & Commercial Grammar Dictionary
- * Actively used as the Presidential Translation Engine to prevent any meaning distortion across all 100+ World Languages.
- */
-export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
-  // Full Sentences & Slogans
-  {
-    en: /APEDA & ISO Certified Premium Global Exporter \| Surat, Gujarat/gi,
-    gu: 'APEDA અને ISO પ્રમાણિત અગ્રણી વૈશ્વિક નિકાસકાર | સુરત, ગુજરાત',
-    hi: 'APEDA और ISO प्रमाणित प्रीमियम वैश्विक निर्यातक | सूरत, गुजरात',
-    fr: 'Exportateur Mondial Certifié APEDA & ISO | Surat, Gujarat'
+   {
+    en: /APEDA & ISO 9001:2015 REGISTERED EXPORTER|APEDA & ISO Certified Premium Global Exporter \| Surat, Gujarat/gi,
+    gu: 'APEDA અને ISO 9001:2015 પ્રમાણિત અગ્રણી વૈશ્વિક નિકાસકાર | સુરત, ગુજરાત',
+    hi: 'APEDA और ISO 9001:2015 प्रमाणित प्रीमियम वैश्विक निर्यातक | सूरत, गुजरात',
+    fr: 'EXPORTATEUR REGISTRÉ APEDA & ISO 9001:2015 | Surat, Gujarat',
+    ar: 'مُصدِّر مُسجَّل ومُعتمد حسب مواصفات ISO 9001:2015 و APEDA | سورات، الهند',
+    es: 'EXPORTADOR REGISTRADO CON CERTIFICACIÓN APEDA E ISO 9001:2015',
+    de: 'APEDA & ISO 9001:2015 ZERTIFIZIERTER EXPORTEUR',
+    ru: 'ЗАРЕГИСТРИРОВАННЫЙ ЭКСПОРТЕР APEDA И ISO 9001:2015',
+    zh: 'APEDA 与 ISO 9001:2015 认证注册出口商',
+    ja: 'APEDAおよびISO 9001:2015認定登録輸出業者',
+    ko: 'APEDA 및 ISO 9001:2015 인증 등록 수출업체',
+    tr: 'APEDA VE ISO 9001:2015 SERTİFİKALI KAYITLI İHRACATÇI'
   },
   {
     en: /Connecting Premium Quality (Agro Commodities Products|Agro Commodities|Industrial Goods|Machinery|Spices).*To The World\.?/gi,
@@ -95,6 +80,161 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
     hi: 'उच्च गुणवत्ता वाले कृषि उत्पादों (एग्रो कमोडिटीज), डेयरी उत्पादों (डेयरी प्रोडक्ट्स), कपड़ा उत्पादों (टेक्सटाइल प्रोडक्ट्स), रेडीमेड गारमेंट्स उत्पादों (तैयार वस्त्र), नई और पुरानी मशीनरी, औद्योगिक सामान उत्पादों और फास्टनरों को दुनिया से जोड़ना।',
     fr: 'Connecter les produits agro-alimentaires, produits laitiers, produits textiles, vêtements prêts-à-porter, machines neuves et d\'occasion, produits industriels & boulonnerie de qualité supérieure au monde entier.',
     ar: 'ربط المنتجات الزراعية والغذائية عالية الجودة، ومنتجات الألبان، والمنتجات النسيجية، ومنتجات الملابس الجاهزة، والمعدات الجديدة والمستعملة، والمنتجات الصناعية وأدوات التثبيت بالأسواق العالمية.',
+    es: 'Conectando productos agrícolas de calidad superior, productos lácteos, productos textiles, productos de ropa confeccionada, maquinaria nueva y usada, productos industriales y sujetadores con el mundo.',
+    de: 'Verbindung von erstklassigen Agrarprodukten, Molkereiprodukten, Textilprodukten, Konfektionskleidungsprodukten, neuen und gebrauchten Maschinen, Industriegüterprodukten und Befestigungselementen mit der Welt.',
+    ru: 'Поставка сельскохозяйственной продукции высшего качества, молочной продукции, текстильной продукции, изделий готовой одежды, нового и б/у оборудования, промышленной продукции и крепежа по всему миру.',
+    zh: '将优质农产品、乳制品、纺织品产品、成衣服装产品、二手及新型机械、工业品与紧固件产品连接至全球。',
+    ja: '高品質な農産物製品、乳製品、繊維製品（テキスタイル）、既製服アパレル製品、中古および新品の産業機械、産業用品・ファスナー製品を世界へ届ける。',
+    ko: '고품질 농산물 제품, 유제품, 텍스타일 섬유 제품, 기성복 의류 제품, 중고 및 신형 기계, 산업용품 및 패스너 제품을 전 세계로 연결합니다.',
+    pt: 'Conectando produtos agrícolas de qualidade superior, produtos lácteos, produtos têxteis, produtos de vestuário pronto, maquinaria nova e usada, produtos industriais e fixadores ao mundo.',
+    it: 'Collegare prodotti agricoli di qualità superiore, prodotti lattiero-caseari, prodotti tessili, prodotti di abbigliamento confezionato, macchinari nuovi e usati, prodotti industriali e bulloneria al mondo.',
+    tr: 'Üstün kaliteli tarım ürünlerini, süt ürünlerini, tekstil ürünlerini, hazır giyim ürünlerini, yeni ve ikinci el makineleri, sanayi ürünlerini ve bağlantı elemanlarını dünyaya bağlamak.'
+  },
+  {
+    en: /Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40\+ countries\.?/gi,
+    gu: 'મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતો ૪૦+ દેશોમાં વિશ્વસનીય ભારતીય નિકાસકાર.',
+    hi: 'मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, और इको पैकेजिंग में विशेषज्ञता वाला 40+ से अधिक देशों में विश्वसनीय भारतीय निर्यातक।',
+    fr: 'Exportateur indien de confiance spécialisé dans les épices, le riz, les oléagineux, la boulonnerie, les machines neuves et d\'occasion et les emballages écologiques vers plus de 40 pays.',
+    ar: 'مُصدِّر هندي موثوق متخصص في التوابل، والأرز، والبذور الزيتية، وأدوات التثبيت، والمعدات الجديدة والمستعملة، والتغليف المستدام لأكثر من 40 دولة.',
+    es: 'Exportador indio de confianza especializado en especias, arroz, semillas oleaginosas, sujetadores, maquinaria nueva y usada y embalajes ecológicos a más de 40 países.',
+    de: 'Zuverlässiger indischer Exporteur, spezialisiert auf Gewürze, Reis, Ölsamen, Befestigungselemente, neue und gebrauchte Maschinen sowie Öko-Verpackungen in über 40 Länder.',
+    ru: 'Надежный индийский экспортер, специализирующийся на специях, рисе, масличных культурах, крепеже, новом и б/у оборудовании и эко-упаковке в 40+ стран.',
+    zh: '值得信赖的印度出口商，专注于香料、大米、油籽、紧固件、新旧机械及环保包装，出口至40多个国家。',
+    ja: 'スパイス、米、油糧種子、ファスナー、新品・中古機械、エコ包装を40カ国以上に輸出する信頼のインド輸出業者。',
+    ko: '40여 개국에 향신료, 쌀, 유지 종자, 패스너, 신형 및 중고 기계, 친환경 포장을 전문으로 수출하는 신뢰할 수 있는 인도 수출업체.',
+    tr: '40\'tan fazla ülkeye baharat, pirinç, yağlı tohumlar, bağlantı elemanları, yeni ve ikinci el makineler ve çevre dostu ambalaj ihraç eden güvenilir Hintli ihracatçı.'
+  },
+  // About Section Slogans
+  {
+    en: /LEADING EXPORTER FROM SURAT, INDIA/gi,
+    gu: 'સુરત, ભારતથી અગ્રણી નિકાસકાર',
+    hi: 'सूरत, भारत से प्रमुख निर्यातक',
+    fr: 'PREMIER EXPORTATEUR DE SURAT, INDE',
+    ar: 'المُصدِّر الرائد من سورات، الهند',
+    es: 'PRINCIPAL EXPORTADOR DE SURAT, INDIA',
+    de: 'FÜHRENDER EXPORTEUR AUS SURAT, INDIEN',
+    ru: 'ВЕДУЩИЙ ЭКСПОРТЕР ИЗ СУРАТА, ИНДИЯ',
+    zh: '来自印度素拉特的领先出口商',
+    ja: 'インド・スラトのリーディング輸出業者',
+    ko: '인도 수라트의 선도적인 수출업체',
+    tr: 'SURAT, HİNDİSTAN\'IN LİDER İHRACATÇISI'
+  },
+  {
+    en: /Delivering Excellence from Indian Soil to Global Markets/gi,
+    gu: 'ભારતીય ભૂમિથી વૈશ્વિક બજારો સુધી શ્રેષ્ઠતા પહોંચાડવી',
+    hi: 'भारतीय भूमि से वैश्विक बाजारों तक उत्कृष्टता प्रदान करना',
+    fr: 'Offrir l\'Excellence du Sol Indien aux Marchés Mondiaux',
+    ar: 'تقديم التميز من الأرض الهندية إلى الأسواق العالمية',
+    es: 'Llevando la excelencia de la tierra india a los mercados mundiales',
+    de: 'Exzellenz vom indischen Boden auf globale Märkte bringen',
+    ru: 'Поставка лучшей продукции от индийской земли к мировым рынкам',
+    zh: '将印度土地的卓越品质传递至全球市场',
+    ja: 'インドの土地から世界の市場へ最高品質をお届け',
+    ko: '인도 토양의 우수성을 전 세계 시장으로 전달',
+    tr: 'Hindistan Topraklarından Dünya Pazarlarına Üstün Kalite'
+  },
+  {
+    en: /We are a premier export and trading house headquartered in Surat, Gujarat\. Committed to uncompromised purity, strict quality protocols, and seamless logistics, we export top-tier agricultural produce, industrial supplies, new and used machinery, and sustainable packaging globally\.?/gi,
+    gu: 'અમે સુરત, ગુજરાતમાં મુખ્ય મથક ધરાવતી અગ્રણી નિકાસ અને ટ્રેડિંગ કંપની છીએ. સમાધાન વગરની શુદ્ધતા, કડક ગુણવત્તા પ્રોટોકોલ અને સીમલેસ લોજિસ્ટિક્સ માટે કટિબદ્ધ, અમે વૈશ્વિક સ્તરે ઉચ્ચ-સ્તરની કૃષિ પેદાશો, ઔદ્યોગિક પુરવઠો, નવી અને વપરાયેલી મશીનરી અને ઇકો-પેકેજિંગની નિકાસ કરીએ છીએ.',
+    hi: 'हम सूरत, गुजरात में मुख्यालय वाली एक प्रमुख निर्यात और ट्रेडिंग कंपनी हैं। बिना समझौते की शुद्धता, सख्त गुणवत्ता प्रोटोकॉल और निर्बाध लॉजिस्टिक्स के लिए प्रतिबद्ध, हम विश्व स्तर पर शीर्ष श्रेणी की कृषि उपज, औद्योगिक आपूर्ति, नई और पुरानी मशीनरी और टिकाऊ पैकेजिंग का निर्यात करते हैं।',
+    fr: 'Nous sommes une maison d\'exportation et de commerce de premier plan basée à Surat, Gujarat. Engagés en faveur d\'une pureté sans compromis, de protocoles de qualité stricts et d\'une logistique fluide, nous exportons des produits agricoles de premier ordre, des fournitures industrielles, des machines neuves et d\'occasion et des emballages durables dans le monde entier.',
+    ar: 'نحن شركة تصدير وتجارة رائدة مقره الرئيسي في سورات، غوجارات. نلتزم بالنقاء التام وفحوصات الجودة الصارمة والخدمات اللوجستية السلسة، ونقوم بتصدير أفضل المنتجات الزراعية والمستلزمات الصناعية والمعدات الجديدة والمستعملة والتغليف المستدام عالمياً.',
+    es: 'Somos una casa de comercio y exportación líder con sede en Surat, Gujarat. Comprometidos con la pureza sin concesiones, estrictos protocolos de calidad y una logística fluida, exportamos productos agrícolas de primer nivel, suministros industriales, maquinaria nueva y usada y embalajes sostenibles a nivel mundial.',
+    de: 'Wir sind ein führendes Export- und Handelshaus mit Hauptsitz in Surat, Gujarat. Wir verpflichten uns zu kompromissloser Reinheit, strengen Qualitätsprotokollen und nahtloser Logistik und exportieren weltweit erstklassige Agrarprodukte, Industriebedarf, neue und gebrauchte Maschinen sowie nachhaltige Verpackungen.',
+    ru: 'Мы являемся ведущим экспортно-торговым домом со штаб-квартирой в Сурате, Гуджарат. Стремясь к бескомпромиссной чистоте, строгим протоколам качества и бесперебойной логистике, мы экспортируем по всему миру высококачественную сельхозпродукцию, промышленные товары, новое и б/у оборудование и экологичную упаковку.',
+    zh: '我们是一家总部位于古吉拉特邦素拉特的顶尖出口与贸易公司。致力于卓越品质、严格的质量标准和无缝物流，向全球出口优质农产品、工业用品、新旧机械及环保包装。',
+    ja: '当社はグジャラート州スラトに本社を置くリーディング輸出・貿易商社です。妥協のない純度、厳格な品質プロトコル、円滑な物流を約束し、高品質農産物、産業用品、新品・中古機械、持続可能な包装を世界に輸出しています。',
+    ko: '당사는 구자라트 수라트에 본사를 둔 선도적인 수출 및 무역 회사입니다. 타협 없는 순도, 엄격한 품질 프로토콜 및 원활한 물류를 바탕으로 고품질 농산물, 산업용품, 신형 및 중고 기계, 친환경 포장을 전 세계로 수출합니다.',
+    tr: 'Merkezi Surat, Gujarat\'ta bulunan lider bir ihracat ve ticaret şirketiyiz. Tavizsiz saflık, katı kalite protokolleri ve sorunsuz lojistik taahhüdüyle, dünya çapında üstün kaliteli tarım ürünleri, sanayi malzemeleri, yeni ve ikinci el makineler ve sürdürülebilir ambalaj ihraç ediyoruz.'
+  },
+  {
+    en: /Direct sourcing & APEDA certified quality/gi,
+    gu: 'સીધું સોર્સિંગ અને APEDA પ્રમાણિત ગુણવત્તા',
+    hi: 'डायरेक्ट सोर्सिंग और APEDA प्रमाणित गुणवत्ता',
+    fr: 'Approvisionnement direct & qualité certifiée APEDA',
+    ar: 'التوريد المباشر وجودة معتمدة من APEDA',
+    es: 'Abastecimiento directo y calidad certificada APEDA',
+    de: 'Direkter Bezug & APEDA-zertifizierte Qualität',
+    ru: 'Прямые поставки и качество, сертифицированное APEDA',
+    zh: '原产地直采与 APEDA 认证品质'
+  },
+  {
+    en: /Global logistics & express port delivery/gi,
+    gu: 'વૈશ્વિક લોજિસ્ટિક્સ અને એક્સપ્રેસ પોર્ટ ડિલિવરી',
+    hi: 'ग्लोबल लॉजिस्टिक्स और एक्सप्रेस पोर्ट डिलीवरी',
+    fr: 'Logistique mondiale & livraison portuaire express',
+    ar: 'خدمات لوجستية عالمية وتوصيل سريع للموانئ',
+    es: 'Logística global y entrega portuaria exprés',
+    de: 'Globale Logistik & Express-Hafenlieferung',
+    ru: 'Глобальная логистика и экспресс-доставка в порты',
+    zh: '全球物流与港口快速交付'
+  },
+  {
+    en: /Competitive container pricing & transparent terms/gi,
+    gu: 'સ્પર્ધાત્મક કન્ટેનર કિંમત અને પારદર્શક શરતો',
+    hi: 'प्रतिस्पर्धी कंटेनर मूल्य निर्धारण और पारदर्शी शर्तें',
+    fr: 'Tarification compétitive des conteneurs & conditions transparentes',
+    ar: 'أسعار حاويات تنافسية وشروط شحن شفافة',
+    es: 'Precios competitivos de contenedores y términos transparentes',
+    de: 'Wettbewerbsfähige Containerpreise & transparente Bedingungen',
+    ru: 'Конкурентные цены на контейнеры и прозрачные условия',
+    zh: '具竞争力的集装箱价格与透明条款'
+  },
+  {
+    en: /Export Track Record & Capacity/gi,
+    gu: 'એક્સપોર્ટ ટ્રેક રેકોર્ડ અને ક્ષમતા',
+    hi: 'निर्यात ट्रैक रिकॉर्ड और क्षमता',
+    fr: 'Capacité et Historique d\'Exportation',
+    ar: 'سجل ومسيرة التصدير والقدرة التشغيلية',
+    es: 'Historial y capacidad de exportación',
+    de: 'Export-Erfolgsbilanz & Kapazität',
+    ru: 'Показатели экспорта и производственная мощность',
+    zh: '出口业绩与产能记录'
+  },
+  {
+    en: /Years Experience/gi,
+    gu: 'વર્ષનો અનુભવ',
+    hi: 'वर्षों का अनुभव',
+    fr: 'Années d\'Expérience',
+    ar: 'سنوات من الخبرة',
+    es: 'Años de experiencia',
+    de: 'Jahre Erfahrung',
+    ru: 'Лет опыта',
+    zh: '年行业经验'
+  },
+  {
+    en: /Export Countries/gi,
+    gu: 'નિકાસ દેશો',
+    hi: 'निर्यात देश',
+    fr: 'Pays d\'Exportation',
+    ar: 'دول التصدير',
+    es: 'Países de exportación',
+    de: 'Exportländer',
+    ru: 'Стран экспорта',
+    zh: '出口国家与地区'
+  },
+  {
+    en: /Metric Tons Exported/gi,
+    gu: 'મીટ્રિક ટન નિકાસ',
+    hi: 'मीट्रिक टन निर्यात',
+    fr: 'Tonnes Métriques Exportées',
+    ar: 'طن متري تم تصديره',
+    es: 'Toneladas métricas exportadas',
+    de: 'Exportierte Metrische Tonnen',
+    ru: 'Метрических тонн экспортировано',
+    zh: '吨公吨出口量'
+  },
+  {
+    en: /Global Importers/gi,
+    gu: 'વૈશ્વિક આયાતકારો',
+    hi: 'वैश्विक आयातक',
+    fr: 'Importateurs Mondiaux',
+    ar: 'مستوردون عالميون',
+    es: 'Importadores globales',
+    de: 'Globale Importeure',
+    ru: 'Мировых импортеров',
+    zh: '全球合作进口商'
+  },العالمية.',
     es: 'Conectando productos agrícolas de calidad superior, productos lácteos, productos textiles, productos de ropa confeccionada, maquinaria nueva y usada, productos industriales y sujetadores con el mundo.',
     de: 'Verbindung von erstklassigen Agrarprodukten, Molkereiprodukten, Textilprodukten, Konfektionskleidungsprodukten, neuen und gebrauchten Maschinen, Industriegüterprodukten und Befestigungselementen mit der Welt.',
     ru: 'Поставка сельскохозяйственной продукции высшего качества, молочной продукции, текстильной продукции, изделий готовой одежды, нового и б/у оборудования, промышленной продукции и крепежа по всему миру.',
