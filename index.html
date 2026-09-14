@@ -3,6 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <script>
+    // Safe DOM Node Patch for Google Translate & Browser Translation Engines (Prevents removeChild / insertBefore crashes in React)
+    if (typeof window !== 'undefined' && typeof Node !== 'undefined') {
+      const originalRemoveChild = Node.prototype.removeChild;
+      Node.prototype.removeChild = function (child) {
+        if (child && child.parentNode !== this) {
+          if (console && console.warn) {
+            console.warn('GoogleTranslate/DOM patch: Cannot remove child, parent is not the current node.', child);
+          }
+          return child;
+        }
+        return originalRemoveChild.call(this, child);
+      };
+
+      const originalInsertBefore = Node.prototype.insertBefore;
+      Node.prototype.insertBefore = function (newNode, referenceNode) {
+        if (referenceNode && referenceNode.parentNode !== this) {
+          if (console && console.warn) {
+            console.warn('GoogleTranslate/DOM patch: Cannot insert before reference node, parent is not current node.', referenceNode);
+          }
+          return this.appendChild(newNode);
+        }
+        return originalInsertBefore.call(this, newNode, referenceNode);
+      };
+    }
+
     // Force immediate purge of all ServiceWorker & CacheStorage registrations
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {

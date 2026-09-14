@@ -11,10 +11,19 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
+    const errStr = String(error?.message || error || '');
+    if (errStr.includes('removeChild') || errStr.includes('insertBefore') || errStr.includes('NotFoundError')) {
+      return { hasError: false, error: null };
+    }
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
+    const errStr = String(error?.message || error || '');
+    if (errStr.includes('removeChild') || errStr.includes('insertBefore') || errStr.includes('NotFoundError')) {
+      console.warn("Ignored Google Translate DOM conflict:", error);
+      return;
+    }
     console.error("Critical React Error Caught:", error, errorInfo);
   }
 
