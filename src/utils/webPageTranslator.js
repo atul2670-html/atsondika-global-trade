@@ -1,8 +1,9 @@
 // High-Performance Dual-Engine Full Page Web Translator for ATSondika Global Trade
 import { normalizeLangCode } from './universalTranslator';
-import { matchTradeDictionary } from './translator';
+import { matchTradeDictionary, sanitizeGrammarAndNouns } from './translator';
 
 const translationCache = new Map();
+let activeDomObserver = null;
 
 /**
  * High-Performance DOM Full-Page Translator
@@ -22,58 +23,121 @@ export async function translateWholePage(targetLang = 'en') {
   if (gLang === 'fil') gLang = 'tl';
   if (gLang === 'jv') gLang = 'jw';
 
-  // 1. Set Google Translate Cookie for widget fallback
+  // 1. Enable Google Translate Widget & set googtrans cookie for ALL languages
   try {
-    if (langCode === 'en') {
+    if (gLang === 'en') {
       document.cookie = "googtrans=/en/en; path=/;";
       document.cookie = `googtrans=/en/en; path=/; domain=${window.location.hostname};`;
       document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+
+      const googleSelect = document.querySelector('.goog-te-combo');
+      if (googleSelect && googleSelect.value) {
+        googleSelect.value = '';
+        googleSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     } else {
       const cookieVal = `/en/${gLang}`;
       document.cookie = `googtrans=${cookieVal}; path=/;`;
       document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname};`;
+      initGoogleTranslateScript();
+
+      const applyGoogleCombo = () => {
+        try {
+          const googleSelect = document.querySelector('.goog-te-combo');
+          if (googleSelect && googleSelect.value !== gLang) {
+            googleSelect.value = gLang;
+            googleSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      };
+
+      if (!applyGoogleCombo()) {
+        let attempts = 0;
+        const pollInterval = setInterval(() => {
+          attempts++;
+          if (applyGoogleCombo() || attempts >= 20) {
+            clearInterval(pollInterval);
+          }
+        }, 100);
+      }
     }
   } catch (e) {}
 
-  // 2. Ensure Google Translate Script is loaded
-  initGoogleTranslateScript();
-
-  // 3. Trigger Google Translate Widget if initialized
-  const applyGoogleCombo = () => {
-    try {
-      const googleSelect = document.querySelector('.goog-te-combo');
-      if (googleSelect) {
-        let targetVal = gLang;
-        if (langCode === 'en') {
-          // Find whether Google Translate combo uses '' or 'en' for original English
-          const hasEnOption = Array.from(googleSelect.options).some(opt => opt.value === 'en');
-          targetVal = hasEnOption ? 'en' : '';
-        }
-        if (googleSelect.value !== targetVal) {
-          googleSelect.value = targetVal;
-          googleSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-        return true;
-      }
-    } catch (e) {}
-    return false;
-  };
-
-  if (!applyGoogleCombo()) {
-    let attempts = 0;
-    const pollInterval = setInterval(() => {
-      attempts++;
-      if (applyGoogleCombo() || attempts >= 20) {
-        clearInterval(pollInterval);
-      }
-    }, 100);
-  }
-
-  // 4. Direct Client-Side NMT API (gtx) DOM Text Node Walker for 100% coverage across ALL world languages
+  // 2. Run Direct DOM Text Node Walker with Dictionary Sanitization
   try {
     await translateDomTextNodes(targetLang, gLang);
   } catch (e) {}
+
+  // 3. Attach Live MutationObserver to sanitize any ongoing DOM updates from Google Translate or JS
+  try {
+    attachDomSanitizerObserver(langCode);
+  } catch (e) {}
+}
+
+/**
+ * Attach Live DOM MutationObserver to clean up Google Translate output in real-time
+ */
+
+function attachDomSanitizerObserver(langCode) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  if (activeDomObserver) {
+    activeDomObserver.disconnect();
+    activeDomObserver = null;
+  }
+
+  if (!langCode || langCode === 'en') return;
+
+  const sanitizeSingleNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+      const parent = node.parentElement;
+      if (parent && parent.closest('.no-translate-element, script, style, textarea, input, select, option, code, pre')) {
+        return;
+      }
+      const origText = node.textContent;
+      const cleanText = sanitizeGrammarAndNouns(origText, langCode);
+      if (cleanText !== origText) {
+        node.textContent = cleanText;
+      }
+    }
+  };
+
+  const sanitizeSubtree = (targetNode) => {
+    if (!targetNode) return;
+    if (targetNode.nodeType === Node.TEXT_NODE) {
+      sanitizeSingleNode(targetNode);
+    } else if (targetNode.nodeType === Node.ELEMENT_NODE) {
+      const walker = document.createTreeWalker(targetNode, NodeFilter.SHOW_TEXT);
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        sanitizeSingleNode(textNode);
+      }
+    }
+  };
+
+  // Immediate pass over current DOM
+  sanitizeSubtree(document.body);
+
+  activeDomObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'characterData') {
+        sanitizeSingleNode(mutation.target);
+      } else if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach(node => {
+          sanitizeSubtree(node);
+        });
+      }
+    }
+  });
+
+  activeDomObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
 }
 
 /**
@@ -93,7 +157,7 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
         if (!node.textContent || !node.textContent.trim()) return NodeFilter.FILTER_REJECT;
         const parent = node.parentElement;
         if (!parent) return NodeFilter.FILTER_REJECT;
-        if (parent.closest('.notranslate, .no-translate-element, script, style, textarea, input, select, option, code, pre')) {
+        if (parent.closest('.no-translate-element, script, style, textarea, input, select, option, code, pre')) {
           return NodeFilter.FILTER_REJECT;
         }
         const txt = node.textContent.trim();
@@ -133,7 +197,8 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
     // Check trade dictionary first for native human grammar override
     const dictMatch = matchTradeDictionary(orig, gLang);
     if (dictMatch && dictMatch !== orig) {
-      translationCache.set(cacheKey, dictMatch);
+      const sanitizedMatch = sanitizeGrammarAndNouns(dictMatch, gLang);
+      translationCache.set(cacheKey, sanitizedMatch);
     } else if (!translationCache.has(cacheKey) && orig.length > 1) {
       if (!stringsToTranslate.includes(orig)) {
         stringsToTranslate.push(orig);
@@ -152,8 +217,9 @@ export async function translateDomTextNodes(targetLang = 'en', gLang = 'en') {
           if (res.ok) {
             const data = await res.json();
             if (data && data[0] && Array.isArray(data[0])) {
-              const transStr = data[0].map(item => item[0]).join('').trim();
+              let transStr = data[0].map(item => item[0]).join('').trim();
               if (transStr) {
+                transStr = sanitizeGrammarAndNouns(transStr, gLang);
                 translationCache.set(`${gLang}:${origStr}`, transStr);
               }
             }
@@ -207,3 +273,4 @@ export function initGoogleTranslateScript() {
     document.body.appendChild(script);
   }
 }
+

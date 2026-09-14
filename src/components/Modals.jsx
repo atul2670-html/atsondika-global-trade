@@ -4359,7 +4359,7 @@ export default function Modals() {
                       marginTop: '10px'
                     }}
                   >
-                    🏷️ Save Main Category Group (મેઈન કેટેગરી ઉમેરો)
+                    🏷️ Save Main Category Group
                   </button>
                 </form>
               </div>

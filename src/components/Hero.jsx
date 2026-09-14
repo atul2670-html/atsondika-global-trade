@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { autoTranslateFullObject } from '../utils/translator';
+import { autoTranslateFullObject, sanitizeGrammarAndNouns, getTextInLanguage } from '../utils/translator';
 
 export default function Hero() {
   const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn, showLiveToast, tradeMode, setTradeMode } = useApp();
@@ -19,20 +19,16 @@ export default function Hero() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentTitle = typeof heroBanner.title === 'object'
-    ? (heroBanner.title[currentLang] || heroBanner.title['en'] || t.hero_title)
-    : (heroBanner.title || t.hero_title);
-
-  const currentSubtitle = typeof heroBanner.subtitle === 'object'
-    ? (heroBanner.subtitle[currentLang] || heroBanner.subtitle['en'] || t.hero_subtitle)
-    : (heroBanner.subtitle || t.hero_subtitle);
+  const currentTitle = getTextInLanguage(heroBanner.title || t.hero_title, currentLang);
+  const currentSubtitle = getTextInLanguage(heroBanner.subtitle || t.hero_subtitle, currentLang);
+  const currentBadge = getTextInLanguage(heroBanner.badge || 'APEDA & ISO 9001:2015 REGISTERED EXPORTER', currentLang);
 
   return (
     <section className="hero" id="home">
       <div className="hero-container">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
-            <div className="hero-badge notranslate" style={{ marginBottom: 0 }}>
+            <div className="hero-badge" style={{ marginBottom: 0 }}>
               <span>✨</span> {heroBanner.badge}
             </div>
 
@@ -40,7 +36,7 @@ export default function Hero() {
             {isAdminLoggedIn && (
               <button
                 type="button"
-                className="admin-hero-edit-btn notranslate"
+                className="admin-hero-edit-btn no-translate-element"
                 onClick={() => {
                   verifyAdminAccess(() => {
                     setActiveModal('hero');
@@ -53,11 +49,11 @@ export default function Hero() {
             )}
           </div>
 
-          <h1 className="hero-title notranslate">
+          <h1 className="hero-title">
             {currentTitle}
           </h1>
           
-          <p className="hero-subtitle notranslate">
+          <p className="hero-subtitle">
             {currentSubtitle}
           </p>
 
@@ -88,7 +84,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              <span className="notranslate">🌐</span> <span className="notranslate">{currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ' : (currentLang === 'hi' ? 'ग्लोबल ट्रेड' : (currentLang === 'fr' ? 'Commerce Mondial' : (currentLang === 'ar' ? 'التجارة العالمية' : (currentLang === 'zh' ? '全球贸易' : 'Global Trade'))))}</span>
+              <span>🌐</span> <span>{currentLang === 'gu' ? 'ગ્લોબલ ટ્રેડ' : (currentLang === 'hi' ? 'ग्लोबल ट्रेड' : (currentLang === 'fr' ? 'Commerce Mondial' : (currentLang === 'ar' ? 'التجارة العالمية' : (currentLang === 'zh' ? '全球贸易' : 'Global Trade'))))}</span>
             </button>
 
             {/* 2. Explore Products (Center) */}
@@ -110,7 +106,7 @@ export default function Hero() {
                 textDecoration: 'none'
               }}
             >
-              <span className="notranslate">📦</span> <span className="notranslate">{t.hero_btn_products || (currentLang === 'gu' ? 'પ્રોડક્ટ્સ જુઓ' : (currentLang === 'hi' ? 'उत्पाद देखें' : (currentLang === 'fr' ? 'Explorer les Produits' : (currentLang === 'ar' ? 'استكشاف المنتجات' : (currentLang === 'zh' ? '浏览所有产品' : 'Explore Products')))))}</span>
+              <span>📦</span> <span>{t.hero_btn_products || (currentLang === 'gu' ? 'પ્રોડક્ટ્સ જુઓ' : (currentLang === 'hi' ? 'उत्पाद देखें' : (currentLang === 'fr' ? 'Explorer les Produits' : (currentLang === 'ar' ? 'استكشاف المنتجات' : (currentLang === 'zh' ? '浏览所有产品' : 'Explore Products')))))}</span>
             </a>
 
             {/* 3. Local Trade (Right) */}
@@ -138,7 +134,7 @@ export default function Hero() {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              <span className="notranslate">🛍️</span> <span className="notranslate">{currentLang === 'gu' ? 'લોકલ ટ્રેડ' : (currentLang === 'hi' ? 'लोकल ट्रेड' : (currentLang === 'fr' ? 'Commerce Local' : (currentLang === 'ar' ? 'التجارة المحلية' : (currentLang === 'zh' ? '本地零售' : 'Local Trade'))))}</span>
+              <span>🛍️</span> <span>{currentLang === 'gu' ? 'લોકલ ટ્રેડ' : (currentLang === 'hi' ? 'लोकल ट्रेड' : (currentLang === 'fr' ? 'Commerce Local' : (currentLang === 'ar' ? 'التجارة المحلية' : (currentLang === 'zh' ? '本地零售' : 'Local Trade'))))}</span>
             </button>
           </div>
         </div>

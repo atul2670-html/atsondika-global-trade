@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { convertGoogleDriveUrl } from '../utils/address';
-import { autoTranslateText, getCategoryTabTitle } from '../utils/translator';
+import { autoTranslateText, getCategoryTabTitle, getTextInLanguage } from '../utils/translator';
 
 const getCardUiText = (key, lang, extra = {}) => {
   const norm = (lang || 'en').split('-')[0].toLowerCase();
@@ -551,7 +551,7 @@ export default function ProductsGrid() {
                 });
               }}
             >
-              📦 + Add Sub-Product (પેટા પ્રોડક્ટ ઉમેરો)
+              📦 + Add Sub-Product
             </button>
 
             <button
@@ -572,7 +572,7 @@ export default function ProductsGrid() {
                 });
               }}
             >
-              🏷️ + Add Main Category (મેઈન પ્રોડક્ટ ઉમેરો)
+              🏷️ + Add Main Category
             </button>
           </div>
         </div>
@@ -635,7 +635,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn notranslate ${currentCategory === tab.filter ? 'active' : ''}`}
+                  className={`tab-btn ${currentCategory === tab.filter ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(tab.filter);
                     setSearchFilterQuery('');
@@ -765,7 +765,7 @@ export default function ProductsGrid() {
               >
                 <button
                   type="button"
-                  className={`tab-btn notranslate ${currentCategory === p.category ? 'active' : ''}`}
+                  className={`tab-btn ${currentCategory === p.category ? 'active' : ''}`}
                   onClick={() => {
                     setCurrentCategory(p.category);
                     setSearchFilterQuery('');
@@ -812,7 +812,7 @@ export default function ProductsGrid() {
                 {/* SUB-PRODUCTS HOVER DROPDOWN FOR CUSTOM CATEGORIES */}
                 {isHovered && (
                   <div
-                    className="sub-product-hover-dropdown notranslate"
+                    className="sub-product-hover-dropdown"
                     style={{
                       position: 'absolute',
                       top: 'calc(100% + 4px)',
@@ -943,11 +943,7 @@ export default function ProductsGrid() {
               </thead>
               <tbody>
                 {filtered.map((p, idx) => {
-                  const enTitle = (p.names && typeof p.names === 'object') ? (p.names['en'] || p.name || '') : (p.name || '');
-                  const langTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || '') : '';
-                  const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
-                    ? langTitle
-                    : autoTranslateText(enTitle || langTitle, currentLang);
+                  const title = getTextInLanguage(p.names || p.name, currentLang);
                   const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
                   const formattedPrice = tradeMode === 'local' ? ('₹' + Number(basePriceInr).toLocaleString('en-IN')) : (p.priceUSD ? convertPrice(p.priceUSD) : 'On Request');
                   const mrpInr = Math.round(basePriceInr * 1.32);
@@ -1105,17 +1101,8 @@ export default function ProductsGrid() {
             </div>
           ) : (
             filtered.map((p, idx) => {
-              const enTitle = (p.names && typeof p.names === 'object') ? (p.names['en'] || p.name || '') : (p.name || '');
-              const langTitle = (p.names && typeof p.names === 'object') ? (p.names[currentLang] || '') : '';
-              const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
-                ? langTitle
-                : autoTranslateText(enTitle || langTitle, currentLang);
-
-              const enSpec = (typeof p.spec === 'object') ? (p.spec['en'] || '') : (typeof p.specifications === 'object' ? p.specifications['en'] : p.spec || '');
-              const langSpec = (typeof p.spec === 'object') ? (p.spec[currentLang] || '') : '';
-              const specText = (langSpec && currentLang !== 'en' && !langSpec.includes('વુઅલિચય') && !langSpec.includes('પરેમિયમ'))
-                ? langSpec
-                : autoTranslateText(enSpec || langSpec || 'High Quality Premium Product', currentLang);
+              const title = getTextInLanguage(p.names || p.name, currentLang);
+              const specText = getTextInLanguage(p.spec || p.specifications || 'High Quality Premium Product', currentLang);
 
               let rawImgs = (p.images && p.images.length > 0) ? [...p.images] : [p.image || 'images/agro_spices_grains.png'];
               if (rawImgs.length === 1) {
@@ -1436,7 +1423,7 @@ export default function ProductsGrid() {
                         </div>
 
                         {/* Delivery & Packing Charge Tag */}
-                        <div className="notranslate" style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#0F1111', marginTop: '6px', fontWeight: 600, display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {parseFloat(p.courierCharge) > 0 ? (
                             <span style={{ color: '#0284c7', fontWeight: 800 }}>{getCardUiText('courierCharge', currentLang, { sym: currSym, charge: p.courierCharge })}</span>
                           ) : (
@@ -1456,7 +1443,6 @@ export default function ProductsGrid() {
                       <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
                         <button
                           type="button"
-                          className="notranslate"
                           onClick={() => {
                             const cardCurrency = p.currency || itemCurrency || 'INR';
                             addToRfqCart({ ...p, currency: cardCurrency }, 1, 'pcs', 'LOCAL');
