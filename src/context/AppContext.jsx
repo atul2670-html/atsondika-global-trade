@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { initialProductsData, defaultBranchOffices, defaultCertificates, translations, defaultCompanyProfiles, seaFreightPorts, airCargoRoutes } from '../data/initialData.js';
 import { toUSEnglishAddress, convertGoogleDriveUrl } from '../utils/address.js';
-import { realtimeEngine, pushGlobalCloudSync, pullGlobalCloudSync, fetchLiveExchangeRates, DEFAULT_CURRENCIES, LIVE_TICKER_ITEMS } from '../utils/realtimeSync.js';
+import { realtimeEngine, pushGlobalCloudSync, pullGlobalCloudSync, subscribeToGlobalCloudPush, fetchLiveExchangeRates, DEFAULT_CURRENCIES, LIVE_TICKER_ITEMS } from '../utils/realtimeSync.js';
 
 const initialStoreData = {};
 
@@ -416,7 +416,12 @@ export function AppProvider({ children }) {
 
   const [heroBanner, setHeroBanner] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_hero_banner_v4') || 'null');
+      const stored = JSON.parse(
+        localStorage.getItem('site_hero_banner_v4') ||
+        localStorage.getItem('site_hero_banner_v3') ||
+        localStorage.getItem('site_hero_banner_v2') ||
+        'null'
+      );
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
           ? { en: stored.title, gu: defaultHeroBanner.title.gu, hi: defaultHeroBanner.title.hi, fr: defaultHeroBanner.title.fr }
@@ -426,7 +431,13 @@ export function AppProvider({ children }) {
           ? { en: stored.subtitle, gu: defaultHeroBanner.subtitle.gu, hi: defaultHeroBanner.subtitle.hi, fr: defaultHeroBanner.subtitle.fr }
           : { ...defaultHeroBanner.subtitle, ...stored.subtitle };
 
-        return { ...defaultHeroBanner, ...stored, title: titleObj, subtitle: subObj };
+        return {
+          ...defaultHeroBanner,
+          ...stored,
+          title: titleObj,
+          subtitle: subObj,
+          image: convertGoogleDriveUrl(stored.image || defaultHeroBanner.image)
+        };
       }
     } catch(e) {}
     return defaultHeroBanner;
@@ -552,6 +563,8 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
+      localStorage.setItem('site_hero_banner_v4', JSON.stringify(heroBanner));
+      localStorage.setItem('site_hero_banner_v3', JSON.stringify(heroBanner));
       localStorage.setItem('site_hero_banner_v2', JSON.stringify(heroBanner));
     } catch(e) {}
   }, [heroBanner]);
@@ -1109,14 +1122,28 @@ export function AppProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Initial load + 3-second automated cloud poll across all global devices
+  // Real-Time Global Microsecond Push Engine (Server-Sent Event Stream + 1.2s Poll Heartbeat)
   useEffect(() => {
     fetchServerData();
+
+    // 1. Millisecond Push Stream Listener (Fires in ~50ms when Admin makes changes anywhere in the world)
+    const unsubPush = subscribeToGlobalCloudPush((pushedData) => {
+      if (pushedData && !isSyncing.current) {
+        fetchServerData();
+        triggerRealtimeRefresh();
+      }
+    });
+
+    // 2. High-speed 1.2-second Heartbeat Backup Poll
     const timer = setInterval(() => {
       fetchServerData();
       triggerRealtimeRefresh();
-    }, 3000);
-    return () => clearInterval(timer);
+    }, 1200);
+
+    return () => {
+      unsubPush();
+      clearInterval(timer);
+    };
   }, []);
 
   // Active Company Helper
@@ -1467,8 +1494,18 @@ export function AppProvider({ children }) {
   };
 
   const saveHeroBanner = (bannerData) => {
-    setHeroBanner(bannerData);
-    syncToServer({ heroBanner: bannerData });
+    if (!bannerData) return;
+    const cleanData = {
+      ...bannerData,
+      image: convertGoogleDriveUrl(bannerData.image)
+    };
+    setHeroBanner(cleanData);
+    try {
+      localStorage.setItem('site_hero_banner_v4', JSON.stringify(cleanData));
+      localStorage.setItem('site_hero_banner_v3', JSON.stringify(cleanData));
+      localStorage.setItem('site_hero_banner_v2', JSON.stringify(cleanData));
+    } catch(e) {}
+    syncToServer({ heroBanner: cleanData });
     setActiveModal(null);
   };
 

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
+import { convertGoogleDriveUrl } from '../utils/address';
+import { superFastCompressImage } from '../utils/realtimeSync';
 
 export default function Hero() {
   const { currentLang, t, heroBanner, saveHeroBanner, verifyAdminAccess, setActiveModal, isAdminLoggedIn, showLiveToast, tradeMode, setTradeMode } = useApp();
@@ -170,16 +172,15 @@ export default function Hero() {
                     type="file"
                     accept="image/*"
                     style={{ display: 'none' }}
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (evt) => {
-                          saveHeroBanner({ ...heroBanner, image: evt.target.result });
+                        const compressed = await superFastCompressImage(file, 1200, 0.82);
+                        if (compressed) {
+                          saveHeroBanner({ ...heroBanner, image: compressed });
                           setShowImgMenu(false);
                           showLiveToast("✅ Hero Banner Photo Updated!", "success");
-                        };
-                        reader.readAsDataURL(file);
+                        }
                       }
                     }}
                   />
@@ -189,9 +190,10 @@ export default function Hero() {
                   type="button"
                   className="img-option-item"
                   onClick={() => {
-                    const url = prompt("🔗 Enter Image Web URL (e.g. https://example.com/banner.jpg):", heroBanner.image || '');
+                    const url = prompt("🔗 Enter Image Web URL (Google Drive, Dropbox, or Image Link):", heroBanner.image || '');
                     if (url && url.trim()) {
-                      saveHeroBanner({ ...heroBanner, image: url.trim() });
+                      const cleanUrl = convertGoogleDriveUrl(url.trim());
+                      saveHeroBanner({ ...heroBanner, image: cleanUrl });
                       setShowImgMenu(false);
                       showLiveToast("✅ Hero Banner Photo Updated!", "success");
                     }
@@ -230,10 +232,29 @@ export default function Hero() {
           )}
 
           <img
-            src={heroBanner.image || 'images/hero_export_shipping.png'}
+            src={convertGoogleDriveUrl(heroBanner.image || 'images/hero_export_shipping.png')}
             alt="Export Shipping Container"
             className="hero-img"
-            onError={(e) => { e.target.src = 'images/hero_export_shipping.png'; }}
+            onError={(e) => {
+              const currentSrc = e.target.src || '';
+              const fileIdMatch = (heroBanner.image || '').match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]{20,60})/);
+              const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+              if (fileId) {
+                if (currentSrc.includes('thumbnail')) {
+                  e.target.src = `https://lh3.googleusercontent.com/d/${fileId}`;
+                  return;
+                }
+                if (currentSrc.includes('lh3.googleusercontent.com')) {
+                  e.target.src = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                  return;
+                }
+              }
+              const defaultSrc = 'images/hero_export_shipping.png';
+              if (!currentSrc.includes(defaultSrc)) {
+                e.target.src = defaultSrc;
+              }
+            }}
           />
         </div>
       </div>

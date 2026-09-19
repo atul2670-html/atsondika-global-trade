@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
+import { superFastCompressImage } from '../utils/realtimeSync';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
@@ -1109,37 +1110,18 @@ export default function Modals() {
           className="form-control"
           accept="image/*"
           multiple
-          onChange={(e) => {
-            Array.from(e.target.files).forEach(file => {
-              const reader = new FileReader();
-              reader.onload = (evt) => {
-                const img = new Image();
-                img.onload = () => {
-                  const canvas = document.createElement('canvas');
-                  let width = img.width;
-                  let height = img.height;
-                  const maxDim = 1000;
-                  if (width > maxDim || height > maxDim) {
-                    if (width > height) {
-                      height = Math.round((height * maxDim) / width);
-                      width = maxDim;
-                    } else {
-                      width = Math.round((width * maxDim) / height);
-                      height = maxDim;
-                    }
-                  }
-                  canvas.width = width;
-                  canvas.height = height;
-                  const ctx = canvas.getContext('2d');
-                  ctx.drawImage(img, 0, 0, width, height);
-                  const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-                  setImageUrls(prev => [...prev, compressedDataUrl]);
-                };
-                img.onerror = () => setImageUrls(prev => [...prev, evt.target.result]);
-                img.src = evt.target.result;
-              };
-              reader.readAsDataURL(file);
-            });
+          onChange={async (e) => {
+            const files = Array.from(e.target.files || []);
+            if (files.length === 0) return;
+            showLiveToast(`⚡ Uploading ${files.length} Photo(s) in microsecond speed...`, 'info');
+            const compressedResults = await Promise.all(
+              files.map(file => superFastCompressImage(file, 900, 0.8))
+            );
+            const validPhotos = compressedResults.filter(Boolean);
+            if (validPhotos.length > 0) {
+              setImageUrls(prev => [...prev, ...validPhotos]);
+              showLiveToast(`⚡ ${validPhotos.length} Photo(s) Compressed & Added in 0ms!`, 'success');
+            }
           }}
         />
       </div>
@@ -3565,17 +3547,47 @@ export default function Modals() {
             }}>
               {/* HERO PHOTO MANAGEMENT BOX */}
               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
-                <label className="form-label" style={{ marginBottom: '8px' }}>
-                  🖼️ Hero Banner Image
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>
+                    🖼️ Hero Banner Image
+                  </label>
+                  {heroImgInput && heroImgInput !== 'images/hero_export_shipping.png' && (
+                    <button
+                      type="button"
+                      style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                      onClick={() => setHeroImgInput('images/hero_export_shipping.png')}
+                    >
+                      🔄 Reset to Default Photo
+                    </button>
+                  )}
+                </div>
 
                 {heroImgInput && (
                   <div style={{ position: 'relative', width: '100%', height: '140px', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '10px', border: '1px solid var(--border-glass)' }}>
                     <img
-                      src={heroImgInput}
+                      src={convertGoogleDriveUrl(heroImgInput)}
                       alt="Hero Banner Preview"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { e.target.src = 'images/hero_export_shipping.png'; }}
+                      onError={(e) => {
+                        const currentSrc = e.target.src || '';
+                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]{20,60})/);
+                        const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+                        if (fileId) {
+                          if (currentSrc.includes('thumbnail')) {
+                            e.target.src = `https://lh3.googleusercontent.com/d/${fileId}`;
+                            return;
+                          }
+                          if (currentSrc.includes('lh3.googleusercontent.com')) {
+                            e.target.src = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                            return;
+                          }
+                        }
+                        const defaultSrc = 'images/hero_export_shipping.png';
+                        if (!currentSrc.includes(defaultSrc)) {
+                          e.target.src = defaultSrc;
+                        }
+                      }}
                     />
                     <span style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.75)', color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
                       Current Hero Image Preview
@@ -3592,12 +3604,14 @@ export default function Modals() {
                       type="file"
                       className="form-control"
                       accept="image/*"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (evt) => setHeroImgInput(evt.target.result);
-                          reader.readAsDataURL(file);
+                          const compressed = await superFastCompressImage(file, 1200, 0.82);
+                          if (compressed) {
+                            setHeroImgInput(compressed);
+                            showLiveToast("⚡ Photo compressed & attached!", "success");
+                          }
                         }
                       }}
                     />
@@ -3605,16 +3619,22 @@ export default function Modals() {
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
-                      🔗 Or Image Web URL:
+                      🔗 Or Image Web URL (Google Drive / Dropbox / Direct Link):
                     </label>
                     <input
-                      type="url"
+                      type="text"
                       className="form-control"
-                      placeholder="https://example.com/banner.jpg"
+                      placeholder="Paste Google Drive, Dropbox or Web Image URL..."
                       value={heroImgInput}
-                      onChange={(e) => setHeroImgInput(e.target.value)}
+                      onChange={(e) => {
+                        setHeroImgInput(e.target.value);
+                      }}
                     />
                   </div>
+                </div>
+
+                <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  💡 <b>Google Drive Tip:</b> Make sure link access is set to <b>"Anyone with the link can view"</b> (Public).
                 </div>
               </div>
 

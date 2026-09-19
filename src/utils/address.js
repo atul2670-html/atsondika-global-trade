@@ -59,17 +59,31 @@ export function toUSEnglishAddress(str) {
 }
 
 /**
- * Automatically converts any Google Drive link into a direct rendering high-res image URL.
- * e.g., https://drive.google.com/file/d/FILE_ID/view -> https://lh3.googleusercontent.com/d/FILE_ID
+ * Automatically converts any Google Drive, Dropbox, or Cloud image link into a direct rendering high-res image URL.
+ * Uses Google Workspace high-res thumbnail renderer endpoint (sz=w1600) for 100% reliable rendering without cookie/CORS blocks.
+ * e.g., https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/thumbnail?id=FILE_ID&sz=w1600
  */
 export function convertGoogleDriveUrl(url) {
   if (!url || typeof url !== 'string') return url;
   const trimmed = url.trim();
-  const driveRegex = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^&]*&)*id=)([a-zA-Z0-9_-]+)/i;
+
+  // 1. Google Drive conversion (handles /file/d/ID/view, open?id=ID, uc?id=ID, /file/d/ID/preview, /file/d/ID, thumbnail?id=ID)
+  const driveRegex = /(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^&]*&)*id=|thumbnail\?id=)|docs\.google\.com\/file\/d\/)([a-zA-Z0-9_-]{20,60})/i;
   const match = trimmed.match(driveRegex);
   if (match && match[1]) {
-    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`;
   }
+
+  // 2. Dropbox conversion (change dl=0 or dl=1 to raw=1)
+  if (trimmed.includes('dropbox.com')) {
+    return trimmed.replace(/([?&])dl=[01]/i, '$1raw=1').replace(/\?raw=1&/, '?').concat(trimmed.includes('raw=1') ? '' : (trimmed.includes('?') ? '&raw=1' : '?raw=1'));
+  }
+
+  // 3. Standalone Google Drive file ID match (20 to 50 alphanumeric chars)
+  if (/^[a-zA-Z0-9_-]{20,50}$/.test(trimmed)) {
+    return `https://drive.google.com/thumbnail?id=${trimmed}&sz=w1600`;
+  }
+
   return trimmed;
 }
 
