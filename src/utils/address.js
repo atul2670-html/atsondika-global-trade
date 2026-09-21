@@ -67,11 +67,10 @@ export function convertGoogleDriveUrl(url) {
   if (!url || typeof url !== 'string') return url;
   const trimmed = url.trim();
 
-  // 1. Google Drive conversion (handles /file/d/ID/view, open?id=ID, uc?id=ID, /file/d/ID/preview, /file/d/ID, thumbnail?id=ID, lh3/d/ID)
-  const driveRegex = /(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^&]*&)*id=|thumbnail\?id=)|docs\.google\.com\/file\/d\/|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{20,60})/i;
-  const match = trimmed.match(driveRegex);
-  if (match && match[1]) {
-    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  // 1. Google Drive conversion (handles /file/d/ID/view, open?id=ID, uc?id=ID, thumbnail?id=ID, lh3/d/ID)
+  const fileIdMatch = trimmed.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{20,50})(?:[\/?&#]|$)/i);
+  if (fileIdMatch && fileIdMatch[1]) {
+    return `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
   }
 
   // 2. Dropbox conversion (change dl=0 or dl=1 to raw=1)

@@ -5,6 +5,31 @@ import { realtimeEngine, pushGlobalCloudSync, pullGlobalCloudSync, subscribeToGl
 
 const initialStoreData = {};
 
+function safeLocalStorageSet(key, value) {
+  const strVal = typeof value === 'string' ? value : JSON.stringify(value);
+  try {
+    localStorage.setItem(key, strVal);
+  } catch (e) {
+    const legacyKeysToClean = [
+      'custom_added_products_v7',
+      'custom_added_products_v6',
+      'custom_added_products_master',
+      'site_company_profiles_v2',
+      'site_company_profiles_v1',
+      'site_hero_banner_v3',
+      'site_hero_banner_v2'
+    ];
+    legacyKeysToClean.forEach(k => {
+      try { localStorage.removeItem(k); } catch (err) {}
+    });
+    try {
+      localStorage.setItem(key, strVal);
+    } catch (e2) {
+      console.warn(`localStorage quota exceeded for ${key}`);
+    }
+  }
+}
+
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
@@ -18,6 +43,21 @@ export function AppProvider({ children }) {
     } catch(e) {}
     return DEFAULT_CURRENCIES;
   });
+
+  useEffect(() => {
+    const legacyKeysToPurge = [
+      'custom_added_products_v7',
+      'custom_added_products_v6',
+      'custom_added_products_master',
+      'site_company_profiles_v2',
+      'site_company_profiles_v1',
+      'site_hero_banner_v3',
+      'site_hero_banner_v2'
+    ];
+    legacyKeysToPurge.forEach(k => {
+      try { localStorage.removeItem(k); } catch(e) {}
+    });
+  }, []);
 
   useEffect(() => {
     const updateLiveFxRates = async () => {
@@ -563,14 +603,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     if (!heroBanner) return;
-    try {
-      localStorage.setItem('site_hero_banner_v4', JSON.stringify(heroBanner));
-      // Purge redundant legacy duplicate keys to free up localStorage quota
-      localStorage.removeItem('site_hero_banner_v3');
-      localStorage.removeItem('site_hero_banner_v2');
-    } catch(e) {
-      console.warn("localStorage quota exceeded for hero banner, saving to IndexedDB.");
-    }
+    safeLocalStorageSet('site_hero_banner_v4', heroBanner);
     try {
       const req = indexedDB.open('AdidevPhotoDB', 1);
       req.onupgradeneeded = (evt) => {
@@ -790,7 +823,7 @@ export function AppProvider({ children }) {
               setHeroBanner(prev => {
                 const idbTs = Number(heroReq.result.updatedAt) || 0;
                 const prevTs = Number(prev?.updatedAt) || 0;
-                return (idbTs >= prevTs) ? { ...prev, ...heroReq.result } : prev;
+                return (idbTs > 0 && idbTs > prevTs) ? { ...prev, ...heroReq.result } : prev;
               });
             }
           };
@@ -801,7 +834,7 @@ export function AppProvider({ children }) {
               setAboutData(prev => {
                 const idbTs = Number(aboutReq.result.updatedAt) || 0;
                 const prevTs = Number(prev?.updatedAt) || 0;
-                return (idbTs >= prevTs) ? { ...prev, ...aboutReq.result } : prev;
+                return (idbTs > 0 && idbTs > prevTs) ? { ...prev, ...aboutReq.result } : prev;
               });
             }
           };
@@ -1162,19 +1195,17 @@ export function AppProvider({ children }) {
           setHeroBanner(prev => {
             const serverTs = Number(data.heroBanner.updatedAt) || 0;
             const localTs = Number(prev?.updatedAt) || 0;
-            if (serverTs >= localTs || !localTs) {
+            if (serverTs > 0 && serverTs > localTs) {
               const cleanImg = convertGoogleDriveUrl(data.heroBanner.image || prev?.image || 'images/hero_export_shipping.png');
               const updated = {
                 ...defaultHeroBanner,
                 ...prev,
                 ...data.heroBanner,
                 image: cleanImg,
-                updatedAt: serverTs || localTs || Date.now()
+                updatedAt: serverTs
               };
               try {
                 localStorage.setItem('site_hero_banner_v4', JSON.stringify(updated));
-                localStorage.setItem('site_hero_banner_v3', JSON.stringify(updated));
-                localStorage.setItem('site_hero_banner_v2', JSON.stringify(updated));
               } catch(e) {}
               return updated;
             }
@@ -1186,12 +1217,12 @@ export function AppProvider({ children }) {
           setAboutData(prev => {
             const serverTs = Number(data.aboutData.updatedAt) || 0;
             const localTs = Number(prev?.updatedAt) || 0;
-            if (serverTs >= localTs || !localTs) {
+            if (serverTs > 0 && serverTs > localTs) {
               const updated = {
                 ...defaultAboutData,
                 ...prev,
                 ...data.aboutData,
-                updatedAt: serverTs || localTs || Date.now()
+                updatedAt: serverTs
               };
               try { localStorage.setItem('site_about_data_v1', JSON.stringify(updated)); } catch(e) {}
               return updated;
@@ -1596,16 +1627,23 @@ export function AppProvider({ children }) {
   const saveHeroBanner = (bannerData) => {
     if (!bannerData) return;
     const now = Date.now();
+    const cleanImg = convertGoogleDriveUrl(bannerData.image || 'images/hero_export_shipping.png');
     const cleanData = {
       ...bannerData,
-      image: convertGoogleDriveUrl(bannerData.image || 'images/hero_export_shipping.png'),
+      image: cleanImg,
       updatedAt: now
     };
     setHeroBanner(cleanData);
+    safeLocalStorageSet('site_hero_banner_v4', cleanData);
     try {
-      localStorage.setItem('site_hero_banner_v4', JSON.stringify(cleanData));
-      localStorage.setItem('site_hero_banner_v3', JSON.stringify(cleanData));
-      localStorage.setItem('site_hero_banner_v2', JSON.stringify(cleanData));
+      const req = indexedDB.open('AdidevPhotoDB', 1);
+      req.onsuccess = (evt) => {
+        const db = evt.target.result;
+        if (db.objectStoreNames.contains('photos')) {
+          const tx = db.transaction('photos', 'readwrite');
+          tx.objectStore('photos').put(cleanData, 'heroBanner');
+        }
+      };
     } catch(e) {}
     syncToServer({ heroBanner: cleanData });
     setActiveModal(null);

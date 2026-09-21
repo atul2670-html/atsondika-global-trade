@@ -3540,7 +3540,7 @@ export default function Modals() {
                 badge: badgeInput,
                 title: finalTitles,
                 subtitle: finalSubtitles,
-                image: heroImgInput || 'images/hero_export_shipping.png'
+                image: convertGoogleDriveUrl(heroImgInput) || 'images/hero_export_shipping.png'
               });
               showLiveToast("✅ Multi-Language Hero Note & Headline Updated Successfully!", "success");
               setActiveModal(null);
@@ -3632,9 +3632,7 @@ export default function Modals() {
                       placeholder="Paste Google Drive, Dropbox or Web Image URL..."
                       value={heroImgInput}
                       onChange={(e) => {
-                        const val = e.target.value;
-                        const clean = convertGoogleDriveUrl(val);
-                        setHeroImgInput(clean);
+                        setHeroImgInput(e.target.value);
                       }}
                       onBlur={(e) => {
                         const val = e.target.value;
