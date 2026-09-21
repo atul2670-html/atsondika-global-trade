@@ -235,24 +235,29 @@ export default function Hero() {
             src={convertGoogleDriveUrl(heroBanner.image || 'images/hero_export_shipping.png')}
             alt="Export Shipping Container"
             className="hero-img"
+            referrerPolicy="no-referrer"
             onError={(e) => {
               const currentSrc = e.target.src || '';
-              const fileIdMatch = (heroBanner.image || '').match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]{20,60})/);
+              const fileIdMatch = (heroBanner.image || '').match(/(?:file\/d\/|id=|\/d\/)([a-zA-Z0-9_-]{20,60})/);
               const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
               if (fileId) {
-                if (currentSrc.includes('thumbnail')) {
-                  e.target.src = `https://lh3.googleusercontent.com/d/${fileId}`;
+                if (currentSrc.includes('lh3.googleusercontent.com')) {
+                  e.target.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
                   return;
                 }
-                if (currentSrc.includes('lh3.googleusercontent.com')) {
+                if (currentSrc.includes('thumbnail')) {
                   e.target.src = `https://drive.google.com/uc?export=view&id=${fileId}`;
                   return;
                 }
               }
-              const defaultSrc = 'images/hero_export_shipping.png';
-              if (!currentSrc.includes(defaultSrc)) {
-                e.target.src = defaultSrc;
+
+              // Only revert to default shipping image if no custom image was provided
+              if (!heroBanner.image || heroBanner.image === 'images/hero_export_shipping.png') {
+                const defaultSrc = 'images/hero_export_shipping.png';
+                if (!currentSrc.includes(defaultSrc)) {
+                  e.target.src = defaultSrc;
+                }
               }
             }}
           />

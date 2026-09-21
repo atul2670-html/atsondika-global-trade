@@ -3568,24 +3568,29 @@ export default function Modals() {
                       src={convertGoogleDriveUrl(heroImgInput)}
                       alt="Hero Banner Preview"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      referrerPolicy="no-referrer"
                       onError={(e) => {
                         const currentSrc = e.target.src || '';
-                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]{20,60})/);
+                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=|\/d\/)([a-zA-Z0-9_-]{20,60})/);
                         const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
                         if (fileId) {
-                          if (currentSrc.includes('thumbnail')) {
-                            e.target.src = `https://lh3.googleusercontent.com/d/${fileId}`;
+                          if (currentSrc.includes('lh3.googleusercontent.com')) {
+                            e.target.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
                             return;
                           }
-                          if (currentSrc.includes('lh3.googleusercontent.com')) {
-                            e.target.src = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                          if (currentSrc.includes('thumbnail')) {
+                            e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
                             return;
                           }
                         }
-                        const defaultSrc = 'images/hero_export_shipping.png';
-                        if (!currentSrc.includes(defaultSrc)) {
-                          e.target.src = defaultSrc;
+
+                        // Only revert to default shipping image if NO custom URL was provided
+                        if (!heroImgInput || heroImgInput === 'images/hero_export_shipping.png') {
+                          const defaultSrc = 'images/hero_export_shipping.png';
+                          if (!currentSrc.includes(defaultSrc)) {
+                            e.target.src = defaultSrc;
+                          }
                         }
                       }}
                     />
@@ -3627,7 +3632,14 @@ export default function Modals() {
                       placeholder="Paste Google Drive, Dropbox or Web Image URL..."
                       value={heroImgInput}
                       onChange={(e) => {
-                        setHeroImgInput(e.target.value);
+                        const val = e.target.value;
+                        const clean = convertGoogleDriveUrl(val);
+                        setHeroImgInput(clean);
+                      }}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        const clean = convertGoogleDriveUrl(val);
+                        setHeroImgInput(clean);
                       }}
                     />
                   </div>

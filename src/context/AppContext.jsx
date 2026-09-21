@@ -562,10 +562,26 @@ export function AppProvider({ children }) {
   });
 
   useEffect(() => {
+    if (!heroBanner) return;
     try {
       localStorage.setItem('site_hero_banner_v4', JSON.stringify(heroBanner));
-      localStorage.setItem('site_hero_banner_v3', JSON.stringify(heroBanner));
-      localStorage.setItem('site_hero_banner_v2', JSON.stringify(heroBanner));
+      // Purge redundant legacy duplicate keys to free up localStorage quota
+      localStorage.removeItem('site_hero_banner_v3');
+      localStorage.removeItem('site_hero_banner_v2');
+    } catch(e) {
+      console.warn("localStorage quota exceeded for hero banner, saving to IndexedDB.");
+    }
+    try {
+      const req = indexedDB.open('AdidevPhotoDB', 1);
+      req.onupgradeneeded = (evt) => {
+        const db = evt.target.result;
+        if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
+      };
+      req.onsuccess = (evt) => {
+        const db = evt.target.result;
+        const tx = db.transaction('photos', 'readwrite');
+        tx.objectStore('photos').put(heroBanner, 'heroBanner');
+      };
     } catch(e) {}
   }, [heroBanner]);
 
@@ -576,14 +592,34 @@ export function AppProvider({ children }) {
   }, [activeCompanyId]);
 
   useEffect(() => {
+    if (!aboutData) return;
     try {
       localStorage.setItem('site_about_data_v1', JSON.stringify(aboutData));
+    } catch(e) {
+      console.warn("localStorage quota exceeded for about data, saving to IndexedDB.");
+    }
+    try {
+      const req = indexedDB.open('AdidevPhotoDB', 1);
+      req.onupgradeneeded = (evt) => {
+        const db = evt.target.result;
+        if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
+      };
+      req.onsuccess = (evt) => {
+        const db = evt.target.result;
+        const tx = db.transaction('photos', 'readwrite');
+        tx.objectStore('photos').put(aboutData, 'aboutData');
+      };
     } catch(e) {}
   }, [aboutData]);
 
   const saveAboutData = (data) => {
-    setAboutData(data);
-    syncToServer({ aboutData: data });
+    if (!data) return;
+    const cleanData = {
+      ...data,
+      updatedAt: Date.now()
+    };
+    setAboutData(cleanData);
+    syncToServer({ aboutData: cleanData });
     setActiveModal(null);
   };
 
@@ -731,7 +767,7 @@ export function AppProvider({ children }) {
     } catch(e) {}
   }, [photoOverrides]);
 
-  // Load from IndexedDB on startup if localStorage was lost
+  // Load from IndexedDB on startup if localStorage was lost or quota exceeded
   useEffect(() => {
     try {
       const req = indexedDB.open('AdidevPhotoDB', 1);
@@ -739,10 +775,34 @@ export function AppProvider({ children }) {
         const db = evt.target.result;
         if (db.objectStoreNames.contains('photos')) {
           const tx = db.transaction('photos', 'readonly');
-          const getReq = tx.objectStore('photos').get('overrides');
+          const store = tx.objectStore('photos');
+          
+          const getReq = store.get('overrides');
           getReq.onsuccess = () => {
             if (getReq.result && typeof getReq.result === 'object' && Object.keys(getReq.result).length > 0) {
               setPhotoOverrides(prev => ({ ...getReq.result, ...prev }));
+            }
+          };
+
+          const heroReq = store.get('heroBanner');
+          heroReq.onsuccess = () => {
+            if (heroReq.result && heroReq.result.image) {
+              setHeroBanner(prev => {
+                const idbTs = Number(heroReq.result.updatedAt) || 0;
+                const prevTs = Number(prev?.updatedAt) || 0;
+                return (idbTs >= prevTs) ? { ...prev, ...heroReq.result } : prev;
+              });
+            }
+          };
+
+          const aboutReq = store.get('aboutData');
+          aboutReq.onsuccess = () => {
+            if (aboutReq.result && aboutReq.result.title) {
+              setAboutData(prev => {
+                const idbTs = Number(aboutReq.result.updatedAt) || 0;
+                const prevTs = Number(prev?.updatedAt) || 0;
+                return (idbTs >= prevTs) ? { ...prev, ...aboutReq.result } : prev;
+              });
             }
           };
         }
@@ -781,9 +841,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     try {
       localStorage.setItem('custom_added_products_v8', JSON.stringify(customProductsList));
-      localStorage.setItem('custom_added_products_v7', JSON.stringify(customProductsList));
-      localStorage.setItem('custom_added_products_v6', JSON.stringify(customProductsList));
-      localStorage.setItem('custom_added_products_master', JSON.stringify(customProductsList));
+      // Purge redundant legacy keys that bloat localStorage quota
+      localStorage.removeItem('custom_added_products_v7');
+      localStorage.removeItem('custom_added_products_v6');
+      localStorage.removeItem('custom_added_products_master');
     } catch(e) {
       console.warn("localStorage quota exceeded for products, saving to IndexedDB.");
     }
@@ -1097,8 +1158,47 @@ export function AppProvider({ children }) {
         if (Array.isArray(data.branchesList)) setBranchesList(data.branchesList);
         if (Array.isArray(data.certificatesList)) setCertificatesList(data.certificatesList);
         if (Array.isArray(data.freightRoutesList)) setFreightRoutesList(data.freightRoutesList);
-        if (data.heroBanner) setHeroBanner(data.heroBanner);
-        if (data.aboutData) setAboutData(data.aboutData);
+        if (data.heroBanner && typeof data.heroBanner === 'object') {
+          setHeroBanner(prev => {
+            const serverTs = Number(data.heroBanner.updatedAt) || 0;
+            const localTs = Number(prev?.updatedAt) || 0;
+            if (serverTs >= localTs || !localTs) {
+              const cleanImg = convertGoogleDriveUrl(data.heroBanner.image || prev?.image || 'images/hero_export_shipping.png');
+              const updated = {
+                ...defaultHeroBanner,
+                ...prev,
+                ...data.heroBanner,
+                image: cleanImg,
+                updatedAt: serverTs || localTs || Date.now()
+              };
+              try {
+                localStorage.setItem('site_hero_banner_v4', JSON.stringify(updated));
+                localStorage.setItem('site_hero_banner_v3', JSON.stringify(updated));
+                localStorage.setItem('site_hero_banner_v2', JSON.stringify(updated));
+              } catch(e) {}
+              return updated;
+            }
+            return prev;
+          });
+        }
+
+        if (data.aboutData && typeof data.aboutData === 'object') {
+          setAboutData(prev => {
+            const serverTs = Number(data.aboutData.updatedAt) || 0;
+            const localTs = Number(prev?.updatedAt) || 0;
+            if (serverTs >= localTs || !localTs) {
+              const updated = {
+                ...defaultAboutData,
+                ...prev,
+                ...data.aboutData,
+                updatedAt: serverTs || localTs || Date.now()
+              };
+              try { localStorage.setItem('site_about_data_v1', JSON.stringify(updated)); } catch(e) {}
+              return updated;
+            }
+            return prev;
+          });
+        }
         if (data.paymentGatewaysConfig && typeof data.paymentGatewaysConfig === 'object') {
           setPaymentGatewaysConfig(data.paymentGatewaysConfig);
           try { localStorage.setItem('site_payment_gateways_config_v1', JSON.stringify(data.paymentGatewaysConfig)); } catch(e) {}
@@ -1495,9 +1595,11 @@ export function AppProvider({ children }) {
 
   const saveHeroBanner = (bannerData) => {
     if (!bannerData) return;
+    const now = Date.now();
     const cleanData = {
       ...bannerData,
-      image: convertGoogleDriveUrl(bannerData.image)
+      image: convertGoogleDriveUrl(bannerData.image || 'images/hero_export_shipping.png'),
+      updatedAt: now
     };
     setHeroBanner(cleanData);
     try {
