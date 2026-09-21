@@ -78,7 +78,7 @@ export default function Modals() {
     customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
-    paymentGatewaysConfig, savePaymentGatewaysConfig
+    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -622,7 +622,8 @@ export default function Modals() {
       }
     });
 
-    return mainCategories;
+    const delSet = new Set(deletedBuiltInIds || []);
+    return mainCategories.filter(m => !delSet.has(m.id) && !delSet.has(m.category));
   };
 
   // Sync state when editing hero

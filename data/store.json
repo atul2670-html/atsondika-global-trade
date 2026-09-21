@@ -85,6 +85,146 @@
   ],
   "customProductsList": [
     {
+      "category": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
+      "companyId": "comp_3",
+      "hsCode": "",
+      "id": "prod-custom-1787377491255-984",
+      "image": "https://lh3.googleusercontent.com/d/1FYXvSasBcf2Nh7xtUDvQldECv7eVF09v",
+      "images": [
+        "https://lh3.googleusercontent.com/d/1FYXvSasBcf2Nh7xtUDvQldECv7eVF09v",
+        "https://lh3.googleusercontent.com/d/1Bbwci6x7Q8VhrPFHxkqV2Cb8hJri6UZb",
+        "https://lh3.googleusercontent.com/d/1Wb9CQkVr5P5iBUTmxW-97tI9nNrf7zS7",
+        "https://lh3.googleusercontent.com/d/1-i0JMVOADhgJ1tt05VpcMwi76MS127qX",
+        "https://lh3.googleusercontent.com/d/1ph9cOQe4MBG7shGCSgKyxccCvSKgte-2",
+        "https://lh3.googleusercontent.com/d/1_N05OjtmjOyifkKGTqYARk4lS24ER_HW",
+        "https://lh3.googleusercontent.com/d/1R2xTMIep7Xla0u3iAaYcJQOKrfCpLD6L",
+        "https://lh3.googleusercontent.com/d/1-HFoKsdshk_sssGlm3HdDgN97LtD8YRf"
+      ],
+      "isCustom": true,
+      "isSub": false,
+      "moq": "",
+      "names": {
+        "en": "Textile Products",
+        "fr": "Textile Products",
+        "gu": "ટેક્સટાઇલ પેદાશો",
+        "hi": "ટેક્સટાઇલ પેદાશો"
+      },
+      "packaging": "",
+      "spec": {
+        "en": "High Quality Premium Product",
+        "fr": "Produit Premium de Haute Qualité",
+        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+      },
+      "specifications": {
+        "en": "High Quality Premium Product",
+        "fr": "Produit Premium de Haute Qualité",
+        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+      }
+    },
+    {
+      "category": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
+      "companyId": "comp_3",
+      "hsCode": "620462",
+      "id": "prod-custom-1788244064309-558",
+      "image": "https://lh3.googleusercontent.com/d/1dWqRl6rPwW7uxThINDCWvAjG-NuHlCnk",
+      "images": [
+        "https://lh3.googleusercontent.com/d/1dWqRl6rPwW7uxThINDCWvAjG-NuHlCnk",
+        "https://lh3.googleusercontent.com/d/1LBgJ75k7x9QLJr9PQZWfqKiePjk0vCjp",
+        "https://lh3.googleusercontent.com/d/10IZYiy6Zjjdttl1NxD6vvsBsc7vZ7bH6"
+      ],
+      "isCustom": true,
+      "isSub": true,
+      "localHsn": "61034200",
+      "moq": "1 Unit / Container",
+      "names": {
+        "en": "Export Quality Garments",
+        "fr": "Qualité d'Exportation Supérieure Vêtements",
+        "gu": "એક્સપોર્ટ ક્વોલિટી ગુણવત્તા ગારમેન્ટ્સ",
+        "hi": "निर्यात गुणवत्ता गारमेंट्स"
+      },
+      "packaging": "Standard Export Packaging",
+      "parentId": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
+      "spec": {
+        "en": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
+        "fr": "ઉચ્ચ ગુણવત્તાયુક્ત Premium પ્રોડક્ટ",
+        "gu": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "ઉચ્ચ ગુણવત્તાયુક્ત प्रीमियम પ્રોડક્ટ"
+      }
+    },
+    {
+      "category": "electronic_products",
+      "companyId": "comp_1",
+      "couponBadge": "2% OFF Special Offer",
+      "courierCharge": 0,
+      "currency": "INR",
+      "enableGlobalTrade": true,
+      "enableLocalTrade": true,
+      "hsCode": "852872",
+      "id": "prod-custom-1789734768894-91",
+      "image": "https://lh3.googleusercontent.com/d/1hwoDG0a4sQPBh2hhkEDNDY0Wd-eKEJZZ",
+      "images": [
+        "https://lh3.googleusercontent.com/d/1hwoDG0a4sQPBh2hhkEDNDY0Wd-eKEJZZ"
+      ],
+      "isCustom": true,
+      "isSub": true,
+      "localGstRate": 18,
+      "localHsn": "85287212",
+      "localPrice": 63700,
+      "localStock": 100,
+      "moq": "1 Unit / Container",
+      "mrpInr": 65000,
+      "names": {
+        "en": "Samsung TV 55\"",
+        "fr": "Samsung TV 55\"",
+        "gu": "સેમસંગ ટીવી 55\"",
+        "hi": "Samsung TV 55\""
+      },
+      "packaging": "Standard Export Packaging",
+      "packingCharge": 0,
+      "parentId": "electronic_products",
+      "spec": {
+        "en": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
+        "fr": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
+        "gu": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ"
+      },
+      "unit": "kg"
+    },
+    {
+      "category": "electronic_products",
+      "companyId": "comp_1",
+      "enableGlobalTrade": true,
+      "enableLocalTrade": true,
+      "hsCode": "",
+      "icon": "🏷️",
+      "id": "prod-custom-1789734281030-167",
+      "image": "",
+      "isCustom": true,
+      "isSub": false,
+      "moq": "",
+      "names": {
+        "en": "Electronic Products ",
+        "fr": "Electronic Products ",
+        "gu": "ઇલેક્ટ્રોનિક પ્રોડક્ટ્સ",
+        "hi": "ઇલેક્ટ્રોનિક પ્રોડક્ટ્સ"
+      },
+      "packaging": "",
+      "spec": {
+        "en": "High Quality Premium Product",
+        "fr": "Produit Premium de Haute Qualité",
+        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+      },
+      "specifications": {
+        "en": "High Quality Premium Product",
+        "fr": "Produit Premium de Haute Qualité",
+        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+      }
+    },
+    {
       "category": "garments",
       "companyId": "comp_4",
       "hsCode": "620413",
@@ -339,75 +479,6 @@
       "unit": "pcs"
     },
     {
-      "category": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
-      "companyId": "comp_3",
-      "hsCode": "",
-      "id": "prod-custom-1787377491255-984",
-      "image": "https://lh3.googleusercontent.com/d/1FYXvSasBcf2Nh7xtUDvQldECv7eVF09v",
-      "images": [
-        "https://lh3.googleusercontent.com/d/1FYXvSasBcf2Nh7xtUDvQldECv7eVF09v",
-        "https://lh3.googleusercontent.com/d/1Bbwci6x7Q8VhrPFHxkqV2Cb8hJri6UZb",
-        "https://lh3.googleusercontent.com/d/1Wb9CQkVr5P5iBUTmxW-97tI9nNrf7zS7",
-        "https://lh3.googleusercontent.com/d/1-i0JMVOADhgJ1tt05VpcMwi76MS127qX",
-        "https://lh3.googleusercontent.com/d/1ph9cOQe4MBG7shGCSgKyxccCvSKgte-2",
-        "https://lh3.googleusercontent.com/d/1_N05OjtmjOyifkKGTqYARk4lS24ER_HW",
-        "https://lh3.googleusercontent.com/d/1R2xTMIep7Xla0u3iAaYcJQOKrfCpLD6L",
-        "https://lh3.googleusercontent.com/d/1-HFoKsdshk_sssGlm3HdDgN97LtD8YRf"
-      ],
-      "isCustom": true,
-      "isSub": false,
-      "moq": "",
-      "names": {
-        "en": "Textile Products",
-        "fr": "Textile Products",
-        "gu": "ટેક્સટાઇલ પેદાશો",
-        "hi": "ટેક્સટાઇલ પેદાશો"
-      },
-      "packaging": "",
-      "spec": {
-        "en": "High Quality Premium Product",
-        "fr": "Produit Premium de Haute Qualité",
-        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
-      },
-      "specifications": {
-        "en": "High Quality Premium Product",
-        "fr": "Produit Premium de Haute Qualité",
-        "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
-      }
-    },
-    {
-      "category": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
-      "companyId": "comp_3",
-      "hsCode": "620462",
-      "id": "prod-custom-1788244064309-558",
-      "image": "https://lh3.googleusercontent.com/d/1dWqRl6rPwW7uxThINDCWvAjG-NuHlCnk",
-      "images": [
-        "https://lh3.googleusercontent.com/d/1dWqRl6rPwW7uxThINDCWvAjG-NuHlCnk",
-        "https://lh3.googleusercontent.com/d/1LBgJ75k7x9QLJr9PQZWfqKiePjk0vCjp",
-        "https://lh3.googleusercontent.com/d/10IZYiy6Zjjdttl1NxD6vvsBsc7vZ7bH6"
-      ],
-      "isCustom": true,
-      "isSub": true,
-      "localHsn": "61034200",
-      "moq": "1 Unit / Container",
-      "names": {
-        "en": "Export Quality Garments",
-        "fr": "Qualité d'Exportation Supérieure Vêtements",
-        "gu": "એક્સપોર્ટ ક્વોલિટી ગુણવત્તા ગારમેન્ટ્સ",
-        "hi": "निर्यात गुणवत्ता गारमेंट्स"
-      },
-      "packaging": "Standard Export Packaging",
-      "parentId": "apparel_(fashion/clothing),_home_textiles,_and_technical_textiles.",
-      "spec": {
-        "en": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
-        "fr": "ઉચ્ચ ગુણવત્તાયુક્ત Premium પ્રોડક્ટ",
-        "gu": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "ઉચ્ચ ગુણવત્તાયુક્ત प्रीमियम પ્રોડક્ટ"
-      }
-    },
-    {
       "category": "used_machinery",
       "companyId": "comp_1",
       "enableGlobalTrade": true,
@@ -440,74 +511,37 @@
       }
     },
     {
-      "category": "electronic_products",
-      "companyId": "comp_1",
-      "couponBadge": "2% OFF Special Offer",
-      "courierCharge": 0,
-      "currency": "INR",
-      "enableGlobalTrade": true,
-      "enableLocalTrade": true,
-      "hsCode": "852872",
-      "id": "prod-custom-1789734768894-91",
-      "image": "https://lh3.googleusercontent.com/d/1hwoDG0a4sQPBh2hhkEDNDY0Wd-eKEJZZ",
-      "images": [
-        "https://lh3.googleusercontent.com/d/1hwoDG0a4sQPBh2hhkEDNDY0Wd-eKEJZZ"
-      ],
-      "isCustom": true,
-      "isSub": true,
-      "localGstRate": 18,
-      "localHsn": "85287212",
-      "localPrice": 63700,
-      "localStock": 100,
-      "moq": "1 Unit / Container",
-      "mrpInr": 65000,
-      "names": {
-        "en": "Samsung TV 55\"",
-        "fr": "Samsung TV 55\"",
-        "gu": "સેમસંગ ટીવી 55\"",
-        "hi": "Samsung TV 55\""
-      },
-      "packaging": "Standard Export Packaging",
-      "packingCharge": 0,
-      "parentId": "electronic_products",
-      "spec": {
-        "en": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
-        "fr": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
-        "gu": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ"
-      },
-      "unit": "kg"
-    },
-    {
-      "category": "electronic_products",
-      "companyId": "comp_1",
+      "category": "new_machinery",
+      "parentId": null,
+      "isSub": false,
       "enableGlobalTrade": true,
       "enableLocalTrade": true,
       "hsCode": "",
-      "icon": "🏷️",
-      "id": "prod-custom-1789734281030-167",
       "image": "",
-      "isCustom": true,
-      "isSub": false,
-      "moq": "",
+      "images": [],
       "names": {
-        "en": "Electronic Products ",
-        "fr": "Electronic Products ",
-        "gu": "ઇલેક્ટ્રોનિક પ્રોડક્ટ્સ",
-        "hi": "ઇલેક્ટ્રોનિક પ્રોડક્ટ્સ"
+        "en": "Nilkanth Heavy Machinery & CNC",
+        "gu": "સી.એન.સી. મશીન",
+        "hi": "सीएनसी मशीन",
+        "fr": "Machine CNC"
       },
-      "packaging": "",
       "spec": {
         "en": "High Quality Premium Product",
-        "fr": "Produit Premium de Haute Qualité",
         "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद",
+        "fr": "Produit Premium de Haute Qualité"
       },
+      "icon": "🏷️",
+      "packaging": "",
+      "moq": "",
+      "isCustom": true,
+      "companyId": "comp_1",
+      "id": "prod-custom-1789993277251-211",
       "specifications": {
         "en": "High Quality Premium Product",
-        "fr": "Produit Premium de Haute Qualité",
         "gu": "ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ",
-        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद"
+        "hi": "उच्च गुणवत्ता वाला प्रीमियम उत्पाद",
+        "fr": "Produit Premium de Haute Qualité"
       }
     }
   ],
@@ -1303,7 +1337,7 @@
       "fr": "Exportateur indien de confiance spécialisé dans les épices, le riz, les machines neuves et d'occasion, les vêtements et les emballages écologiques vers 40+ pays."
     },
     "image": "https://lh3.googleusercontent.com/d/1pRG3v7wwVCVcbkRg89gH7g7F8pb79r4_",
-    "updatedAt": 1789992551443
+    "updatedAt": 1789993271259
   },
   "aboutData": {
     "badge": {
@@ -1380,6 +1414,6 @@
     }
   },
   "activeCompanyId": "comp_1",
-  "updatedAt": 1789992551976,
+  "updatedAt": 1789993277926,
   "deletedInquiryIds": []
 }

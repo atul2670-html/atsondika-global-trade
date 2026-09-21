@@ -2142,6 +2142,7 @@ export function AppProvider({ children }) {
       certificatesList: activeCompanyCertificates, saveCertificate, deleteCertificate,
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
+      deletedBuiltInIds, setDeletedBuiltInIds,
       customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
       merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,

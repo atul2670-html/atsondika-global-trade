@@ -11,7 +11,7 @@ export default function ProductsGrid() {
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
     productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
-    currentMerchant, syncVersion
+    currentMerchant, syncVersion, deletedBuiltInIds, setDeletedBuiltInIds, showLiveToast
   } = useApp();
 
   const [carouselIndices, setCarouselIndices] = useState({});
@@ -58,6 +58,9 @@ export default function ProductsGrid() {
       { filter: 'packaging', title: t.tab_eco }
     ];
   }
+
+  const deletedSet = new Set(deletedBuiltInIds || []);
+  defaultTabs = defaultTabs.filter(t => t.filter === 'all' || !deletedSet.has(t.filter));
 
   // Deduplicate custom main category tabs for the active company
   const customMains = [];
@@ -356,6 +359,36 @@ export default function ProductsGrid() {
             >
               🏷️ + Add Main Category (મેઈન પ્રોડક્ટ ઉમેરો)
             </button>
+
+            {isAdminLoggedIn && (
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  borderColor: 'rgba(239, 68, 68, 0.4)',
+                  color: '#f87171',
+                  padding: '10px 18px',
+                  fontSize: '0.92rem',
+                  fontWeight: 800
+                }}
+                onClick={() => {
+                  verifyAdminAccess(() => {
+                    if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
+                      const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery'];
+                      const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
+
+                      setDeletedBuiltInIds(nextDeleted);
+                      try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
+                      setCurrentCategory('all');
+                      showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
+                    }
+                  });
+                }}
+              >
+                🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
+              </button>
+            )}
           </div>
         </div>
 
@@ -425,6 +458,19 @@ export default function ProductsGrid() {
                 >
                   {tab.title}
                   <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>
+                  {isAdminLoggedIn && tab.filter !== 'all' && (
+                    <span
+                      className="delete-cat-tab"
+                      style={{ marginLeft: '8px', cursor: 'pointer', opacity: 0.8 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteProduct(tab.filter, tab.filter, tab.title, true);
+                      }}
+                      title={`Delete Category "${tab.title}"`}
+                    >
+                      ✖
+                    </span>
+                  )}
                 </button>
 
                 {/* SUB-PRODUCTS MEGA DROPDOWN POPUP ON HOVER */}
