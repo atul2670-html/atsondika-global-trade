@@ -666,7 +666,7 @@ export function AppProvider({ children }) {
     try {
       const stored = JSON.parse(localStorage.getItem('deleted_built_in_ids') || '[]');
       if (Array.isArray(stored)) {
-        return stored.filter(id => !['dairy', 'agro', 'textiles', 'garments', 'new_machinery', 'used_machinery', 'packaging', 'eco_packaging', 'industrial', 'apparel'].includes(id));
+        return stored;
       }
     } catch(e) {}
     return [];

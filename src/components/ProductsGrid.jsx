@@ -375,7 +375,7 @@ export default function ProductsGrid() {
                 onClick={() => {
                   verifyAdminAccess(() => {
                     if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
-                      const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery'];
+                      const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery', 'eco_packaging', 'apparel', 'turmeric', 'basmati', 'cumin', 'cnc_machine', 'new_agro_machinery', 'fasteners', 'jute_bags', 'peanuts', 'spices', 'milling', 'bagging', 'sorting', 'bolts', 'nuts', 'washers', 'cotton', 'denim', 'ghee', 'lathe', 'cnc'];
                       const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
 
                       setDeletedBuiltInIds(nextDeleted);
