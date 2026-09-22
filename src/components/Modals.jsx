@@ -3601,7 +3601,7 @@ export default function Modals() {
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         const currentSrc = e.target.src || '';
-                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=|\/d\/)([a-zA-Z0-9_-]{20,60})/);
+                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=|\/d\/|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{5,60})/i);
                         const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
                         if (fileId) {
@@ -3662,7 +3662,9 @@ export default function Modals() {
                       placeholder="Paste Google Drive, Dropbox or Web Image URL..."
                       value={heroImgInput}
                       onChange={(e) => {
-                        setHeroImgInput(e.target.value);
+                        const val = e.target.value;
+                        const clean = convertGoogleDriveUrl(val);
+                        setHeroImgInput(clean);
                       }}
                       onBlur={(e) => {
                         const val = e.target.value;

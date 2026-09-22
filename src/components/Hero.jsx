@@ -238,7 +238,7 @@ export default function Hero() {
             referrerPolicy="no-referrer"
             onError={(e) => {
               const currentSrc = e.target.src || '';
-              const fileIdMatch = (heroBanner.image || '').match(/(?:file\/d\/|id=|\/d\/)([a-zA-Z0-9_-]{20,60})/);
+              const fileIdMatch = (heroBanner.image || '').match(/(?:file\/d\/|id=|\/d\/|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{5,60})/i);
               const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
               if (fileId) {

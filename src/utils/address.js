@@ -68,7 +68,7 @@ export function convertGoogleDriveUrl(url) {
   const trimmed = url.trim();
 
   // 1. Google Drive conversion (handles /file/d/ID/view, open?id=ID, uc?id=ID, thumbnail?id=ID, lh3/d/ID)
-  const fileIdMatch = trimmed.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{20,50})(?:[\/?&#]|$)/i);
+  const fileIdMatch = trimmed.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{5,60})(?:[\/?&#]|$)/i);
   if (fileIdMatch && fileIdMatch[1]) {
     return `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
   }
@@ -78,8 +78,8 @@ export function convertGoogleDriveUrl(url) {
     return trimmed.replace(/([?&])dl=[01]/i, '$1raw=1').replace(/\?raw=1&/, '?').concat(trimmed.includes('raw=1') ? '' : (trimmed.includes('?') ? '&raw=1' : '?raw=1'));
   }
 
-  // 3. Standalone Google Drive file ID match (20 to 50 alphanumeric chars)
-  if (/^[a-zA-Z0-9_-]{20,50}$/.test(trimmed)) {
+  // 3. Standalone Google Drive file ID match (5 to 60 alphanumeric chars)
+  if (/^[a-zA-Z0-9_-]{5,60}$/.test(trimmed)) {
     return `https://lh3.googleusercontent.com/d/${trimmed}`;
   }
 
