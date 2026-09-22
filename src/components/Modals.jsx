@@ -483,6 +483,8 @@ export default function Modals() {
   const [hsCode, setHsCode] = useState('520811');
   const [localHsn, setLocalHsn] = useState('52081110');
   const [moq, setMoq] = useState('1 Unit / Container');
+  const [moqQty, setMoqQty] = useState('1');
+  const [moqUnit, setMoqUnit] = useState('Container (કન્ટેનર)');
   const [spec, setSpec] = useState('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
   const [packaging, setPackaging] = useState('Standard Export Packaging');
   const [imageUrls, setImageUrls] = useState([]);
@@ -697,7 +699,16 @@ export default function Modals() {
           setMainDescInput(typeof target.spec === 'string' ? target.spec : 'Premium Main Product Category');
           setHsCode(target.hsCode || '520811');
           setLocalHsn(target.localHsn || `${target.hsCode || '520811'}10`);
-          setMoq(target.moq || '1 Unit / Container');
+          const rawMoq = target.moq || '1 Unit / Container';
+          setMoq(rawMoq);
+          const moqMatch = rawMoq.match(/^(\d+)\s*(.*)$/);
+          if (moqMatch) {
+            setMoqQty(moqMatch[1]);
+            setMoqUnit(moqMatch[2] || 'Container (કન્ટેનર)');
+          } else {
+            setMoqQty('1');
+            setMoqUnit('Container (કન્ટેનર)');
+          }
           setSpec(typeof target.spec === 'object' ? (target.spec['en'] || target.spec['gu']) : (target.spec || 'ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ'));
           setPackaging(target.packaging || 'Standard Export Packaging');
           const loadedMrp = target.mrpInr || Math.round((target.localPrice || 999) * 1.32);
@@ -744,6 +755,8 @@ export default function Modals() {
       setMainDescInput('Premium Export Quality Category');
       setHsCode('520811');
       setMoq('1 Unit / Container');
+      setMoqQty('1');
+      setMoqUnit('Container (કન્ટેનર)');
       setSpec('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
       setPackaging('Standard Export Packaging');
       setLocalMrp('1499');
@@ -4899,15 +4912,96 @@ export default function Modals() {
                       </div>
 
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
-                          Minimum Order (MOQ)
-                        </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', margin: 0, fontWeight: 800 }}>
+                            Minimum Order (MOQ) <span style={{ color: '#2dd4bf', fontWeight: 700 }}>(ઓર્ડર એકમ / ડિવીઝન પસંદ કરો)</span>
+                          </label>
+                        </div>
+                        
+                        {/* Qty Number + Division Unit Select dropdown */}
+                        <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Qty (દા.ત. 1, 100)"
+                            min="1"
+                            value={moqQty}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setMoqQty(val);
+                              setMoq(`${val || '1'} ${moqUnit}`);
+                            }}
+                            style={{ width: '85px', fontWeight: 800, textAlign: 'center' }}
+                            title="ઓર્ડર જથ્થો (Quantity)"
+                          />
+                          <select
+                            className="form-control"
+                            value={moqUnit}
+                            onChange={(e) => {
+                              const unitVal = e.target.value;
+                              setMoqUnit(unitVal);
+                              setMoq(`${moqQty || '1'} ${unitVal}`);
+                            }}
+                            style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', border: '1px solid rgba(45, 212, 191, 0.4)', fontSize: '0.82rem' }}
+                            title="એકમ ડિવીઝન પસંદ કરો (Select MOQ Unit Division)"
+                          >
+                            <option value="Pcs (નંગ)">Pcs / Pieces (નંગ / ટુકડા)</option>
+                            <option value="Boxes (બોક્સ)">Boxes (બોક્સ / ખોખાં)</option>
+                            <option value="Containers (કન્ટેનર)">Container (20ft/40ft કન્ટેનર)</option>
+                            <option value="MT (મીટ્રિક ટન)">Metric Tons / MT (મીટ્રિક ટન)</option>
+                            <option value="Cartons (કાર્ટન બોક્સ)">Cartons (કાર્ટન બોક્સ)</option>
+                            <option value="Bags (કોથળા / ગુણી)">Bags / Sacks (કોથળા / ગુણી)</option>
+                            <option value="Bales (ગાંસડી / બંડલ)">Bales / Bundles (ગાંસડી / બંડલ)</option>
+                            <option value="Sets (સેટ)">Sets (સેટ - ગારમેન્ટ્સ / ડ્રેસ)</option>
+                            <option value="Dozen (ડઝન)">Dozen (ડઝન - 12 Pcs)</option>
+                            <option value="Kg (કિલોગ્રામ)">Kg / Kilograms (કિલોગ્રામ)</option>
+                            <option value="Unit / Container">Unit / Container (સામાન્ય એકમ)</option>
+                          </select>
+                        </div>
+
+                        {/* Quick Preset Buttons Bar */}
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                          {[
+                            { qty: '100', unit: 'Pcs (નંગ)', label: '⚡ 100 નંગ' },
+                            { qty: '50', unit: 'Boxes (બોક્સ)', label: '⚡ 50 બોક્સ' },
+                            { qty: '1', unit: 'Container (કન્ટેનર)', label: '⚡ 1 કન્ટેનર' },
+                            { qty: '10', unit: 'MT (મીટ્રિક ટન)', label: '⚡ 10 MT ટન' },
+                            { qty: '50', unit: 'Cartons (કાર્ટન બોક્સ)', label: '⚡ 50 કાર્ટન' },
+                            { qty: '100', unit: 'Bags (કોથળા / ગુણી)', label: '⚡ 100 કોથળા' },
+                          ].map((preset, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              style={{
+                                fontSize: '0.71rem',
+                                padding: '2px 7px',
+                                borderRadius: '6px',
+                                background: (moqQty === preset.qty && moqUnit === preset.unit) ? 'rgba(45, 212, 191, 0.3)' : 'rgba(255, 255, 255, 0.08)',
+                                color: (moqQty === preset.qty && moqUnit === preset.unit) ? '#2dd4bf' : '#94a3b8',
+                                border: (moqQty === preset.qty && moqUnit === preset.unit) ? '1px solid #2dd4bf' : '1px solid rgba(255, 255, 255, 0.15)',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                transition: 'all 0.15s ease'
+                              }}
+                              onClick={() => {
+                                setMoqQty(preset.qty);
+                                setMoqUnit(preset.unit);
+                                setMoq(`${preset.qty} ${preset.unit}`);
+                              }}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Direct Editable Custom MOQ Text string */}
                         <input
                           type="text"
                           className="form-control"
                           placeholder="e.g. 1 Unit / Container"
                           value={moq}
                           onChange={(e) => setMoq(e.target.value)}
+                          style={{ fontWeight: 800, fontSize: '0.85rem' }}
                         />
                       </div>
                     </div>
