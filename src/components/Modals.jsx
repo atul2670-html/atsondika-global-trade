@@ -482,9 +482,21 @@ export default function Modals() {
   const [catIconInput, setCatIconInput] = useState('🏷️');
   const [hsCode, setHsCode] = useState('520811');
   const [localHsn, setLocalHsn] = useState('52081110');
-  const [moq, setMoq] = useState('1 Unit / Container');
-  const [moqQty, setMoqQty] = useState('1');
-  const [moqUnit, setMoqUnit] = useState('Container (કન્ટેનર)');
+  const [moq, setMoq] = useState('1 Container (20ft FCL)');
+  const [moqUnitQty, setMoqUnitQty] = useState('');
+  const [moqUnitType, setMoqUnitType] = useState('Pcs (નંગ)');
+  const [moqPackQty, setMoqPackQty] = useState('');
+  const [moqPackType, setMoqPackType] = useState('Cartons (કાર્ટન)');
+  const [moqContainerQty, setMoqContainerQty] = useState('1');
+  const [moqContainerType, setMoqContainerType] = useState('20ft FCL Container');
+
+  const buildMoqString = (uQty, uType, pQty, pType, cQty, cType) => {
+    const parts = [];
+    if (uQty && String(uQty).trim()) parts.push(`${String(uQty).trim()} ${uType}`);
+    if (pQty && String(pQty).trim()) parts.push(`${String(pQty).trim()} ${pType}`);
+    if (cQty && String(cQty).trim()) parts.push(`${String(cQty).trim()} ${cType}`);
+    return parts.length > 0 ? parts.join(' / ') : '1 Container (20ft FCL)';
+  };
   const [spec, setSpec] = useState('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
   const [packaging, setPackaging] = useState('Standard Export Packaging');
   const [imageUrls, setImageUrls] = useState([]);
@@ -699,16 +711,7 @@ export default function Modals() {
           setMainDescInput(typeof target.spec === 'string' ? target.spec : 'Premium Main Product Category');
           setHsCode(target.hsCode || '520811');
           setLocalHsn(target.localHsn || `${target.hsCode || '520811'}10`);
-          const rawMoq = target.moq || '1 Unit / Container';
-          setMoq(rawMoq);
-          const moqMatch = rawMoq.match(/^(\d+)\s*(.*)$/);
-          if (moqMatch) {
-            setMoqQty(moqMatch[1]);
-            setMoqUnit(moqMatch[2] || 'Container (કન્ટેનર)');
-          } else {
-            setMoqQty('1');
-            setMoqUnit('Container (કન્ટેનર)');
-          }
+          setMoq(target.moq || '1 Container (20ft FCL)');
           setSpec(typeof target.spec === 'object' ? (target.spec['en'] || target.spec['gu']) : (target.spec || 'ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ'));
           setPackaging(target.packaging || 'Standard Export Packaging');
           const loadedMrp = target.mrpInr || Math.round((target.localPrice || 999) * 1.32);
@@ -754,9 +757,13 @@ export default function Modals() {
       setCatCodeInput('');
       setMainDescInput('Premium Export Quality Category');
       setHsCode('520811');
-      setMoq('1 Unit / Container');
-      setMoqQty('1');
-      setMoqUnit('Container (કન્ટેનર)');
+      setMoq('1 Container (20ft FCL)');
+      setMoqUnitQty('');
+      setMoqUnitType('Pcs (નંગ)');
+      setMoqPackQty('');
+      setMoqPackType('Cartons (કાર્ટન)');
+      setMoqContainerQty('1');
+      setMoqContainerType('20ft FCL Container');
       setSpec('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
       setPackaging('Standard Export Packaging');
       setLocalMrp('1499');
@@ -4895,113 +4902,212 @@ export default function Modals() {
                       )}
                     </div>
 
-                    <div className="form-row">
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
-                          🌐 Int'l HS Code (6-Digit WCO) * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                    <div className="form-group" style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
+                        🌐 Int'l HS Code (6-Digit WCO) * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="e.g. 090931"
+                        value={hsCode}
+                        onChange={(e) => setHsCode(e.target.value)}
+                        required
+                        style={{ fontWeight: 800, color: 'var(--primary-teal-glow)' }}
+                      />
+                    </div>
+
+                    {/* 3 EXPLICIT MOQ DIVISION BOXES (યુનિટ, કાર્ટન/કોથળા/બોક્ષ અને કન્ટેનર સાઈઝ) */}
+                    <div className="form-group" style={{ marginBottom: 0, width: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <label style={{ fontSize: '0.82rem', color: '#38bdf8', margin: 0, fontWeight: 800 }}>
+                          📦 Minimum Order Quantity (MOQ) - ૩-ડિવીઝન ઓર્ડર બોક્સ (Numbers & Dropdowns)
+                        </label>
+                      </div>
+
+                      {/* 3 Explicit Boxes Grid Container */}
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
+                        gap: '10px',
+                        background: 'rgba(15, 23, 42, 0.7)',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        marginBottom: '10px'
+                      }}>
+                        {/* BOX 1: યુનિટ / નંગ ડ્રોપડાઉન (Single Item Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૧. યુનિટ ડ્રોપડાઉન (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqUnitQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqUnitQty(val);
+                                setMoq(buildMoqString(val, moqUnitType, moqPackQty, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="યુનિટ સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqUnitType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqUnitType(val);
+                                setMoq(buildMoqString(moqUnitQty, val, moqPackQty, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#38bdf8', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="Pcs (નંગ)">Pcs (નંગ / ટુકડા)</option>
+                              <option value="Pairs (જોડી)">Pairs (જોડી)</option>
+                              <option value="Sets (સેટ)">Sets (સેટ)</option>
+                              <option value="Meter (મીટર)">Meter (મીટર)</option>
+                              <option value="Kg (કિલોગ્રામ)">Kg (કિલોગ્રામ)</option>
+                              <option value="Grams (ગ્રામ)">Grams (ગ્રામ)</option>
+                              <option value="Dozen (ડઝન)">Dozen (ડઝન)</option>
+                              <option value="Litre (લીટર)">Litre (લીટર)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* BOX 2: કાર્ટન, કોથળા & બોક્ષ ડ્રોપડાઉન (Master Packaging Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૨. કાર્ટન / કોથળા / બોક્ષ (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqPackQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqPackQty(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, val, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="પેકિંગ સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqPackType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqPackType(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, val, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#facc15', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="Cartons (કાર્ટન)">Cartons (કાર્ટન બોક્સ)</option>
+                              <option value="Bags (કોથળા / ગુણી)">Bags (કોથળા / ગુણી)</option>
+                              <option value="Boxes (માસ્ટર બોક્ષ)">Boxes (માસ્ટર બોક્ષ)</option>
+                              <option value="Bales (ગાંસડી)">Bales (ગાંસડી / બંડલ)</option>
+                              <option value="Drums (ડ્રમ)">Drums (ડ્રમ / બેરલ)</option>
+                              <option value="Pallets (પેલેટ)">Pallets (વુડન પેલેટ)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* BOX 3: કન્ટેનર સાઈઝ ડ્રોપડાઉન (Shipment / Container Size Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#2dd4bf', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૩. કન્ટેનર સાઈઝ ડ્રોપડાઉન (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqContainerQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqContainerQty(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, moqPackType, val, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="કન્ટેનર સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqContainerType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqContainerType(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, moqPackType, moqContainerQty, val));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="20ft FCL Container">20ft FCL Container</option>
+                              <option value="40ft FCL Container">40ft FCL Container</option>
+                              <option value="40ft High Cube (HC)">40ft High Cube (HC)</option>
+                              <option value="LCL Cargo Shipment">LCL Cargo Shipment</option>
+                              <option value="Air Freight Cargo">Air Freight Cargo</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Quick Sample Presets Bar */}
+                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>⚡ ઝડપી કમ્બાઈન્ડ બટન:</span>
+                        {[
+                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '10', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 100 Pcs / 10 Cartons / 1 Cont' },
+                          { uQty: '500', uType: 'Pcs (નંગ)', pQty: '50', pType: 'Boxes (માસ્ટર બોક્ષ)', cQty: '', cType: '20ft FCL Container', label: '⚡ 500 Pcs / 50 Boxes' },
+                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '100', pType: 'Bags (કોથળા / ગુણી)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 100 Bags / 1 Cont' },
+                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 1 Container (20ft FCL)' },
+                        ].map((preset, pIdx) => (
+                          <button
+                            key={pIdx}
+                            type="button"
+                            style={{
+                              fontSize: '0.7rem',
+                              padding: '2px 7px',
+                              borderRadius: '6px',
+                              background: 'rgba(56, 189, 248, 0.12)',
+                              color: '#38bdf8',
+                              border: '1px solid rgba(56, 189, 248, 0.3)',
+                              cursor: 'pointer',
+                              fontWeight: 700,
+                              transition: 'all 0.15s ease'
+                            }}
+                            onClick={() => {
+                              setMoqUnitQty(preset.uQty);
+                              setMoqUnitType(preset.uType);
+                              setMoqPackQty(preset.pQty);
+                              setMoqPackType(preset.pType);
+                              setMoqContainerQty(preset.cQty);
+                              setMoqContainerType(preset.cType);
+                              setMoq(buildMoqString(preset.uQty, preset.uType, preset.pQty, preset.pType, preset.cQty, preset.cType));
+                            }}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Live Final MOQ Result Field */}
+                      <div>
+                        <label style={{ fontSize: '0.74rem', color: '#2dd4bf', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                          🌐 ફાઇનલ MOQ સ્પેસિફિકેશન ટેક્સ્ટ (ઓટો-જનરેટેડ & એડિટેબલ):
                         </label>
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="e.g. 090931"
-                          value={hsCode}
-                          onChange={(e) => setHsCode(e.target.value)}
-                          required
-                          style={{ fontWeight: 800, color: 'var(--primary-teal-glow)' }}
-                        />
-                      </div>
-
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', margin: 0, fontWeight: 800 }}>
-                            Minimum Order (MOQ) <span style={{ color: '#2dd4bf', fontWeight: 700 }}>(ઓર્ડર એકમ / ડિવીઝન પસંદ કરો)</span>
-                          </label>
-                        </div>
-                        
-                        {/* Qty Number + Division Unit Select dropdown */}
-                        <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Qty (દા.ત. 1, 100)"
-                            min="1"
-                            value={moqQty}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setMoqQty(val);
-                              setMoq(`${val || '1'} ${moqUnit}`);
-                            }}
-                            style={{ width: '85px', fontWeight: 800, textAlign: 'center' }}
-                            title="ઓર્ડર જથ્થો (Quantity)"
-                          />
-                          <select
-                            className="form-control"
-                            value={moqUnit}
-                            onChange={(e) => {
-                              const unitVal = e.target.value;
-                              setMoqUnit(unitVal);
-                              setMoq(`${moqQty || '1'} ${unitVal}`);
-                            }}
-                            style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', border: '1px solid rgba(45, 212, 191, 0.4)', fontSize: '0.82rem' }}
-                            title="એકમ ડિવીઝન પસંદ કરો (Select MOQ Unit Division)"
-                          >
-                            <option value="Pcs (નંગ)">Pcs / Pieces (નંગ / ટુકડા)</option>
-                            <option value="Boxes (બોક્સ)">Boxes (બોક્સ / ખોખાં)</option>
-                            <option value="Containers (કન્ટેનર)">Container (20ft/40ft કન્ટેનર)</option>
-                            <option value="MT (મીટ્રિક ટન)">Metric Tons / MT (મીટ્રિક ટન)</option>
-                            <option value="Cartons (કાર્ટન બોક્સ)">Cartons (કાર્ટન બોક્સ)</option>
-                            <option value="Bags (કોથળા / ગુણી)">Bags / Sacks (કોથળા / ગુણી)</option>
-                            <option value="Bales (ગાંસડી / બંડલ)">Bales / Bundles (ગાંસડી / બંડલ)</option>
-                            <option value="Sets (સેટ)">Sets (સેટ - ગારમેન્ટ્સ / ડ્રેસ)</option>
-                            <option value="Dozen (ડઝન)">Dozen (ડઝન - 12 Pcs)</option>
-                            <option value="Kg (કિલોગ્રામ)">Kg / Kilograms (કિલોગ્રામ)</option>
-                            <option value="Unit / Container">Unit / Container (સામાન્ય એકમ)</option>
-                          </select>
-                        </div>
-
-                        {/* Quick Preset Buttons Bar */}
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                          {[
-                            { qty: '100', unit: 'Pcs (નંગ)', label: '⚡ 100 નંગ' },
-                            { qty: '50', unit: 'Boxes (બોક્સ)', label: '⚡ 50 બોક્સ' },
-                            { qty: '1', unit: 'Container (કન્ટેનર)', label: '⚡ 1 કન્ટેનર' },
-                            { qty: '10', unit: 'MT (મીટ્રિક ટન)', label: '⚡ 10 MT ટન' },
-                            { qty: '50', unit: 'Cartons (કાર્ટન બોક્સ)', label: '⚡ 50 કાર્ટન' },
-                            { qty: '100', unit: 'Bags (કોથળા / ગુણી)', label: '⚡ 100 કોથળા' },
-                          ].map((preset, pIdx) => (
-                            <button
-                              key={pIdx}
-                              type="button"
-                              style={{
-                                fontSize: '0.71rem',
-                                padding: '2px 7px',
-                                borderRadius: '6px',
-                                background: (moqQty === preset.qty && moqUnit === preset.unit) ? 'rgba(45, 212, 191, 0.3)' : 'rgba(255, 255, 255, 0.08)',
-                                color: (moqQty === preset.qty && moqUnit === preset.unit) ? '#2dd4bf' : '#94a3b8',
-                                border: (moqQty === preset.qty && moqUnit === preset.unit) ? '1px solid #2dd4bf' : '1px solid rgba(255, 255, 255, 0.15)',
-                                cursor: 'pointer',
-                                fontWeight: 700,
-                                transition: 'all 0.15s ease'
-                              }}
-                              onClick={() => {
-                                setMoqQty(preset.qty);
-                                setMoqUnit(preset.unit);
-                                setMoq(`${preset.qty} ${preset.unit}`);
-                              }}
-                            >
-                              {preset.label}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Direct Editable Custom MOQ Text string */}
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="e.g. 1 Unit / Container"
+                          placeholder="e.g. 100 Pcs (નંગ) / 10 Cartons (કાર્ટન) / 1 Container (20ft FCL)"
                           value={moq}
                           onChange={(e) => setMoq(e.target.value)}
-                          style={{ fontWeight: 800, fontSize: '0.85rem' }}
+                          style={{ fontWeight: 800, fontSize: '0.88rem', color: '#2dd4bf', background: '#0f172a', border: '1px solid #2dd4bf' }}
                         />
                       </div>
                     </div>
