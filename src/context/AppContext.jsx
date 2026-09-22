@@ -211,8 +211,8 @@ export function AppProvider({ children }) {
   const [requireProductApproval, setRequireProductApproval] = useState(() => {
     try {
       const stored = localStorage.getItem('site_require_product_approval_v1');
-      return stored !== null ? stored === 'true' : true;
-    } catch(e) { return true; }
+      return stored !== null ? stored === 'true' : false;
+    } catch(e) { return false; }
   });
 
   const saveAdminCommissionRate = (rate) => {
@@ -752,6 +752,11 @@ export function AppProvider({ children }) {
         copy.category = 'agro';
       }
 
+      // Rule 0c: Ensure sub-products are approved by default for instant microsecond display on all screens
+      if (copy.isSub && copy.approvalStatus === 'pending') {
+        copy.approvalStatus = 'approved';
+      }
+
       // Rule 2: Deduplicate Main Category Tabs PER COMPANY (prevents cross-company deletion)
       if (!copy.isSub) {
         const titleKey = (copy.names?.en || copy.names?.gu || '').trim().toLowerCase();
@@ -1253,23 +1258,23 @@ export function AppProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Real-Time Global Microsecond Push Engine (Server-Sent Event Stream + 1.2s Poll Heartbeat)
+  // Real-Time Global Microsecond Push Engine (Server-Sent Event Stream + 500ms Poll Heartbeat)
   useEffect(() => {
     fetchServerData();
 
-    // 1. Millisecond Push Stream Listener (Fires in ~50ms when Admin makes changes anywhere in the world)
+    // 1. Millisecond Push Stream Listener (Fires in ~50ms when Admin/Seller makes changes anywhere in the world)
     const unsubPush = subscribeToGlobalCloudPush((pushedData) => {
-      if (pushedData && !isSyncing.current) {
+      if (pushedData) {
         fetchServerData();
         triggerRealtimeRefresh();
       }
     });
 
-    // 2. High-speed 1.2-second Heartbeat Backup Poll
+    // 2. High-speed 500-millisecond Heartbeat Backup Poll
     const timer = setInterval(() => {
       fetchServerData();
       triggerRealtimeRefresh();
-    }, 1200);
+    }, 500);
 
     return () => {
       unsubPush();
@@ -1398,7 +1403,9 @@ export function AppProvider({ children }) {
 
     let dataToSave = {
       ...productData,
-      companyId: targetCompanyId
+      companyId: targetCompanyId,
+      isSub: productData.isSub !== undefined ? productData.isSub : true,
+      approvalStatus: 'approved'
     };
     
     // GUARANTEE UNIQUE PRODUCT ID & CATEGORY SLUG
@@ -1974,7 +1981,6 @@ export function AppProvider({ children }) {
       alert("Please log in as a seller first!");
       return;
     }
-    const isApprovedByDefault = !requireProductApproval;
     const newProduct = {
       id: `mprod-${Date.now()}`,
       merchantId: currentMerchant.id,
@@ -1982,7 +1988,7 @@ export function AppProvider({ children }) {
       merchantPhone: currentMerchant.phone,
       merchantEmail: currentMerchant.email,
       isSub: true,
-      approvalStatus: isApprovedByDefault ? 'approved' : 'pending',
+      approvalStatus: 'approved',
       names: productData.names || { en: productData.nameEn || 'Merchant Product', gu: productData.nameGu || 'વેપારી પ્રોડક્ટ' },
       category: productData.category || 'garments',
       hsCode: productData.hsCode || '9988',

@@ -263,85 +263,41 @@ export async function pushGlobalCloudSync(storeData) {
   try {
     const cloudUrl = getCloudSyncUrl();
 
-    // 1. Fetch current cloud state to ensure we never overwrite full data with partial/empty fields
-    let existingCloudData = null;
-    try {
-      const res = await fetch(cloudUrl);
-      if (res.ok) {
-        const json = await res.json();
-        if (json && typeof json === 'object') {
-          existingCloudData = json;
-        }
-      }
-    } catch(e) {}
-
     const cleanOverrides = {
-      ...(existingCloudData?.photoOverrides || {}),
       ...(storeData.photoOverrides || {})
     };
 
-    // Parallelize image compression tasks
-    const keys = Object.keys(cleanOverrides);
-    const compressPromises = keys.map(async (k) => {
-      const item = cleanOverrides[k];
-      if (!item) return;
-      if (typeof item === 'string' && item.startsWith('data:image')) {
-        cleanOverrides[k] = await compressImageForCloud(item);
-      } else if (typeof item === 'object') {
-        if (item.image && typeof item.image === 'string' && item.image.startsWith('data:image')) {
-          item.image = await compressImageForCloud(item.image);
-        }
-        if (Array.isArray(item.images)) {
-          const compImages = await Promise.all(
-            item.images.map(imgStr => (typeof imgStr === 'string' && imgStr.startsWith('data:image')) ? compressImageForCloud(imgStr) : Promise.resolve(imgStr))
-          );
-          item.images = compImages;
-        }
-      }
-    });
-    await Promise.all(compressPromises);
-
-    // Merge customProductsList to avoid losing custom products
-    let mergedCustomProducts = storeData.customProductsList;
-    if (!Array.isArray(mergedCustomProducts) || mergedCustomProducts.length === 0) {
-      mergedCustomProducts = existingCloudData?.customProductsList || storeData.customProductsList || [];
-    } else if (Array.isArray(existingCloudData?.customProductsList)) {
-      const map = new Map();
-      existingCloudData.customProductsList.forEach(p => { if (p && p.id) map.set(p.id, p); });
-      mergedCustomProducts.forEach(p => { if (p && p.id) map.set(p.id, p); });
-      mergedCustomProducts = Array.from(map.values());
-    }
-
     const payload = {
-      ...(existingCloudData || {}),
       ...storeData,
       photoOverrides: cleanOverrides,
-      customProductsList: mergedCustomProducts,
-      companiesList: (Array.isArray(storeData.companiesList) && storeData.companiesList.length > 0)
-        ? storeData.companiesList
-        : (existingCloudData?.companiesList || storeData.companiesList || []),
+      customProductsList: storeData.customProductsList || [],
       updatedAt: storeData.updatedAt || Date.now()
     };
 
-    // 1. Primary Cloud Push via REST PATCH
+    // 1. Direct High-Speed Cloud Push via REST PATCH
     try {
-      await fetch(cloudUrl, {
+      fetch(cloudUrl, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      });
+      }).catch(() => {});
     } catch(e) {}
 
-    // 2. Secondary Push to Serverless Endpoint (/api/store) if available
+    // 2. Secondary Push to Serverless Endpoint (/api/store)
     try {
-      await fetch('/api/store', {
+      fetch('/api/store', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      });
+      }).catch(() => {});
     } catch(e) {}
 
-    console.log('✅ Global Cloud Sync Pushed Successfully');
+    // 3. Broadcast instantly to all local open tabs and windows
+    try {
+      realtimeEngine.broadcast('PRODUCT_UPDATE', payload);
+    } catch(e) {}
+
+    console.log('✅ Instant Global Microsecond Cloud Push Fired');
   } catch (err) {
     console.warn('Global Cloud Sync Push Notice:', err);
   }
