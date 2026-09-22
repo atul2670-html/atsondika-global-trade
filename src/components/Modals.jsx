@@ -1320,7 +1320,27 @@ export default function Modals() {
                   });
                 }}
               >
-                🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
+                🗑️ Remove / Delete Default Main Products (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  padding: '12px 16px',
+                  justifyContent: 'flex-start',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  boxShadow: '0 4px 18px rgba(245, 158, 11, 0.4)'
+                }}
+                onClick={() => {
+                  verifyAdminAccess(() => {
+                    setActiveModal('manage_main_categories');
+                  });
+                }}
+              >
+                🏷️ Manage & Delete Main Products (મેઈન પ્રોડક્ટ્સ મેનેજ & ડીલીટ કરો)
               </button>
 
               <button
@@ -1433,6 +1453,143 @@ export default function Modals() {
           </div>
         </div>
       )}
+
+      {/* MANAGE & DELETE MAIN CATEGORIES MODAL */}
+      {activeModal === 'manage_main_categories' && (() => {
+        const currentCompId = activeCompany?.id || 'comp_1';
+        const deletedSet = new Set(deletedBuiltInIds || []);
+        const mainCatsList = [];
+
+        const defaultCats = [
+          { id: 'agro', code: 'agro', title: currentLang === 'gu' ? '🌾 એગ્રો કોમોડિટીઝ (Agro Produce & Spices)' : '🌾 Agro Commodities & Spices', icon: '🌾' },
+          { id: 'dairy', code: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ (Dairy Products)' : '🥛 Dairy Products', icon: '🥛' },
+          { id: 'textiles', code: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)' : '🧵 Textile Products', icon: '🧵' },
+          { id: 'garments', code: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : '👕 Readymade Garments', icon: '👕' },
+          { id: 'industrial', code: 'industrial', title: currentLang === 'gu' ? '🔩 ઔદ્યોગિક માલ & ફાસ્ટનર્સ' : '🔩 Industrial Goods & Fasteners', icon: '🔩' },
+          { id: 'new_machinery', code: 'new_machinery', title: currentLang === 'gu' ? '🏗️ નવી મશીનરી & સિસ્ટમ્સ' : '🏗️ New Machinery Systems', icon: '🏗️' },
+          { id: 'used_machinery', code: 'used_machinery', title: currentLang === 'gu' ? '⚙️ વપરાયેલી ઔદ્યોગિક મશીનરી' : '⚙️ Used Industrial Machinery', icon: '⚙️' },
+          { id: 'packaging', code: 'packaging', title: currentLang === 'gu' ? '🛍️ ઇકો પેકેજિંગ & જૂટ બેગ્સ' : '🛍️ Eco Packaging & Jute Bags', icon: '🛍️' }
+        ];
+
+        defaultCats.forEach(cat => {
+          if (!deletedSet.has(cat.code)) {
+            mainCatsList.push(cat);
+          }
+        });
+
+        (customProductsList || [])
+          .filter(p => !p.isSub && (p.companyId || 'comp_1') === currentCompId)
+          .forEach(p => {
+            let titleEn = (p.names?.en || p.name || p.category || '').trim();
+            let titleGu = (p.names?.gu || '').trim();
+            let catTitle = currentLang === 'gu' ? (titleGu || titleEn) : (titleEn || titleGu);
+            mainCatsList.push({
+              id: p.id,
+              code: p.category || p.id,
+              title: `${p.icon || '🏷️'} ${catTitle}`,
+              icon: p.icon || '🏷️',
+              isCustom: true
+            });
+          });
+
+        const allProducts = getAllProducts();
+
+        return (
+          <div className="modal-backdrop show">
+            <div className="glass-card modal-card" style={{ maxWidth: '650px', width: '92vw', maxHeight: '88vh', overflowY: 'auto', borderRadius: '24px' }}>
+              <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
+              
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '4px' }}>🏷️</span>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                  Manage & Delete Main Products ({activeCompany?.name || 'Sister Company'})
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                  દરેક મેઈન પ્રોડક્ટ કેટેગરી કંટ્રોલ પેનલ — Delete or Edit any Main Category & its sub-products.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#2dd4bf' }}>
+                  📦 Total Main Categories: {mainCatsList.length}
+                </span>
+                <button
+                  type="button"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: 'white', padding: '6px 14px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer' }}
+                  onClick={() => {
+                    setEditingProductId(null);
+                    setActiveModal('product_main');
+                  }}
+                >
+                  ➕ Add New Main Category
+                </button>
+              </div>
+
+              {mainCatsList.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px border-dashed rgba(255,255,255,0.1)' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#94a3b8', margin: 0 }}>
+                    {currentLang === 'gu' ? 'હાલમાં કોઈ મેઈન પ્રોડક્ટ કેટેગરી નથી. નવી ઉમેરવા ઉપરના બટન પર ક્લિક કરો.' : 'No Main Product Categories. Click above to add your company main products.'}
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '10px' }}>
+                  {mainCatsList.map(cat => {
+                    const subCount = allProducts.filter(p => p.category === cat.code || p.parentId === cat.id || p.parentId === cat.code).length;
+                    return (
+                      <div
+                        key={cat.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: 'rgba(15, 23, 42, 0.7)',
+                          padding: '12px 16px',
+                          borderRadius: '14px',
+                          border: '1px solid var(--border-glass)'
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: 'white' }}>
+                            {cat.title}
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px' }}>
+                            📦 {subCount} {subCount === 1 ? 'Sub-Product' : 'Sub-Products'} included
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {cat.isCustom && (
+                            <button
+                              type="button"
+                              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                              onClick={() => {
+                                setEditingProductId(cat.id);
+                                setActiveModal('product_main');
+                              }}
+                            >
+                              ✏️ Edit
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', border: 'none', color: 'white', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
+                            onClick={() => {
+                              deleteProduct(cat.id, cat.code, cat.title, true);
+                            }}
+                          >
+                            🗑️ Delete Main Product
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 1. ADMIN REGISTERED SELLERS & EXPORTERS CONTROL MODAL */}
       {activeModal === 'admin_sellers' && (

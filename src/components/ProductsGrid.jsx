@@ -360,35 +360,34 @@ export default function ProductsGrid() {
               🏷️ + Add Main Category (મેઈન પ્રોડક્ટ ઉમેરો)
             </button>
 
-            {isAdminLoggedIn && (
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.12)',
-                  borderColor: 'rgba(239, 68, 68, 0.4)',
-                  color: '#f87171',
-                  padding: '10px 18px',
-                  fontSize: '0.92rem',
-                  fontWeight: 800
-                }}
-                onClick={() => {
-                  verifyAdminAccess(() => {
-                    if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
-                      const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery', 'eco_packaging', 'apparel', 'turmeric', 'basmati', 'cumin', 'cnc_machine', 'new_agro_machinery', 'fasteners', 'jute_bags', 'peanuts', 'spices', 'milling', 'bagging', 'sorting', 'bolts', 'nuts', 'washers', 'cotton', 'denim', 'ghee', 'lathe', 'cnc'];
-                      const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)',
+                border: 'none',
+                color: 'white',
+                padding: '10px 18px',
+                fontSize: '0.92rem',
+                fontWeight: 800
+              }}
+              onClick={() => {
+                verifyAdminAccess(() => {
+                  if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
+                    const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery', 'eco_packaging', 'apparel', 'turmeric', 'basmati', 'cumin', 'cnc_machine', 'new_agro_machinery', 'fasteners', 'jute_bags', 'peanuts', 'spices', 'milling', 'bagging', 'sorting', 'bolts', 'nuts', 'washers', 'cotton', 'denim', 'ghee', 'lathe', 'cnc'];
+                    const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
 
-                      setDeletedBuiltInIds(nextDeleted);
-                      try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
-                      setCurrentCategory('all');
-                      showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
-                    }
-                  });
-                }}
-              >
-                🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
-              </button>
-            )}
+                    setDeletedBuiltInIds(nextDeleted);
+                    try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
+                    setCurrentCategory('all');
+                    showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
+                  }
+                });
+              }}
+            >
+              🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
+            </button>
           </div>
         </div>
 
@@ -458,17 +457,29 @@ export default function ProductsGrid() {
                 >
                   {tab.title}
                   <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>
-                  {isAdminLoggedIn && tab.filter !== 'all' && (
+                  {tab.filter !== 'all' && (
                     <span
                       className="delete-cat-tab"
-                      style={{ marginLeft: '8px', cursor: 'pointer', opacity: 0.8 }}
+                      style={{
+                        marginLeft: '8px',
+                        cursor: 'pointer',
+                        background: 'rgba(239, 68, 68, 0.25)',
+                        color: '#f87171',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        border: '1px solid rgba(239, 68, 68, 0.4)'
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteProduct(tab.filter, tab.filter, tab.title, true);
+                        verifyAdminAccess(() => {
+                          deleteProduct(tab.filter, tab.filter, tab.title, true);
+                        });
                       }}
-                      title={`Delete Category "${tab.title}"`}
+                      title={`Delete Main Product / Category "${tab.title}" (મેઈન પ્રોડક્ટ હટાવો)`}
                     >
-                      ✖
+                      🗑️
                     </span>
                   )}
                 </button>
@@ -606,33 +617,44 @@ export default function ProductsGrid() {
                     {displayTitle}
                   </span>
                   <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>
-                  {isAdminLoggedIn && (
-                    <>
-                      <span
-                        style={{ marginLeft: '6px', opacity: 0.8 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          verifyAdminAccess(() => {
-                            setEditingProductId(p.id);
-                            setActiveModal('product_main');
-                          });
-                        }}
-                        title={`Edit Category "${title}"`}
-                      >
-                        ✏️
-                      </span>
-                      <span
-                        className="delete-cat-tab"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                  <>
+                    <span
+                      style={{ marginLeft: '6px', opacity: 0.8, cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        verifyAdminAccess(() => {
+                          setEditingProductId(p.id);
+                          setActiveModal('product_main');
+                        });
+                      }}
+                      title={`Edit Main Product / Category "${title}"`}
+                    >
+                      ✏️
+                    </span>
+                    <span
+                      className="delete-cat-tab"
+                      style={{
+                        marginLeft: '4px',
+                        cursor: 'pointer',
+                        background: 'rgba(239, 68, 68, 0.25)',
+                        color: '#f87171',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        border: '1px solid rgba(239, 68, 68, 0.4)'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        verifyAdminAccess(() => {
                           deleteProduct(p.id, p.category, title, true);
-                        }}
-                        title={`Delete Category "${title}"`}
-                      >
-                        ✖
-                      </span>
-                    </>
-                  )}
+                        });
+                      }}
+                      title={`Delete Main Product / Category "${title}" (મેઈન પ્રોડક્ટ હટાવો)`}
+                    >
+                      🗑️
+                    </span>
+                  </>
                 </button>
 
                 {/* SUB-PRODUCTS HOVER DROPDOWN FOR CUSTOM CATEGORIES */}
