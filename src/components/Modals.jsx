@@ -1264,14 +1264,12 @@ export default function Modals() {
     </div>
   );
 
-
-
   return (
     <>
       {/* ADMIN CONTROL PANEL DASHBOARD MODAL */}
       {activeModal === 'admin_control' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '520px', borderRadius: '24px' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
             
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -1284,11 +1282,11 @@ export default function Modals() {
               </span>
             </div>
 
-            <div style={{ display: 'grid', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '14px' }}>
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0d9488, #0f766e)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0d9488, #0f766e)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('company')}
               >
                 ✏️ Edit Sister Companies Profiles & Logos
@@ -1298,12 +1296,15 @@ export default function Modals() {
                 type="button"
                 className="btn-primary"
                 style={{
-                  padding: '12px 16px',
+                  padding: '14px 18px',
                   justifyContent: 'flex-start',
                   fontSize: '0.9rem',
                   fontWeight: 800,
                   background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                  boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)'
+                  boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35'
                 }}
                 onClick={() => {
                   verifyAdminAccess(() => {
@@ -1327,12 +1328,15 @@ export default function Modals() {
                 type="button"
                 className="btn-primary"
                 style={{
-                  padding: '12px 16px',
+                  padding: '14px 18px',
                   justifyContent: 'flex-start',
                   fontSize: '0.9rem',
                   fontWeight: 800,
                   background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                  boxShadow: '0 4px 18px rgba(245, 158, 11, 0.4)'
+                  boxShadow: '0 4px 18px rgba(245, 158, 11, 0.4)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35'
                 }}
                 onClick={() => {
                   verifyAdminAccess(() => {
@@ -1346,7 +1350,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0284c7, #0369a1)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0284c7, #0369a1)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_sellers')}
               >
                 🏬 Registered Sellers & Exporters Control ({merchantsList?.length || 0})
@@ -1355,7 +1359,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_product_approvals')}
               >
                 📦 Seller Product Approvals — એડમિન એપ્રુઅલ ({(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'pending').length})
@@ -1364,7 +1368,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #d97706, #b45309)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #d97706, #b45309)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_commission')}
               >
                 💰 Admin Commission & Platform Settings ({adminCommissionRate || 2.5}%)
@@ -1373,7 +1377,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_payment_gateways')}
               >
                 💳 Payment Gateways Setup — Razorpay (Local ₹) & Skydo (Global $)
@@ -1382,7 +1386,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0369a1, #075985)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #0369a1, #075985)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_leads')}
               >
                 👥 View Registered Customer Leads & Inquiries ({customerList?.length || 0})
@@ -1391,7 +1395,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #059669, #047857)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #059669, #047857)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => {
                   if (exportDatabase) exportDatabase();
                   setActiveModal(null);
@@ -1402,7 +1406,7 @@ export default function Modals() {
 
               <label
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', cursor: 'pointer', margin: 0 }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', cursor: 'pointer', margin: 0, whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
               >
                 📤 Restore / Load Database (store.json)
                 <input
@@ -1430,7 +1434,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ padding: '12px 16px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #475569, #334155)' }}
+                style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #475569, #334155)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_security')}
               >
                 🔑 Change Admin Password (OTP)
@@ -1439,7 +1443,7 @@ export default function Modals() {
               <button
                 type="button"
                 className="btn-secondary"
-                style={{ padding: '12px 16px', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 800, color: '#f87171', borderColor: 'rgba(248,113,113,0.4)', marginTop: '8px' }}
+                style={{ padding: '14px 18px', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 800, color: '#f87171', borderColor: 'rgba(248,113,113,0.4)', gridColumn: '1 / -1', marginTop: '4px' }}
                 onClick={() => {
                   setIsAdminLoggedIn(false);
                   try { localStorage.setItem('admin_access_unlocked_v1', 'false'); } catch(e) {}
