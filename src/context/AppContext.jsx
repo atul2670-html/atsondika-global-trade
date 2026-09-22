@@ -1168,8 +1168,14 @@ export function AppProvider({ children }) {
             data.customProductsList.forEach(p => {
               if (p && p.id && !currentDeleted.has(p.id) && !currentDeleted.has(p.category) && !currentDeleted.has(p.parentId)) {
                 const existing = map.get(p.id);
-                if (!existing || JSON.stringify(existing) !== JSON.stringify(p)) {
+                if (!existing) {
                   map.set(p.id, p);
+                } else {
+                  const existingTime = Number(existing.updatedAt || 0);
+                  const serverTime = Number(p.updatedAt || 0);
+                  if (serverTime > existingTime) {
+                    map.set(p.id, { ...existing, ...p });
+                  }
                 }
               }
             });
@@ -1405,7 +1411,8 @@ export function AppProvider({ children }) {
       ...productData,
       companyId: targetCompanyId,
       isSub: productData.isSub !== undefined ? productData.isSub : true,
-      approvalStatus: 'approved'
+      approvalStatus: 'approved',
+      updatedAt: Date.now()
     };
     
     // GUARANTEE UNIQUE PRODUCT ID & CATEGORY SLUG
