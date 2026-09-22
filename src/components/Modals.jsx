@@ -492,10 +492,16 @@ export default function Modals() {
 
   const buildMoqString = (uQty, uType, pQty, pType, cQty, cType) => {
     const parts = [];
-    if (uQty && String(uQty).trim()) parts.push(`${String(uQty).trim()} ${uType}`);
-    if (pQty && String(pQty).trim()) parts.push(`${String(pQty).trim()} ${pType}`);
-    if (cQty && String(cQty).trim()) parts.push(`${String(cQty).trim()} ${cType}`);
-    return parts.length > 0 ? parts.join(' / ') : '1 Container (20ft FCL)';
+    if (uQty && String(uQty).trim() && uType && !String(uType).startsWith('None')) {
+      parts.push(`${String(uQty).trim()} ${uType}`);
+    }
+    if (pQty && String(pQty).trim() && pType && !String(pType).startsWith('None')) {
+      parts.push(`${String(pQty).trim()} ${pType}`);
+    }
+    if (cQty && String(cQty).trim() && cType && !String(cType).startsWith('None')) {
+      parts.push(`${String(cQty).trim()} ${cType}`);
+    }
+    return parts.length > 0 ? parts.join(' / ') : '100 Pcs (નંગ)';
   };
   const [spec, setSpec] = useState('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
   const [packaging, setPackaging] = useState('Standard Export Packaging');
@@ -4967,6 +4973,7 @@ export default function Modals() {
                               style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#38bdf8', fontSize: '0.78rem', padding: '4px 4px' }}
                             >
                               <option value="Pcs (નંગ)">Pcs (નંગ / ટુકડા)</option>
+                              <option value="None">None (જરૂર નથી)</option>
                               <option value="Pairs (જોડી)">Pairs (જોડી)</option>
                               <option value="Sets (સેટ)">Sets (સેટ)</option>
                               <option value="Meter (મીટર)">Meter (મીટર)</option>
@@ -5009,6 +5016,7 @@ export default function Modals() {
                               style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#facc15', fontSize: '0.78rem', padding: '4px 4px' }}
                             >
                               <option value="Cartons (કાર્ટન)">Cartons (કાર્ટન બોક્સ)</option>
+                              <option value="None">None (જરૂર નથી)</option>
                               <option value="Bags (કોથળા / ગુણી)">Bags (કોથળા / ગુણી)</option>
                               <option value="Boxes (માસ્ટર બોક્ષ)">Boxes (માસ્ટર બોક્ષ)</option>
                               <option value="Bales (ગાંસડી)">Bales (ગાંસડી / બંડલ)</option>
@@ -5048,11 +5056,13 @@ export default function Modals() {
                               }}
                               style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', fontSize: '0.78rem', padding: '4px 4px' }}
                             >
+                              <option value="None">None (જરૂર નથી - DHL / Air Cargo)</option>
                               <option value="20ft FCL Container">20ft FCL Container</option>
                               <option value="40ft FCL Container">40ft FCL Container</option>
                               <option value="40ft High Cube (HC)">40ft High Cube (HC)</option>
-                              <option value="LCL Cargo Shipment">LCL Cargo Shipment</option>
-                              <option value="Air Freight Cargo">Air Freight Cargo</option>
+                              <option value="LCL Cargo Shipment">LCL Cargo Shipment (ઓછો માલ)</option>
+                              <option value="Air Freight Cargo (DHL/Express)">Air Freight Cargo (DHL / Air Express)</option>
+                              <option value="Courier Parcel">Courier Parcel (કુરિયર પાર્સલ)</option>
                             </select>
                           </div>
                         </div>
@@ -5062,10 +5072,10 @@ export default function Modals() {
                       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>⚡ ઝડપી કમ્બાઈન્ડ બટન:</span>
                         {[
-                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '10', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 100 Pcs / 10 Cartons / 1 Cont' },
-                          { uQty: '500', uType: 'Pcs (નંગ)', pQty: '50', pType: 'Boxes (માસ્ટર બોક્ષ)', cQty: '', cType: '20ft FCL Container', label: '⚡ 500 Pcs / 50 Boxes' },
-                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '100', pType: 'Bags (કોથળા / ગુણી)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 100 Bags / 1 Cont' },
-                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '⚡ 1 Container (20ft FCL)' },
+                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '5', pType: 'Cartons (કાર્ટન)', cQty: '', cType: 'None', label: '✈️ 100 Pcs (DHL Air Express)' },
+                          { uQty: '500', uType: 'Pcs (નંગ)', pQty: '50', pType: 'Boxes (માસ્ટર બોક્ષ)', cQty: '', cType: 'None', label: '✈️ 500 Pcs / 50 Boxes (Air Cargo)' },
+                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '10', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '🚢 100 Pcs / 10 Cartons / 1 Cont' },
+                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '100', pType: 'Bags (કોથળા / ગુણી)', cQty: '1', cType: '20ft FCL Container', label: '🚢 100 Bags / 1 Cont' },
                         ].map((preset, pIdx) => (
                           <button
                             key={pIdx}
