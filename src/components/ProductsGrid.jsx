@@ -317,78 +317,82 @@ export default function ProductsGrid() {
             </button>
           </div>
 
-          {/* DEDICATED QUICK ADMIN ACTION BUTTONS */}
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
-                padding: '10px 20px',
-                fontSize: '0.92rem',
-                fontWeight: 800
-              }}
-              onClick={() => {
-                verifyAdminAccess(() => {
+          {/* DEDICATED QUICK ACTION BUTTONS */}
+          {(isAdminLoggedIn || currentMerchant) && (
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                  padding: '10px 20px',
+                  fontSize: '0.92rem',
+                  fontWeight: 800
+                }}
+                onClick={() => {
                   setEditingProductId(null);
                   setActiveModal('product_sub');
-                });
-              }}
-            >
-              📦 + Add Sub-Product (પેટા પ્રોડક્ટ ઉમેરો)
-            </button>
+                }}
+              >
+                📦 + Add Sub-Product (પેટા પ્રોડક્ટ ઉમેરો)
+              </button>
 
-            <button
-              type="button"
-              className="btn-secondary"
-              style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                borderColor: 'var(--primary-teal-glow)',
-                color: 'white',
-                padding: '10px 18px',
-                fontSize: '0.92rem',
-                fontWeight: 800
-              }}
-              onClick={() => {
-                verifyAdminAccess(() => {
-                  setEditingProductId(null);
-                  setActiveModal('product_main');
-                });
-              }}
-            >
-              🏷️ + Add Main Category (મેઈન પ્રોડક્ટ ઉમેરો)
-            </button>
+              {isAdminLoggedIn && (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    borderColor: 'var(--primary-teal-glow)',
+                    color: 'white',
+                    padding: '10px 18px',
+                    fontSize: '0.92rem',
+                    fontWeight: 800
+                  }}
+                  onClick={() => {
+                    verifyAdminAccess(() => {
+                      setEditingProductId(null);
+                      setActiveModal('product_main');
+                    });
+                  }}
+                >
+                  🏷️ + Add Main Category (મેઈન પ્રોડક્ટ ઉમેરો)
+                </button>
+              )}
 
-            <button
-              type="button"
-              className="btn-secondary"
-              style={{
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)',
-                border: 'none',
-                color: 'white',
-                padding: '10px 18px',
-                fontSize: '0.92rem',
-                fontWeight: 800
-              }}
-              onClick={() => {
-                verifyAdminAccess(() => {
-                  if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
-                    const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery', 'eco_packaging', 'apparel', 'turmeric', 'basmati', 'cumin', 'cnc_machine', 'new_agro_machinery', 'fasteners', 'jute_bags', 'peanuts', 'spices', 'milling', 'bagging', 'sorting', 'bolts', 'nuts', 'washers', 'cotton', 'denim', 'ghee', 'lathe', 'cnc'];
-                    const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
+              {isAdminLoggedIn && (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{
+                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                    boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '10px 18px',
+                    fontSize: '0.92rem',
+                    fontWeight: 800
+                  }}
+                  onClick={() => {
+                    verifyAdminAccess(() => {
+                      if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
+                        const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery', 'eco_packaging', 'apparel', 'turmeric', 'basmati', 'cumin', 'cnc_machine', 'new_agro_machinery', 'fasteners', 'jute_bags', 'peanuts', 'spices', 'milling', 'bagging', 'sorting', 'bolts', 'nuts', 'washers', 'cotton', 'denim', 'ghee', 'lathe', 'cnc'];
+                        const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
 
-                    setDeletedBuiltInIds(nextDeleted);
-                    try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
-                    setCurrentCategory('all');
-                    showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
-                  }
-                });
-              }}
-            >
-              🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
-            </button>
-          </div>
+                        setDeletedBuiltInIds(nextDeleted);
+                        try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
+                        setCurrentCategory('all');
+                        showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
+                      }
+                    });
+                  }}
+                >
+                  🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Live Filter Search & Multi-View Toolbar */}
@@ -457,7 +461,7 @@ export default function ProductsGrid() {
                 >
                   {tab.title}
                   <span style={{ fontSize: '0.68rem', marginLeft: '6px', opacity: 0.75 }}>▼</span>
-                  {tab.filter !== 'all' && (
+                  {(isAdminLoggedIn && tab.filter !== 'all') && (
                     <span
                       className="delete-cat-tab"
                       style={{
@@ -617,44 +621,46 @@ export default function ProductsGrid() {
                     {displayTitle}
                   </span>
                   <span style={{ fontSize: '0.68rem', marginLeft: '4px', opacity: 0.75 }}>▼</span>
-                  <>
-                    <span
-                      style={{ marginLeft: '6px', opacity: 0.8, cursor: 'pointer' }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        verifyAdminAccess(() => {
-                          setEditingProductId(p.id);
-                          setActiveModal('product_main');
-                        });
-                      }}
-                      title={`Edit Main Product / Category "${title}"`}
-                    >
-                      ✏️
-                    </span>
-                    <span
-                      className="delete-cat-tab"
-                      style={{
-                        marginLeft: '4px',
-                        cursor: 'pointer',
-                        background: 'rgba(239, 68, 68, 0.25)',
-                        color: '#f87171',
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                        fontWeight: 800,
-                        border: '1px solid rgba(239, 68, 68, 0.4)'
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        verifyAdminAccess(() => {
-                          deleteProduct(p.id, p.category, title, true);
-                        });
-                      }}
-                      title={`Delete Main Product / Category "${title}" (મેઈન પ્રોડક્ટ હટાવો)`}
-                    >
-                      🗑️
-                    </span>
-                  </>
+                  {isAdminLoggedIn && (
+                    <>
+                      <span
+                        style={{ marginLeft: '6px', opacity: 0.8, cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          verifyAdminAccess(() => {
+                            setEditingProductId(p.id);
+                            setActiveModal('product_main');
+                          });
+                        }}
+                        title={`Edit Main Product / Category "${title}"`}
+                      >
+                        ✏️
+                      </span>
+                      <span
+                        className="delete-cat-tab"
+                        style={{
+                          marginLeft: '4px',
+                          cursor: 'pointer',
+                          background: 'rgba(239, 68, 68, 0.25)',
+                          color: '#f87171',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          border: '1px solid rgba(239, 68, 68, 0.4)'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          verifyAdminAccess(() => {
+                            deleteProduct(p.id, p.category, title, true);
+                          });
+                        }}
+                        title={`Delete Main Product / Category "${title}" (મેઈન પ્રોડક્ટ હટાવો)`}
+                      >
+                        🗑️
+                      </span>
+                    </>
+                  )}
                 </button>
 
                 {/* SUB-PRODUCTS HOVER DROPDOWN FOR CUSTOM CATEGORIES */}
@@ -757,23 +763,23 @@ export default function ProductsGrid() {
           })}
 
           {/* Add Sub-Product Action Button inside Tab Bar */}
-          <button
-            type="button"
-            className="btn-primary"
-            style={{
-              marginLeft: '10px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              fontWeight: 800
-            }}
-            onClick={() => {
-              verifyAdminAccess(() => {
+          {(isAdminLoggedIn || currentMerchant) && (
+            <button
+              type="button"
+              className="btn-primary"
+              style={{
+                marginLeft: '10px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                fontWeight: 800
+              }}
+              onClick={() => {
                 setEditingProductId(null);
                 setActiveModal('product_sub');
-              });
-            }}
-          >
-            📦 + Add Sub-Product
-          </button>
+              }}
+            >
+              📦 + Add Sub-Product
+            </button>
+          )}
         </div>
 
         {/* Products Grid / List / Compare Container */}
@@ -906,31 +912,31 @@ export default function ProductsGrid() {
                   : `Each sister company profile maintains its own unique product catalog. Click below to add Main Categories and Sub-Products specifically for ${activeCompany?.name}.`}
               </p>
 
-              {isAdminLoggedIn ? (
+              {(isAdminLoggedIn || currentMerchant) ? (
                 <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', padding: '10px 22px', fontSize: '0.9rem' }}
-                    onClick={() => {
-                      verifyAdminAccess(() => {
-                        setEditingProductId(null);
-                        setActiveModal('product_main');
-                      });
-                    }}
-                  >
-                    🏷️ + {currentLang === 'gu' ? 'મેઈન પ્રોડક્ટ (કેટેગરી) ઉમેરો' : 'Add Main Category'}
-                  </button>
+                  {isAdminLoggedIn && (
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', padding: '10px 22px', fontSize: '0.9rem' }}
+                      onClick={() => {
+                        verifyAdminAccess(() => {
+                          setEditingProductId(null);
+                          setActiveModal('product_main');
+                        });
+                      }}
+                    >
+                      🏷️ + {currentLang === 'gu' ? 'મેઈન પ્રોડક્ટ (કેટેગરી) ઉમેરો' : 'Add Main Category'}
+                    </button>
+                  )}
 
                   <button
                     type="button"
                     className="btn-primary"
                     style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', padding: '10px 22px', fontSize: '0.9rem' }}
                     onClick={() => {
-                      verifyAdminAccess(() => {
-                        setEditingProductId(null);
-                        setActiveModal('product_sub');
-                      });
+                      setEditingProductId(null);
+                      setActiveModal('product_sub');
                     }}
                   >
                     📦 + {currentLang === 'gu' ? 'પેટા પ્રોડક્ટ (Sub-Product) ઉમેરો' : 'Add Sub-Product'}
@@ -947,7 +953,7 @@ export default function ProductsGrid() {
                   fontSize: '0.85rem',
                   fontWeight: 700
                 }}>
-                  🔐 {currentLang === 'gu' ? 'પ્રોડક્ટ ઉમેરવા માટે એડમિન લોગીન કરો.' : 'Log in as Admin to add products for this company.'}
+                  🔐 {currentLang === 'gu' ? 'પ્રોડક્ટ ઉમેરવા માટે એડમિન અથવા સેલર લોગીન કરો.' : 'Log in as Admin or Seller to add products for this company.'}
                 </div>
               )}
             </div>
@@ -1510,7 +1516,7 @@ export default function ProductsGrid() {
                       </div>
                     )}
 
-                    {(!p.isSub && isAdminLoggedIn) && (
+                    {(!p.isSub && (isAdminLoggedIn || currentMerchant)) && (
                       <button
                         type="button"
                         className="btn-secondary"
@@ -1524,10 +1530,8 @@ export default function ProductsGrid() {
                           borderColor: 'rgba(34, 197, 94, 0.3)'
                         }}
                         onClick={() => {
-                          verifyAdminAccess(() => {
-                            setEditingProductId(null);
-                            setActiveModal('product_sub');
-                          });
+                          setEditingProductId(null);
+                          setActiveModal('product_sub');
                         }}
                       >
                         📦 + Add Sub-Product under this Category
