@@ -5068,43 +5068,7 @@ export default function Modals() {
                         </div>
                       </div>
 
-                      {/* Quick Sample Presets Bar */}
-                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>⚡ ઝડપી કમ્બાઈન્ડ બટન:</span>
-                        {[
-                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '5', pType: 'Cartons (કાર્ટન)', cQty: '', cType: 'None', label: '✈️ 100 Pcs (DHL Air Express)' },
-                          { uQty: '500', uType: 'Pcs (નંગ)', pQty: '50', pType: 'Boxes (માસ્ટર બોક્ષ)', cQty: '', cType: 'None', label: '✈️ 500 Pcs / 50 Boxes (Air Cargo)' },
-                          { uQty: '100', uType: 'Pcs (નંગ)', pQty: '10', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container', label: '🚢 100 Pcs / 10 Cartons / 1 Cont' },
-                          { uQty: '', uType: 'Pcs (નંગ)', pQty: '100', pType: 'Bags (કોથળા / ગુણી)', cQty: '1', cType: '20ft FCL Container', label: '🚢 100 Bags / 1 Cont' },
-                        ].map((preset, pIdx) => (
-                          <button
-                            key={pIdx}
-                            type="button"
-                            style={{
-                              fontSize: '0.7rem',
-                              padding: '2px 7px',
-                              borderRadius: '6px',
-                              background: 'rgba(56, 189, 248, 0.12)',
-                              color: '#38bdf8',
-                              border: '1px solid rgba(56, 189, 248, 0.3)',
-                              cursor: 'pointer',
-                              fontWeight: 700,
-                              transition: 'all 0.15s ease'
-                            }}
-                            onClick={() => {
-                              setMoqUnitQty(preset.uQty);
-                              setMoqUnitType(preset.uType);
-                              setMoqPackQty(preset.pQty);
-                              setMoqPackType(preset.pType);
-                              setMoqContainerQty(preset.cQty);
-                              setMoqContainerType(preset.cType);
-                              setMoq(buildMoqString(preset.uQty, preset.uType, preset.pQty, preset.pType, preset.cQty, preset.cType));
-                            }}
-                          >
-                            {preset.label}
-                          </button>
-                        ))}
-                      </div>
+
 
                       {/* Live Final MOQ Result Field */}
                       <div>
