@@ -78,7 +78,7 @@ export default function Modals() {
     customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
-    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds
+    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -1292,6 +1292,35 @@ export default function Modals() {
                 onClick={() => setActiveModal('company')}
               >
                 ✏️ Edit Sister Companies Profiles & Logos
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  padding: '12px 16px',
+                  justifyContent: 'flex-start',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                  boxShadow: '0 4px 18px rgba(239, 68, 68, 0.4)'
+                }}
+                onClick={() => {
+                  verifyAdminAccess(() => {
+                    if (confirm(`🗑️ Are you sure you want to remove ALL default demo categories for "${activeCompany?.name || 'this company'}"? (દરેક કંપનીમાંથી ડિફોલ્ટ મેઈન પ્રોડક્ટ્સ હટાવો)`)) {
+                      const defaultCategoryKeys = ['agro', 'dairy', 'textiles', 'garments', 'industrial', 'packaging', 'new_machinery', 'used_machinery'];
+                      const nextDeleted = Array.from(new Set([...(deletedBuiltInIds || []), ...defaultCategoryKeys]));
+
+                      setDeletedBuiltInIds(nextDeleted);
+                      try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(nextDeleted)); } catch(e) {}
+                      setCurrentCategory('all');
+                      showLiveToast(`✅ Removed default demo categories for ${activeCompany?.name || 'company'}! You can now add your own main products.`, 'success');
+                      setActiveModal(null);
+                    }
+                  });
+                }}
+              >
+                🗑️ Remove Default Demo Categories (ડિફોલ્ટ પ્રોડક્ટ્સ હટાવો)
               </button>
 
               <button
