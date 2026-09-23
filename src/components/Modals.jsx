@@ -510,6 +510,7 @@ export default function Modals() {
   const [newUrlInput, setNewUrlInput] = useState('');
 
   // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
+  const [priceUSD, setPriceUSD] = useState('');
   const [localMrp, setLocalMrp] = useState('1499');
   const [localPrice, setLocalPrice] = useState('999');
   const [packingCharge, setPackingCharge] = useState('0');
@@ -725,6 +726,7 @@ export default function Modals() {
           const loadedPrice = target.localPrice || target.priceInr || '999';
           setLocalMrp(loadedMrp);
           setLocalPrice(loadedPrice);
+          setPriceUSD(target.priceUSD !== undefined && target.priceUSD !== null ? String(target.priceUSD) : '');
           setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
           setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
           setLocalGstRate(target.localGstRate || '18');
@@ -775,6 +777,7 @@ export default function Modals() {
       setPackaging('Standard Export Packaging');
       setLocalMrp('1499');
       setLocalPrice('999');
+      setPriceUSD('');
       setPackingCharge('0');
       setCourierCharge('0');
       setLocalGstRate('18');
@@ -4658,6 +4661,10 @@ export default function Modals() {
                   const baseEnglishSpec = (typeof spec === 'string' ? spec : (spec.en || spec.gu || 'Premium Export Quality Category')).trim();
                   const autoSpec = autoGenerateMultilingualSpec(baseEnglishSpec);
 
+                  const parsedUsd = (priceUSD !== '' && !isNaN(parseFloat(priceUSD))) 
+                    ? parseFloat(priceUSD) 
+                    : ((localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat((parseFloat(localPrice) / 86.45).toFixed(2)) : null);
+
                   saveProduct({
                     category,
                     parentId: parentSelect || null,
@@ -4671,6 +4678,7 @@ export default function Modals() {
                     names: autoNames,
                     spec: autoSpec,
                     packaging, moq,
+                    priceUSD: parsedUsd,
                     localPrice: (localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat(localPrice) : 999,
                     mrpInr: (localMrp !== '' && !isNaN(parseFloat(localMrp))) ? parseFloat(localMrp) : 1499,
                     packingCharge: (packingCharge !== '' && !isNaN(parseFloat(packingCharge))) ? parseFloat(packingCharge) : 0,
@@ -5160,6 +5168,30 @@ export default function Modals() {
                           onChange={(e) => setMoq(e.target.value)}
                           style={{ fontWeight: 800, fontSize: '0.88rem', color: '#2dd4bf', background: '#0f172a', border: '1px solid #2dd4bf' }}
                         />
+                      </div>
+
+                      {/* 💲 Global Export FOB / CIF Unit Price ($ USD) Field */}
+                      <div style={{ marginTop: '14px', background: 'rgba(16, 185, 129, 0.08)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                        <label style={{ fontSize: '0.86rem', color: '#4ade80', display: 'block', marginBottom: '4px', fontWeight: 800 }}>
+                          💲 Global Export FOB / CIF Unit Price ($ USD) (ગ્લોબલ એક્સપોર્ટ યુનિટ દીઠ કિંમત)
+                        </label>
+                        <p style={{ fontSize: '0.74rem', color: '#9ca3af', margin: '0 0 10px' }}>
+                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે યુનિટ દીઠ $ USD ભાવ લખો. (ખાલી રાખશો તો લોકલ ₹ ભાવમાંથી ઓટો-કન્વર્ટ થશે)
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            className="form-control"
+                            placeholder="e.g. 14.00 ($ USD / Unit)"
+                            value={priceUSD}
+                            onChange={(e) => setPriceUSD(e.target.value)}
+                            style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem', background: '#0f172a', border: '1px solid rgba(74, 222, 128, 0.5)', flex: 1 }}
+                          />
+                          <span style={{ fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>USD / Unit</span>
+                        </div>
                       </div>
                     </div>
                   </div>
