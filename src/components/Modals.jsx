@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
-import { superFastCompressImage } from '../utils/realtimeSync';
+import { superFastCompressImage, DEFAULT_CURRENCIES } from '../utils/realtimeSync';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
@@ -512,6 +512,7 @@ export default function Modals() {
   // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
   const [priceUSD, setPriceUSD] = useState('');
   const [exportIncoterm, setExportIncoterm] = useState('FOB');
+  const [exportCurrency, setExportCurrency] = useState('USD');
   const [localMrp, setLocalMrp] = useState('1499');
   const [localPrice, setLocalPrice] = useState('999');
   const [packingCharge, setPackingCharge] = useState('0');
@@ -729,6 +730,7 @@ export default function Modals() {
           setLocalPrice(loadedPrice);
           setPriceUSD(target.priceUSD !== undefined && target.priceUSD !== null ? String(target.priceUSD) : '');
           setExportIncoterm(target.exportIncoterm || 'FOB');
+          setExportCurrency(target.exportCurrency || target.currencyUSD || 'USD');
           setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
           setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
           setLocalGstRate(target.localGstRate || '18');
@@ -4683,6 +4685,7 @@ export default function Modals() {
                     packaging, moq,
                     priceUSD: parsedUsd,
                     exportIncoterm: exportIncoterm || 'FOB',
+                    exportCurrency: exportCurrency || 'USD',
                     localPrice: (localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat(localPrice) : 999,
                     mrpInr: (localMrp !== '' && !isNaN(parseFloat(localMrp))) ? parseFloat(localMrp) : 1499,
                     packingCharge: (packingCharge !== '' && !isNaN(parseFloat(packingCharge))) ? parseFloat(packingCharge) : 0,
@@ -5201,23 +5204,38 @@ export default function Modals() {
                           </button>
                         </div>
                         <p style={{ fontSize: '0.74rem', color: '#9ca3af', margin: '0 0 10px' }}>
-                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે યુનિટ દીઠ $ USD ભાવ અને Incoterm (FOB, CIF, EXW, CFR) પસંદ કરો.
+                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે કરંસી (ડિફોલ્ટ USD), યુનિટ દીઠ ભાવ અને Incoterm (FOB, CIF, EXW, CFR) પસંદ કરો.
                         </p>
 
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
-                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flex: 1, minWidth: '200px' }}>
-                            <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>$</span>
+                          {/* Searchable World Currency Dropdown (Default USD) */}
+                          <div style={{ minWidth: '160px', flexShrink: 0 }}>
+                            <SearchableCurrencySelect
+                              label="💱 Export Currency *"
+                              value={exportCurrency || 'USD'}
+                              onChange={(selected) => {
+                                const code = typeof selected === 'object' && selected ? (selected.code || 'USD') : (selected || 'USD');
+                                setExportCurrency(code);
+                              }}
+                            />
+                          </div>
+
+                          {/* Export Unit Price Input */}
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flex: 1, minWidth: '170px' }}>
+                            <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>
+                              {(DEFAULT_CURRENCIES.find(c => c.code === (exportCurrency || 'USD'))?.symbol) || '$'}
+                            </span>
                             <input
                               type="number"
                               step="0.01"
                               min="0"
                               className="form-control"
-                              placeholder="e.g. 14.00 ($ USD / Unit)"
+                              placeholder={`e.g. 14.00 (${exportCurrency || 'USD'} / Unit)`}
                               value={priceUSD}
                               onChange={(e) => setPriceUSD(e.target.value)}
                               style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem', background: '#0f172a', border: '1px solid rgba(74, 222, 128, 0.5)', flex: 1 }}
                             />
-                            <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>USD / Unit</span>
+                            <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>{exportCurrency || 'USD'} / Unit</span>
                           </div>
 
                           {/* Incoterm Term Selector Dropdown */}
