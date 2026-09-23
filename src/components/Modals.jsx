@@ -253,11 +253,48 @@ export default function Modals() {
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
 
   const getCatalogProductInvoiceInfo = (prod) => {
-    if (!prod) return { name: 'Export Product', hsn: '9988', price: '15', qty: '100', unit: 'Pcs (નંગ)', incoterm: 'FOB (Free On Board)' };
+    if (!prod) return { name: 'Export Product', hsn: '9988', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ)', incoterm: 'FOB (Free On Board)' };
     
-    const name = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
-    const hsn = prod.hsCode || prod.localHsn || '9988';
+    let subName = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
+    let hsn = prod.hsCode || prod.localHsn || '9988';
     
+    // Resolve Main Category Name
+    let mainCategoryName = '';
+    if (prod.isSub || prod.category || prod.parentId) {
+      const customMains = customProductsList || [];
+      const customMain = customMains.find(m => !m.isSub && (m.category === prod.category || m.id === prod.parentId || m.category === prod.parentId));
+      if (customMain) {
+        mainCategoryName = (customMain.names && typeof customMain.names === 'object')
+          ? (customMain.names[currentLang] || customMain.names['en'] || customMain.names['gu'] || '')
+          : (customMain.name || '');
+      }
+    }
+
+    if (!mainCategoryName) {
+      const catSlug = (prod.category || prod.parentId || '').toLowerCase();
+      const hs = (hsn || '').trim();
+      const nameStr = (subName + ' ' + (prod.name || '')).toLowerCase();
+
+      if (catSlug.includes('garment') || catSlug.includes('apparel') || nameStr.includes('suit') || nameStr.includes('dress') || hs.startsWith('61') || hs.startsWith('62')) {
+        mainCategoryName = currentLang === 'gu' ? 'રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : 'Ready Made Garments';
+      } else if (catSlug.includes('textile') || catSlug.includes('fabric') || nameStr.includes('saree') || nameStr.includes('yarn') || hs.startsWith('52') || hs.startsWith('54')) {
+        mainCategoryName = currentLang === 'gu' ? 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (Textiles)' : 'Textile Products';
+      } else if (catSlug.includes('agro') || nameStr.includes('spice') || nameStr.includes('rice') || nameStr.includes('wheat') || nameStr.includes('seed')) {
+        mainCategoryName = currentLang === 'gu' ? 'એગ્રો કોમોડિટીઝ & ફૂડ' : 'Agro & Food Products';
+      } else if (catSlug.includes('dairy') || nameStr.includes('ghee') || nameStr.includes('milk')) {
+        mainCategoryName = currentLang === 'gu' ? 'ડેરી પ્રોડક્ટ્સ' : 'Dairy Products';
+      }
+    }
+
+    let fullName = subName;
+    if (mainCategoryName && mainCategoryName.trim()) {
+      const cleanMain = mainCategoryName.trim();
+      const cleanSub = subName.trim();
+      if (!cleanSub.toLowerCase().includes(cleanMain.toLowerCase()) && !cleanMain.toLowerCase().includes(cleanSub.toLowerCase())) {
+        fullName = `${cleanMain} - ${cleanSub}`;
+      }
+    }
+
     let rawPrice = prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== ''
       ? String(prod.priceUSD)
       : (prod.priceUsd || prod.priceInr || prod.localPrice || prod.price || '');
@@ -267,25 +304,16 @@ export default function Modals() {
     }
 
     let qty = '1';
-    let unit = prod.unit || 'Pcs (નંગ)';
-
-    if (prod.moqUnitQty && String(prod.moqUnitQty).trim() !== '' && !isNaN(parseFloat(prod.moqUnitQty))) {
-      qty = String(prod.moqUnitQty).trim();
-      if (prod.moqUnitType) unit = prod.moqUnitType;
-      else if (prod.moq) unit = prod.moq;
-    } else if (prod.moq) {
-      const match = String(prod.moq).match(/^(\d+)\s*(.*)$/);
-      if (match) {
-        qty = match[1];
-        unit = match[2] || prod.unit || 'Pcs';
-      } else {
-        unit = prod.moq;
-      }
+    let rawMoq = prod.moq || '100 Pcs (નંગ)';
+    let cleanMoq = rawMoq.replace(/\/ (\d+)\s*(20ft|40ft)/gi, '/ $1 x $2');
+    if (!cleanMoq.startsWith('MOQ:')) {
+      cleanMoq = `MOQ: ${cleanMoq}`;
     }
+    let unit = cleanMoq;
 
     const incoterm = prod.exportIncoterm || prod.incoterm || 'FOB';
 
-    return { name, hsn, price, qty, unit, incoterm };
+    return { name: fullName, hsn, price, qty, unit, incoterm };
   };
 
   const [activeQuoteCustomer, setActiveQuoteCustomer] = useState(null);
@@ -6983,7 +7011,7 @@ export default function Modals() {
                               {quoteCurrency} {Number(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              {item.qty} {item.unit}
+                              {Number(item.qty || 1) > 1 ? `${item.qty} x (${item.unit})` : (item.unit || 'MOQ: 100 Pcs (નંગ)')}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 900, color: '#0f766e', fontSize: '0.95rem' }}>
                               {quoteCurrency} {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
