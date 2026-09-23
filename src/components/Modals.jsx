@@ -252,8 +252,24 @@ export default function Modals() {
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
 
+  const getNormalizedIncotermString = (raw) => {
+    if (!raw) return 'FOB (Free On Board - Loading Port)';
+    const s = String(raw).trim().toUpperCase();
+    if (s.startsWith('DDP')) return 'DDP (Delivered Duty Paid - Buyer Doorstep)';
+    if (s.startsWith('CIF')) return 'CIF (Cost, Insurance & Freight - Destination Port)';
+    if (s.startsWith('EXW')) return 'EXW (Ex Works - Seller Factory/Warehouse)';
+    if (s.startsWith('CFR')) return 'CFR (Cost & Freight - Destination Port)';
+    if (s.startsWith('FCA')) return 'FCA (Free Carrier - Inland Depot)';
+    if (s.startsWith('FAS')) return 'FAS (Free Alongside Ship)';
+    if (s.startsWith('CPT')) return 'CPT (Carriage Paid To)';
+    if (s.startsWith('CIP')) return 'CIP (Carriage & Insurance Paid To)';
+    if (s.startsWith('DAP')) return 'DAP (Delivered At Place)';
+    if (s.startsWith('FOB')) return 'FOB (Free On Board - Loading Port)';
+    return raw;
+  };
+
   const getCatalogProductInvoiceInfo = (prod) => {
-    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'FOB (Free On Board)' };
+    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'DDP (Delivered Duty Paid - Buyer Doorstep)', currency: 'USD' };
     
     let subName = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
     let hsn = prod.hsCode || prod.localHsn || '9988';
@@ -335,9 +351,11 @@ export default function Modals() {
     }
     let unit = cleanMoq;
 
-    const incoterm = prod.exportIncoterm || prod.incoterm || 'FOB';
+    const rawIncoterm = prod.exportIncoterm || prod.incoterm || prod.export_incoterm || 'FOB';
+    const incoterm = getNormalizedIncotermString(rawIncoterm);
+    const currency = prod.exportCurrency || prod.currency || prod.currencyUSD || prod.priceCurrency || prod.quoteCurrency || 'USD';
 
-    return { name: fullName, hsn, price, qty, unit, incoterm };
+    return { name: fullName, hsn, price, qty, unit, incoterm, currency };
   };
 
   const [activeQuoteCustomer, setActiveQuoteCustomer] = useState(null);
@@ -7097,7 +7115,7 @@ export default function Modals() {
 
                     <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '8px', border: '1px solid #bbf7d0', textAlign: 'right' }}>
                       <div style={{ fontSize: '0.82rem', color: '#166534', fontWeight: 700 }}>
-                        {invoiceTradeMode === 'export' ? 'FOB / CIF COMMODITY VALUE:' : 'SUBTOTAL TAXABLE VALUE:'}
+                        {invoiceTradeMode === 'export' ? `${(quoteIncoterm || 'FOB').split(' ')[0]} COMMODITY VALUE:` : 'SUBTOTAL TAXABLE VALUE:'}
                       </div>
                       <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#15803d', marginTop: '2px' }}>
                         {quoteCurrency} {subtotalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
