@@ -208,6 +208,24 @@ export function AppProvider({ children }) {
     catch(e) { return 2.5; }
   });
 
+  // Global Forex Risk Buffer State (Default 2.5%)
+  const [forexRiskBuffer, setForexRiskBuffer] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_forex_risk_buffer_v1');
+      if (saved !== null && saved !== undefined) return parseFloat(saved);
+    } catch(e) {}
+    return 2.5;
+  });
+
+  const saveForexRiskBuffer = (val) => {
+    const num = parseFloat(val);
+    const validBuffer = isNaN(num) ? 2.5 : Math.max(0, Math.min(25, num));
+    setForexRiskBuffer(validBuffer);
+    try { localStorage.setItem('site_forex_risk_buffer_v1', validBuffer.toString()); } catch(e) {}
+    syncToServer({ forexRiskBuffer: validBuffer });
+    showLiveToast(`🛡️ Forex Risk Buffer updated to +${validBuffer}%`, 'success');
+  };
+
   const [requireProductApproval, setRequireProductApproval] = useState(() => {
     try {
       const stored = localStorage.getItem('site_require_product_approval_v1');
@@ -2159,6 +2177,7 @@ export function AppProvider({ children }) {
       customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
       merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
+      forexRiskBuffer, saveForexRiskBuffer, setForexRiskBuffer: saveForexRiskBuffer,
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,
       exportDatabase, importDatabase,
       paymentGatewaysConfig, savePaymentGatewaysConfig,

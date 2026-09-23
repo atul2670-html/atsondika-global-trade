@@ -8,7 +8,7 @@ export default function ContainerCalculator() {
   const {
     freightRoutesList, deleteFreightRoute,
     isAdminLoggedIn, verifyAdminAccess, setActiveModal, setEditingRouteId,
-    currentLang
+    currentLang, forexRiskBuffer, saveForexRiskBuffer
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('container'); // 'container' | 'currency' | 'routes'
@@ -24,7 +24,21 @@ export default function ContainerCalculator() {
   const [amount, setAmount] = useState(10000);
   const [fromCurr, setFromCurr] = useState('USD');
   const [toCurr, setToCurr] = useState('INR');
-  const [fluctuationPct, setFluctuationPct] = useState(2); // Default 2% Forex Risk Buffer
+  const [fluctuationPct, setFluctuationPctState] = useState(forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5);
+
+  const setFluctuationPct = (val) => {
+    const pct = parseFloat(val);
+    if (!isNaN(pct)) {
+      setFluctuationPctState(pct);
+      if (saveForexRiskBuffer) saveForexRiskBuffer(pct);
+    }
+  };
+
+  useEffect(() => {
+    if (forexRiskBuffer !== undefined && forexRiskBuffer !== null) {
+      setFluctuationPctState(forexRiskBuffer);
+    }
+  }, [forexRiskBuffer]);
   const [showSwastikForexPanel, setShowSwastikForexPanel] = useState(false); // Collapsible Swastik (卐) Toggle State
   const [rates, setRates] = useState(fallbackRates);
   const [currencyDict, setCurrencyDict] = useState(worldCurrencies);

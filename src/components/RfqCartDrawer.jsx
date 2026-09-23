@@ -32,7 +32,8 @@ export default function RfqCartDrawer() {
     tradeMode,
     showLiveToast,
     paymentGatewaysConfig,
-    setSelectedRfqProducts
+    setSelectedRfqProducts,
+    forexRiskBuffer
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -928,6 +929,26 @@ export default function RfqCartDrawer() {
                 )}
               </div>
             </div>
+
+            {/* 🛡️ Forex Risk Buffer Impact Badge */}
+            {getActiveCurrencyCode() !== 'INR' && (
+              <div style={{
+                background: 'rgba(234, 179, 8, 0.12)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                padding: '6px 12px',
+                borderRadius: '10px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                color: '#fde047',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '10px'
+              }}>
+                <span>🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}</span>
+                <span style={{ color: '#4ade80', fontWeight: 900 }}>+{forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}% Hedged Buffer</span>
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
               {/* PRIMARY PAY NOW BUTTON */}

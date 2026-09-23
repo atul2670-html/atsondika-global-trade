@@ -78,6 +78,7 @@ export default function Modals() {
     customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
+    forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess
   } = useApp();
 
@@ -2111,6 +2112,82 @@ export default function Modals() {
                       }}
                     >
                       {rateVal}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 🛡️ Forex Risk Buffer Impact Controls */}
+              <div style={{ background: 'rgba(234,179,8,0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(234,179,8,0.3)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.92rem', fontWeight: 800, color: '#fde047', margin: 0 }}>
+                    🛡️ Forex Risk Buffer Rate (%) (ફોરેક્સ રિસ્ક બફર દર)
+                  </label>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '3px 8px', borderRadius: '6px' }}>
+                    +{forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}% Active
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                  ગ્લોબલ કન્વર્ઝન અને ફોરેક્ષ કેલ્ક્યુલેટર માટે રિસ્ક હેજિંગ બફર સેટિંગ. આપડા ફોરેક્ષ કેલ્ક્યુલેટર સાથે સિન્ક રહેશે.
+                </p>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <select
+                    className="input-field"
+                    style={{
+                      fontSize: '0.92rem',
+                      fontWeight: 800,
+                      padding: '10px 14px',
+                      color: '#facc15',
+                      background: '#18181b',
+                      border: '1px solid rgba(234,179,8,0.4)',
+                      borderRadius: '10px',
+                      flex: 1,
+                      cursor: 'pointer'
+                    }}
+                    value={forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (saveForexRiskBuffer) saveForexRiskBuffer(val);
+                    }}
+                  >
+                    <option value={0}>0% - Exact Spot Exchange Rate (0% Buffer)</option>
+                    <option value={0.5}>+0.5% - Low FX Risk Buffer (+0.5%)</option>
+                    <option value={1}>+1.0% - Standard Commercial Buffer (+1.0%)</option>
+                    <option value={1.5}>+1.5% - Moderate Volatility Hedge (+1.5%)</option>
+                    <option value={2}>+2.0% - Default Export Risk Hedge (+2.0%)</option>
+                    <option value={2.5}>+2.5% - High Volatility Protection (+2.5% Recommended)</option>
+                    <option value={3}>+3.0% - Extended Delivery Buffer (+3.0%)</option>
+                    <option value={3.5}>+3.5% - High Volatility Buffer (+3.5%)</option>
+                    <option value={4}>+4.0% - Emerging Market Hedge (+4.0%)</option>
+                    <option value={5}>+5.0% - Maximum Safety Protection (+5.0%)</option>
+                    <option value={7.5}>+7.5% - Long-Term Contract Buffer (+7.5%)</option>
+                    <option value={10}>+10.0% - High Volatility Hedge (+10.0%)</option>
+                  </select>
+                </div>
+
+                {/* Preset Quick Buttons */}
+                <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Presets:</span>
+                  {[0, 1.5, 2.5, 3.5, 5.0].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => {
+                        if (saveForexRiskBuffer) saveForexRiskBuffer(pct);
+                      }}
+                      style={{
+                        padding: '4px 10px',
+                        fontSize: '0.76rem',
+                        fontWeight: 800,
+                        borderRadius: '8px',
+                        background: (forexRiskBuffer === pct) ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
+                        color: (forexRiskBuffer === pct) ? '#fde047' : '#d4d4d8',
+                        border: '1px solid ' + ((forexRiskBuffer === pct) ? 'rgba(234,179,8,0.5)' : 'rgba(255,255,255,0.1)'),
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {pct === 0 ? '0% Exact' : `+${pct}%`}
                     </button>
                   ))}
                 </div>
