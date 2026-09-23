@@ -211,7 +211,7 @@ export default function Modals() {
   const [transporterLrInput, setTransporterLrInput] = useState('VRL Logistics / LR #889944');
   const [placeOfSupplyStateInput, setPlaceOfSupplyStateInput] = useState('Maharashtra (27)');
   const [invoiceItems, setInvoiceItems] = useState([
-    { id: 'item_1', name: 'Premium Export Commodity / Product Item', hsn: '09093110', qty: '10', unit: 'MT (Metric Tons)', price: '500' }
+    { id: 'item_1', name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', price: '15' }
   ]);
 
   // Sync state when selecting sister company to edit
@@ -253,7 +253,7 @@ export default function Modals() {
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
 
   const getCatalogProductInvoiceInfo = (prod) => {
-    if (!prod) return { name: 'Export Product', hsn: '9988', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ)', incoterm: 'FOB (Free On Board)' };
+    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'FOB (Free On Board)' };
     
     let subName = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
     let hsn = prod.hsCode || prod.localHsn || '9988';
@@ -276,21 +276,35 @@ export default function Modals() {
       const nameStr = (subName + ' ' + (prod.name || '')).toLowerCase();
 
       if (catSlug.includes('garment') || catSlug.includes('apparel') || nameStr.includes('suit') || nameStr.includes('dress') || hs.startsWith('61') || hs.startsWith('62')) {
-        mainCategoryName = currentLang === 'gu' ? 'રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : 'Ready Made Garments';
+        mainCategoryName = 'Ready Made Garments';
       } else if (catSlug.includes('textile') || catSlug.includes('fabric') || nameStr.includes('saree') || nameStr.includes('yarn') || hs.startsWith('52') || hs.startsWith('54')) {
-        mainCategoryName = currentLang === 'gu' ? 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (Textiles)' : 'Textile Products';
+        mainCategoryName = 'Textile Products';
       } else if (catSlug.includes('agro') || nameStr.includes('spice') || nameStr.includes('rice') || nameStr.includes('wheat') || nameStr.includes('seed')) {
-        mainCategoryName = currentLang === 'gu' ? 'એગ્રો કોમોડિટીઝ & ફૂડ' : 'Agro & Food Products';
+        mainCategoryName = 'Agro & Food Products';
       } else if (catSlug.includes('dairy') || nameStr.includes('ghee') || nameStr.includes('milk')) {
-        mainCategoryName = currentLang === 'gu' ? 'ડેરી પ્રોડક્ટ્સ' : 'Dairy Products';
+        mainCategoryName = 'Dairy Products';
       }
     }
 
     let fullName = subName;
-    if (mainCategoryName && mainCategoryName.trim()) {
+    const catSlugLower = (prod.category || prod.parentId || '').toLowerCase();
+    const hsLower = (hsn || '').trim();
+    const nameLower = (subName || '').toLowerCase();
+
+    const isGarment = catSlugLower.includes('garment') || hsLower.startsWith('61') || hsLower.startsWith('62') || nameLower.includes('garment') || (mainCategoryName || '').toLowerCase().includes('garment') || nameLower.includes('dress') || nameLower.includes('suit') || nameLower.includes('punjabi');
+
+    if (isGarment) {
+      if (nameLower === 'ready made garments' || nameLower === 'readymade garments' || nameLower === 'garments') {
+        fullName = 'Ready Made Garments - Punjabi Dresses';
+      } else if (!nameLower.includes('ready made garments') && !nameLower.includes('readymade garments')) {
+        fullName = `Ready Made Garments - ${subName}`;
+      } else {
+        fullName = subName;
+      }
+    } else if (mainCategoryName && mainCategoryName.trim()) {
       const cleanMain = mainCategoryName.trim();
       const cleanSub = subName.trim();
-      if (!cleanSub.toLowerCase().includes(cleanMain.toLowerCase()) && !cleanMain.toLowerCase().includes(cleanSub.toLowerCase())) {
+      if (cleanSub.toLowerCase() !== cleanMain.toLowerCase() && !cleanSub.toLowerCase().startsWith(cleanMain.toLowerCase())) {
         fullName = `${cleanMain} - ${cleanSub}`;
       }
     }
@@ -304,8 +318,18 @@ export default function Modals() {
     }
 
     let qty = '1';
-    let rawMoq = prod.moq || '100 Pcs (નંગ)';
-    let cleanMoq = rawMoq.replace(/\/ (\d+)\s*(20ft|40ft)/gi, '/ $1 x $2');
+    let rawMoq = prod.moq || '';
+    let cleanMoq = rawMoq
+      .replace(/MOQ:\s*/gi, '')
+      .replace(/\/ (\d+)\s*(20ft|40ft)/gi, '/ $1 x $2')
+      .replace(/120ft/gi, '1 x 20ft')
+      .replace(/1 20ft/gi, '1 x 20ft')
+      .trim();
+
+    if (!cleanMoq || cleanMoq === '100 Pcs (નંગ)' || !cleanMoq.includes('/') || (!cleanMoq.includes('Carton') && !cleanMoq.includes('કાર્ટન'))) {
+      cleanMoq = '100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container';
+    }
+
     if (!cleanMoq.startsWith('MOQ:')) {
       cleanMoq = `MOQ: ${cleanMoq}`;
     }
