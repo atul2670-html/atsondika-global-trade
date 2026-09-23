@@ -473,6 +473,25 @@ export default function Modals() {
     }
   }, [activeModal, activeQuoteCustomer]);
 
+  useEffect(() => {
+    if (activeModal === 'quotation' && quotationProduct) {
+      const info = getCatalogProductInvoiceInfo(quotationProduct);
+      setInvoiceItems([
+        {
+          id: `item_${Date.now()}`,
+          name: info.name,
+          hsn: info.hsn,
+          qty: info.qty,
+          unit: info.unit,
+          price: info.price
+        }
+      ]);
+      if (info.incoterm) {
+        setQuoteIncoterm(info.incoterm);
+      }
+    }
+  }, [activeModal, quotationProduct]);
+
   // Lightbox Image Preview State
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [isUltraZoom, setIsUltraZoom] = useState(false);
@@ -539,7 +558,13 @@ export default function Modals() {
       parts.push(`${String(pQty).trim()} ${pType}`);
     }
     if (cQty && String(cQty).trim() && cType && !String(cType).startsWith('None')) {
-      parts.push(`${String(cQty).trim()} ${cType}`);
+      const trimmedC = String(cQty).trim();
+      const trimmedType = String(cType).trim();
+      if (/^\d+ft/i.test(trimmedType)) {
+        parts.push(`${trimmedC} x ${trimmedType}`);
+      } else {
+        parts.push(`${trimmedC} ${trimmedType}`);
+      }
     }
     return parts.length > 0 ? parts.join(' / ') : '100 Pcs (નંગ)';
   };
@@ -6918,7 +6943,7 @@ export default function Modals() {
                         <>
                           <div><strong>Port of Loading:</strong> {quotePortLoading}</div>
                           <div><strong>Port of Discharge:</strong> {quotePortDischarge}</div>
-                          <div><strong>Incoterms:</strong> {quoteIncoterm}</div>
+                          <div><strong>Incoterms:</strong> {quoteIncoterm && quoteIncoterm !== 'LOCAL' ? quoteIncoterm : (quotationProduct?.exportIncoterm || exportIncoterm || 'FOB')}</div>
                         </>
                       ) : (
                         <>

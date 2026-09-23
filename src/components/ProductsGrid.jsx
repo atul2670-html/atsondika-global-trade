@@ -1514,7 +1514,7 @@ export default function ProductsGrid() {
                         </div>
                         <div>
                           <strong>{currentLang === 'gu' ? '⚡ ન્યૂનતમ ઓર્ડર (MOQ):' : (currentLang === 'hi' ? '⚡ न्यूनतम ऑर्डर (MOQ):' : (currentLang === 'fr' ? '⚡ Quantité Minimale (MOQ):' : '⚡ MOQ:'))}</strong>{' '}
-                          {autoTranslateText(p.moq || '1 Unit / Container', currentLang)}
+                          {p.moq ? p.moq.replace(/\/ (\d+)\s*(20ft|40ft)/gi, '/ $1 x $2') : '100 Pcs (નંગ)'}
                         </div>
                         <div>
                           <strong>{currentLang === 'gu' ? '🌐 એચ.એસ. કોડ:' : (currentLang === 'hi' ? '🌐 एचएस कोड:' : (currentLang === 'fr' ? '🌐 Code SH:' : '🌐 HS Code:'))}</strong>{' '}
