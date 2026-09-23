@@ -49,6 +49,44 @@ export default function RfqCartDrawer() {
   const [billingAddress, setBillingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
+  const getActiveCurrencyCode = () => {
+    if (typeof currentCurrency === 'object' && currentCurrency) {
+      return currentCurrency.code || 'INR';
+    }
+    return currentCurrency || 'INR';
+  };
+
+  const getActiveCurrencySymbol = () => {
+    const code = getActiveCurrencyCode();
+    return currSymbolMap[code] || getCurrencySymbol(code);
+  };
+
+  const formatLocalPrice = (amountInr) => {
+    const num = parseFloat(amountInr) || 0;
+    const activeCode = getActiveCurrencyCode();
+    const activeSym = getActiveCurrencySymbol();
+
+    if (activeCode === 'INR') {
+      return `${activeSym}${Math.round(num).toLocaleString('en-IN')}`;
+    }
+
+    const inrToUsdRate = 86.45;
+    let usdVal = num / inrToUsdRate;
+
+    if (activeCode === 'USD') {
+      const formatted = usdVal < 10 ? usdVal.toFixed(2) : Math.round(usdVal).toLocaleString('en-US');
+      return `$${formatted}`;
+    }
+
+    const targetFx = (currenciesList || []).find(c => c.code === activeCode);
+    let targetVal = usdVal;
+    if (targetFx && targetFx.rate) {
+      targetVal = usdVal * targetFx.rate;
+    }
+    const formatted = targetVal < 10 ? targetVal.toFixed(2) : Math.round(targetVal).toLocaleString('en-US');
+    return `${activeSym}${formatted}`;
+  };
+
   // Payment Checkout System States & Validation Refs
   const buyerNameInputRef = React.useRef(null);
   const buyerPhoneInputRef = React.useRef(null);
@@ -279,28 +317,66 @@ export default function RfqCartDrawer() {
   return (
     <div className="rfq-drawer-overlay" onClick={() => setIsRfqDrawerOpen(false)}>
       <div className="rfq-drawer-content" onClick={(e) => e.stopPropagation()}>
-        {/* Drawer Header */}
-        <div className="rfq-drawer-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '1.8rem' }}>🛒</span>
+        {/* Drawer Header with Live Currency Switcher */}
+        <div className="rfq-drawer-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '1.6rem' }}>🛒</span>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
                 {tradeMode === 'local'
-                  ? (currentLang === 'gu' ? '🛍️ લોકલ ટ્રેડ શોપિંગ કાર્ટ (Local Cart)' : '🛍️ Local Trade Shopping Cart')
+                  ? (currentLang === 'gu' ? '🛍️ Local Trade Shopping Cart' : '🛍️ Local Trade Shopping Cart')
                   : (rfqTradeCategory === 'export' ? 'Export Quote Cart (RFQ)' : 'Domestic India Sale Quote Cart')}
               </h3>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                {rfqCartItems.length} {currentLang === 'gu' ? 'પ્રોડક્ટ્સ કાર્ટમાં સેવ થયેલ છે' : 'Products Saved in Cart'}
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)' }}>
+                {rfqCartItems.length} {currentLang === 'gu' ? 'Products Saved in Cart' : 'Products Saved in Cart'}
               </span>
             </div>
           </div>
-          <button
-            className="drawer-close-btn"
-            onClick={() => setIsRfqDrawerOpen(false)}
-            aria-label="Close Drawer"
-          >
-            ✕
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {/* Header Currency Dropdown Selector */}
+            <div style={{ width: '135px' }}>
+              <SearchableCurrencySelect
+                value={currentCurrency}
+                currenciesList={currenciesList}
+                onChange={(selectedObj) => {
+                  if (setCurrentCurrency) setCurrentCurrency(selectedObj);
+                }}
+              />
+            </div>
+
+            {/* Quick IN ₹ INR Toggle Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const inrObj = (currenciesList || []).find(c => c.code === 'INR') || { code: 'INR', symbol: '₹', name: 'Indian Rupee' };
+                if (setCurrentCurrency) setCurrentCurrency(inrObj);
+              }}
+              style={{
+                padding: '5px 10px',
+                borderRadius: '16px',
+                border: '1px solid ' + (getActiveCurrencyCode() === 'INR' ? '#f59e0b' : 'rgba(255,255,255,0.2)'),
+                background: getActiveCurrencyCode() === 'INR' ? 'rgba(245, 158, 11, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: getActiveCurrencyCode() === 'INR' ? '#f59e0b' : '#e2e8f0',
+                fontSize: '0.74rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+              title="Switch to Indian Rupee (₹ INR)"
+            >
+              IN ₹ INR
+            </button>
+
+            {/* Close Button */}
+            <button
+              className="drawer-close-btn"
+              onClick={() => setIsRfqDrawerOpen(false)}
+              aria-label="Close Drawer"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Drawer Body */}
@@ -373,15 +449,15 @@ export default function RfqCartDrawer() {
                           {tradeMode !== 'local' && (
                             <span className="rfq-item-hscode">HS: {item.hsCode || '090931'}</span>
                           )}
-                          <span className="rfq-item-price">
+                          <span className="rfq-item-price" style={{ color: '#f59e0b', fontWeight: 800 }}>
                             {tradeMode === 'local'
-                              ? getCurrencySymbol(item.currency || 'INR') + Number(itemPrice).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                              ? formatLocalPrice(itemPrice)
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.packingCharge} Packing</span>}
-                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {getCurrencySymbol(item.currency || 'INR')}{item.courierCharge} Courier</span>}
+                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {formatLocalPrice(item.packingCharge)} Packing</span>}
+                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {formatLocalPrice(item.courierCharge)} Courier</span>}
                               {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
                             </div>
                           )}
@@ -801,13 +877,21 @@ export default function RfqCartDrawer() {
                 {tradeMode === 'local' ? (
                   <>
                     <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
-                      {totalCourierCharge > 0 ? `🚚 Courier: ${cartCurrSym}${totalCourierCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '🚚 FREE Delivery'}
-                      {totalPackingCharge > 0 ? ` • 📦 Packing: ${cartCurrSym}${totalPackingCharge.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
-                      {totalGstAmount > 0 ? ` • 🏛️ GST: +${cartCurrSym}${totalGstAmount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : ''}
+                      {totalCourierCharge > 0 ? `🚚 Courier: ${formatLocalPrice(totalCourierCharge)}` : '🚚 FREE Delivery'}
+                      {totalPackingCharge > 0 ? ` • 📦 Packing: ${formatLocalPrice(totalPackingCharge)}` : ''}
+                      {totalGstAmount > 0 ? ` • 🏛️ GST: +${formatLocalPrice(totalGstAmount)}` : ''}
                     </span>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#facc15' }}>
-                      Total: {cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#f59e0b', display: 'block' }}>
+                      Total: {formatLocalPrice(totalLocalAmount)}
                     </span>
+                    {getActiveCurrencyCode() !== 'INR' && (
+                      <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, display: 'block', marginTop: '2px' }}>
+                        IN Live INR Equivalent: ₹{Math.round(totalLocalAmount).toLocaleString('en-IN')} INR
+                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, display: 'block' }}>
+                          (Live FX Rate: 1 USD = ₹94.55 INR)
+                        </span>
+                      </span>
+                    )}
                   </>
                 ) : (
                   <>
@@ -833,8 +917,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `હમણાં જ પેમેન્ટ કરો (Pay Now ${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN') : convertPrice(totalExportAmount)})`}
+                  ? `Pay Now & Complete Order (${tradeMode === 'local' ? formatLocalPrice(totalLocalAmount) : convertPrice(totalExportAmount)})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? formatLocalPrice(totalLocalAmount) : convertPrice(totalExportAmount)})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
