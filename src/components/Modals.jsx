@@ -252,6 +252,42 @@ export default function Modals() {
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
 
+  const getCatalogProductInvoiceInfo = (prod) => {
+    if (!prod) return { name: 'Export Product', hsn: '9988', price: '15', qty: '100', unit: 'Pcs (નંગ)', incoterm: 'FOB (Free On Board)' };
+    
+    const name = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
+    const hsn = prod.hsCode || prod.localHsn || '9988';
+    
+    let rawPrice = prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== ''
+      ? String(prod.priceUSD)
+      : (prod.priceUsd || prod.priceInr || prod.localPrice || prod.price || '');
+    let price = rawPrice ? String(rawPrice).replace(/[^0-9.]/g, '') : '15';
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+      price = '15';
+    }
+
+    let qty = '1';
+    let unit = prod.unit || 'Pcs (નંગ)';
+
+    if (prod.moqUnitQty && String(prod.moqUnitQty).trim() !== '' && !isNaN(parseFloat(prod.moqUnitQty))) {
+      qty = String(prod.moqUnitQty).trim();
+      if (prod.moqUnitType) unit = prod.moqUnitType;
+      else if (prod.moq) unit = prod.moq;
+    } else if (prod.moq) {
+      const match = String(prod.moq).match(/^(\d+)\s*(.*)$/);
+      if (match) {
+        qty = match[1];
+        unit = match[2] || prod.unit || 'Pcs';
+      } else {
+        unit = prod.moq;
+      }
+    }
+
+    const incoterm = prod.exportIncoterm || prod.incoterm || 'FOB';
+
+    return { name, hsn, price, qty, unit, incoterm };
+  };
+
   const [activeQuoteCustomer, setActiveQuoteCustomer] = useState(null);
 
   // 1-Click Proforma Invoice Generator for Particular Inquiry Item & Buyer
@@ -309,13 +345,17 @@ export default function Modals() {
 
     let prodName = cust.productName || '';
     let hs = cust.hsCode || '';
-    let unitPrice = '500';
+    let unitPrice = '15';
 
     if (matchedProd) {
       setQuotationProduct(matchedProd);
-      if (!prodName) prodName = matchedProd.names?.en || matchedProd.names?.gu || 'Punjabi Dress';
-      if (!hs) hs = matchedProd.hsCode || matchedProd.localHsn || '620443';
-      if (matchedProd.priceUsd) unitPrice = matchedProd.priceUsd.replace(/[^0-9.]/g, '') || '500';
+      const info = getCatalogProductInvoiceInfo(matchedProd);
+      if (!prodName) prodName = info.name;
+      if (!hs) hs = info.hsn;
+      unitPrice = info.price;
+      if (info.qty) parsedQty = info.qty;
+      if (info.unit) parsedUnit = info.unit;
+      if (info.incoterm) setQuoteIncoterm(info.incoterm);
     } else {
       let cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for item:|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
       if (cleanName.includes('MOQ:')) cleanName = cleanName.split('MOQ:')[0].trim();
@@ -332,21 +372,20 @@ export default function Modals() {
     // Case 1: Explicit selectedProducts array
     if (cust.selectedProducts && Array.isArray(cust.selectedProducts) && cust.selectedProducts.length > 0) {
       lineItems = cust.selectedProducts.map((p, pIdx) => {
-        const pName = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Export Commodity';
-        const pHs = p.hsCode || p.localHsn || '9988';
-        const pPrice = p.priceUsd ? p.priceUsd.replace(/[^0-9.]/g, '') : '500';
+        const info = getCatalogProductInvoiceInfo(p);
+        if (pIdx === 0 && info.incoterm) setQuoteIncoterm(info.incoterm);
         return {
           id: `item_${Date.now()}_${pIdx}`,
-          name: pName,
-          hsn: pHs,
-          qty: '1',
-          unit: p.moq || parsedUnit || 'Unit / Container',
-          price: pPrice || '500'
+          name: info.name,
+          hsn: info.hsn,
+          qty: info.qty,
+          unit: info.unit,
+          price: info.price
         };
       });
     }
 
-    // Case 2: Multi-line / regex matching in notes (e.g. "1. Readymade Garments (HS Code: 620413)...\n2. Industrial Automation Systems...")
+    // Case 2: Multi-line / regex matching in notes
     if (lineItems.length === 0 && notes) {
       const allCatalogProds = getAllProducts ? getAllProducts() : [];
       const itemMatches = [...notes.matchAll(/(\d+)\.\s*([^\n\r<]+)/g)];
@@ -367,22 +406,22 @@ export default function Modals() {
                    (guName && (lowTitle.includes(guName) || guName.includes(lowTitle)));
           });
 
-          const price = matchedProd?.priceUsd ? matchedProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
-          const unit = matchedProd?.moq || '1 Unit / Container';
+          const info = getCatalogProductInvoiceInfo(matchedProd);
+          if (idx === 0 && info.incoterm) setQuoteIncoterm(info.incoterm);
 
           return {
             id: `item_${Date.now()}_${idx}`,
-            name: itemTitle || `Item #${idx + 1}`,
-            hsn: itemHs,
-            qty: '1',
-            unit: unit,
-            price: price
+            name: itemTitle || info.name || `Item #${idx + 1}`,
+            hsn: itemHs !== '9988' ? itemHs : info.hsn,
+            qty: info.qty || '1',
+            unit: info.unit || 'Pcs (નંગ)',
+            price: info.price || '15'
           };
         });
       }
     }
 
-    // Case 3: Comma separated productNames (e.g. "Sari and Garment Fabrics, Punjabi Dress")
+    // Case 3: Comma separated productNames
     if (lineItems.length === 0 && cust.productName && cust.productName.includes(',')) {
       const pNames = cust.productName.split(',').map(s => s.trim()).filter(Boolean);
       const hsList = (cust.hsCode || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -392,8 +431,8 @@ export default function Modals() {
         name: pn,
         hsn: hsList[pIdx] || hsList[0] || '9988',
         qty: '1',
-        unit: 'Unit / Container',
-        price: '500'
+        unit: 'Pcs (નંગ)',
+        price: '15'
       }));
     }
 
@@ -6524,20 +6563,19 @@ export default function Modals() {
                           className="btn-secondary"
                           onClick={() => {
                             const firstProd = allCatalogProducts[0];
-                            const pName = firstProd ? (firstProd.names?.[currentLang] || firstProd.names?.en || firstProd.names?.gu) : `Product Item ${invoiceItems.length + 1}`;
-                            const hs = firstProd ? (firstProd.hsCode || firstProd.localHsn || '9988') : '9988';
-                            const price = firstProd?.priceUsd ? firstProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
+                            const info = getCatalogProductInvoiceInfo(firstProd);
                             setInvoiceItems(prev => [
                               ...prev,
                               {
                                 id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-                                name: pName,
-                                hsn: hs,
-                                qty: '1',
-                                unit: firstProd?.moq || 'Unit / Container',
-                                price: price || '500'
+                                name: info.name,
+                                hsn: info.hsn,
+                                qty: info.qty,
+                                unit: info.unit,
+                                price: info.price
                               }
                             ]);
+                            if (info.incoterm) setQuoteIncoterm(info.incoterm);
                           }}
                           style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(14, 165, 233, 0.15)', fontWeight: 800 }}
                           title="Add a new line item pre-filled from website product catalog"
@@ -6582,16 +6620,16 @@ export default function Modals() {
                               onChange={(e) => {
                                 const selectedProd = allCatalogProducts.find(p => p.id === e.target.value);
                                 if (selectedProd) {
-                                  const pName = selectedProd.names?.[currentLang] || selectedProd.names?.en || selectedProd.names?.gu || 'Export Product';
-                                  const hs = selectedProd.hsCode || selectedProd.localHsn || '9988';
-                                  const price = selectedProd.priceUsd ? selectedProd.priceUsd.replace(/[^0-9.]/g, '') : '500';
+                                  const info = getCatalogProductInvoiceInfo(selectedProd);
                                   setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
                                     ...i,
-                                    name: pName,
-                                    hsn: hs,
-                                    price: price || '500',
-                                    unit: selectedProd.moq || 'Unit / Container'
+                                    name: info.name,
+                                    hsn: info.hsn,
+                                    price: info.price,
+                                    qty: info.qty,
+                                    unit: info.unit
                                   } : i));
+                                  if (info.incoterm) setQuoteIncoterm(info.incoterm);
                                 }
                               }}
                               value=""
@@ -6648,6 +6686,20 @@ export default function Modals() {
                             />
                           </div>
                           <div>
+                            <label style={{ fontSize: '0.72rem', color: '#4ade80', fontWeight: 800 }}>Unit Price ({quoteCurrency})</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              className="form-control"
+                              value={item.price}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, price: val } : i));
+                              }}
+                              style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800, color: '#4ade80' }}
+                            />
+                          </div>
+                          <div>
                             <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Quantity</label>
                             <input
                               type="number"
@@ -6671,19 +6723,6 @@ export default function Modals() {
                                 setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, unit: val } : i));
                               }}
                               style={{ padding: '3px 6px', fontSize: '0.8rem' }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit Price ({quoteCurrency})</label>
-                            <input
-                              type="number"
-                              className="form-control"
-                              value={item.price}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, price: val } : i));
-                              }}
-                              style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
                             />
                           </div>
                           <div style={{ textAlign: 'right' }}>
@@ -6749,10 +6788,38 @@ export default function Modals() {
                     </div>
                   </>
                 ) : (
-                  <div className="form-group" style={{ marginBottom: '8px' }}>
-                    <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Destination Country / City</label>
-                    <input type="text" className="form-control" value={buyerCountry} onChange={(e) => setBuyerCountry(e.target.value)} placeholder="e.g. Dubai, UAE / Canada / USA..." />
-                  </div>
+                  <>
+                    <div className="form-group" style={{ marginBottom: '8px' }}>
+                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Destination Country / City</label>
+                      <input type="text" className="form-control" value={buyerCountry} onChange={(e) => setBuyerCountry(e.target.value)} placeholder="e.g. Dubai, UAE / Canada / USA..." />
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '8px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 800, display: 'block' }}>⚓ Port of Loading (Origin)</label>
+                      <input type="text" className="form-control" value={quotePortLoading} onChange={(e) => setQuotePortLoading(e.target.value)} placeholder="e.g. Mundra Port / Hazira Port, India" style={{ fontWeight: 700 }} />
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '8px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, display: 'block' }}>🚢 Port of Discharge (Destination)</label>
+                      <input type="text" className="form-control" value={quotePortDischarge} onChange={(e) => setQuotePortDischarge(e.target.value)} placeholder="e.g. Jebel Ali Port, Dubai / Port of New York" style={{ fontWeight: 700 }} />
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '8px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block' }}>📊 Incoterm (Terms of Delivery)</label>
+                      <select className="form-control" value={quoteIncoterm} onChange={(e) => setQuoteIncoterm(e.target.value)} style={{ fontWeight: 800, color: '#facc15', background: '#0f172a' }}>
+                        <option value="FOB (Free On Board - Loading Port)">FOB (Free On Board - Loading Port)</option>
+                        <option value="CIF (Cost, Insurance & Freight - Destination Port)">CIF (Cost, Insurance & Freight - Destination Port)</option>
+                        <option value="EXW (Ex Works - Seller Factory/Warehouse)">EXW (Ex Works - Seller Factory/Warehouse)</option>
+                        <option value="CFR (Cost & Freight - Destination Port)">CFR (Cost & Freight - Destination Port)</option>
+                        <option value="DDP (Delivered Duty Paid - Buyer Doorstep)">DDP (Delivered Duty Paid - Buyer Doorstep)</option>
+                        <option value="FCA (Free Carrier - Inland Depot)">FCA (Free Carrier - Inland Depot)</option>
+                        <option value="FAS (Free Alongside Ship)">FAS (Free Alongside Ship)</option>
+                        <option value="CPT (Carriage Paid To)">CPT (Carriage Paid To)</option>
+                        <option value="CIP (Carriage & Insurance Paid To)">CIP (Carriage & Insurance Paid To)</option>
+                        <option value="DAP (Delivered At Place)">DAP (Delivered At Place)</option>
+                      </select>
+                    </div>
+                  </>
                 )}
 
                 <div className="form-group" style={{ marginBottom: '8px' }}>
@@ -6870,8 +6937,8 @@ export default function Modals() {
                         <th style={{ padding: '10px 12px' }}>#</th>
                         <th style={{ padding: '10px 12px' }}>Particular Goods / Jobwork Description</th>
                         <th style={{ padding: '10px 12px' }}>HSN / SAC</th>
-                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Qty</th>
                         <th style={{ padding: '10px 12px', textAlign: 'right' }}>Unit Price ({quoteCurrency})</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Qty</th>
                         <th style={{ padding: '10px 12px', textAlign: 'right' }}>Taxable Amount ({quoteCurrency})</th>
                       </tr>
                     </thead>
@@ -6888,10 +6955,10 @@ export default function Modals() {
                               {item.hsn || '9988'}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              {item.qty} {item.unit}
+                              {quoteCurrency} {Number(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              {quoteCurrency} {Number(item.price || 0).toLocaleString()}
+                              {item.qty} {item.unit}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 900, color: '#0f766e', fontSize: '0.95rem' }}>
                               {quoteCurrency} {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
