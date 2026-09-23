@@ -6671,6 +6671,7 @@ export default function Modals() {
                               }
                             ]);
                             if (info.incoterm) setQuoteIncoterm(info.incoterm);
+                            if (info.currency) setQuoteCurrency(info.currency);
                           }}
                           style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(14, 165, 233, 0.15)', fontWeight: 800 }}
                           title="Add a new line item pre-filled from website product catalog"
@@ -6725,6 +6726,7 @@ export default function Modals() {
                                     unit: info.unit
                                   } : i));
                                   if (info.incoterm) setQuoteIncoterm(info.incoterm);
+                                  if (info.currency) setQuoteCurrency(info.currency);
                                 }
                               }}
                               value=""
