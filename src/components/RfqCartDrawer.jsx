@@ -33,7 +33,8 @@ export default function RfqCartDrawer() {
     showLiveToast,
     paymentGatewaysConfig,
     setSelectedRfqProducts,
-    forexRiskBuffer
+    forexRiskBuffer,
+    setActiveModal
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -766,7 +767,26 @@ export default function RfqCartDrawer() {
                     {rfqTradeCategory === 'export' && (
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                         <div className="rfq-form-group">
-                          <label>Incoterms</label>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ margin: 0 }}>Incoterms</label>
+                            {setActiveModal && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveModal('incoterms_chart')}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: '#38bdf8',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                  padding: 0
+                                }}
+                              >
+                                📊 View Chart
+                              </button>
+                            )}
+                          </div>
                           <select
                             className="rfq-select"
                             value={selectedIncoterm}

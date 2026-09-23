@@ -511,6 +511,7 @@ export default function Modals() {
 
   // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
   const [priceUSD, setPriceUSD] = useState('');
+  const [exportIncoterm, setExportIncoterm] = useState('FOB');
   const [localMrp, setLocalMrp] = useState('1499');
   const [localPrice, setLocalPrice] = useState('999');
   const [packingCharge, setPackingCharge] = useState('0');
@@ -727,6 +728,7 @@ export default function Modals() {
           setLocalMrp(loadedMrp);
           setLocalPrice(loadedPrice);
           setPriceUSD(target.priceUSD !== undefined && target.priceUSD !== null ? String(target.priceUSD) : '');
+          setExportIncoterm(target.exportIncoterm || 'FOB');
           setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
           setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
           setLocalGstRate(target.localGstRate || '18');
@@ -778,6 +780,7 @@ export default function Modals() {
       setLocalMrp('1499');
       setLocalPrice('999');
       setPriceUSD('');
+      setExportIncoterm('FOB');
       setPackingCharge('0');
       setCourierCharge('0');
       setLocalGstRate('18');
@@ -4679,6 +4682,7 @@ export default function Modals() {
                     spec: autoSpec,
                     packaging, moq,
                     priceUSD: parsedUsd,
+                    exportIncoterm: exportIncoterm || 'FOB',
                     localPrice: (localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat(localPrice) : 999,
                     mrpInr: (localMrp !== '' && !isNaN(parseFloat(localMrp))) ? parseFloat(localMrp) : 1499,
                     packingCharge: (packingCharge !== '' && !isNaN(parseFloat(packingCharge))) ? parseFloat(packingCharge) : 0,
@@ -5170,27 +5174,110 @@ export default function Modals() {
                         />
                       </div>
 
-                      {/* 💲 Global Export FOB / CIF Unit Price ($ USD) Field */}
-                      <div style={{ marginTop: '14px', background: 'rgba(16, 185, 129, 0.08)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
-                        <label style={{ fontSize: '0.86rem', color: '#4ade80', display: 'block', marginBottom: '4px', fontWeight: 800 }}>
-                          💲 Global Export FOB / CIF Unit Price ($ USD) (ગ્લોબલ એક્સપોર્ટ યુનિટ દીઠ કિંમત)
-                        </label>
+                      {/* 💲 Global Export FOB / CIF Unit Price ($ USD) & Incoterms Selection */}
+                      <div style={{ marginTop: '14px', background: 'rgba(16, 185, 129, 0.08)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap', gap: '8px' }}>
+                          <label style={{ fontSize: '0.88rem', color: '#4ade80', margin: 0, fontWeight: 900 }}>
+                            💲 Global Export Price ($ USD) & Incoterms Selection (FOB / CIF / EXW)
+                          </label>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => setShowIncotermsModal(true)}
+                            style={{
+                              padding: '4px 10px',
+                              fontSize: '0.76rem',
+                              fontWeight: 800,
+                              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                              border: '1px solid rgba(56, 189, 248, 0.5)',
+                              boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            📊 View Incoterms Responsibilities Chart & Guide
+                          </button>
+                        </div>
                         <p style={{ fontSize: '0.74rem', color: '#9ca3af', margin: '0 0 10px' }}>
-                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે યુનિટ દીઠ $ USD ભાવ લખો. (ખાલી રાખશો તો લોકલ ₹ ભાવમાંથી ઓટો-કન્વર્ટ થશે)
+                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે યુનિટ દીઠ $ USD ભાવ અને Incoterm (FOB, CIF, EXW, CFR) પસંદ કરો.
                         </p>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>$</span>
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            className="form-control"
-                            placeholder="e.g. 14.00 ($ USD / Unit)"
-                            value={priceUSD}
-                            onChange={(e) => setPriceUSD(e.target.value)}
-                            style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem', background: '#0f172a', border: '1px solid rgba(74, 222, 128, 0.5)', flex: 1 }}
-                          />
-                          <span style={{ fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>USD / Unit</span>
+
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flex: 1, minWidth: '200px' }}>
+                            <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>$</span>
+                            <input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              className="form-control"
+                              placeholder="e.g. 14.00 ($ USD / Unit)"
+                              value={priceUSD}
+                              onChange={(e) => setPriceUSD(e.target.value)}
+                              style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem', background: '#0f172a', border: '1px solid rgba(74, 222, 128, 0.5)', flex: 1 }}
+                            />
+                            <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>USD / Unit</span>
+                          </div>
+
+                          {/* Incoterm Term Selector Dropdown */}
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800 }}>Incoterm:</span>
+                            <select
+                              className="form-control"
+                              value={exportIncoterm}
+                              onChange={(e) => setExportIncoterm(e.target.value)}
+                              style={{
+                                fontSize: '0.82rem',
+                                fontWeight: 800,
+                                background: '#0f172a',
+                                color: '#facc15',
+                                border: '1px solid rgba(250, 204, 21, 0.5)',
+                                padding: '6px 10px',
+                                borderRadius: '8px',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <option value="FOB">FOB - Free On Board (Loading Port Quay)</option>
+                              <option value="CIF">CIF - Cost, Insurance & Freight (Destination Port)</option>
+                              <option value="EXW">EXW - Ex Works (Factory Premises)</option>
+                              <option value="CFR">CFR - Cost & Freight (Destination Port)</option>
+                              <option value="DDP">DDP - Delivered Duty Paid (Buyer Warehouse Door)</option>
+                              <option value="FCA">FCA - Free Carrier (First Inland Depot)</option>
+                              <option value="CIP">CIP - Carriage & Insurance Paid To</option>
+                              <option value="DAP">DAP - Delivered at Place</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Quick Incoterm Preset Pills */}
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.74rem', color: '#9ca3af' }}>Quick Selection:</span>
+                          {[
+                            { code: 'FOB', label: 'FOB (Free On Board - Port)' },
+                            { code: 'CIF', label: 'CIF (Cost, Insurance & Freight)' },
+                            { code: 'EXW', label: 'EXW (Ex Works - Factory)' },
+                            { code: 'CFR', label: 'CFR (Cost & Freight)' },
+                            { code: 'DDP', label: 'DDP (Delivered Duty Paid)' }
+                          ].map((item) => (
+                            <button
+                              key={item.code}
+                              type="button"
+                              onClick={() => setExportIncoterm(item.code)}
+                              style={{
+                                padding: '4px 10px',
+                                fontSize: '0.74rem',
+                                fontWeight: 800,
+                                borderRadius: '6px',
+                                background: exportIncoterm === item.code ? 'rgba(250, 204, 21, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                                color: exportIncoterm === item.code ? '#fde047' : '#cbd5e1',
+                                border: '1px solid ' + (exportIncoterm === item.code ? 'rgba(250, 204, 21, 0.6)' : 'rgba(255, 255, 255, 0.12)'),
+                                cursor: 'pointer'
+                              }}
+                            >
+                              {item.label}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -6960,35 +7047,153 @@ export default function Modals() {
       )}
 
       {/* INCOTERMS 2020 RISK & COST RESPONSIBILITIES CHART MODAL */}
-      {showIncotermsModal && (
+      {(showIncotermsModal || activeModal === 'incoterms_chart') && (
         <div className="modal-backdrop show" style={{ zIndex: 3000, background: 'rgba(3, 7, 18, 0.88)' }}>
-          <div className="glass-card modal-card" style={{ maxWidth: '920px', width: '95%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '20px' }}>
-            <button className="modal-close" onClick={() => setShowIncotermsModal(false)}>&times;</button>
+          <div className="glass-card modal-card" style={{ maxWidth: '960px', width: '95%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '20px' }}>
+            <button className="modal-close" onClick={() => { setShowIncotermsModal(false); if (setActiveModal) setActiveModal(null); }}>&times;</button>
             
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>📊</span>
               <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'white', margin: 0 }}>
-                ICC INCOTERMS® 2020 Official Risk & Cost Chart
+                ICC INCOTERMS® Official Responsibilities & Risk Transfer Chart
               </h3>
               <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginTop: '4px' }}>
-                Select any Incoterm term below (EXW, FOB, CFR, CIF, DDP...) to view Transfer of Risk (⚠️ Risk Point) & Cost breakdown.
+                Select any Incoterm term (EXW, FOB, CFR, CIF, DDP...) to view Transfer of Risk (⚠️ Risk Point) & Cost breakdown.
               </p>
             </div>
 
             {/* IncoTerms Visual Legend */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: '12px', marginBottom: '18px', fontSize: '0.82rem', flexWrap: 'wrap', border: '1px solid var(--border-glass)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: 'linear-gradient(90deg, #0284c7, #38bdf8)', borderRadius: '3px' }}></span>
-                <strong style={{ color: 'white' }}>Exporter / Seller Cost</strong>
+                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: 'linear-gradient(90deg, #f97316, #ea580c)', borderRadius: '3px' }}></span>
+                <strong style={{ color: 'white' }}>Seller's Obligation (વેચનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: '#475569', borderRadius: '3px' }}></span>
-                <strong style={{ color: 'white' }}>Importer / Buyer Cost</strong>
+                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: '#0284c7', borderRadius: '3px' }}></span>
+                <strong style={{ color: 'white' }}>Buyer's Obligation (ખરીદનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1rem' }}>⚠️</span>
-                <strong style={{ color: '#f87171' }}>Transfer of Risk Point</strong>
+                <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900 }}>!</span>
+                <strong style={{ color: '#f87171' }}>Transfer of Risk Point (જોખમ બદલાવનું સ્થળ)</strong>
               </div>
+            </div>
+
+            {/* Visual Stage-by-Stage Diagram Header & Rows (Matching Screenshot 1) */}
+            <div style={{
+              background: 'rgba(15, 23, 42, 0.95)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '16px',
+              padding: '14px',
+              marginBottom: '20px',
+              overflowX: 'auto'
+            }}>
+              <div style={{ fontSize: '0.88rem', fontWeight: 900, color: '#38bdf8', textAlign: 'center', marginBottom: '12px' }}>
+                🌐 INCOTERMS® RESPONSIBILITIES & RISK TRANSFER DIAGRAM CHART
+              </div>
+
+              {/* Stage Icons Header Row */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '70px repeat(8, minmax(80px, 1fr))',
+                gap: '4px',
+                textAlign: 'center',
+                fontSize: '0.65rem',
+                fontWeight: 800,
+                color: '#cbd5e1',
+                borderBottom: '2px solid rgba(255,255,255,0.1)',
+                paddingBottom: '8px',
+                marginBottom: '8px'
+              }}>
+                <div style={{ color: '#facc15' }}>TERM</div>
+                <div>🏭<br/>FACTORY</div>
+                <div>🚚<br/>FIRST CARRIER</div>
+                <div>⚓<br/>PORT QUAY</div>
+                <div>🚢<br/>ON BOARD</div>
+                <div>🛳️<br/>ON ARRIVAL</div>
+                <div>⚓<br/>DEST PORT</div>
+                <div>🏬<br/>DEST PLACE</div>
+                <div>🏪<br/>BUYER DOOR</div>
+              </div>
+
+              {/* Diagram Rows for Each Key Incoterm */}
+              {[
+                { code: 'EXW', name: 'Ex Works', sellerEnd: 1, riskPoint: 'Factory Gate' },
+                { code: 'FCA', name: 'Free Carrier', sellerEnd: 2, riskPoint: 'First Carrier' },
+                { code: 'FAS', name: 'Free Alongside Ship', sellerEnd: 3, riskPoint: 'Port Quay' },
+                { code: 'FOB', name: 'Free On Board', sellerEnd: 4, riskPoint: 'Vessel Onboard' },
+                { code: 'CFR', name: 'Cost & Freight', sellerEnd: 6, riskPoint: 'Vessel Onboard' },
+                { code: 'CIF', name: 'Cost, Insurance & Freight', sellerEnd: 6, riskPoint: 'Vessel Onboard' },
+                { code: 'CPT', name: 'Carriage Paid To', sellerEnd: 7, riskPoint: 'First Carrier' },
+                { code: 'CIP', name: 'Carriage & Insurance Paid', sellerEnd: 7, riskPoint: 'First Carrier' },
+                { code: 'DAP', name: 'Delivered at Place', sellerEnd: 7, riskPoint: 'Destination Place' },
+                { code: 'DDP', name: 'Delivered Duty Paid', sellerEnd: 8, riskPoint: 'Buyer Warehouse' }
+              ].map((row) => (
+                <div
+                  key={row.code}
+                  onClick={() => {
+                    if (setExportIncoterm) setExportIncoterm(row.code);
+                    if (setQuoteIncoterm) setQuoteIncoterm(`${row.code} Port/Factory`);
+                    setShowIncotermsModal(false);
+                    if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
+                  }}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '70px repeat(8, minmax(80px, 1fr))',
+                    gap: '4px',
+                    alignItems: 'center',
+                    padding: '6px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  title={`Click to Select ${row.code} (${row.name})`}
+                >
+                  {/* Code Badge */}
+                  <div style={{ fontWeight: 900, fontSize: '0.76rem', color: '#fde047', background: 'rgba(234,179,8,0.2)', padding: '2px 4px', borderRadius: '4px', textAlign: 'center' }}>
+                    {row.code}
+                  </div>
+
+                  {/* 8 Stage Columns with Orange (Seller) vs Blue (Buyer) bars */}
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((stageIdx) => {
+                    const isSeller = stageIdx <= row.sellerEnd;
+                    const isRiskTransfer = (
+                      (row.code === 'EXW' && stageIdx === 1) ||
+                      (row.code === 'FCA' && stageIdx === 2) ||
+                      (row.code === 'FAS' && stageIdx === 3) ||
+                      ((row.code === 'FOB' || row.code === 'CFR' || row.code === 'CIF') && stageIdx === 4) ||
+                      ((row.code === 'CPT' || row.code === 'CIP') && stageIdx === 2) ||
+                      (row.code === 'DAP' && stageIdx === 7) ||
+                      (row.code === 'DDP' && stageIdx === 8)
+                    );
+
+                    return (
+                      <div
+                        key={stageIdx}
+                        style={{
+                          height: '20px',
+                          borderRadius: '4px',
+                          background: isSeller ? 'linear-gradient(90deg, #f97316, #ea580c)' : '#0284c7',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.65rem',
+                          fontWeight: 800,
+                          color: 'white',
+                          position: 'relative'
+                        }}
+                      >
+                        {isRiskTransfer && (
+                          <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '15px', height: '15px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900, boxShadow: '0 0 6px #ef4444' }} title={`Transfer of Risk Point: ${row.riskPoint}`}>
+                            !
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
 
             {/* List of 11 Incoterms Cards */}
