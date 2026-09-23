@@ -5249,36 +5249,6 @@ export default function Modals() {
                             </select>
                           </div>
                         </div>
-
-                        {/* Quick Incoterm Preset Pills */}
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.74rem', color: '#9ca3af' }}>Quick Selection:</span>
-                          {[
-                            { code: 'FOB', label: 'FOB (Free On Board - Port)' },
-                            { code: 'CIF', label: 'CIF (Cost, Insurance & Freight)' },
-                            { code: 'EXW', label: 'EXW (Ex Works - Factory)' },
-                            { code: 'CFR', label: 'CFR (Cost & Freight)' },
-                            { code: 'DDP', label: 'DDP (Delivered Duty Paid)' }
-                          ].map((item) => (
-                            <button
-                              key={item.code}
-                              type="button"
-                              onClick={() => setExportIncoterm(item.code)}
-                              style={{
-                                padding: '4px 10px',
-                                fontSize: '0.74rem',
-                                fontWeight: 800,
-                                borderRadius: '6px',
-                                background: exportIncoterm === item.code ? 'rgba(250, 204, 21, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                                color: exportIncoterm === item.code ? '#fde047' : '#cbd5e1',
-                                border: '1px solid ' + (exportIncoterm === item.code ? 'rgba(250, 204, 21, 0.6)' : 'rgba(255, 255, 255, 0.12)'),
-                                cursor: 'pointer'
-                              }}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -7199,7 +7169,7 @@ export default function Modals() {
             {/* List of 11 Incoterms Cards */}
             <div style={{ display: 'grid', gap: '12px' }}>
               {incotermsList.map((term) => {
-                const isSelected = quoteIncoterm.includes(term.code);
+                const isSelected = (exportIncoterm === term.code) || (quoteIncoterm && quoteIncoterm.includes(term.code));
                 return (
                   <div
                     key={term.code}
@@ -7265,8 +7235,10 @@ export default function Modals() {
                           borderColor: isSelected ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
                         }}
                         onClick={() => {
-                          setQuoteIncoterm(term.sampleTerm);
+                          if (setExportIncoterm) setExportIncoterm(term.code);
+                          if (setQuoteIncoterm) setQuoteIncoterm(term.sampleTerm);
                           setShowIncotermsModal(false);
+                          if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
                         }}
                       >
                         {isSelected ? '✓ Selected' : `Select ${term.code}`}
