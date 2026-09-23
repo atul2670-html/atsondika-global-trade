@@ -61,10 +61,33 @@ export default function RfqCartDrawer() {
     return currSymbolMap[code] || getCurrencySymbol(code);
   };
 
-  const formatLocalPrice = (amountInr) => {
+  const getItemInrVal = (item, val) => {
+    const num = parseFloat(val) || 0;
+    if (num <= 0) return 0;
+    const itemCurr = item.currency || 'INR';
+    if (itemCurr === 'INR') return num;
+
+    const inrToUsdRate = 86.45;
+    if (itemCurr === 'USD') return num * inrToUsdRate;
+
+    const itemFx = (currenciesList || []).find(c => c.code === itemCurr);
+    if (itemFx && itemFx.rate) {
+      return (num / itemFx.rate) * inrToUsdRate;
+    }
+    return num;
+  };
+
+  const formatItemPrice = (item, amountVal) => {
+    const amountInr = getItemInrVal(item, amountVal);
+    return formatPriceFromInr(amountInr);
+  };
+
+  const formatPriceFromInr = (amountInr) => {
     const num = parseFloat(amountInr) || 0;
     const activeCode = getActiveCurrencyCode();
     const activeSym = getActiveCurrencySymbol();
+
+    if (num <= 0) return `${activeSym}0`;
 
     if (activeCode === 'INR') {
       return `${activeSym}${Math.round(num).toLocaleString('en-IN')}`;
@@ -108,37 +131,39 @@ export default function RfqCartDrawer() {
 
   const totalQuantity = rfqCartItems.reduce((acc, item) => acc + (parseFloat(item.quantity) || 1), 0);
 
-  // 1. Items Base Price Subtotal (Selling Price * Quantity)
-  const itemsSubtotal = rfqCartItems.reduce((acc, item) => {
-    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+  // 1. Items Base Price Subtotal in INR
+  const itemsSubtotalInr = rfqCartItems.reduce((acc, item) => {
+    const priceVal = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? item.localPrice : (item.priceInr || 499);
+    const inrPrice = getItemInrVal(item, priceVal);
     const qty = parseFloat(item.quantity) || 1;
-    return acc + (price * qty);
+    return acc + (inrPrice * qty);
   }, 0);
 
-  // 2. Total Packing Charge
-  const totalPackingCharge = rfqCartItems.reduce((acc, item) => {
-    const pack = parseFloat(item.packingCharge) || 0;
+  // 2. Total Packing Charge in INR
+  const totalPackingChargeInr = rfqCartItems.reduce((acc, item) => {
+    const inrPack = getItemInrVal(item, item.packingCharge || 0);
     const qty = parseFloat(item.quantity) || 1;
-    return acc + (pack * qty);
+    return acc + (inrPack * qty);
   }, 0);
 
-  // 3. Total Courier Delivery Charge
-  const totalCourierCharge = rfqCartItems.reduce((acc, item) => {
-    const cour = parseFloat(item.courierCharge) || 0;
+  // 3. Total Courier Delivery Charge in INR
+  const totalCourierChargeInr = rfqCartItems.reduce((acc, item) => {
+    const inrCour = getItemInrVal(item, item.courierCharge || 0);
     const qty = parseFloat(item.quantity) || 1;
-    return acc + (cour * qty);
+    return acc + (inrCour * qty);
   }, 0);
 
-  // 4. Total GST Amount (Included Tax breakdown)
-  const totalGstAmount = rfqCartItems.reduce((acc, item) => {
-    const price = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+  // 4. Total GST Amount in INR
+  const totalGstAmountInr = rfqCartItems.reduce((acc, item) => {
+    const priceVal = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? item.localPrice : (item.priceInr || 499);
+    const inrPrice = getItemInrVal(item, priceVal);
     const qty = parseFloat(item.quantity) || 1;
     const gstRate = parseFloat(item.localGstRate) || 0;
-    return acc + ((price * qty) * (gstRate / 100));
+    return acc + ((inrPrice * qty) * (gstRate / 100));
   }, 0);
 
-  // 5. Grand Total (Items Subtotal + GST + Packing Charge + Courier Charge)
-  const totalLocalAmount = itemsSubtotal + totalGstAmount + totalPackingCharge + totalCourierCharge;
+  // 5. Grand Total in INR
+  const totalLocalAmountInr = itemsSubtotalInr + totalGstAmountInr + totalPackingChargeInr + totalCourierChargeInr;
 
   const cartCurrency = rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(cartCurrency);
@@ -451,13 +476,13 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price" style={{ color: '#f59e0b', fontWeight: 800 }}>
                             {tradeMode === 'local'
-                              ? formatLocalPrice(itemPrice)
+                              ? formatItemPrice(item, itemPrice)
                               : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {formatLocalPrice(item.packingCharge)} Packing</span>}
-                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {formatLocalPrice(item.courierCharge)} Courier</span>}
+                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {formatItemPrice(item, item.packingCharge)} Packing</span>}
+                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {formatItemPrice(item, item.courierCharge)} Courier</span>}
                               {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
                             </div>
                           )}
@@ -877,16 +902,16 @@ export default function RfqCartDrawer() {
                 {tradeMode === 'local' ? (
                   <>
                     <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
-                      {totalCourierCharge > 0 ? `🚚 Courier: ${formatLocalPrice(totalCourierCharge)}` : '🚚 FREE Delivery'}
-                      {totalPackingCharge > 0 ? ` • 📦 Packing: ${formatLocalPrice(totalPackingCharge)}` : ''}
-                      {totalGstAmount > 0 ? ` • 🏛️ GST: +${formatLocalPrice(totalGstAmount)}` : ''}
+                      {totalCourierChargeInr > 0 ? `🚚 Courier: ${formatPriceFromInr(totalCourierChargeInr)}` : '🚚 FREE Delivery'}
+                      {totalPackingChargeInr > 0 ? ` • 📦 Packing: ${formatPriceFromInr(totalPackingChargeInr)}` : ''}
+                      {totalGstAmountInr > 0 ? ` • 🏛️ GST: +${formatPriceFromInr(totalGstAmountInr)}` : ''}
                     </span>
                     <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#f59e0b', display: 'block' }}>
-                      Total: {formatLocalPrice(totalLocalAmount)}
+                      Total: {formatPriceFromInr(totalLocalAmountInr)}
                     </span>
                     {getActiveCurrencyCode() !== 'INR' && (
                       <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, display: 'block', marginTop: '2px' }}>
-                        IN Live INR Equivalent: ₹{Math.round(totalLocalAmount).toLocaleString('en-IN')} INR
+                        IN Live INR Equivalent: ₹{Math.round(totalLocalAmountInr).toLocaleString('en-IN')} INR
                         <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, display: 'block' }}>
                           (Live FX Rate: 1 USD = ₹94.55 INR)
                         </span>
@@ -917,8 +942,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `Pay Now & Complete Order (${tradeMode === 'local' ? formatLocalPrice(totalLocalAmount) : convertPrice(totalExportAmount)})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? formatLocalPrice(totalLocalAmount) : convertPrice(totalExportAmount)})`}
+                  ? `Pay Now & Complete Order (${tradeMode === 'local' ? formatPriceFromInr(totalLocalAmountInr) : convertPrice(totalExportAmount)})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? formatPriceFromInr(totalLocalAmountInr) : convertPrice(totalExportAmount)})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
