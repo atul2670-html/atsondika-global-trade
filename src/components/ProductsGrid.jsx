@@ -59,6 +59,21 @@ export default function ProductsGrid() {
     ];
   }
 
+  const getProductDisplayPrice = (p) => {
+    const usdVal = p.priceUSD ? parseFloat(p.priceUSD) : 0;
+    const inrVal = p.localPrice ? parseFloat(p.localPrice) : (p.priceInr ? parseFloat(p.priceInr) : 0);
+
+    if (tradeMode === 'local') {
+      if (inrVal > 0) return '₹' + Math.round(inrVal).toLocaleString('en-IN');
+      if (usdVal > 0) return '₹' + Math.round(usdVal * 86.45).toLocaleString('en-IN');
+      return currentLang === 'gu' ? 'On Request' : 'On Request';
+    } else {
+      if (usdVal > 0) return convertPrice ? convertPrice(usdVal) : ('$' + usdVal);
+      if (inrVal > 0) return convertPrice ? convertPrice(inrVal / 86.45) : ('$' + Math.round(inrVal / 86.45));
+      return currentLang === 'gu' ? 'On Request' : 'On Request';
+    }
+  };
+
   const deletedSet = new Set(deletedBuiltInIds || []);
   defaultTabs = defaultTabs.filter(t => t.filter === 'all' || !deletedSet.has(t.filter));
 
@@ -802,9 +817,7 @@ export default function ProductsGrid() {
                   const title = (langTitle && currentLang !== 'en' && !langTitle.includes('વુઅલિચય') && !langTitle.includes('પરેમિયમ'))
                     ? langTitle
                     : autoTranslateText(enTitle || langTitle, currentLang);
-                  const basePriceInr = p.localPrice || (p.priceInr ? parseFloat(p.priceInr) : 499 + ((idx + 1) * 160));
-                  const formattedPrice = tradeMode === 'local' ? ('₹' + Number(basePriceInr).toLocaleString('en-IN')) : (p.priceUSD ? convertPrice(p.priceUSD) : 'On Request');
-                  const mrpInr = Math.round(basePriceInr * 1.32);
+                  const formattedPrice = getProductDisplayPrice(p);
 
                   return (
                     <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>

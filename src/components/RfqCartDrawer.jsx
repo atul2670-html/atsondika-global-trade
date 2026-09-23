@@ -78,8 +78,22 @@ export default function RfqCartDrawer() {
     return num;
   };
 
+  const getItemUsdPrice = (item) => {
+    if (item.priceUSD && !isNaN(parseFloat(item.priceUSD)) && parseFloat(item.priceUSD) > 0) {
+      return parseFloat(item.priceUSD);
+    }
+    const inrVal = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') 
+      ? parseFloat(item.localPrice) 
+      : (item.priceInr ? parseFloat(item.priceInr) : 0);
+    if (inrVal > 0) {
+      return inrVal / 86.45;
+    }
+    return 0;
+  };
+
   const formatItemPrice = (item, amountVal) => {
     const amountInr = getItemInrVal(item, amountVal);
+    if (amountInr <= 0) return 'On Request';
     return formatPriceFromInr(amountInr);
   };
 
@@ -171,7 +185,7 @@ export default function RfqCartDrawer() {
 
   // Total amount calculation for Global Export Trade
   const totalExportAmount = rfqCartItems.reduce((acc, item) => {
-    const priceUSD = item.priceUSD ? parseFloat(item.priceUSD) : (item.priceInr ? parseFloat(item.priceInr) / 86.45 : 12);
+    const priceUSD = getItemUsdPrice(item);
     return acc + (priceUSD * (parseFloat(item.quantity) || 1));
   }, 0);
 
@@ -322,7 +336,8 @@ export default function RfqCartDrawer() {
 
     rfqCartItems.forEach((item, index) => {
       const prodName = item.names?.[currentLang] || item.names?.en || item.name || 'Agro Item';
-      const formattedPrice = item.priceUSD ? convertPrice(item.priceUSD) : 'On Request';
+      const usdPrice = getItemUsdPrice(item);
+      const formattedPrice = tradeMode === 'local' ? formatItemPrice(item, (item.localPrice || item.priceInr || 0)) : (usdPrice > 0 ? convertPrice(usdPrice) : 'On Request');
       msg += `\n${index + 1}. *${prodName}*\n`;
       msg += `   - Quantity: ${item.quantity} ${item.unit || 'MT'}\n`;
       msg += `   - Est. Price: ${formattedPrice}\n`;
@@ -459,7 +474,8 @@ export default function RfqCartDrawer() {
               <div className="rfq-cart-list">
                 {rfqCartItems.map((item) => {
                   const name = item.names?.[currentLang] || item.names?.en || item.name || 'Product Item';
-                  const itemPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 499);
+                  const itemPrice = (item.localPrice !== undefined && item.localPrice !== null && item.localPrice !== '') ? parseFloat(item.localPrice) : (item.priceInr ? parseFloat(item.priceInr) : 0);
+                  const usdPrice = getItemUsdPrice(item);
 
                   return (
                     <div key={item.id} className="rfq-cart-item">
@@ -477,8 +493,8 @@ export default function RfqCartDrawer() {
                           )}
                           <span className="rfq-item-price" style={{ color: '#f59e0b', fontWeight: 800 }}>
                             {tradeMode === 'local'
-                              ? formatItemPrice(item, itemPrice)
-                              : (item.priceUSD ? convertPrice(item.priceUSD) : 'On Request')}
+                              ? (itemPrice > 0 ? formatItemPrice(item, itemPrice) : 'On Request')
+                              : (usdPrice > 0 ? convertPrice(usdPrice) : 'On Request')}
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -963,8 +979,8 @@ export default function RfqCartDrawer() {
                 }}
               >
                 <span>💳</span> {currentLang === 'gu'
-                  ? `Pay Now & Complete Order (${tradeMode === 'local' ? formatPriceFromInr(totalLocalAmountInr) : convertPrice(totalExportAmount)})`
-                  : `Pay Now & Complete Order (${tradeMode === 'local' ? formatPriceFromInr(totalLocalAmountInr) : convertPrice(totalExportAmount)})`}
+                  ? `Pay Now & Complete Order (${tradeMode === 'local' ? (totalLocalAmountInr > 0 ? formatPriceFromInr(totalLocalAmountInr) : 'On Request') : (totalExportAmount > 0 ? convertPrice(totalExportAmount) : 'On Request')})`
+                  : `Pay Now & Complete Order (${tradeMode === 'local' ? (totalLocalAmountInr > 0 ? formatPriceFromInr(totalLocalAmountInr) : 'On Request') : (totalExportAmount > 0 ? convertPrice(totalExportAmount) : 'On Request')})`}
               </button>
 
               {/* SECONDARY WHATSAPP BUTTON */}
