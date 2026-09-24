@@ -243,7 +243,7 @@ export default function Modals() {
   const [quoteQty, setQuoteQty] = useState('20');
   const [quoteUnit, setQuoteUnit] = useState('MT (Metric Tons)');
   const [quoteUnitPrice, setQuoteUnitPrice] = useState('850');
-  const [quoteCurrency, setQuoteCurrency] = useState('USD');
+  const [quoteCurrency, setQuoteCurrency] = useState('INR');
   const [quoteIncoterm, setQuoteIncoterm] = useState('FOB Mundra Port');
   const [quotePortLoading, setQuotePortLoading] = useState('Mundra Port / Hazira Port, India');
   const [quotePortDischarge, setQuotePortDischarge] = useState('Jebel Ali Port, Dubai');
@@ -356,7 +356,7 @@ export default function Modals() {
 
     const rawIncoterm = prod.exportIncoterm || prod.incoterm || prod.export_incoterm || 'FOB';
     const incoterm = getNormalizedIncotermString(rawIncoterm);
-    const currency = prod.exportCurrency || prod.currency || prod.currencyUSD || prod.priceCurrency || prod.quoteCurrency || 'USD';
+    const currency = prod.exportCurrency || prod.currency || prod.currencyUSD || prod.priceCurrency || (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR');
 
     return { name: fullName, hsn, price, qty, unit, incoterm, currency };
   };
@@ -666,7 +666,7 @@ export default function Modals() {
   // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
   const [priceUSD, setPriceUSD] = useState('');
   const [exportIncoterm, setExportIncoterm] = useState('FOB');
-  const [exportCurrency, setExportCurrency] = useState('USD');
+  const [exportCurrency, setExportCurrency] = useState('INR');
   const [localMrp, setLocalMrp] = useState('1499');
   const [localPrice, setLocalPrice] = useState('999');
   const [packingCharge, setPackingCharge] = useState('0');
@@ -5367,10 +5367,11 @@ export default function Modals() {
                           <div style={{ minWidth: '160px', flexShrink: 0 }}>
                             <SearchableCurrencySelect
                               label="💱 Export Currency *"
-                              value={exportCurrency || 'USD'}
+                              value={exportCurrency || 'INR'}
                               onChange={(selected) => {
-                                const code = typeof selected === 'object' && selected ? (selected.code || 'USD') : (selected || 'USD');
+                                const code = typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR');
                                 setExportCurrency(code);
+                                setQuoteCurrency(code);
                               }}
                             />
                           </div>

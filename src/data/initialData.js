@@ -163,6 +163,10 @@ export const initialProductsData = [
     isSub: true,
     hsCode: "04059020",
     localHsn: "04059020",
+    exportCurrency: "INR",
+    priceUSD: 1500,
+    localPrice: 1500,
+    exportIncoterm: "CIP",
     image: "images/agro_spices_grains.png",
     images: ["images/agro_spices_grains.png", "images/hero_export_shipping.png"],
     names: {
