@@ -884,7 +884,9 @@ export default function Modals() {
           setLocalPrice(loadedPrice);
           setPriceUSD(target.priceUSD !== undefined && target.priceUSD !== null ? String(target.priceUSD) : '');
           setExportIncoterm(target.exportIncoterm || 'FOB');
-          setExportCurrency(target.exportCurrency || target.currencyUSD || 'USD');
+          const loadedCurrency = target.exportCurrency || target.currencyUSD || 'INR';
+          setExportCurrency(loadedCurrency);
+          setQuoteCurrency(loadedCurrency);
           setPackingCharge(target.packingCharge !== undefined ? target.packingCharge : '0');
           setCourierCharge(target.courierCharge !== undefined ? target.courierCharge : '0');
           setLocalGstRate(target.localGstRate || '18');
@@ -4840,7 +4842,7 @@ export default function Modals() {
                     packaging, moq,
                     priceUSD: parsedUsd,
                     exportIncoterm: exportIncoterm || 'FOB',
-                    exportCurrency: exportCurrency || 'USD',
+                    exportCurrency: exportCurrency || 'INR',
                     localPrice: (localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat(localPrice) : 999,
                     mrpInr: (localMrp !== '' && !isNaN(parseFloat(localMrp))) ? parseFloat(localMrp) : 1499,
                     packingCharge: (packingCharge !== '' && !isNaN(parseFloat(packingCharge))) ? parseFloat(packingCharge) : 0,
@@ -6615,7 +6617,7 @@ export default function Modals() {
                     color: invoiceTradeMode === 'export' ? 'white' : 'var(--text-sub)'
                   }}
                 >
-                  🌐 International Export Sale (USD / Custom Port)
+                  🌐 International Export Sale ({quoteCurrency || 'USD'} / Custom Port)
                 </button>
                 <button
                   type="button"
