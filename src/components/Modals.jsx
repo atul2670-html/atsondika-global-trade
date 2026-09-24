@@ -325,9 +325,12 @@ export default function Modals() {
       }
     }
 
-    let rawPrice = prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== ''
-      ? String(prod.priceUSD)
-      : (prod.priceUsd || prod.priceInr || prod.localPrice || prod.price || '');
+    const isProdInr = (prod.exportCurrency === 'INR' || prod.currency === 'INR');
+    let rawPrice = isProdInr
+      ? (prod.localPrice !== undefined && prod.localPrice !== null && prod.localPrice !== '' ? String(prod.localPrice) : (prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== '' ? String(prod.priceUSD) : (prod.priceInr || prod.price || '')))
+      : (prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== ''
+          ? String(prod.priceUSD)
+          : (prod.priceUsd || prod.priceInr || prod.localPrice || prod.price || ''));
     let price = rawPrice ? String(rawPrice).replace(/[^0-9.]/g, '') : '15';
     if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
       price = '15';
@@ -426,6 +429,7 @@ export default function Modals() {
       if (info.qty) parsedQty = info.qty;
       if (info.unit) parsedUnit = info.unit;
       if (info.incoterm) setQuoteIncoterm(info.incoterm);
+      if (info.currency) setQuoteCurrency(info.currency);
     } else {
       let cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for item:|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
       if (cleanName.includes('MOQ:')) cleanName = cleanName.split('MOQ:')[0].trim();
@@ -444,6 +448,7 @@ export default function Modals() {
       lineItems = cust.selectedProducts.map((p, pIdx) => {
         const info = getCatalogProductInvoiceInfo(p);
         if (pIdx === 0 && info.incoterm) setQuoteIncoterm(info.incoterm);
+        if (pIdx === 0 && info.currency) setQuoteCurrency(info.currency);
         return {
           id: `item_${Date.now()}_${pIdx}`,
           name: info.name,
@@ -544,20 +549,35 @@ export default function Modals() {
   }, [activeModal, activeQuoteCustomer]);
 
   useEffect(() => {
-    if (activeModal === 'quotation' && quotationProduct) {
-      const info = getCatalogProductInvoiceInfo(quotationProduct);
-      setInvoiceItems([
-        {
-          id: `item_${Date.now()}`,
-          name: info.name,
-          hsn: info.hsn,
-          qty: info.qty,
-          unit: info.unit,
-          price: info.price
+    if (activeModal === 'quotation') {
+      const allProds = getAllProducts ? getAllProducts() : [];
+      let targetProd = quotationProduct;
+      if (!targetProd && invoiceItems && invoiceItems.length > 0) {
+        targetProd = allProds.find(p => p.hsCode === invoiceItems[0].hsn || (p.names?.en && invoiceItems[0].name.includes(p.names.en)) || (p.names?.gu && invoiceItems[0].name.includes(p.names.gu)));
+      }
+      if (!targetProd && allProds.length > 0) {
+        targetProd = allProds[0];
+      }
+      if (targetProd) {
+        const info = getCatalogProductInvoiceInfo(targetProd);
+        if (quotationProduct) {
+          setInvoiceItems([
+            {
+              id: `item_${Date.now()}`,
+              name: info.name,
+              hsn: info.hsn,
+              qty: info.qty,
+              unit: info.unit,
+              price: info.price
+            }
+          ]);
+          if (info.incoterm) {
+            setQuoteIncoterm(info.incoterm);
+          }
         }
-      ]);
-      if (info.incoterm) {
-        setQuoteIncoterm(info.incoterm);
+        if (info.currency) {
+          setQuoteCurrency(info.currency);
+        }
       }
     }
   }, [activeModal, quotationProduct]);
@@ -4805,6 +4825,7 @@ export default function Modals() {
                     : ((localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat((parseFloat(localPrice) / 86.45).toFixed(2)) : null);
 
                   saveProduct({
+                    id: editingProductId || undefined,
                     category,
                     parentId: parentSelect || null,
                     isSub: true,
@@ -6573,7 +6594,12 @@ export default function Modals() {
                   type="button"
                   onClick={() => {
                     setInvoiceTradeMode('export');
-                    setQuoteCurrency('USD');
+                    if (quotationProduct) {
+                      const info = getCatalogProductInvoiceInfo(quotationProduct);
+                      if (info.currency) setQuoteCurrency(info.currency);
+                    } else if (!quoteCurrency) {
+                      setQuoteCurrency('USD');
+                    }
                   }}
                   style={{
                     flex: 1,

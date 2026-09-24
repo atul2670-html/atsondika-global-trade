@@ -1422,7 +1422,8 @@ export function AppProvider({ children }) {
   };
 
   const saveProduct = (productData) => {
-    let targetExisting = editingProductId ? getAllProducts().find(p => p.id === editingProductId) : null;
+    const targetId = productData.id || editingProductId;
+    let targetExisting = targetId ? getAllProducts().find(p => p.id === targetId) : null;
     let targetCompanyId = productData.companyId || (targetExisting ? targetExisting.companyId : null) || activeCompanyId;
 
     let dataToSave = {
@@ -1434,8 +1435,8 @@ export function AppProvider({ children }) {
     };
     
     // GUARANTEE UNIQUE PRODUCT ID & CATEGORY SLUG
-    if (editingProductId) {
-      dataToSave.id = editingProductId;
+    if (targetId) {
+      dataToSave.id = targetId;
     } else if (!dataToSave.id) {
       dataToSave.id = `prod-custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     }
@@ -1480,10 +1481,10 @@ export function AppProvider({ children }) {
     } catch(e) {}
 
     let nextProductsList = customProductsList;
-    if (editingProductId) {
-      const exists = customProductsList.some(p => p.id === editingProductId);
+    if (targetId) {
+      const exists = customProductsList.some(p => p.id === targetId);
       if (exists) {
-        nextProductsList = sanitizeCustomProductsList(customProductsList.map(p => p.id === editingProductId ? { ...p, ...dataToSave } : p));
+        nextProductsList = sanitizeCustomProductsList(customProductsList.map(p => p.id === targetId ? { ...p, ...dataToSave } : p));
       } else {
         nextProductsList = sanitizeCustomProductsList([...customProductsList, dataToSave]);
       }
