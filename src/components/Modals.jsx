@@ -6769,6 +6769,247 @@ export default function Modals() {
                 </button>
               </div>
 
+              {/* PARTICULAR LINE ITEMS & JOBWORK SERVICES (ITEMS CAPSULES MODULE) */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                  <label style={{ fontSize: '0.86rem', color: '#38bdf8', fontWeight: 800, margin: 0 }}>
+                    🛠️ Particular Line Items & Jobwork Services ({invoiceItems.length} Items):
+                  </label>
+                  
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => {
+                        const firstProd = allCatalogProducts && allCatalogProducts.length > 0 ? allCatalogProducts[0] : null;
+                        const info = getCatalogProductInvoiceInfo(firstProd);
+                        setInvoiceItems(prev => [
+                          ...prev,
+                          {
+                            id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+                            name: info.name,
+                            hsn: info.hsn,
+                            qty: info.qty,
+                            unit: info.unit,
+                            price: info.price,
+                            currency: info.currency || 'USD ($)',
+                            incoterm: info.incoterm || 'FOB (Free On Board - Loading Port)'
+                          }
+                        ]);
+                      }}
+                      style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)', background: 'rgba(14, 165, 233, 0.15)', fontWeight: 800 }}
+                      title="Add a new line item pre-filled from website product catalog"
+                    >
+                      📄 + Add Website Product
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => {
+                        setInvoiceItems(prev => [
+                          ...prev,
+                          {
+                            id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+                            name: `Custom Jobwork Service / Item ${prev.length + 1}`,
+                            hsn: '9988',
+                            qty: '1',
+                            unit: 'PCS (Pieces)',
+                            price: '100',
+                            currency: 'USD ($)',
+                            incoterm: 'FOB (Free On Board - Loading Port)'
+                          }
+                        ]);
+                      }}
+                      style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', background: 'rgba(34, 197, 94, 0.15)', fontWeight: 800 }}
+                      title="Add a new custom jobwork or custom service line item"
+                    >
+                      ➕ + Add Custom Item
+                    </button>
+                  </div>
+                </div>
+
+                {/* RENDER EACH LINE ITEM CAPSULE */}
+                {invoiceItems.map((item, idx) => (
+                  <div
+                    key={item.id || idx}
+                    style={{
+                      background: 'rgba(15, 23, 42, 0.65)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      borderRadius: '12px',
+                      padding: '14px',
+                      marginBottom: '12px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    {/* CAPSULE HEADER ROW: BADGE + PICK CATALOG PRODUCT + TRASH REMOVE BUTTON */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                      <span style={{ background: '#f59e0b', color: '#0f172a', fontWeight: 900, padding: '2px 8px', borderRadius: '6px', fontSize: '0.8rem' }}>
+                        #{idx + 1}
+                      </span>
+
+                      {allCatalogProducts && allCatalogProducts.length > 0 && (
+                        <select
+                          className="form-control"
+                          style={{ minWidth: '220px', flex: 1, fontSize: '0.78rem', fontWeight: 800, color: '#facc15', background: '#0f172a', borderColor: '#facc15' }}
+                          onChange={(e) => {
+                            const selectedProd = allCatalogProducts.find(p => p.id === e.target.value);
+                            if (selectedProd) {
+                              const info = getCatalogProductInvoiceInfo(selectedProd);
+                              setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                ...i,
+                                name: info.name,
+                                hsn: info.hsn,
+                                price: info.price,
+                                qty: info.qty,
+                                unit: info.unit,
+                                currency: info.currency || 'USD ($)',
+                                incoterm: info.incoterm || 'FOB (Free On Board - Loading Port)'
+                              } : i));
+                            }
+                          }}
+                          value=""
+                        >
+                          <option value="" disabled>📄 Pick Product from Catalog...</option>
+                          {allCatalogProducts.map(p => {
+                            const title = p.names?.[currentLang] || p.names?.en || p.names?.gu || 'Product';
+                            const isCustom = (customProductsList || []).some(cp => cp.id === p.id);
+                            return (
+                              <option key={p.id} value={p.id}>
+                                {isCustom ? '⭐ ' : ''}{title} (HS: {p.hsCode || p.localHsn || 'N/A'})
+                              </option>
+                            );
+                          })}
+                        </select>
+                      )}
+
+                      {invoiceItems.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setInvoiceItems(prev => prev.filter((_, iIdx) => iIdx !== idx))}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '1.2rem', cursor: 'pointer', padding: '0 6px' }}
+                          title="Remove line item"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+
+                    {/* PRODUCT TITLE / CATEGORY BAR */}
+                    <div style={{ marginBottom: '10px' }}>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Product Category - Name (e.g. Dairy Products - Premium Pure Cow Ghee)"
+                        value={item.name}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, name: val } : i));
+                        }}
+                        style={{ width: '100%', fontWeight: 700, fontSize: '0.85rem', background: 'rgba(255,255,255,0.06)', color: '#f8fafc', borderColor: 'rgba(255,255,255,0.15)' }}
+                      />
+                    </div>
+
+                    {/* PRODUCT ATTRIBUTES ROW (HSN, CURRENCY, UNIT PRICE, QTY, UNIT/MOQ, INCOTERM, LINE TOTAL) */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', alignItems: 'end' }}>
+                      {/* HSN / SAC */}
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>HSN / SAC</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={item.hsn || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsn: val } : i));
+                          }}
+                          style={{ fontSize: '0.8rem', fontWeight: 700, padding: '4px 8px' }}
+                        />
+                      </div>
+
+                      {/* CURRENCY & UNIT PRICE */}
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>Unit Price (USD)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={item.price || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, price: val } : i));
+                          }}
+                          style={{ fontSize: '0.8rem', fontWeight: 700, padding: '4px 8px' }}
+                        />
+                      </div>
+
+                      {/* QUANTITY */}
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>Quantity</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={item.qty || '1'}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, qty: val } : i));
+                          }}
+                          style={{ fontSize: '0.8rem', fontWeight: 700, padding: '4px 8px' }}
+                        />
+                      </div>
+
+                      {/* UNIT / MOQ */}
+                      <div style={{ gridColumn: 'span 2' }}>
+                        <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>Unit</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={item.unit || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, unit: val } : i));
+                          }}
+                          placeholder="e.g. MOQ: 500 Kg (કિલો)"
+                          style={{ fontSize: '0.78rem', fontWeight: 700, padding: '4px 8px' }}
+                        />
+                      </div>
+
+                      {/* INCOTERM DROPDOWN */}
+                      <div style={{ gridColumn: 'span 2' }}>
+                        <label style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '2px' }}>📊 Incoterm (Terms of Delivery)</label>
+                        <select
+                          className="form-control"
+                          value={item.incoterm || 'FOB (Free On Board - Loading Port)'}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, incoterm: val } : i));
+                          }}
+                          style={{ fontSize: '0.78rem', fontWeight: 800, color: '#facc15', background: '#0f172a', padding: '4px 8px' }}
+                        >
+                          <option value="FOB (Free On Board - Loading Port)">FOB (Free On Board - Loading Port)</option>
+                          <option value="CIF (Cost, Insurance & Freight - Destination Port)">CIF (Cost, Insurance & Freight - Destination Port)</option>
+                          <option value="EXW (Ex Works - Seller Factory/Warehouse)">EXW (Ex Works - Seller Factory/Warehouse)</option>
+                          <option value="CFR (Cost & Freight - Destination Port)">CFR (Cost & Freight - Destination Port)</option>
+                          <option value="DDP (Delivered Duty Paid - Buyer Doorstep)">DDP (Delivered Duty Paid - Buyer Doorstep)</option>
+                          <option value="FCA (Free Carrier - Inland Depot)">FCA (Free Carrier - Inland Depot)</option>
+                          <option value="FAS (Free Alongside Ship)">FAS (Free Alongside Ship)</option>
+                          <option value="CPT (Carriage Paid To)">CPT (Carriage Paid To)</option>
+                          <option value="CIP (Carriage & Insurance Paid To)">CIP (Carriage & Insurance Paid To)</option>
+                          <option value="DAP (Delivered At Place)">DAP (Delivered At Place)</option>
+                        </select>
+                      </div>
+
+                      {/* LINE TOTAL */}
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: '#4ade80', fontWeight: 800, display: 'block', marginBottom: '2px' }}>Line Total</label>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 900, color: '#4ade80', padding: '4px 0' }}>
+                          {(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <div className="form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div className="form-group" style={{ marginBottom: '8px' }}>
                   <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Buyer Name / Contact</label>
