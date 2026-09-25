@@ -6834,22 +6834,6 @@ export default function Modals() {
                       <label style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, display: 'block' }}>🚢 Port of Discharge (Destination)</label>
                       <input type="text" className="form-control" value={quotePortDischarge} onChange={(e) => setQuotePortDischarge(e.target.value)} placeholder="e.g. Jebel Ali Port, Dubai / Port of New York" style={{ fontWeight: 700 }} />
                     </div>
-
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block' }}>📊 Incoterm (Terms of Delivery)</label>
-                      <select className="form-control" value={quoteIncoterm} onChange={(e) => setQuoteIncoterm(e.target.value)} style={{ fontWeight: 800, color: '#facc15', background: '#0f172a' }}>
-                        <option value="FOB (Free On Board - Loading Port)">FOB (Free On Board - Loading Port)</option>
-                        <option value="CIF (Cost, Insurance & Freight - Destination Port)">CIF (Cost, Insurance & Freight - Destination Port)</option>
-                        <option value="EXW (Ex Works - Seller Factory/Warehouse)">EXW (Ex Works - Seller Factory/Warehouse)</option>
-                        <option value="CFR (Cost & Freight - Destination Port)">CFR (Cost & Freight - Destination Port)</option>
-                        <option value="DDP (Delivered Duty Paid - Buyer Doorstep)">DDP (Delivered Duty Paid - Buyer Doorstep)</option>
-                        <option value="FCA (Free Carrier - Inland Depot)">FCA (Free Carrier - Inland Depot)</option>
-                        <option value="FAS (Free Alongside Ship)">FAS (Free Alongside Ship)</option>
-                        <option value="CPT (Carriage Paid To)">CPT (Carriage Paid To)</option>
-                        <option value="CIP (Carriage & Insurance Paid To)">CIP (Carriage & Insurance Paid To)</option>
-                        <option value="DAP (Delivered At Place)">DAP (Delivered At Place)</option>
-                      </select>
-                    </div>
                   </>
                 )}
               </div>
