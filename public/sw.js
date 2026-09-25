@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adidev-app-v3.0';
+const CACHE_NAME = 'atsondika-app-v3.2-' + Date.now();
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
