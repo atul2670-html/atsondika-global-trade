@@ -251,16 +251,21 @@ export default function Modals() {
   const [destGstRate, setDestGstRate] = useState('5');
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
-  const [invoiceRefNo, setInvoiceRefNo] = useState('');
+  const [invoiceRefSeq, setInvoiceRefSeq] = useState('');
 
   useEffect(() => {
     if (activeModal === 'quotation') {
-      const compInitials = (activeCompany?.name || 'ADIDEV SMART SOLUTION').split(' ').map(w => w[0]).join('').toUpperCase();
-      const typeTag = documentType === 'jobwork' ? '/JW/' : (invoiceTradeMode === 'export' ? '/EXP/' : '/DOM/');
-      const seq = Math.floor(100000 + Math.random() * 900000);
-      setInvoiceRefNo(`${compInitials}${typeTag}${seq}`);
+      if (!invoiceRefSeq) {
+        setInvoiceRefSeq(String(Math.floor(100000 + Math.random() * 900000)));
+      }
+    } else if (invoiceRefSeq) {
+      setInvoiceRefSeq('');
     }
-  }, [activeModal, documentType, invoiceTradeMode, activeCompany]);
+  }, [activeModal, invoiceRefSeq]);
+
+  const compInitials = (activeCompany?.name || 'ADIDEV SMART SOLUTION').split(' ').map(w => w[0]).join('').toUpperCase();
+  const typeTag = documentType === 'jobwork' ? '/JW/' : (invoiceTradeMode === 'export' ? '/EXP/' : '/DOM/');
+  const stableInvoiceRefNo = `${compInitials}${typeTag}${invoiceRefSeq || '878129'}`;
 
   const getNormalizedIncotermString = (raw) => {
     if (!raw) return 'FOB (Free On Board - Loading Port)';
@@ -279,7 +284,7 @@ export default function Modals() {
   };
 
   const getCatalogProductInvoiceInfo = (prod) => {
-    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'DDP (Delivered Duty Paid - Buyer Doorstep)', currency: (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR') };
+    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'DDP (Delivered Duty Paid - Buyer Doorstep)', currency: 'INR' };
     
     let subName = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
     let hsn = prod.hsCode || prod.localHsn || '9988';
@@ -365,7 +370,7 @@ export default function Modals() {
 
     const rawIncoterm = prod.exportIncoterm || prod.incoterm || prod.export_incoterm || 'FOB';
     const incoterm = getNormalizedIncotermString(rawIncoterm);
-    const currency = prod.exportCurrency || prod.currency || prod.priceCurrency || (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR');
+    const currency = prod.exportCurrency || prod.currency || prod.priceCurrency || 'INR';
 
     return { name: fullName, hsn, price, qty, unit, incoterm, currency };
   };
@@ -1003,11 +1008,11 @@ export default function Modals() {
 
   // Maximum Global Currencies Database (50+ World Currencies)
   const globalCurrencyList = [
+    { code: 'INR', symbol: '₹', label: 'INR (₹) - Indian Rupee' },
     { code: 'USD', symbol: '$', label: 'USD ($) - US Dollar' },
     { code: 'EUR', symbol: '€', label: 'EUR (€) - Euro (EU)' },
     { code: 'AED', symbol: 'د.إ', label: 'AED (د.إ) - UAE Dirham' },
     { code: 'GBP', symbol: '£', label: 'GBP (£) - British Pound' },
-    { code: 'INR', symbol: '₹', label: 'INR (₹) - Indian Rupee' },
     { code: 'SAR', symbol: '﷼', label: 'SAR (﷼) - Saudi Riyal' },
     { code: 'CAD', symbol: '$', label: 'CAD ($) - Canadian Dollar' },
     { code: 'AUD', symbol: '$', label: 'AUD ($) - Australian Dollar' },

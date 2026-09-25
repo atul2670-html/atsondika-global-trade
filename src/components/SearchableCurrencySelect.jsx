@@ -32,8 +32,8 @@ export default function SearchableCurrencySelect({ label, value, onChange, curre
     items = DEFAULT_CURRENCIES;
   }
 
-  const activeCode = typeof value === 'object' && value ? value.code : (value || 'USD');
-  const activeObj = items.find(c => c.code === activeCode) || items[0] || { code: 'USD', symbol: '$', flag: '🇺🇸', name: 'US Dollar (USA)' };
+  const activeCode = typeof value === 'object' && value ? value.code : (value || 'INR');
+  const activeObj = items.find(c => c.code === activeCode) || items.find(c => c.code === 'INR') || items[0] || { code: 'INR', symbol: '₹', flag: '🇮🇳', name: 'Indian Rupee (India)' };
 
   const q = searchQuery.toLowerCase().trim();
   const filteredItems = items.filter(c => {
