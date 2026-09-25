@@ -4522,7 +4522,7 @@ export default function Modals() {
       {/* DUAL PRODUCT MODAL (2 DISTINCT FORMS FOR MAIN CATEGORY VS SUB-PRODUCT) */}
       {(activeModal === 'product' || activeModal === 'product_main' || activeModal === 'product_sub') && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '640px', borderRadius: '20px' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '1180px', width: '95%', maxHeight: '92vh', overflowY: 'auto', borderRadius: '20px' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
             
             {/* EDITING MODE STATUS BANNER */}
@@ -6334,7 +6334,7 @@ export default function Modals() {
       {/* INSTANT EXPORT PROFORMA INVOICE / QUOTATION GENERATOR MODAL */}
       {activeModal === 'quotation' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '95%', maxHeight: '92vh', overflowY: 'auto' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '1180px', width: '95%', maxHeight: '92vh', overflowY: 'auto' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
