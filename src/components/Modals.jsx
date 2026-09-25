@@ -205,6 +205,7 @@ export default function Modals() {
   const [includeStampInInvoice, setIncludeStampInInvoice] = useState(true);
   const [invoiceTradeMode, setInvoiceTradeMode] = useState('export'); // 'export' | 'interstate' | 'intrastate'
   const [documentType, setDocumentType] = useState('proforma'); // 'proforma' | 'tax_invoice' | 'jobwork'
+  const [invoiceRefNo, setInvoiceRefNo] = useState('AGT/EXP/878129');
   const [domesticGstRate, setDomesticGstRate] = useState(18); // 5 | 12 | 18 | 28
   const [buyerGstinInput, setBuyerGstinInput] = useState('');
   const [vehicleNoInput, setVehicleNoInput] = useState('GJ-05-BX-9988');
@@ -671,6 +672,36 @@ export default function Modals() {
       }
     }
     return parts.length > 0 ? parts.join(' / ') : '100 Pcs (નંગ)';
+  };
+
+  const parseMoqParts = (moqStr) => {
+    if (!moqStr) return { uQty: '100', uType: 'Pcs (નંગ)', pQty: '2', pType: 'Cartons (કાર્ટન)', cQty: '1', cType: '20ft FCL Container' };
+    const clean = String(moqStr).replace(/^MOQ:\s*/i, '').trim();
+    const tokens = clean.split('/').map(s => s.trim());
+    
+    let uQty = '', uType = 'Pcs (નંગ)';
+    let pQty = '', pType = 'Cartons (કાર્ટન)';
+    let cQty = '1', cType = '20ft FCL Container';
+
+    tokens.forEach(tok => {
+      const numMatch = tok.match(/^(\d+)\s*(?:x\s*)?(.*)$/i);
+      if (numMatch) {
+        const val = numMatch[1];
+        const rest = numMatch[2].trim();
+        if (/20ft|40ft|container|lcl|cargo|courier|air/i.test(rest)) {
+          cQty = val;
+          cType = rest || '20ft FCL Container';
+        } else if (/carton|bag|box|bale|drum|pallet/i.test(rest)) {
+          pQty = val;
+          pType = rest || 'Cartons (કાર્ટન)';
+        } else {
+          uQty = val;
+          uType = rest || 'Pcs (નંગ)';
+        }
+      }
+    });
+
+    return { uQty: uQty || '100', uType, pQty: pQty || '2', pType, cQty: cQty || '1', cType };
   };
   const [spec, setSpec] = useState('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
   const [packaging, setPackaging] = useState('Standard Export Packaging');
@@ -6821,20 +6852,206 @@ export default function Modals() {
                           )}
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '6px' }}>
-                          <div>
-                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>HSN / SAC</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={item.hsn}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsn: val } : i));
-                              }}
-                              style={{ padding: '3px 6px', fontSize: '0.8rem' }}
-                            />
-                          </div>
+                        {/* GLOBAL INT'L HS CODE SEARCH (WCO 6-DIGIT ONLINE TOOL) MODULE */}
+                        {(() => {
+                          const itemQuery = item.hsSearchQuery !== undefined ? item.hsSearchQuery : '';
+                          const filtered = itemQuery.trim()
+                            ? hsCodeDictionary.filter(h =>
+                                h.code.includes(itemQuery.trim()) ||
+                                h.localHsn.includes(itemQuery.trim()) ||
+                                h.name.toLowerCase().includes(itemQuery.trim().toLowerCase()) ||
+                                h.cat.toLowerCase().includes(itemQuery.trim().toLowerCase())
+                              )
+                            : hsCodeDictionary;
+
+                          return (
+                            <div style={{ background: 'rgba(20, 184, 166, 0.05)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(45, 212, 191, 0.35)', marginBottom: '10px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#e2e8f0', fontSize: '0.84rem' }}>
+                                  🌐 Global Int'l HS Code Search <span style={{ color: '#2dd4bf', fontWeight: 700 }}>(WCO 6-Digit Online Tool)</span>
+                                </label>
+                              </div>
+
+                              {/* Live Search Tool for Global Int'l HS Code */}
+                              <div style={{ position: 'relative', marginBottom: '10px' }}>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="🔍 Type Global product name (e.g. Cumin, Rice, Bolts, Textile)..."
+                                    value={itemQuery}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsSearchQuery: val, showHsDropdown: true } : i));
+                                    }}
+                                    onFocus={() => {
+                                      setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, showHsDropdown: true } : i));
+                                    }}
+                                    style={{ fontSize: '0.86rem', flex: 1 }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOnlineHsSearch(itemQuery || item.name, 'international')}
+                                    className="btn-primary"
+                                    style={{
+                                      padding: '0 12px',
+                                      flexShrink: 0,
+                                      fontSize: '0.78rem',
+                                      fontWeight: 800,
+                                      background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                                      boxShadow: '0 2px 10px rgba(2, 132, 199, 0.3)',
+                                      whiteSpace: 'nowrap'
+                                    }}
+                                    title="Search 6-Digit International HS Code Online"
+                                  >
+                                    🌐 Int'l HS Search
+                                  </button>
+                                  {itemQuery && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsSearchQuery: '', showHsDropdown: false } : i));
+                                      }}
+                                      className="btn-secondary"
+                                      style={{ padding: '0 8px', flexShrink: 0 }}
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Dropdown Results */}
+                                {item.showHsDropdown && (
+                                  <div className="glass-card" style={{
+                                    position: 'absolute',
+                                    top: 'calc(100% + 4px)',
+                                    left: 0,
+                                    width: '100%',
+                                    maxHeight: '220px',
+                                    overflowY: 'auto',
+                                    zIndex: 100,
+                                    background: 'rgba(15, 23, 42, 0.98)',
+                                    backdropFilter: 'blur(24px)',
+                                    border: '1px solid var(--primary-teal-glow)',
+                                    borderRadius: 'var(--radius-md)',
+                                    boxShadow: '0 15px 40px rgba(0,0,0,0.6)',
+                                    padding: '6px'
+                                  }}>
+                                    <div
+                                      onClick={() => {
+                                        handleOnlineHsSearch(itemQuery || item.name, 'international');
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, showHsDropdown: false } : i));
+                                      }}
+                                      style={{
+                                        padding: '8px',
+                                        borderRadius: 'var(--radius-sm)',
+                                        cursor: 'pointer',
+                                        fontSize: '0.78rem',
+                                        fontWeight: 800,
+                                        background: 'rgba(2, 132, 199, 0.18)',
+                                        color: '#38bdf8',
+                                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        marginBottom: '8px'
+                                      }}
+                                    >
+                                      <span>🌐 Search "{itemQuery || item.name || 'Product'}" Int'l 6-Digit HS Code Online</span>
+                                      <span style={{ fontSize: '0.7rem', background: '#0284c7', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
+                                    </div>
+
+                                    <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', padding: '4px 8px', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '4px' }}>
+                                      👇 Quick Auto-Fill Int'l WCO 6-Digit HS Code:
+                                    </div>
+
+                                    {filtered.length === 0 ? (
+                                      <div style={{ padding: '10px', textAlign: 'center' }}>
+                                        <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '6px' }}>
+                                          No matching local database HS Code found for "{itemQuery}".
+                                        </p>
+                                        <button
+                                          type="button"
+                                          className="btn-primary"
+                                          style={{
+                                            width: '100%',
+                                            fontSize: '0.78rem',
+                                            padding: '6px',
+                                            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                                            justifyContent: 'center'
+                                          }}
+                                          onClick={() => {
+                                            handleOnlineHsSearch(itemQuery || item.name, 'international');
+                                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, showHsDropdown: false } : i));
+                                          }}
+                                        >
+                                          🌐 Search Int'l 6-Digit HS Code Online
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      filtered.map((hItem, hIdx) => (
+                                        <div
+                                          key={hIdx}
+                                          onClick={() => {
+                                            setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                              ...i,
+                                              hsn: hItem.code,
+                                              hsSearchQuery: `${hItem.code} - ${hItem.name}`,
+                                              showHsDropdown: false
+                                            } : i));
+                                          }}
+                                          style={{
+                                            padding: '8px 10px',
+                                            borderRadius: 'var(--radius-sm)',
+                                            cursor: 'pointer',
+                                            fontSize: '0.82rem',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                            transition: 'background 0.2s'
+                                          }}
+                                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(20, 184, 166, 0.2)'}
+                                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                        >
+                                          <div>
+                                            <span style={{ fontWeight: 900, color: '#4ade80', marginRight: '6px' }}>
+                                              🌐 {hItem.code}
+                                            </span>
+                                            <span style={{ color: 'var(--text-main)' }}>{hItem.name}</span>
+                                          </div>
+                                          <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', color: 'var(--text-sub)', padding: '2px 6px', borderRadius: '4px' }}>
+                                            {hItem.cat}
+                                          </span>
+                                        </div>
+                                      ))
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div style={{ marginBottom: 0 }}>
+                                <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
+                                  🌐 Int'l HS Code (6-Digit WCO) * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="e.g. 04059020"
+                                  value={item.hsn || ''}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, hsn: val } : i));
+                                  }}
+                                  required
+                                  style={{ fontWeight: 800, color: 'var(--primary-teal-glow)', fontSize: '0.86rem' }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '8px', marginBottom: '8px' }}>
                           <div>
                             <label style={{ fontSize: '0.72rem', color: '#4ade80', fontWeight: 800 }}>Unit Price ({quoteCurrency})</label>
                             <input
@@ -6862,26 +7079,213 @@ export default function Modals() {
                               style={{ padding: '3px 6px', fontSize: '0.8rem', fontWeight: 800 }}
                             />
                           </div>
-                          <div>
-                            <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)' }}>Unit</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={item.unit}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, unit: val } : i));
-                              }}
-                              style={{ padding: '3px 6px', fontSize: '0.8rem' }}
-                            />
-                          </div>
                           <div style={{ textAlign: 'right' }}>
                             <label style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Line Total</label>
-                            <strong style={{ fontSize: '0.88rem', color: '#4ade80' }}>
+                            <strong style={{ fontSize: '0.92rem', color: '#4ade80' }}>
                               {(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </strong>
                           </div>
                         </div>
+
+                        {/* MERGED 3-DIVISION MOQ ORDER BOX (IN PLACE OF OLD SINGLE UNIT CAPSULE) */}
+                        {(() => {
+                          const parsed = parseMoqParts(item.unit);
+                          const curUQty = item.moqUnitQty !== undefined ? item.moqUnitQty : parsed.uQty;
+                          const curUType = item.moqUnitType || parsed.uType;
+                          const curPQty = item.moqPackQty !== undefined ? item.moqPackQty : parsed.pQty;
+                          const curPType = item.moqPackType || parsed.pType;
+                          const curCQty = item.moqContainerQty !== undefined ? item.moqContainerQty : parsed.cQty;
+                          const curCType = item.moqContainerType || parsed.cType;
+
+                          return (
+                            <div style={{ background: 'rgba(15, 23, 42, 0.75)', padding: '10px', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.35)', marginTop: '4px' }}>
+                              <div style={{ fontSize: '0.76rem', color: '#38bdf8', fontWeight: 800, marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+                                <span>📦 Minimum Order Quantity (MOQ) - ૩-ડિવીઝન ઓર્ડર બોક્સ (Numbers & Dropdowns):</span>
+                                <span style={{ fontSize: '0.74rem', background: 'rgba(56, 189, 248, 0.15)', color: '#4ade80', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                                  {item.unit ? (item.unit.startsWith('MOQ:') ? item.unit : `MOQ: ${item.unit}`) : 'MOQ: 100 Pcs (નંગ)'}
+                                </span>
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '8px' }}>
+                                {/* BOX 1: યુનિટ / નંગ ડ્રોપડાઉન (Qty) */}
+                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <label style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '3px' }}>
+                                    ૧. યુનિટ ડ્રોપડાઉન (Qty)
+                                  </label>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="Qty"
+                                      min="0"
+                                      value={curUQty}
+                                      onChange={(e) => {
+                                        const uQty = e.target.value;
+                                        const formatted = buildMoqString(uQty, curUType, curPQty, curPType, curCQty, curCType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: uQty,
+                                          moqUnitType: curUType,
+                                          moqPackQty: curPQty,
+                                          moqPackType: curPType,
+                                          moqContainerQty: curCQty,
+                                          moqContainerType: curCType
+                                        } : i));
+                                      }}
+                                      style={{ width: '60px', fontWeight: 800, textAlign: 'center', padding: '3px 4px', fontSize: '0.8rem' }}
+                                    />
+                                    <select
+                                      className="form-control"
+                                      value={curUType}
+                                      onChange={(e) => {
+                                        const uType = e.target.value;
+                                        const formatted = buildMoqString(curUQty, uType, curPQty, curPType, curCQty, curCType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: curUQty,
+                                          moqUnitType: uType,
+                                          moqPackQty: curPQty,
+                                          moqPackType: curPType,
+                                          moqContainerQty: curCQty,
+                                          moqContainerType: curCType
+                                        } : i));
+                                      }}
+                                      style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#38bdf8', fontSize: '0.76rem', padding: '3px 4px' }}
+                                    >
+                                      <option value="Pcs (નંગ)">Pcs (નંગ / ટુકડા)</option>
+                                      <option value="None">None (જરૂર નથી)</option>
+                                      <option value="Pairs (જોડી)">Pairs (જોડી)</option>
+                                      <option value="Sets (સેટ)">Sets (સેટ)</option>
+                                      <option value="Meter (મીટર)">Meter (મીટર)</option>
+                                      <option value="Kg (કિલોગ્રામ)">Kg (કિલોગ્રામ)</option>
+                                      <option value="Grams (ગ્રામ)">Grams (ગ્રામ)</option>
+                                      <option value="Dozen (ડઝન)">Dozen (ડઝન)</option>
+                                      <option value="Litre (લીટર)">Litre (લીટર)</option>
+                                    </select>
+                                  </div>
+                                </div>
+
+                                {/* BOX 2: કાર્ટન, કોથળા & બોક્ષ ડ્રોપડાઉન (Qty) */}
+                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <label style={{ fontSize: '0.7rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '3px' }}>
+                                    ૨. કાર્ટન / કોથળા / બોક્ષ (Qty)
+                                  </label>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="Qty"
+                                      min="0"
+                                      value={curPQty}
+                                      onChange={(e) => {
+                                        const pQty = e.target.value;
+                                        const formatted = buildMoqString(curUQty, curUType, pQty, curPType, curCQty, curCType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: curUQty,
+                                          moqUnitType: curUType,
+                                          moqPackQty: pQty,
+                                          moqPackType: curPType,
+                                          moqContainerQty: curCQty,
+                                          moqContainerType: curCType
+                                        } : i));
+                                      }}
+                                      style={{ width: '60px', fontWeight: 800, textAlign: 'center', padding: '3px 4px', fontSize: '0.8rem' }}
+                                    />
+                                    <select
+                                      className="form-control"
+                                      value={curPType}
+                                      onChange={(e) => {
+                                        const pType = e.target.value;
+                                        const formatted = buildMoqString(curUQty, curUType, curPQty, pType, curCQty, curCType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: curUQty,
+                                          moqUnitType: curUType,
+                                          moqPackQty: curPQty,
+                                          moqPackType: pType,
+                                          moqContainerQty: curCQty,
+                                          moqContainerType: curCType
+                                        } : i));
+                                      }}
+                                      style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#facc15', fontSize: '0.76rem', padding: '3px 4px' }}
+                                    >
+                                      <option value="Cartons (કાર્ટન)">Cartons (કાર્ટન બોક્સ)</option>
+                                      <option value="None">None (જરૂર નથી)</option>
+                                      <option value="Bags (કોથળા / ગુણી)">Bags (કોથળા / ગુણી)</option>
+                                      <option value="Boxes (માસ્ટર બોક્ષ)">Boxes (માસ્ટર બોક્ષ)</option>
+                                      <option value="Bales (ગાંસડી)">Bales (ગાંસડી / બંડલ)</option>
+                                      <option value="Drums (ડ્રમ)">Drums (ડ્રમ / બેરલ)</option>
+                                      <option value="Pallets (પેલેટ)">Pallets (વુડન પેલેટ)</option>
+                                    </select>
+                                  </div>
+                                </div>
+
+                                {/* BOX 3: કન્ટેનર સાઈઝ ડ્રોપડાઉન (Qty) */}
+                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <label style={{ fontSize: '0.7rem', color: '#2dd4bf', fontWeight: 800, display: 'block', marginBottom: '3px' }}>
+                                    ૩. કન્ટેનર સાઈઝ ડ્રોપડાઉન (Qty)
+                                  </label>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="Qty"
+                                      min="0"
+                                      value={curCQty}
+                                      onChange={(e) => {
+                                        const cQty = e.target.value;
+                                        const formatted = buildMoqString(curUQty, curUType, curPQty, curPType, cQty, curCType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: curUQty,
+                                          moqUnitType: curUType,
+                                          moqPackQty: curPQty,
+                                          moqPackType: curPType,
+                                          moqContainerQty: cQty,
+                                          moqContainerType: curCType
+                                        } : i));
+                                      }}
+                                      style={{ width: '60px', fontWeight: 800, textAlign: 'center', padding: '3px 4px', fontSize: '0.8rem' }}
+                                    />
+                                    <select
+                                      className="form-control"
+                                      value={curCType}
+                                      onChange={(e) => {
+                                        const cType = e.target.value;
+                                        const formatted = buildMoqString(curUQty, curUType, curPQty, curPType, curCQty, cType);
+                                        setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? {
+                                          ...i,
+                                          unit: formatted,
+                                          moqUnitQty: curUQty,
+                                          moqUnitType: curUType,
+                                          moqPackQty: curPQty,
+                                          moqPackType: curPType,
+                                          moqContainerQty: curCQty,
+                                          moqContainerType: cType
+                                        } : i));
+                                      }}
+                                      style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', fontSize: '0.76rem', padding: '3px 4px' }}
+                                    >
+                                      <option value="None">None (જરૂર નથી - DHL / Air Cargo)</option>
+                                      <option value="20ft FCL Container">20ft FCL Container</option>
+                                      <option value="40ft FCL Container">40ft FCL Container</option>
+                                      <option value="40ft High Cube (HC)">40ft High Cube (HC)</option>
+                                      <option value="LCL Cargo Shipment">LCL Cargo Shipment (ઓછો માલ)</option>
+                                      <option value="Air Freight Cargo (DHL/Express)">Air Freight Cargo (DHL / Air Express)</option>
+                                      <option value="Courier Parcel">Courier Parcel (કુરિયર પાર્સલ)</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     ))}
                   </div>
