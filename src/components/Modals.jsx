@@ -56,6 +56,57 @@ const hsCodeDictionary = [
   { code: '481920', localHsn: '48192020', name: 'Folding Paper Bags & Multi-wall Sacks (પેપર બેગ્સ)', cat: 'Packaging' }
 ];
 
+// HELPER FUNCTIONS FOR 3-DIVISION MOQ ORDER BOX (NUMBERS & DROPDOWNS)
+const buildMoqString = (uQty, uType, pQty, pType, cQty, cType) => {
+  let parts = [];
+  if (uQty && uType && uType !== 'None') {
+    parts.push(`${uQty} ${uType}`);
+  }
+  if (pQty && pType && pType !== 'None') {
+    parts.push(`${pQty} ${pType}`);
+  }
+  if (cQty && cType && cType !== 'None') {
+    parts.push(`${cQty} ${cType}`);
+  }
+  if (parts.length === 0) return 'MOQ: 100 Pcs (નંગ)';
+  return `MOQ: ${parts.join(' / ')}`;
+};
+
+const parseMoqParts = (str) => {
+  const result = {
+    uQty: '100', uType: 'Pcs (નંગ / ટુકડા)',
+    pQty: '2', pType: 'Cartons (કાર્ટન)',
+    cQty: '1', cType: '20ft FCL Container'
+  };
+  if (!str) return result;
+  
+  const clean = str.replace(/^MOQ:\s*/i, '');
+  const parts = clean.split('/').map(p => p.trim());
+  
+  if (parts[0]) {
+    const match = parts[0].match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
+    if (match) {
+      result.uQty = match[1];
+      result.uType = match[2] || result.uType;
+    }
+  }
+  if (parts[1]) {
+    const match = parts[1].match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
+    if (match) {
+      result.pQty = match[1];
+      result.pType = match[2] || result.pType;
+    }
+  }
+  if (parts[2]) {
+    const match = parts[2].match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
+    if (match) {
+      result.cQty = match[1];
+      result.cType = match[2] || result.cType;
+    }
+  }
+  return result;
+};
+
 export default function Modals() {
   const {
     activeModal, setActiveModal, t, currentLang,
