@@ -251,6 +251,16 @@ export default function Modals() {
   const [destGstRate, setDestGstRate] = useState('5');
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
+  const [invoiceRefNo, setInvoiceRefNo] = useState('');
+
+  useEffect(() => {
+    if (activeModal === 'quotation') {
+      const compInitials = (activeCompany?.name || 'ADIDEV SMART SOLUTION').split(' ').map(w => w[0]).join('').toUpperCase();
+      const typeTag = documentType === 'jobwork' ? '/JW/' : (invoiceTradeMode === 'export' ? '/EXP/' : '/DOM/');
+      const seq = Math.floor(100000 + Math.random() * 900000);
+      setInvoiceRefNo(`${compInitials}${typeTag}${seq}`);
+    }
+  }, [activeModal, documentType, invoiceTradeMode, activeCompany]);
 
   const getNormalizedIncotermString = (raw) => {
     if (!raw) return 'FOB (Free On Board - Loading Port)';
@@ -269,7 +279,7 @@ export default function Modals() {
   };
 
   const getCatalogProductInvoiceInfo = (prod) => {
-    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'DDP (Delivered Duty Paid - Buyer Doorstep)', currency: 'USD' };
+    if (!prod) return { name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', price: '15', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', incoterm: 'DDP (Delivered Duty Paid - Buyer Doorstep)', currency: (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR') };
     
     let subName = prod.names?.[currentLang] || prod.names?.en || prod.names?.gu || prod.name || 'Export Commodity';
     let hsn = prod.hsCode || prod.localHsn || '9988';
@@ -325,12 +335,11 @@ export default function Modals() {
       }
     }
 
-    const isProdInr = (prod.exportCurrency === 'INR' || prod.currency === 'INR');
-    let rawPrice = isProdInr
-      ? (prod.localPrice !== undefined && prod.localPrice !== null && prod.localPrice !== '' ? String(prod.localPrice) : (prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== '' ? String(prod.priceUSD) : (prod.priceInr || prod.price || '')))
-      : (prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== ''
-          ? String(prod.priceUSD)
-          : (prod.priceUsd || prod.priceInr || prod.localPrice || prod.price || ''));
+    let rawPrice = (prod.priceUSD !== undefined && prod.priceUSD !== null && prod.priceUSD !== '')
+      ? String(prod.priceUSD)
+      : (prod.localPrice !== undefined && prod.localPrice !== null && prod.localPrice !== ''
+          ? String(prod.localPrice)
+          : (prod.priceInr || prod.priceUsd || prod.price || ''));
     let price = rawPrice ? String(rawPrice).replace(/[^0-9.]/g, '') : '15';
     if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
       price = '15';
@@ -356,7 +365,7 @@ export default function Modals() {
 
     const rawIncoterm = prod.exportIncoterm || prod.incoterm || prod.export_incoterm || 'FOB';
     const incoterm = getNormalizedIncotermString(rawIncoterm);
-    const currency = prod.exportCurrency || prod.currency || prod.currencyUSD || prod.priceCurrency || (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR');
+    const currency = prod.exportCurrency || prod.currency || prod.priceCurrency || (typeof exportCurrency !== 'undefined' && exportCurrency ? exportCurrency : 'INR');
 
     return { name: fullName, hsn, price, qty, unit, incoterm, currency };
   };
@@ -6600,8 +6609,18 @@ export default function Modals() {
                     if (quotationProduct) {
                       const info = getCatalogProductInvoiceInfo(quotationProduct);
                       if (info.currency) setQuoteCurrency(info.currency);
+                    } else if (invoiceItems && invoiceItems.length > 0) {
+                      const baseProds = getAllProducts ? getAllProducts() : [];
+                      const customProds = customProductsList || [];
+                      const matched = [...baseProds, ...customProds].find(p => p.hsCode === invoiceItems[0].hsn || (p.names?.en && invoiceItems[0].name.includes(p.names.en)) || (p.names?.gu && invoiceItems[0].name.includes(p.names.gu)));
+                      if (matched) {
+                        const info = getCatalogProductInvoiceInfo(matched);
+                        if (info.currency) setQuoteCurrency(info.currency);
+                      } else if (!quoteCurrency) {
+                        setQuoteCurrency('INR');
+                      }
                     } else if (!quoteCurrency) {
-                      setQuoteCurrency('USD');
+                      setQuoteCurrency('INR');
                     }
                   }}
                   style={{
@@ -6617,7 +6636,7 @@ export default function Modals() {
                     color: invoiceTradeMode === 'export' ? 'white' : 'var(--text-sub)'
                   }}
                 >
-                  🌐 International Export Sale ({quoteCurrency || 'USD'} / Custom Port)
+                  🌐 International Export Sale ({quoteCurrency || 'INR'} / Custom Port)
                 </button>
                 <button
                   type="button"
@@ -7016,7 +7035,7 @@ export default function Modals() {
                         {docTitle}
                       </div>
                       <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '4px' }}>
-                        <strong>Ref No:</strong> {((activeCompany?.name || 'ADIDEV SMART SOLUTION').split(' ').map(w => w[0]).join('') + (documentType === 'jobwork' ? '/JW/' : (invoiceTradeMode === 'export' ? '/EXP/' : '/DOM/')) + Date.now().toString().slice(-6)).toUpperCase()}
+                        <strong>Ref No:</strong> {invoiceRefNo || 'AGT/EXP/878129'}
                       </div>
                       <div style={{ fontSize: '0.82rem', color: '#475569' }}>
                         <strong>Date:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
