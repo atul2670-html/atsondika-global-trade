@@ -266,6 +266,11 @@ export default function Modals() {
     { id: 'item_1', name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', price: '15' }
   ]);
 
+  const allCatalogProducts = [
+    ...(getAllProducts ? getAllProducts() : []),
+    ...(customProductsList || [])
+  ];
+
   // Sync state when selecting sister company to edit
   useEffect(() => {
     if (activeModal === 'company' && selectedCompId && companiesList) {
