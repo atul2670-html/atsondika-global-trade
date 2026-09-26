@@ -894,8 +894,17 @@ export default function ProductsGrid() {
                               whiteSpace: 'nowrap'
                             }}
                             onClick={() => {
-                              if (setQuotationProduct) setQuotationProduct(p);
-                              if (setActiveModal) setActiveModal('quotation');
+                              if (setSelectedRfqProduct) setSelectedRfqProduct(p);
+                              else if (addRfqProduct) addRfqProduct(p);
+
+                              const contactEl = document.querySelector('#contact');
+                              if (contactEl) {
+                                contactEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                setTimeout(() => {
+                                  const inputEl = document.querySelector('#buyer-name-input');
+                                  if (inputEl) inputEl.focus();
+                                }, 400);
+                              }
                             }}
                             title="Request Official Quotation (RFQ)"
                           >
@@ -1597,8 +1606,17 @@ export default function ProductsGrid() {
                           whiteSpace: 'nowrap'
                         }}
                         onClick={() => {
-                          setQuotationProduct(p);
-                          setActiveModal('quotation');
+                          if (setSelectedRfqProduct) setSelectedRfqProduct(p);
+                          else if (addRfqProduct) addRfqProduct(p);
+
+                          const contactEl = document.querySelector('#contact');
+                          if (contactEl) {
+                            contactEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            setTimeout(() => {
+                              const inputEl = document.querySelector('#buyer-name-input');
+                              if (inputEl) inputEl.focus();
+                            }, 400);
+                          }
                         }}
                         title="Request Official Quotation (RFQ)"
                       >

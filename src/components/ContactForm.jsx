@@ -228,6 +228,7 @@ export default function ContactForm() {
                 <div className="form-group">
                   <label className="form-label">{currentLang === 'gu' ? 'ગ્રાહકનું નામ (Buyer Contact Name) *' : 'Buyer Contact Name *'}</label>
                   <input
+                    id="buyer-name-input"
                     type="text"
                     className="form-control"
                     placeholder="e.g. Atul Patel"
