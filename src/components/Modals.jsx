@@ -3143,28 +3143,45 @@ export default function Modals() {
                           {cust.registeredAt}
                         </td>
                         <td style={{ padding: '10px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                          <button
-                            type="button"
-                            className="btn-primary"
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '0.8rem',
-                              fontWeight: 900,
-                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                              color: '#ffffff',
-                              border: 'none',
-                              marginRight: '6px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              boxShadow: '0 2px 10px rgba(16, 185, 129, 0.4)',
-                              cursor: 'pointer'
-                            }}
-                            onClick={() => openQuoteForInquiry(cust)}
-                            title={`Generate Individual Export Proforma Invoice PDF specifically for ${cust.name}`}
-                          >
-                            📄 1-Click Individual PDF Quote
-                          </button>
+                          {(() => {
+                            const canGenerateQuote = Boolean(isAdminLoggedIn || currentMerchant);
+                            return (
+                              <button
+                                type="button"
+                                disabled={!canGenerateQuote}
+                                className="btn-primary"
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 900,
+                                  background: canGenerateQuote
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : 'rgba(100, 116, 139, 0.25)',
+                                  color: canGenerateQuote ? '#ffffff' : '#94a3b8',
+                                  border: canGenerateQuote ? 'none' : '1px solid rgba(148, 163, 184, 0.3)',
+                                  marginRight: '6px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  boxShadow: canGenerateQuote ? '0 2px 10px rgba(16, 185, 129, 0.4)' : 'none',
+                                  cursor: canGenerateQuote ? 'pointer' : 'not-allowed',
+                                  opacity: canGenerateQuote ? 1 : 0.45
+                                }}
+                                onClick={() => {
+                                  if (!canGenerateQuote) {
+                                    alert('🔒 Access Restricted: Only Admin and "Sell With Us" Merchants can generate Proforma Invoice PDF Quotes.');
+                                    return;
+                                  }
+                                  openQuoteForInquiry(cust);
+                                }}
+                                title={canGenerateQuote
+                                  ? `Generate Individual Export Proforma Invoice PDF specifically for ${cust.name}`
+                                  : "🔒 Access Restricted: Only Admin & 'Sell With Us' Merchants can generate PDF Quotes"}
+                              >
+                                📄 1-Click Individual PDF Quote {!canGenerateQuote && '🔒'}
+                              </button>
+                            );
+                          })()}
                           <button
                             type="button"
                             className="btn-secondary"
