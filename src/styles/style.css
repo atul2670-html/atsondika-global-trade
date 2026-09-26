@@ -1402,6 +1402,7 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   border-radius: var(--radius-lg); padding: 35px;
   position: relative; animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   max-height: 90vh; overflow-y: auto; color: var(--text-main);
+  scroll-behavior: smooth; outline: none;
 }
 @keyframes modalPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal-close { position: absolute; top: 20px; right: 24px; background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text-sub); }

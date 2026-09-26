@@ -51,6 +51,77 @@ export default function RfqCartDrawer() {
   const [billingAddress, setBillingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Keyboard Navigation for RFQ Cart Drawer (PageUp, PageDown, Arrow Keys, Home, End)
+  useEffect(() => {
+    if (!isRfqDrawerOpen) return;
+
+    const handleDrawerKeyDown = (e) => {
+      const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End'];
+      if (!keys.includes(e.key)) return;
+
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (
+        activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.tagName === 'SELECT' ||
+        activeEl.isContentEditable
+      );
+
+      if (isInputFocused) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          if (!e.shiftKey && !e.altKey && !e.ctrlKey) return;
+        }
+      }
+
+      const drawer = document.querySelector('.rfq-drawer-body, .rfq-drawer.open, .rfq-drawer');
+      if (!drawer) return;
+
+      const vStep = 90;
+      const hStep = 100;
+      const pageStep = 450;
+
+      switch (e.key) {
+        case 'ArrowUp':
+          drawer.scrollBy({ top: -vStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+          drawer.scrollBy({ top: vStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          drawer.scrollBy({ left: -hStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          drawer.scrollBy({ left: hStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'PageUp':
+          drawer.scrollBy({ top: -pageStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'PageDown':
+          drawer.scrollBy({ top: pageStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'Home':
+          drawer.scrollTo({ top: 0, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'End':
+          drawer.scrollTo({ top: drawer.scrollHeight, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleDrawerKeyDown);
+    return () => window.removeEventListener('keydown', handleDrawerKeyDown);
+  }, [isRfqDrawerOpen]);
+
   const getActiveCurrencyCode = () => {
     if (typeof currentCurrency === 'object' && currentCurrency) {
       return currentCurrency.code || 'INR';

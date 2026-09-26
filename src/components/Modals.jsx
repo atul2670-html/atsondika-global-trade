@@ -192,6 +192,103 @@ export default function Modals() {
     }
   }, [activeModal, marketTickerList]);
 
+  // Universal Keyboard Navigation (Page Up, Page Down, Arrow Keys Up/Down/Left/Right, Home, End)
+  useEffect(() => {
+    if (!activeModal) return;
+
+    // Focus active modal card for instant keyboard responsiveness
+    const focusTimer = setTimeout(() => {
+      const card = document.querySelector('.modal-backdrop.show .modal-card, .modal-card');
+      if (card) {
+        card.setAttribute('tabindex', '-1');
+        card.focus({ preventScroll: true });
+      }
+    }, 60);
+
+    const handleModalKeyDown = (e) => {
+      const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End'];
+      if (!keys.includes(e.key)) return;
+
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (
+        activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.tagName === 'SELECT' ||
+        activeEl.isContentEditable
+      );
+
+      // If user is actively typing in an input field:
+      // Standard Left/Right/Up/Down move the text cursor within the field.
+      // PageUp, PageDown, Shift+Arrow, Alt+Arrow, Ctrl+Arrow scroll the modal.
+      if (isInputFocused) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          if (!e.shiftKey && !e.altKey && !e.ctrlKey) return;
+        }
+      }
+
+      const modalCard = document.querySelector('.modal-backdrop.show .modal-card, .modal-card') || document.querySelector('.modal-backdrop.show');
+      if (!modalCard) return;
+
+      // Find scrollable table wrapper or internal scroll div
+      const internalTableScroll = modalCard.querySelector('div[style*="overflow"], div[style*="overflowX"], div[style*="overflow-x"], .table-responsive, table');
+
+      const vStep = 90;
+      const hStep = 120;
+      const pageStep = 450;
+
+      switch (e.key) {
+        case 'ArrowUp':
+          modalCard.scrollBy({ top: -vStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+          modalCard.scrollBy({ top: vStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          if (internalTableScroll) {
+            internalTableScroll.scrollBy({ left: -hStep, behavior: 'smooth' });
+          }
+          modalCard.scrollBy({ left: -hStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          if (internalTableScroll) {
+            internalTableScroll.scrollBy({ left: hStep, behavior: 'smooth' });
+          }
+          modalCard.scrollBy({ left: hStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'PageUp':
+          modalCard.scrollBy({ top: -pageStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'PageDown':
+          modalCard.scrollBy({ top: pageStep, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'Home':
+          modalCard.scrollTo({ top: 0, behavior: 'smooth' });
+          if (internalTableScroll) internalTableScroll.scrollTo({ left: 0, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'End':
+          modalCard.scrollTo({ top: modalCard.scrollHeight, behavior: 'smooth' });
+          if (internalTableScroll) internalTableScroll.scrollTo({ left: internalTableScroll.scrollWidth, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleModalKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      window.removeEventListener('keydown', handleModalKeyDown);
+    };
+  }, [activeModal]);
+
   // Customer Auth & Lead Management State
   const [custAuthTab, setCustAuthTab] = useState('login'); // 'login' | 'register'
   const [custLoginInput, setCustLoginInput] = useState('');
