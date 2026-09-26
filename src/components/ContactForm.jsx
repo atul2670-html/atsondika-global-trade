@@ -8,13 +8,15 @@ export default function ContactForm() {
     activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems
   } = useApp();
 
-  const activeProducts = (rfqCartItems && rfqCartItems.length > 0)
-    ? rfqCartItems
-    : ((selectedRfqProducts && selectedRfqProducts.length > 0)
-      ? selectedRfqProducts
+  const activeProducts = (selectedRfqProducts && selectedRfqProducts.length > 0)
+    ? selectedRfqProducts
+    : ((rfqCartItems && rfqCartItems.length > 0)
+      ? rfqCartItems
       : (selectedRfqProduct ? [selectedRfqProduct] : []));
 
   const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
+
+  const activeProdKey = activeProducts.map(p => p.id || p.name).join('|');
 
   useEffect(() => {
     const categories = getMainCategoryList ? getMainCategoryList() : [];
@@ -57,8 +59,13 @@ export default function ContactForm() {
         product: autoProductCat,
         msg: `🌐 OFFICIAL EXPORT RFQ / INQUIRY SPECIFICATIONS (${activeProducts.length} Selected Items):\n` + lines.join('\n')
       }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        msg: ''
+      }));
     }
-  }, [activeProducts.length, currentLang, getMainCategoryList]);
+  }, [activeProdKey, currentLang, getMainCategoryList]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

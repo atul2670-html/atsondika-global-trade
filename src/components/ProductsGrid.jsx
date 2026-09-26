@@ -894,8 +894,8 @@ export default function ProductsGrid() {
                               whiteSpace: 'nowrap'
                             }}
                             onClick={() => {
-                              if (setSelectedRfqProduct) setSelectedRfqProduct(p);
-                              else if (addRfqProduct) addRfqProduct(p);
+                              if (addRfqProduct) addRfqProduct(p);
+                              else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
 
                               const contactEl = document.querySelector('#contact');
                               if (contactEl) {
@@ -1606,8 +1606,8 @@ export default function ProductsGrid() {
                           whiteSpace: 'nowrap'
                         }}
                         onClick={() => {
-                          if (setSelectedRfqProduct) setSelectedRfqProduct(p);
-                          else if (addRfqProduct) addRfqProduct(p);
+                          if (addRfqProduct) addRfqProduct(p);
+                          else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
 
                           const contactEl = document.querySelector('#contact');
                           if (contactEl) {

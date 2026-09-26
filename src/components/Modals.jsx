@@ -8270,8 +8270,9 @@ export default function Modals() {
                   className="btn-primary"
                   style={{ fontSize: '0.8rem', padding: '6px 14px' }}
                   onClick={() => {
-                    if (imagePreviewData.productObj && setSelectedRfqProduct) {
-                      setSelectedRfqProduct(imagePreviewData.productObj);
+                    if (imagePreviewData.productObj) {
+                      if (addRfqProduct) addRfqProduct(imagePreviewData.productObj);
+                      else if (setSelectedRfqProduct) setSelectedRfqProduct(imagePreviewData.productObj);
                     }
                     setActiveModal(null);
                     setTimeout(() => {
