@@ -339,7 +339,11 @@ export function AppProvider({ children }) {
   };
 
   const removeFromRfqCart = (id, incoterm) => {
-    setRfqCartItems(prev => prev.filter(item => !(item.id === id && item.incoterm === incoterm)));
+    setRfqCartItems(prev => prev.filter(item => {
+      if (item.id !== id) return true;
+      if (incoterm && item.incoterm !== incoterm) return true;
+      return false;
+    }));
   };
 
   const updateRfqCartQuantity = (id, incoterm, newQty) => {

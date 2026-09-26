@@ -5,7 +5,8 @@ export default function ContactForm() {
   const {
     t, currentLang, selectedRfqProduct, setSelectedRfqProduct,
     selectedRfqProducts, setSelectedRfqProducts, addRfqProduct, removeRfqProduct, clearRfqProducts,
-    activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems
+    activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems,
+    clearRfqCart, removeFromRfqCart
   } = useApp();
 
   const activeProducts = (selectedRfqProducts && selectedRfqProducts.length > 0)
@@ -87,7 +88,8 @@ export default function ContactForm() {
     alert(`✅ Thank you ${formData.name}! Your quotation request for ${activeProducts.length || 1} product(s) has been submitted and saved successfully.`);
     setFormData({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
     if (clearRfqProducts) clearRfqProducts();
-    else if (setSelectedRfqProduct) setSelectedRfqProduct(null);
+    if (clearRfqCart) clearRfqCart();
+    if (setSelectedRfqProduct) setSelectedRfqProduct(null);
   };
 
   const getWaUrl = () => {
@@ -154,7 +156,8 @@ export default function ContactForm() {
                     type="button"
                     onClick={() => {
                       if (clearRfqProducts) clearRfqProducts();
-                      else if (setSelectedRfqProduct) setSelectedRfqProduct(null);
+                      if (clearRfqCart) clearRfqCart();
+                      if (setSelectedRfqProduct) setSelectedRfqProduct(null);
                     }}
                     style={{ background: 'none', border: 'none', color: '#f87171', fontSize: '0.76rem', cursor: 'pointer', fontWeight: 800 }}
                   >
@@ -187,7 +190,8 @@ export default function ContactForm() {
                         type="button"
                         onClick={() => {
                           if (removeRfqProduct) removeRfqProduct(p.id);
-                          else if (setSelectedRfqProduct) setSelectedRfqProduct(null);
+                          if (removeFromRfqCart) removeFromRfqCart(p.id, p.incoterm);
+                          if (setSelectedRfqProduct && activeProducts.length <= 1) setSelectedRfqProduct(null);
                         }}
                         style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.88rem', fontWeight: 900, padding: 0 }}
                         title="Remove this product"
