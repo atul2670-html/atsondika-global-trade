@@ -867,13 +867,13 @@ export default function ProductsGrid() {
                                   cursor: 'pointer',
                                   whiteSpace: 'nowrap'
                                 }}
-                                title="Request Quotation (RFQ)"
+                                title="Export Quote Cart (RFQ)"
                               >
                                 {isSelected
-                                  ? (currentLang === 'gu' ? `✔ ક્વોટેશન માં ઉમેરાયું (${selectedRfqProducts.length})` : (currentLang === 'hi' ? `✔ कोटेशन में जोड़ा गया (${selectedRfqProducts.length})` : `✔ Added to RFQ (${selectedRfqProducts.length})`))
+                                  ? (currentLang === 'gu' ? `✔ એક્સપોર્ટ કોટ કાર્ટ (${selectedRfqProducts.length})` : `✔ Export Quote Cart (${selectedRfqProducts.length})`)
                                   : (tradeMode === 'local'
                                       ? (currentLang === 'gu' ? '🛒 કાર્ટમાં ઉમેરો' : '🛒 Add to Cart')
-                                      : (currentLang === 'gu' ? '💬 કોટેશન વિગત (RFQ)' : '💬 Request Quote (RFQ)'))}
+                                      : (currentLang === 'gu' ? '🛒 એક્સપોર્ટ કોટ કાર્ટ (RFQ)' : '🛒 Export Quote Cart (RFQ)'))}
                               </button>
                             );
                           })()}
@@ -897,9 +897,9 @@ export default function ProductsGrid() {
                               if (setQuotationProduct) setQuotationProduct(p);
                               if (setActiveModal) setActiveModal('quotation');
                             }}
-                            title="Fill Official Inquiry Form On Website / Generate Official Export Quotation PDF"
+                            title="Request Official Quotation (RFQ)"
                           >
-                            📝 {currentLang === 'gu' ? 'ફિલ ઓફિશિયલ ઇન્ક્વાયરી ફોર્મ (Website)' : (currentLang === 'hi' ? 'फिल ऑफिशियल पूछताछ फॉर्म (Website)' : 'Fill Official Inquiry from On Website')}
+                            📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
                           </button>
                         </div>
                       </td>
@@ -1574,11 +1574,11 @@ export default function ProductsGrid() {
                               else if (addRfqProduct) addRfqProduct(p);
                               if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
                             }}
-                            title="Request Quotation (RFQ)"
+                            title="Export Quote Cart (RFQ)"
                           >
                             {isSelected
-                              ? (currentLang === 'gu' ? `✔ ક્વોટેશન માં ઉમેરાયું (${selectedRfqProducts.length})` : (currentLang === 'hi' ? `✔ कोटेशन में जोड़ा गया (${selectedRfqProducts.length})` : `✔ Added to RFQ (${selectedRfqProducts.length})`))
-                              : (currentLang === 'gu' ? '💬 કોટેશન વિગત જણાવો (RFQ)' : (currentLang === 'hi' ? '💬 कोटेशन अनुरोध (RFQ)' : (currentLang === 'fr' ? '💬 Demander un Devis (RFQ)' : '💬 Request Quotation (RFQ)')))}
+                              ? (currentLang === 'gu' ? `✔ એક્સપોર્ટ કોટ કાર્ટ (${selectedRfqProducts.length})` : `✔ Export Quote Cart (${selectedRfqProducts.length})`)
+                              : (currentLang === 'gu' ? '🛒 એક્સપોર્ટ કોટ કાર્ટ (RFQ)' : '🛒 Export Quote Cart (RFQ)')}
                           </button>
                         );
                       })()}
@@ -1600,9 +1600,9 @@ export default function ProductsGrid() {
                           setQuotationProduct(p);
                           setActiveModal('quotation');
                         }}
-                        title="Fill Official Inquiry Form On Website / Generate Official Export Quotation PDF"
+                        title="Request Official Quotation (RFQ)"
                       >
-                        📝 {currentLang === 'gu' ? 'ફિલ ઓફિશિયલ ઇન્ક્વાયરી ફોર્મ (Website)' : (currentLang === 'hi' ? 'फिल ऑफिशियल पूछताछ फॉर्म (Website)' : (currentLang === 'fr' ? '📝 Remplir Demande Officielle' : '📝 Fill Official Inquiry from On Website'))}
+                        📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
                       </button>
 
                       {/* Admin Action Controls (Only visible when Admin is logged in) */}
