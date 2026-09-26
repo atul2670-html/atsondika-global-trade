@@ -7202,13 +7202,13 @@ export default function Modals() {
                   {/* Product & Jobwork Line Items Table */}
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: '0.88rem' }}>
                     <thead>
-                      <tr style={{ background: '#0f766e', color: '#ffffff', textAlign: 'left' }}>
-                        <th style={{ padding: '10px 12px' }}>#</th>
-                        <th style={{ padding: '10px 12px' }}>Particular Goods / Jobwork Description</th>
-                        <th style={{ padding: '10px 12px' }}>HSN / SAC</th>
-                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Unit Price ({quoteCurrency})</th>
-                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Qty</th>
-                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Taxable Amount ({quoteCurrency})</th>
+                      <tr style={{ background: '#0f766e', color: '#ffffff', verticalAlign: 'middle' }}>
+                        <th style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', width: '40px' }}>#</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'left', verticalAlign: 'middle' }}>Particular Goods / Jobwork Description</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>HSN / SAC</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>Unit Price ({quoteCurrency})</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>Qty</th>
+                        <th style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>Taxable Amount ({quoteCurrency})</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -7217,22 +7217,22 @@ export default function Modals() {
                         const priceNum = getNumericValue(item.price, 0);
                         const lineTotal = qtyNum * priceNum;
                         return (
-                          <tr key={item.id || i} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                            <td style={{ padding: '12px', fontWeight: 800, color: '#64748b' }}>{i + 1}</td>
-                            <td style={{ padding: '12px' }}>
+                          <tr key={item.id || i} style={{ borderBottom: '1px solid #e2e8f0', verticalAlign: 'middle' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', fontWeight: 800, color: '#64748b' }}>{i + 1}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', verticalAlign: 'middle' }}>
                               <strong style={{ fontSize: '0.92rem' }}>{item.name}</strong>
                             </td>
-                            <td style={{ padding: '12px', fontWeight: 800, color: '#0284c7' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', fontWeight: 800, color: '#0284c7' }}>
                               {item.hsn || '9988'}
                             </td>
-                            <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', fontWeight: 800 }}>
                               {quoteCurrency} {priceNum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
-                            <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              <div style={{ fontSize: '0.9rem' }}><strong>{qtyNum} Units / Pcs</strong></div>
+                            <td style={{ padding: '12px 10px', textAlign: 'center', verticalAlign: 'middle', fontWeight: 800 }}>
+                              <div style={{ fontSize: '0.88rem' }}><strong>{qtyNum} Units / Pcs</strong></div>
                               {item.unit && <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px' }}>({item.unit})</div>}
                             </td>
-                            <td style={{ padding: '12px', textAlign: 'right', fontWeight: 900, color: '#0f766e', fontSize: '0.95rem' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'right', verticalAlign: 'middle', fontWeight: 900, color: '#0f766e', fontSize: '0.95rem' }}>
                               {quoteCurrency} {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </td>
                           </tr>
