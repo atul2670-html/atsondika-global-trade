@@ -897,9 +897,9 @@ export default function ProductsGrid() {
                               if (setQuotationProduct) setQuotationProduct(p);
                               if (setActiveModal) setActiveModal('quotation');
                             }}
-                            title="Auto-Generate Official Proforma Invoice Quotation"
+                            title="Fill Official Inquiry Form On Website / Generate Official Export Quotation PDF"
                           >
-                            📄 {currentLang === 'gu' ? 'પરફોર્મા એક્ષપોર્ટ કોટ' : (currentLang === 'hi' ? 'परफॉर्मा एक्सपोर्ट कोट' : 'Proforma Export Quote')}
+                            📝 {currentLang === 'gu' ? 'ફિલ ઓફિશિયલ ઇન્ક્વાયરી ફોર્મ (Website)' : (currentLang === 'hi' ? 'फिल ऑफिशियल पूछताछ फॉर्म (Website)' : 'Fill Official Inquiry from On Website')}
                           </button>
                         </div>
                       </td>
@@ -1600,9 +1600,9 @@ export default function ProductsGrid() {
                           setQuotationProduct(p);
                           setActiveModal('quotation');
                         }}
-                        title="Generate Proforma Invoice / Export Quotation PDF"
+                        title="Fill Official Inquiry Form On Website / Generate Official Export Quotation PDF"
                       >
-                        {currentLang === 'gu' ? '📄 પ્રોફોર્મા એક્સપોર્ટ ક્વોટ (PDF)' : (currentLang === 'hi' ? '📄 प्रोफॉर्मा निर्यात कोटेशन (PDF)' : (currentLang === 'fr' ? '📄 Devis Proforma Export' : '📄 Proforma Export Quote'))}
+                        📝 {currentLang === 'gu' ? 'ફિલ ઓફિશિયલ ઇન્ક્વાયરી ફોર્મ (Website)' : (currentLang === 'hi' ? 'फिल ऑफिशियल पूछताछ फॉर्म (Website)' : (currentLang === 'fr' ? '📝 Remplir Demande Officielle' : '📝 Fill Official Inquiry from On Website'))}
                       </button>
 
                       {/* Admin Action Controls (Only visible when Admin is logged in) */}
