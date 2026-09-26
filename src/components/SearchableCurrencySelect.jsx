@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DEFAULT_CURRENCIES } from '../utils/realtimeSync.js';
 
-export default function SearchableCurrencySelect({ label, value, onChange, currenciesList, currencyDict }) {
+export default function SearchableCurrencySelect({ label, value, onChange, currenciesList, currencyDict, align = 'left' }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const containerRef = useRef(null);
@@ -46,7 +46,7 @@ export default function SearchableCurrencySelect({ label, value, onChange, curre
   });
 
   return (
-    <div className="form-group" style={{ position: 'relative', marginBottom: 0 }} ref={containerRef}>
+    <div className="form-group" style={{ position: 'relative', marginBottom: 0, zIndex: isOpen ? 10000 : 'auto' }} ref={containerRef}>
       {label && <label className="form-label" style={{ fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px', display: 'block' }}>{label}</label>}
 
       {/* Main Selected Combobox Trigger Bar */}
@@ -83,10 +83,11 @@ export default function SearchableCurrencySelect({ label, value, onChange, curre
           style={{
             position: 'absolute',
             top: 'calc(100% + 6px)',
-            right: 0,
+            ...(align === 'right' ? { right: 0 } : { left: 0 }),
             width: '280px',
+            maxWidth: 'calc(100vw - 40px)',
             maxHeight: '340px',
-            zIndex: 9999,
+            zIndex: 100000,
             padding: '12px',
             background: '#0f172a',
             border: '1px solid rgba(255,255,255,0.2)',
