@@ -107,6 +107,17 @@ const parseMoqParts = (str) => {
   return result;
 };
 
+const getNumericValue = (val, fallback = 0) => {
+  if (val === undefined || val === null || val === '') return fallback;
+  if (typeof val === 'number') return isNaN(val) ? fallback : val;
+  const match = String(val).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+  if (match && match[1]) {
+    const num = parseFloat(match[1]);
+    return isNaN(num) ? fallback : num;
+  }
+  return fallback;
+};
+
 export default function Modals() {
   const {
     activeModal, setActiveModal, t, currentLang,
@@ -263,7 +274,7 @@ export default function Modals() {
   const [transporterLrInput, setTransporterLrInput] = useState('VRL Logistics / LR #889944');
   const [placeOfSupplyStateInput, setPlaceOfSupplyStateInput] = useState('Maharashtra (27)');
   const [invoiceItems, setInvoiceItems] = useState([
-    { id: 'item_1', name: 'Ready Made Garments - Punjabi Dresses', hsn: '620442', qty: '1', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', price: '15' }
+    { id: 'item_1', name: 'Dairy Products - Spray Dried Skimmed Milk Powder (SMP 34% Protein)', hsn: '04021010', qty: '100', unit: 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન) / 1 x 20ft FCL Container', price: '15', currency: 'INR', incoterm: 'FOB (Free On Board - Loading Port)' }
   ]);
 
   const allCatalogProducts = [
@@ -407,7 +418,6 @@ export default function Modals() {
       price = '15';
     }
 
-    let qty = '1';
     let rawMoq = prod.moq || '';
     let cleanMoq = rawMoq
       .replace(/MOQ:\s*/gi, '')
@@ -423,6 +433,15 @@ export default function Modals() {
     if (!cleanMoq.startsWith('MOQ:')) {
       cleanMoq = `MOQ: ${cleanMoq}`;
     }
+
+    let qty = '100';
+    if (cleanMoq) {
+      const qMatch = cleanMoq.replace(/MOQ:\s*/gi, '').match(/(\d+(?:\.\d+)?)/);
+      if (qMatch && qMatch[1] && parseFloat(qMatch[1]) > 0) {
+        qty = String(qMatch[1]);
+      }
+    }
+
     let unit = cleanMoq;
 
     const rawIncoterm = prod.exportIncoterm || prod.incoterm || prod.export_incoterm || 'FOB';
@@ -6513,7 +6532,7 @@ export default function Modals() {
                   }}
                   onClick={() => {
                     const compName = activeCompany?.name || 'Atsondika Global Trade';
-                    const subtotal = invoiceItems.reduce((acc, item) => acc + (Number(item.qty || 0) * Number(item.price || 0)), 0);
+                    const subtotal = invoiceItems.reduce((acc, item) => acc + (getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)), 0);
                     const totalGst = (subtotal * domesticGstRate) / 100;
                     const grandTotal = invoiceTradeMode === 'export' ? subtotal : (subtotal + totalGst);
 
@@ -6522,7 +6541,7 @@ export default function Modals() {
                     if (documentType === 'jobwork') docTitleStr = 'JOBWORK DELIVERY CHALLAN';
 
                     const itemsListStr = invoiceItems.map((item, idx) => 
-                      `▪️ ${item.name} (${item.qty} ${item.unit}) - ${quoteCurrency} ${(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                      `▪️ ${item.name} (${item.qty} Qty / ${item.unit}) - ${quoteCurrency} ${(getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
                     ).join('\n');
 
                     let msg = `📄 *OFFICIAL DOCUMENT: ${docTitleStr}*\n`;
@@ -6577,7 +6596,7 @@ export default function Modals() {
                   }}
                   onClick={() => {
                     const compName = activeCompany?.name || 'Atsondika Global Trade';
-                    const subtotal = invoiceItems.reduce((acc, item) => acc + (Number(item.qty || 0) * Number(item.price || 0)), 0);
+                    const subtotal = invoiceItems.reduce((acc, item) => acc + (getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)), 0);
                     const totalGst = (subtotal * domesticGstRate) / 100;
                     const grandTotal = invoiceTradeMode === 'export' ? subtotal : (subtotal + totalGst);
 
@@ -6586,7 +6605,7 @@ export default function Modals() {
                     if (documentType === 'jobwork') docTitleStr = 'JOBWORK DELIVERY CHALLAN';
 
                     const itemsListStr = invoiceItems.map((item, idx) => 
-                      `${idx + 1}. ${item.name} | HSN: ${item.hsn || 'N/A'} | Qty: ${item.qty} ${item.unit} | Price: ${quoteCurrency} ${item.price} | Total: ${quoteCurrency} ${(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                      `${idx + 1}. ${item.name} | HSN: ${item.hsn || 'N/A'} | Qty: ${item.qty} (${item.unit}) | Price: ${quoteCurrency} ${item.price} | Total: ${quoteCurrency} ${(getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
                     ).join('\n');
 
                     const subject = `[OFFICIAL DOCUMENT] ${docTitleStr} - ${compName} / ${buyerCompany || buyerName}`;
@@ -7007,7 +7026,7 @@ export default function Modals() {
                       <div>
                         <label style={{ fontSize: '0.72rem', color: '#4ade80', fontWeight: 800, display: 'block', marginBottom: '2px' }}>Line Total</label>
                         <div style={{ fontSize: '0.92rem', fontWeight: 900, color: '#4ade80', padding: '4px 0' }}>
-                          {(Number(item.qty || 0) * Number(item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          {(getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                     </div>
@@ -7108,7 +7127,7 @@ export default function Modals() {
 
             {/* PRINTABLE PROFORMA / TAX INVOICE / JOBWORK SHEET CONTAINER */}
             {(() => {
-              const subtotalValue = invoiceItems.reduce((acc, item) => acc + (Number(item.qty || 0) * Number(item.price || 0)), 0);
+              const subtotalValue = invoiceItems.reduce((acc, item) => acc + (getNumericValue(item.qty, 1) * getNumericValue(item.price, 0)), 0);
               const totalGstAmount = (subtotalValue * domesticGstRate) / 100;
               const grandTotalValue = invoiceTradeMode === 'export' ? subtotalValue : (subtotalValue + totalGstAmount);
 
@@ -7194,7 +7213,9 @@ export default function Modals() {
                     </thead>
                     <tbody>
                       {invoiceItems.map((item, i) => {
-                        const lineTotal = Number(item.qty || 0) * Number(item.price || 0);
+                        const qtyNum = getNumericValue(item.qty, 1);
+                        const priceNum = getNumericValue(item.price, 0);
+                        const lineTotal = qtyNum * priceNum;
                         return (
                           <tr key={item.id || i} style={{ borderBottom: '1px solid #e2e8f0' }}>
                             <td style={{ padding: '12px', fontWeight: 800, color: '#64748b' }}>{i + 1}</td>
@@ -7205,10 +7226,11 @@ export default function Modals() {
                               {item.hsn || '9988'}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              {quoteCurrency} {Number(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              {quoteCurrency} {priceNum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800 }}>
-                              {Number(item.qty || 1) > 1 ? `${item.qty} x (${item.unit})` : (item.unit || 'MOQ: 100 Pcs (નંગ)')}
+                              <div style={{ fontSize: '0.9rem' }}><strong>{qtyNum} Units / Pcs</strong></div>
+                              {item.unit && <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px' }}>({item.unit})</div>}
                             </td>
                             <td style={{ padding: '12px', textAlign: 'right', fontWeight: 900, color: '#0f766e', fontSize: '0.95rem' }}>
                               {quoteCurrency} {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
