@@ -102,11 +102,12 @@ export default function Navbar() {
     <>
       {/* Live Global Market & Currency Ticker Bar (Collapses on Scroll) */}
       <div className="top-bar" style={{
-        maxHeight: isScrolled ? '0px' : '120px',
+        maxHeight: isScrolled ? '0px' : '48px',
         opacity: isScrolled ? 0 : 1,
+        transform: isScrolled ? 'translateY(-6px)' : 'translateY(0)',
         overflow: isScrolled ? 'hidden' : 'visible',
         pointerEvents: isScrolled ? 'none' : 'auto',
-        transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         paddingTop: isScrolled ? '0' : undefined,
         paddingBottom: isScrolled ? '0' : undefined,
         borderBottomWidth: isScrolled ? '0' : undefined
@@ -378,11 +379,12 @@ export default function Navbar() {
 
           {/* COLLAPSIBLE TOP SUB-HEADER BARS (SISTER COMPANIES & ACTION BUTTONS HIDE UPWARDS ON SCROLL) */}
           <div style={{
-            maxHeight: isScrolled ? '0px' : '400px',
+            maxHeight: isScrolled ? '0px' : '130px',
             opacity: isScrolled ? 0 : 1,
+            transform: isScrolled ? 'translateY(-10px)' : 'translateY(0)',
             overflow: 'hidden',
             pointerEvents: isScrolled ? 'none' : 'auto',
-            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
