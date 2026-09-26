@@ -1779,7 +1779,7 @@ export default function Modals() {
                 style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #d97706, #b45309)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_commission')}
               >
-                💰 Admin Commission & Platform Settings ({adminCommissionRate || 2.5}%)
+                💰 Admin Commission, Platform & Forex Risk Buffer Settings ({adminCommissionRate || 2.5}%)
               </button>
 
               <button
@@ -2422,7 +2422,7 @@ export default function Modals() {
             <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
               <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💰</span>
               <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
-                Admin Commission & Platform Settings
+                Admin Commission, Platform & Forex Risk Buffer Settings
               </h3>
               <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
                 એડમિન કમિશન અને સેલર પ્રોડક્ટ પોલિસી સેટિંગ્સ
