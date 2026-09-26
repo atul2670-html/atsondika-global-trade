@@ -28,19 +28,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLight, setIsLight] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const currencyRef = useRef(null);
   const langRef = useRef(null);
@@ -100,18 +87,8 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Live Global Market & Currency Ticker Bar (Collapses on Scroll) */}
-      <div className="top-bar" style={{
-        maxHeight: isScrolled ? '0px' : '48px',
-        opacity: isScrolled ? 0 : 1,
-        transform: isScrolled ? 'translateY(-6px)' : 'translateY(0)',
-        overflow: isScrolled ? 'hidden' : 'visible',
-        pointerEvents: isScrolled ? 'none' : 'auto',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        paddingTop: isScrolled ? '0' : undefined,
-        paddingBottom: isScrolled ? '0' : undefined,
-        borderBottomWidth: isScrolled ? '0' : undefined
-      }}>
+      {/* Live Global Market & Currency Ticker Bar (Natural Document Flow) */}
+      <div className="top-bar">
         <div className="top-bar-content">
           <div className="top-ticker-wrapper">
             {/* SOLID ELEVATED LEFT CONTAINER (NO SCROLLING TEXT CAN EVER OVERLAP THIS) */}
@@ -315,11 +292,277 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MAIN HEADER GLASS CONTAINER */}
+      {/* TOP SUB-HEADER CAPSULES CONTAINER (NATURAL SCROLL FLOW - 100% SMOOTH, ZERO JERK) */}
+      <div className="sub-header-container" style={{
+        maxWidth: '1720px',
+        width: '98%',
+        margin: '6px auto 8px auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        boxSizing: 'border-box'
+      }}>
+        {/* ROW 2: PROMINENT MULTI-COMPANY SISTER COMPANIES TABS BAR */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          flexWrap: 'wrap',
+          padding: '6px 14px',
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius: '14px',
+          border: '1px solid var(--border-glass)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)', whiteSpace: 'nowrap' }}>
+            🏢 {currentLang === 'gu' ? 'સિસ્ટર ગ્રુપ કંપનીઓ (Select Sister Company):' : 'Sister Group Companies:'}
+          </span>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {companiesList.map(comp => (
+              <button
+                key={comp.id}
+                type="button"
+                className={`multi-company-tab ${activeCompanyId === comp.id ? 'active' : ''}`}
+                onClick={() => setActiveCompanyId(comp.id)}
+                title={`Switch active company profile to ${comp.name}`}
+              >
+                <span className="comp-tab-dot"></span>
+                <span className="comp-tab-name">{comp.name}</span>
+                {activeCompanyId === comp.id && <span className="comp-active-pill">ACTIVE ⚡</span>}
+              </button>
+            ))}
+
+            {isAdminLoggedIn && (
+              <>
+                <button
+                  type="button"
+                  className="multi-company-edit-btn"
+                  onClick={() => setActiveModal('company')}
+                  title="Edit Sister Companies & Logos"
+                >
+                  ✏️ Edit Sister Companies
+                </button>
+                <button
+                  type="button"
+                  className="multi-company-edit-btn"
+                  style={{ background: 'rgba(234, 179, 8, 0.18)', color: '#facc15', borderColor: 'rgba(234, 179, 8, 0.35)' }}
+                  onClick={() => setActiveModal('cloud_sync')}
+                  title="Configure Live Cloud Sync Server URL"
+                >
+                  🌐 Cloud Sync Server
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ROW 3: UTILITY ACTION BUTTONS */}
+        <div className="header-actions" style={{
+          display: 'flex',
+          justify: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          padding: '6px 14px',
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius: '14px',
+          border: '1px solid var(--border-glass)',
+          flexWrap: 'wrap',
+          gap: '8px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        }}>
+          {/* LEFT GROUP: LOGIN BUTTONS */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {/* CUSTOMER LOGIN / PORTAL BUTTON */}
+            {currentCustomer ? (
+              <button
+                type="button"
+                className="btn-secondary nav-cust-btn"
+                style={{
+                  background: 'rgba(56, 189, 248, 0.18)',
+                  color: '#38bdf8',
+                  borderColor: 'rgba(56, 189, 248, 0.4)',
+                  padding: '5px 10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveModal('customer_portal')}
+                title={`Logged in as ${currentCustomer.name} (${currentCustomer.phone || currentCustomer.email})`}
+              >
+                👤 <span className="nav-btn-label">{currentCustomer.name.split(' ')[0]}</span> ▾
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-secondary nav-cust-btn"
+                style={{
+                  background: 'rgba(56, 189, 248, 0.18)',
+                  color: '#38bdf8',
+                  borderColor: 'rgba(56, 189, 248, 0.35)',
+                  padding: '5px 10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveModal('customer_auth')}
+                title="Customer Login / Register"
+              >
+                👤 <span className="nav-btn-label">{currentLang === 'gu' ? 'કસ્ટમર લોગઈન' : 'Customer Login'}</span>
+              </button>
+            )}
+
+            {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL BUTTON */}
+            {currentMerchant && currentMerchant.id && currentMerchant.businessName ? (
+              <button
+                type="button"
+                className="btn-secondary nav-cust-btn"
+                style={{
+                  background: 'rgba(234, 179, 8, 0.2)',
+                  color: '#facc15',
+                  borderColor: 'rgba(234, 179, 8, 0.4)',
+                  padding: '5px 10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveModal('seller_portal')}
+                title={`Seller Account: ${currentMerchant.businessName || 'Exporter'}`}
+              >
+                🏬 <span className="nav-btn-label">{(currentMerchant.businessName || 'Seller').split(' ')[0]}</span> ⭐
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-secondary nav-cust-btn"
+                style={{
+                  background: 'rgba(234, 179, 8, 0.18)',
+                  color: '#facc15',
+                  borderColor: 'rgba(234, 179, 8, 0.35)',
+                  padding: '5px 10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={() => setActiveModal('seller_portal')}
+                title="Register as Seller / Exporter to sell your products on our platform"
+              >
+                🤝 <span className="nav-btn-label">{currentLang === 'gu' ? 'વેપારી બનો' : 'Sell With Us'}</span>
+              </button>
+            )}
+
+            {/* DISCREET PURE OM (🕉️) SYMBOL ADMIN BUTTON */}
+            {isAdminLoggedIn ? (
+              <button
+                type="button"
+                style={{
+                  background: 'rgba(34, 197, 94, 0.18)',
+                  color: '#4ade80',
+                  border: '1px solid rgba(34, 197, 94, 0.45)',
+                  borderRadius: '50%',
+                  width: '34px',
+                  height: '34px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.05rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 0 12px rgba(34, 197, 94, 0.25)'
+                }}
+                onClick={() => setActiveModal('admin_control')}
+                title="Atsondika Portal"
+              >
+                🕉️
+              </button>
+            ) : (
+              <button
+                type="button"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.12)',
+                  color: '#fbbf24',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '50%',
+                  width: '34px',
+                  height: '34px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 0 10px rgba(245, 158, 11, 0.15)'
+                }}
+                onClick={() => setActiveModal('admin')}
+                title="Atsondika Portal"
+              >
+                🕉️
+              </button>
+            )}
+          </div>
+
+          {/* RIGHT GROUP: 1ST INQUIRIES, 2ND CART, 3RD TRACK SHIPMENT IN LAST CORNER */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto' }}>
+            {/* 1. Quick Access to Customer Inquiries / Leads */}
+            <button
+              type="button"
+              className="btn-secondary nav-inquiries-btn"
+              style={{
+                background: 'rgba(56, 189, 248, 0.15)',
+                color: '#38bdf8',
+                borderColor: 'rgba(56, 189, 248, 0.35)',
+                fontSize: '0.78rem',
+                padding: '5px 10px',
+                fontWeight: 800,
+                whiteSpace: 'nowrap'
+              }}
+              onClick={() => setActiveModal('admin_leads')}
+              title="View All Customer Inquiries & Sales Leads"
+            >
+              📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
+            </button>
+
+            {/* 3. Official Payment Receipts & Tax Invoice History Button */}
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{
+                background: 'rgba(250, 204, 21, 0.15)',
+                color: '#facc15',
+                borderColor: 'rgba(250, 204, 21, 0.35)',
+                fontSize: '0.78rem',
+                padding: '5px 10px',
+                fontWeight: 800,
+                whiteSpace: 'nowrap'
+              }}
+              onClick={() => setActiveModal('payment_receipts')}
+              title="View Completed Order Payment Receipts & Tax Invoices"
+            >
+              🧾 <span className="nav-btn-label">{currentLang === 'gu' ? 'પેમેન્ટ રીસિપ્ટ્સ' : 'Payment Receipts'}</span>
+            </button>
+
+            {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
+            <button
+              type="button"
+              className="nav-tracker-btn"
+              onClick={() => setIsOrderTrackerOpen(true)}
+              title="Track Container Shipment Live"
+            >
+              🚢 <span className="nav-btn-label">Track Shipment</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. MAIN STICKY HEADER (ELEGANT, SLIM, 100% STABLE HEIGHT - ZERO JERK) */}
       <header className="header">
-        <div className="header-glass" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '8px' }}>
+        <div className="header-glass">
           {/* ROW 1: BRANDING LOGO + MAIN NAVIGATION LINKS */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '10px' }}>
             <a href="#" className="logo-area">
               <img
                 src={activeCompany.logo || 'images/logo.png'}
@@ -340,7 +583,8 @@ export default function Navbar() {
               <li><a href="#calc" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Calculator</a></li>
               <li><a href="#quality" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_quality}</a></li>
               <li><a href="#branches" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_branches}</a></li>
-              <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>            </ul>
+              <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>
+            </ul>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px' }}>
               <button
@@ -376,261 +620,8 @@ export default function Navbar() {
               </button>
             </div>
           </div>
-
-          {/* COLLAPSIBLE TOP SUB-HEADER BARS (SISTER COMPANIES & ACTION BUTTONS HIDE UPWARDS ON SCROLL) */}
-          <div style={{
-            maxHeight: isScrolled ? '0px' : '130px',
-            opacity: isScrolled ? 0 : 1,
-            transform: isScrolled ? 'translateY(-10px)' : 'translateY(0)',
-            overflow: 'hidden',
-            pointerEvents: isScrolled ? 'none' : 'auto',
-            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            width: '100%',
-            marginTop: isScrolled ? '0' : '4px'
-          }}>
-            {/* ROW 2: PROMINENT MULTI-COMPANY SISTER COMPANIES TABS BAR INSIDE GLASS CONTAINER */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            flexWrap: 'wrap',
-            padding: '6px 12px',
-            background: 'rgba(255,255,255,0.03)',
-            borderRadius: '12px',
-            border: '1px solid var(--border-glass)'
-          }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)', whiteSpace: 'nowrap' }}>
-              🏢 {currentLang === 'gu' ? 'સિસ્ટર ગ્રુપ કંપનીઓ (Select Sister Company):' : 'Sister Group Companies:'}
-            </span>
-
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {companiesList.map(comp => (
-                <button
-                  key={comp.id}
-                  type="button"
-                  className={`multi-company-tab ${activeCompanyId === comp.id ? 'active' : ''}`}
-                  onClick={() => setActiveCompanyId(comp.id)}
-                  title={`Switch active company profile to ${comp.name}`}
-                >
-                  <span className="comp-tab-dot"></span>
-                  <span className="comp-tab-name">{comp.name}</span>
-                  {activeCompanyId === comp.id && <span className="comp-active-pill">ACTIVE ⚡</span>}
-                </button>
-              ))}
-
-              {isAdminLoggedIn && (
-                <>
-                  <button
-                    type="button"
-                    className="multi-company-edit-btn"
-                    onClick={() => setActiveModal('company')}
-                    title="Edit Sister Companies & Logos"
-                  >
-                    ✏️ Edit Sister Companies
-                  </button>
-                  <button
-                    type="button"
-                    className="multi-company-edit-btn"
-                    style={{ background: 'rgba(234, 179, 8, 0.18)', color: '#facc15', borderColor: 'rgba(234, 179, 8, 0.35)' }}
-                    onClick={() => setActiveModal('cloud_sync')}
-                    title="Configure Live Cloud Sync Server URL"
-                  >
-                    🌐 Cloud Sync Server
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* ROW 3: UTILITY ACTION BUTTONS INSIDE GLASS CONTAINER */}
-          <div className="header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '6px', flexWrap: 'wrap', gap: '8px' }}>
-            {/* LEFT GROUP: LOGIN BUTTONS */}
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {/* CUSTOMER LOGIN / PORTAL BUTTON */}
-              {currentCustomer ? (
-                <button
-                  type="button"
-                  className="btn-secondary nav-cust-btn"
-                  style={{
-                    background: 'rgba(56, 189, 248, 0.18)',
-                    color: '#38bdf8',
-                    borderColor: 'rgba(56, 189, 248, 0.4)',
-                    padding: '5px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    whiteSpace: 'nowrap'
-                  }}
-                  onClick={() => setActiveModal('customer_portal')}
-                  title={`Logged in as ${currentCustomer.name} (${currentCustomer.phone || currentCustomer.email})`}
-                >
-                  👤 <span className="nav-btn-label">{currentCustomer.name.split(' ')[0]}</span> ▾
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-secondary nav-cust-btn"
-                  style={{
-                    background: 'rgba(56, 189, 248, 0.18)',
-                    color: '#38bdf8',
-                    borderColor: 'rgba(56, 189, 248, 0.35)',
-                    padding: '5px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    whiteSpace: 'nowrap'
-                  }}
-                  onClick={() => setActiveModal('customer_auth')}
-                  title="Customer Login / Register"
-                >
-                  👤 <span className="nav-btn-label">{currentLang === 'gu' ? 'કસ્ટમર લોગઈન' : 'Customer Login'}</span>
-                </button>
-              )}
-
-              {/* MULTI-VENDOR SELLER / MERCHANT REGISTRATION & PORTAL BUTTON */}
-              {currentMerchant && currentMerchant.id && currentMerchant.businessName ? (
-                <button
-                  type="button"
-                  className="btn-secondary nav-cust-btn"
-                  style={{
-                    background: 'rgba(234, 179, 8, 0.2)',
-                    color: '#facc15',
-                    borderColor: 'rgba(234, 179, 8, 0.4)',
-                    padding: '5px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    whiteSpace: 'nowrap'
-                  }}
-                  onClick={() => setActiveModal('seller_portal')}
-                  title={`Seller Account: ${currentMerchant.businessName || 'Exporter'}`}
-                >
-                  🏬 <span className="nav-btn-label">{(currentMerchant.businessName || 'Seller').split(' ')[0]}</span> ⭐
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-secondary nav-cust-btn"
-                  style={{
-                    background: 'rgba(234, 179, 8, 0.18)',
-                    color: '#facc15',
-                    borderColor: 'rgba(234, 179, 8, 0.35)',
-                    padding: '5px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    whiteSpace: 'nowrap'
-                  }}
-                  onClick={() => setActiveModal('seller_portal')}
-                  title="Register as Seller / Exporter to sell your products on our platform"
-                >
-                  🤝 <span className="nav-btn-label">{currentLang === 'gu' ? 'વેપારી બનો' : 'Sell With Us'}</span>
-                </button>
-              )}
-
-              {/* DISCREET PURE OM (🕉️) SYMBOL ADMIN BUTTON */}
-              {isAdminLoggedIn ? (
-                <button
-                  type="button"
-                  style={{
-                    background: 'rgba(34, 197, 94, 0.18)',
-                    color: '#4ade80',
-                    border: '1px solid rgba(34, 197, 94, 0.45)',
-                    borderRadius: '50%',
-                    width: '34px',
-                    height: '34px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.05rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 0 12px rgba(34, 197, 94, 0.25)'
-                  }}
-                  onClick={() => setActiveModal('admin_control')}
-                  title="Atsondika Portal"
-                >
-                  🕉️
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  style={{
-                    background: 'rgba(245, 158, 11, 0.12)',
-                    color: '#fbbf24',
-                    border: '1px solid rgba(245, 158, 11, 0.3)',
-                    borderRadius: '50%',
-                    width: '34px',
-                    height: '34px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 0 10px rgba(245, 158, 11, 0.15)'
-                  }}
-                  onClick={() => setActiveModal('admin')}
-                  title="Atsondika Portal"
-                >
-                  🕉️
-                </button>
-              )}
-            </div>
-
-            {/* RIGHT GROUP: 1ST INQUIRIES, 2ND CART, 3RD TRACK SHIPMENT IN LAST CORNER */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto' }}>
-              {/* 1. Quick Access to Customer Inquiries / Leads */}
-              <button
-                type="button"
-                className="btn-secondary nav-inquiries-btn"
-                style={{
-                  background: 'rgba(56, 189, 248, 0.15)',
-                  color: '#38bdf8',
-                  borderColor: 'rgba(56, 189, 248, 0.35)',
-                  fontSize: '0.78rem',
-                  padding: '5px 10px',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
-                onClick={() => setActiveModal('admin_leads')}
-                title="View All Customer Inquiries & Sales Leads"
-              >
-                📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
-              </button>
-
-              {/* 3. Official Payment Receipts & Tax Invoice History Button */}
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{
-                  background: 'rgba(250, 204, 21, 0.15)',
-                  color: '#facc15',
-                  borderColor: 'rgba(250, 204, 21, 0.35)',
-                  fontSize: '0.78rem',
-                  padding: '5px 10px',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
-                onClick={() => setActiveModal('payment_receipts')}
-                title="View Completed Order Payment Receipts & Tax Invoices"
-              >
-                🧾 <span className="nav-btn-label">{currentLang === 'gu' ? 'પેમેન્ટ રીસિપ્ટ્સ' : 'Payment Receipts'}</span>
-              </button>
-
-              {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
-              <button
-                type="button"
-                className="nav-tracker-btn"
-                onClick={() => setIsOrderTrackerOpen(true)}
-                title="Track Container Shipment Live"
-              >
-                🚢 <span className="nav-btn-label">Track Shipment</span>
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
-    </header>
+      </header>
     </>
   );
 }
