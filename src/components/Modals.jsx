@@ -150,6 +150,7 @@ export default function Modals() {
   const [adminProductApprovalFilter, setAdminProductApprovalFilter] = useState('pending'); // 'pending' | 'approved' | 'rejected' | 'all'
   const [adminProductSearch, setAdminProductSearch] = useState('');
   const [commissionInputRate, setCommissionInputRate] = useState(adminCommissionRate || 2.5);
+  const [forexInputRate, setForexInputRate] = useState(forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5);
 
   const [localGateway, setLocalGateway] = useState(() => paymentGatewaysConfig?.local || {
     provider: 'razorpay',
@@ -180,8 +181,10 @@ export default function Modals() {
   }, [adminCommissionRate]);
 
   useEffect(() => {
-    setCommissionInputRate(adminCommissionRate || 2.5);
-  }, [adminCommissionRate]);
+    if (forexRiskBuffer !== undefined) {
+      setForexInputRate(forexRiskBuffer);
+    }
+  }, [forexRiskBuffer]);
 
   // Live Commodity Market Ticker Rates Manager State
   const [tickerItemsInput, setTickerItemsInput] = useState([]);
@@ -2513,58 +2516,56 @@ export default function Modals() {
                 </p>
 
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <select
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="50"
                     className="input-field"
-                    style={{
-                      fontSize: '0.92rem',
-                      fontWeight: 800,
-                      padding: '10px 14px',
-                      color: '#facc15',
-                      background: '#18181b',
-                      border: '1px solid rgba(234,179,8,0.4)',
-                      borderRadius: '10px',
-                      flex: 1,
-                      cursor: 'pointer'
-                    }}
-                    value={forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (saveForexRiskBuffer) saveForexRiskBuffer(val);
+                    style={{ fontSize: '1.2rem', fontWeight: 800, padding: '10px 14px', width: '120px', textAlign: 'center', color: '#facc15' }}
+                    value={forexInputRate}
+                    onChange={(e) => setForexInputRate(e.target.value)}
+                  />
+                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#facc15' }}>%</span>
+
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ padding: '10px 20px', fontSize: '0.88rem', fontWeight: 800, marginLeft: 'auto', background: 'linear-gradient(135deg, #d97706, #b45309)', cursor: 'pointer' }}
+                    onClick={() => {
+                      const val = parseFloat(forexInputRate);
+                      if (!isNaN(val) && saveForexRiskBuffer) {
+                        saveForexRiskBuffer(val);
+                        showLiveToast(`✅ Forex Risk Buffer saved as +${val}%!`, 'success');
+                      }
                     }}
                   >
-                    <option value={0}>0% - Exact Spot Exchange Rate (0% Buffer)</option>
-                    <option value={0.5}>+0.5% - Low FX Risk Buffer (+0.5%)</option>
-                    <option value={1}>+1.0% - Standard Commercial Buffer (+1.0%)</option>
-                    <option value={1.5}>+1.5% - Moderate Volatility Hedge (+1.5%)</option>
-                    <option value={2}>+2.0% - Default Export Risk Hedge (+2.0%)</option>
-                    <option value={2.5}>+2.5% - High Volatility Protection (+2.5% Recommended)</option>
-                    <option value={3}>+3.0% - Extended Delivery Buffer (+3.0%)</option>
-                    <option value={3.5}>+3.5% - High Volatility Buffer (+3.5%)</option>
-                    <option value={4}>+4.0% - Emerging Market Hedge (+4.0%)</option>
-                    <option value={5}>+5.0% - Maximum Safety Protection (+5.0%)</option>
-                    <option value={7.5}>+7.5% - Long-Term Contract Buffer (+7.5%)</option>
-                    <option value={10}>+10.0% - High Volatility Hedge (+10.0%)</option>
-                  </select>
+                    💾 Save Forex Buffer
+                  </button>
                 </div>
 
                 {/* Preset Quick Buttons */}
-                <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Presets:</span>
-                  {[0, 1.5, 2.5, 3.5, 5.0].map((pct) => (
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', alignSelf: 'center' }}>Presets:</span>
+                  {[0, 1.0, 1.5, 2.0, 2.5, 3.5, 5.0, 10.0].map((pct) => (
                     <button
                       key={pct}
                       type="button"
                       onClick={() => {
-                        if (saveForexRiskBuffer) saveForexRiskBuffer(pct);
+                        setForexInputRate(pct);
+                        if (saveForexRiskBuffer) {
+                          saveForexRiskBuffer(pct);
+                          showLiveToast(`✅ Forex Risk Buffer updated to +${pct}%!`, 'success');
+                        }
                       }}
                       style={{
                         padding: '4px 10px',
-                        fontSize: '0.76rem',
-                        fontWeight: 800,
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
                         borderRadius: '8px',
-                        background: (forexRiskBuffer === pct) ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
-                        color: (forexRiskBuffer === pct) ? '#fde047' : '#d4d4d8',
-                        border: '1px solid ' + ((forexRiskBuffer === pct) ? 'rgba(234,179,8,0.5)' : 'rgba(255,255,255,0.1)'),
+                        background: (parseFloat(forexInputRate) === pct) ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
+                        color: (parseFloat(forexInputRate) === pct) ? '#fde047' : '#d4d4d8',
+                        border: '1px solid ' + ((parseFloat(forexInputRate) === pct) ? 'rgba(234,179,8,0.5)' : 'rgba(255,255,255,0.1)'),
                         cursor: 'pointer'
                       }}
                     >
