@@ -162,38 +162,6 @@ export default function Navbar() {
           </div>
 
           <div className="top-info" style={{ gap: '10px', alignItems: 'center' }}>
-            {/* Currency Selector */}
-            <div className="currency-selector-box" ref={currencyRef} style={{ position: 'relative' }}>
-              <button
-                type="button"
-                className="currency-btn"
-                onClick={() => setCurrencyMenuOpen(!currencyMenuOpen)}
-                title="Select Currency"
-              >
-                <span>{currentCurrency.flag}</span>
-                <span>{currentCurrency.code}</span>
-                <span style={{ fontSize: '0.65rem' }}>▼</span>
-              </button>
-
-              {currencyMenuOpen && (
-                <div className="currency-dropdown show" style={{ maxHeight: '360px', overflowY: 'auto' }}>
-                  {(currenciesList || []).map((curr) => (
-                    <button
-                      key={curr.code}
-                      type="button"
-                      className={`currency-item ${currentCurrency.code === curr.code ? 'active' : ''}`}
-                      onClick={() => {
-                        setCurrentCurrency(curr);
-                        setCurrencyMenuOpen(false);
-                      }}
-                    >
-                      <span>{curr.flag}</span> <strong>{curr.code}</strong> <span style={{ opacity: 0.85, fontSize: '0.72rem' }}>({curr.symbol})</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* ATTACHED UNIFIED LANGUAGE CONTROL CAPSULE */}
             <div className="lang-box-grouped" ref={langRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(45, 212, 191, 0.45)', borderRadius: '20px', padding: '2px 4px', boxShadow: '0 0 12px rgba(45, 212, 191, 0.25)' }}>
               {/* 1. Main Language Dropdown Switcher */}
