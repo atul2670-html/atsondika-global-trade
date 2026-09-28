@@ -4396,14 +4396,14 @@ export default function Modals() {
         </div>
       )}
 
-      {/* Live Commodity Market Rates & Prices Manager Modal */}
+      {/* Edit Sub-Product Rates & Prices Manager Modal */}
       {activeModal === 'ticker' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '880px', maxHeight: '90vh', overflowY: 'auto' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                ✏️ Edit Live Commodity Market Rates & Prices (ભાવ મેનેજ કરો)
+                ✏️ Edit Sub-Product Rates & Prices (સબ પ્રોડક્ટ રેટ મેનેજ કરો)
               </h3>
               <button
                 type="button"
@@ -4412,50 +4412,72 @@ export default function Modals() {
                 onClick={() => {
                   const newItem = {
                     id: `t_${Date.now()}`,
-                    icon: '🌿',
-                    symbol: 'NEW-COMMODITY',
-                    price: '$1,500/MT',
-                    change: '+1.0%',
+                    icon: '📦',
+                    symbol: 'NEW-SUB-PRODUCT',
+                    hsCode: '851713',
+                    price: '$14.00/Pcs (FOB)',
+                    change: '₹1,250/Pcs (Domestic)',
                     isPositive: true
                   };
                   setTickerItemsInput(prev => [...prev, newItem]);
                 }}
               >
-                ➕ + Add Commodity Price
+                ➕ + Add Sub-Product Rate
               </button>
             </div>
 
             <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
-              અહીંથી તમે લાઈવ સ્ક્રોલ થતા કપાસ, ચોખા, જીરું, તલ, સીંગદાણા કે હાર્ડવેરના દૈનિક ભાવ (Market Rates) અને ઓવરઓલ ટકાવારી (% Change) ગમે ત્યારે બદલી શકો છો.
+              અહીંથી તમે લાઈવ સ્ક્રોલ થતા દરેક સબ પ્રોડક્ટના HSN કોડ, B2B રેટ (ગ્લોબલ Ex-Factory/FOB) અને B2C રેટ (લોકલ રિટેલ ભાવ) સરળતાથી મેનેજ કરી શકો છો.
             </p>
 
             <form onSubmit={(e) => {
               e.preventDefault();
               saveMarketTickerList(tickerItemsInput);
-              alert("✅ Live Market Commodity Rates Updated & Synced Successfully!");
+              if (showLiveToast) showLiveToast("✅ Sub-Product Rates Updated & Synced Successfully!", "success");
+              else alert("✅ Sub-Product Rates Updated & Synced Successfully!");
               setActiveModal(null);
             }}>
+              {/* Form Column Headers */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
+                gap: '8px',
+                padding: '0 12px 6px 12px',
+                fontSize: '0.74rem',
+                fontWeight: 800,
+                color: '#38bdf8',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                <div>Icon</div>
+                <div>૧. સબ પ્રોડક્ટનું નામ</div>
+                <div>૨. HSN</div>
+                <div>૩. B2B Unit/Rate</div>
+                <div>૪. B2C Unit/Rate</div>
+                <div></div>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
                 {tickerItemsInput.map((item, index) => (
                   <div
                     key={item.id || index}
                     style={{
                       background: 'rgba(255,255,255,0.03)',
-                      padding: '12px',
+                      padding: '10px 12px',
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--border-glass)',
-                      display: 'flex',
+                      display: 'grid',
+                      gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
                       alignItems: 'center',
-                      gap: '10px',
-                      flexWrap: 'wrap'
+                      gap: '8px'
                     }}
                   >
                     {/* Icon Input */}
                     <input
                       type="text"
                       className="form-control"
-                      style={{ width: '48px', textAlign: 'center', fontSize: '1.2rem', padding: '4px' }}
-                      value={item.icon || '🌾'}
+                      style={{ width: '100%', textAlign: 'center', fontSize: '1.1rem', padding: '4px' }}
+                      value={item.icon || '📦'}
                       onChange={(e) => {
                         const val = e.target.value;
                         setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, icon: val } : it));
@@ -4463,11 +4485,11 @@ export default function Modals() {
                       title="Item Emoji / Icon"
                     />
 
-                    {/* Commodity Symbol */}
+                    {/* Column 1: Sub-Product Name */}
                     <input
                       type="text"
                       className="form-control"
-                      style={{ flex: '1 1 140px', fontWeight: 800 }}
+                      style={{ fontWeight: 800, fontSize: '0.84rem' }}
                       placeholder="e.g. COTTON-GUJ"
                       value={item.symbol || ''}
                       onChange={(e) => {
@@ -4475,33 +4497,50 @@ export default function Modals() {
                         setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, symbol: val } : it));
                       }}
                       required
+                      title="૧. સબ પ્રોડક્ટનું નામ (Sub-Product Name)"
                     />
 
-                    {/* Price Input */}
+                    {/* Column 2: HSN / HS Code */}
                     <input
                       type="text"
                       className="form-control"
-                      style={{ flex: '1 1 120px', color: '#38bdf8', fontWeight: 800 }}
-                      placeholder="e.g. $1,180/MT"
+                      style={{ fontWeight: 800, fontSize: '0.84rem', color: '#facc15', textAlign: 'center' }}
+                      placeholder="e.g. 5201"
+                      value={item.hsCode || item.hsn || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, hsCode: val, hsn: val } : it));
+                      }}
+                      title="૨. HSN (HS Code)"
+                    />
+
+                    {/* Column 3: B2B Unit/Rate */}
+                    <input
+                      type="text"
+                      className="form-control"
+                      style={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.84rem' }}
+                      placeholder="e.g. $1.42/kg (FOB)"
                       value={item.price || ''}
                       onChange={(e) => {
                         const val = e.target.value;
                         setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, price: val } : it));
                       }}
                       required
+                      title="૩. B2B Unit/Rate (ગ્લોબલ B2B રેટ)"
                     />
 
-                    {/* Change / Status Note */}
+                    {/* Column 4: B2C Unit/Rate */}
                     <input
                       type="text"
                       className="form-control"
-                      style={{ flex: '1 1 110px', color: '#4ade80' }}
-                      placeholder="e.g. +2.4%"
+                      style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.84rem' }}
+                      placeholder="e.g. ₹140/kg (Local)"
                       value={item.change || ''}
                       onChange={(e) => {
                         const val = e.target.value;
                         setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, change: val } : it));
                       }}
+                      title="૪. B2C Unit/Rate (લોકલ B2C રેટ)"
                     />
 
                     {/* Delete Item Button */}
@@ -4512,14 +4551,15 @@ export default function Modals() {
                         color: '#ef4444',
                         border: '1px solid rgba(239, 68, 68, 0.4)',
                         borderRadius: '8px',
-                        padding: '6px 12px',
+                        padding: '6px',
                         cursor: 'pointer',
-                        fontWeight: 800
+                        fontWeight: 800,
+                        textAlign: 'center'
                       }}
                       onClick={() => {
                         setTickerItemsInput(prev => prev.filter((_, i) => i !== index));
                       }}
-                      title="Delete Ticker Item"
+                      title="Delete Sub-Product Rate"
                     >
                       ✕
                     </button>
@@ -4528,7 +4568,7 @@ export default function Modals() {
               </div>
 
               <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
-                💾 Save Live Rates & Update Ticker (ભાવ સેવ કરો)
+                💾 Save Sub-Product Rates & Update Ticker (સબ પ્રોડક્ટ રેટ સેવ કરો)
               </button>
             </form>
           </div>

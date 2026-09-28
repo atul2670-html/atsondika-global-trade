@@ -581,15 +581,15 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Default Commodity Market Ticker Rates
+  // Default Sub-Product Live Ticker Rates (Sub-Product Rates)
   const defaultMarketTicker = [
-    { id: 't1', icon: '🌾', symbol: 'COTTON-GUJ', price: '$1.42/kg', change: '+1.8%', isPositive: true },
-    { id: 't2', icon: '🍚', symbol: 'RICE-BASMATI-1121', price: '$1,180/MT', change: '+2.4%', isPositive: true },
-    { id: 't3', icon: '🌿', symbol: 'CUMIN-SEEDS', price: '$3,450/MT', change: '-0.5%', isPositive: false },
-    { id: 't4', icon: '🥜', symbol: 'PEANUT-BOLD', price: '$1,290/MT', change: '+0.9%', isPositive: true },
-    { id: 't5', icon: '🌰', symbol: 'SESAME-HULLED', price: '$1,850/MT', change: '+3.1%', isPositive: true },
-    { id: 't6', icon: '⚙️', symbol: 'CNC-MACHINERY', price: '$18,500/Unit', change: 'In Stock', isPositive: true },
-    { id: 't7', icon: '📌', symbol: 'HT-BOLTS-8.8', price: '$1.25/kg', change: 'FOB Surat', isPositive: true }
+    { id: 't1', icon: '🌾', symbol: 'COTTON-GUJ', hsCode: '5201', price: '$1.42/kg (FOB)', change: '₹140/kg (Domestic)', isPositive: true },
+    { id: 't2', icon: '🍚', symbol: 'RICE-BASMATI-1121', hsCode: '100630', price: '$1,180/MT (FOB)', change: '₹105/kg (Domestic)', isPositive: true },
+    { id: 't3', icon: '🌿', symbol: 'CUMIN-SEEDS', hsCode: '090931', price: '$3,450/MT (FOB)', change: '₹310/kg (Domestic)', isPositive: false },
+    { id: 't4', icon: '🥜', symbol: 'PEANUT-BOLD', hsCode: '120242', price: '$1,290/MT (FOB)', change: '₹115/kg (Domestic)', isPositive: true },
+    { id: 't5', icon: '🌰', symbol: 'SESAME-HULLED', hsCode: '120740', price: '$1,850/MT (FOB)', change: '₹165/kg (Domestic)', isPositive: true },
+    { id: 't6', icon: '⚙️', symbol: 'CNC-MACHINERY', hsCode: '845811', price: '$18,500/Unit (FOB)', change: '₹15.5 Lakh/Unit', isPositive: true },
+    { id: 't7', icon: '📌', symbol: 'HT-BOLTS-8.8', hsCode: '731815', price: '$1.25/kg (FOB)', change: '₹110/kg (Domestic)', isPositive: true }
   ];
 
   const [marketTickerList, setMarketTickerList] = useState(() => {

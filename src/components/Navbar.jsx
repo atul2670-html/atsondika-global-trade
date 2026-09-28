@@ -123,7 +123,7 @@ export default function Navbar() {
                     boxShadow: '0 0 8px rgba(245, 158, 11, 0.3)'
                   }}
                   onClick={() => setActiveModal('ticker')}
-                  title="Edit Live Commodity Market Rates & Prices"
+                  title="Edit Sub-Product Rates & Prices"
                 >
                   ✏️ Edit Rates
                 </button>
@@ -131,11 +131,18 @@ export default function Navbar() {
             </div>
 
             <div className="top-ticker-marquee">
-              {(marketTickerList || []).map((item) => (
-                <span className="ticker-item" key={item.id}>
-                  {item.icon} {item.symbol}: <strong>{item.price} ({item.change})</strong>
-                </span>
-              ))}
+              {(marketTickerList || []).map((item) => {
+                const hsnStr = (item.hsCode || item.hsn) ? ` (HSN: ${item.hsCode || item.hsn})` : '';
+                const b2bStr = item.price ? `B2B: ${item.price}` : '';
+                const b2cStr = item.change ? `B2C: ${item.change}` : '';
+                const ratesText = [b2bStr, b2cStr].filter(Boolean).join(' | ');
+
+                return (
+                  <span className="ticker-item" key={item.id}>
+                    {item.icon} <strong>{item.symbol}</strong>{hsnStr}: <strong style={{ color: '#38bdf8' }}>{ratesText || item.price}</strong>
+                  </span>
+                );
+              })}
             </div>
           </div>
 
