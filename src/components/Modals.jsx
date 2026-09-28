@@ -4422,147 +4422,172 @@ export default function Modals() {
               અહીંથી તમે લાઈવ સ્ક્રોલ થતા દરેક સબ પ્રોડક્ટના HSN કોડ, B2B રેટ (ગ્લોબલ Ex-Factory/FOB) અને B2C રેટ (લોકલ રિટેલ ભાવ) સરળતાથી મેનેજ કરી શકો છો.
             </p>
 
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              saveMarketTickerList(tickerItemsInput);
-              if (showLiveToast) showLiveToast("✅ Sub-Product Rates Updated & Synced Successfully!", "success");
-              else alert("✅ Sub-Product Rates Updated & Synced Successfully!");
-              setActiveModal(null);
-            }}>
-              {/* Form Column Headers */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
-                gap: '8px',
-                padding: '0 12px 6px 12px',
-                fontSize: '0.74rem',
-                fontWeight: 800,
-                color: '#38bdf8',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
+            {tickerItemsInput.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '36px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed var(--border-glass)', marginBottom: '16px' }}>
+                <span style={{ fontSize: '2.8rem', display: 'block', marginBottom: '12px' }}>📦</span>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: '#f59e0b', fontWeight: 800 }}>
+                  {currentLang === 'gu' ? `"${activeCompany?.name || 'કંપની'}" માટે હજુ કોઈ સબ પ્રોડક્ટ ઉમેરેલ નથી` : `No Sub-Products Saved for ${activeCompany?.name || 'Company'} Yet`}
+                </h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', marginBottom: '18px', maxWidth: '540px', margin: '0 auto 18px auto' }}>
+                  {currentLang === 'gu'
+                    ? `દરેક કંપની પ્રોફાઈલનું પોતાનું જ અલગ પ્રોડક્ટ કેટલોગ હોય છે. આ કંપની માટે સબ પ્રોડક્ટ ઉમેરો જેથી તેના HSN કોડ અને B2B/B2C રેટ્સ અહીં મેનેજ કરી શકાય.`
+                    : `Each sister company profile maintains its own unique product catalog. Click below to add sub-products specifically for this company.`}
+                </p>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ padding: '10px 22px', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  onClick={() => {
+                    if (setEditingProductId) setEditingProductId(null);
+                    setActiveModal('edit_product');
+                  }}
+                >
+                  ➕ + Add Sub-Product for {activeCompany?.name || 'Company'} (પહેલી સબ પ્રોડક્ટ ઉમેરો)
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                saveMarketTickerList(tickerItemsInput);
+                if (showLiveToast) showLiveToast("✅ Sub-Product Rates Updated & Synced Successfully!", "success");
+                else alert("✅ Sub-Product Rates Updated & Synced Successfully!");
+                setActiveModal(null);
               }}>
-                <div>Icon</div>
-                <div>૧. સબ પ્રોડક્ટનું નામ</div>
-                <div>૨. HSN</div>
-                <div>૩. B2B Unit/Rate</div>
-                <div>૪. B2C Unit/Rate</div>
-                <div></div>
-              </div>
+                {/* Form Column Headers */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
+                  gap: '8px',
+                  padding: '0 12px 6px 12px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  color: '#38bdf8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  <div>Icon</div>
+                  <div>૧. સબ પ્રોડક્ટનું નામ</div>
+                  <div>૨. HSN</div>
+                  <div>૩. B2B Unit/Rate</div>
+                  <div>૪. B2C Unit/Rate</div>
+                  <div></div>
+                </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                {tickerItemsInput.map((item, index) => (
-                  <div
-                    key={item.id || index}
-                    style={{
-                      background: 'rgba(255,255,255,0.03)',
-                      padding: '10px 12px',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--border-glass)',
-                      display: 'grid',
-                      gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                  >
-                    {/* Icon Input */}
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ width: '100%', textAlign: 'center', fontSize: '1.1rem', padding: '4px' }}
-                      value={item.icon || '📦'}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, icon: val } : it));
-                      }}
-                      title="Item Emoji / Icon"
-                    />
-
-                    {/* Column 1: Sub-Product Name */}
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ fontWeight: 800, fontSize: '0.84rem' }}
-                      placeholder="e.g. COTTON-GUJ"
-                      value={item.symbol || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, symbol: val } : it));
-                      }}
-                      required
-                      title="૧. સબ પ્રોડક્ટનું નામ (Sub-Product Name)"
-                    />
-
-                    {/* Column 2: HSN / HS Code */}
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ fontWeight: 800, fontSize: '0.84rem', color: '#facc15', textAlign: 'center' }}
-                      placeholder="e.g. 5201"
-                      value={item.hsCode || item.hsn || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, hsCode: val, hsn: val } : it));
-                      }}
-                      title="૨. HSN (HS Code)"
-                    />
-
-                    {/* Column 3: B2B Unit/Rate */}
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.84rem' }}
-                      placeholder="e.g. $1.42/kg (FOB)"
-                      value={item.price || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, price: val } : it));
-                      }}
-                      required
-                      title="૩. B2B Unit/Rate (ગ્લોબલ B2B રેટ)"
-                    />
-
-                    {/* Column 4: B2C Unit/Rate */}
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.84rem' }}
-                      placeholder="e.g. ₹140/kg (Local)"
-                      value={item.change || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, change: val } : it));
-                      }}
-                      title="૪. B2C Unit/Rate (લોકલ B2C રેટ)"
-                    />
-
-                    {/* Delete Item Button */}
-                    <button
-                      type="button"
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  {tickerItemsInput.map((item, index) => (
+                    <div
+                      key={item.id || index}
                       style={{
-                        background: 'rgba(239, 68, 68, 0.2)',
-                        color: '#ef4444',
-                        border: '1px solid rgba(239, 68, 68, 0.4)',
-                        borderRadius: '8px',
-                        padding: '6px',
-                        cursor: 'pointer',
-                        fontWeight: 800,
-                        textAlign: 'center'
+                        background: 'rgba(255,255,255,0.03)',
+                        padding: '10px 12px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-glass)',
+                        display: 'grid',
+                        gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
-                      onClick={() => {
-                        setTickerItemsInput(prev => prev.filter((_, i) => i !== index));
-                      }}
-                      title="Delete Sub-Product Rate"
                     >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      {/* Icon Input */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ width: '100%', textAlign: 'center', fontSize: '1.1rem', padding: '4px' }}
+                        value={item.icon || '📦'}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, icon: val } : it));
+                        }}
+                        title="Item Emoji / Icon"
+                      />
 
-              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
-                💾 Save Sub-Product Rates & Update Ticker (સબ પ્રોડક્ટ રેટ સેવ કરો)
-              </button>
-            </form>
+                      {/* Column 1: Sub-Product Name */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. COTTON-GUJ"
+                        value={item.symbol || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, symbol: val } : it));
+                        }}
+                        required
+                        title="૧. સબ પ્રોડક્ટનું નામ (Sub-Product Name)"
+                      />
+
+                      {/* Column 2: HSN / HS Code */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ fontWeight: 800, fontSize: '0.84rem', color: '#facc15', textAlign: 'center' }}
+                        placeholder="e.g. 5201"
+                        value={item.hsCode || item.hsn || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, hsCode: val, hsn: val } : it));
+                        }}
+                        title="૨. HSN (HS Code)"
+                      />
+
+                      {/* Column 3: B2B Unit/Rate */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. $1.42/kg (FOB)"
+                        value={item.price || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, price: val } : it));
+                        }}
+                        required
+                        title="૩. B2B Unit/Rate (ગ્લોબલ B2B રેટ)"
+                      />
+
+                      {/* Column 4: B2C Unit/Rate */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. ₹140/kg (Local)"
+                        value={item.change || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, change: val } : it));
+                        }}
+                        title="૪. B2C Unit/Rate (લોકલ B2C રેટ)"
+                      />
+
+                      {/* Delete Item Button */}
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          color: '#ef4444',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
+                          borderRadius: '8px',
+                          padding: '6px',
+                          cursor: 'pointer',
+                          fontWeight: 800,
+                          textAlign: 'center'
+                        }}
+                        onClick={() => {
+                          setTickerItemsInput(prev => prev.filter((_, i) => i !== index));
+                        }}
+                        title="Delete Sub-Product Rate"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
+                  💾 Save Sub-Product Rates & Update Ticker (સબ પ્રોડક્ટ રેટ સેવ કરો)
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

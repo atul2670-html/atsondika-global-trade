@@ -131,18 +131,26 @@ export default function Navbar() {
             </div>
 
             <div className="top-ticker-marquee">
-              {(marketTickerList || []).map((item) => {
-                const hsnStr = (item.hsCode || item.hsn) ? ` (HSN: ${item.hsCode || item.hsn})` : '';
-                const b2bStr = item.price ? `B2B: ${item.price}` : '';
-                const b2cStr = item.change ? `B2C: ${item.change}` : '';
-                const ratesText = [b2bStr, b2cStr].filter(Boolean).join(' | ');
+              {(!marketTickerList || marketTickerList.length === 0) ? (
+                <span className="ticker-item" style={{ color: '#cbd5e1', fontWeight: 600 }}>
+                  📢 {currentLang === 'gu'
+                    ? `સ્વાગત છે ${activeCompany?.name || 'કંપની'} માં - સબ પ્રોડક્ટ ઉમેરવા પર લાઈવ ભાવ અહીં દેખાશે`
+                    : `Welcome to ${activeCompany?.name || 'Company'} - Live Sub-Product Rates will appear here when sub-products are added`}
+                </span>
+              ) : (
+                marketTickerList.map((item) => {
+                  const hsnStr = (item.hsCode || item.hsn) ? ` (HSN: ${item.hsCode || item.hsn})` : '';
+                  const b2bStr = item.price ? `B2B: ${item.price}` : '';
+                  const b2cStr = item.change ? `B2C: ${item.change}` : '';
+                  const ratesText = [b2bStr, b2cStr].filter(Boolean).join(' | ');
 
-                return (
-                  <span className="ticker-item" key={item.id}>
-                    {item.icon} <strong>{item.symbol}</strong>{hsnStr}: <strong style={{ color: '#38bdf8' }}>{ratesText || item.price}</strong>
-                  </span>
-                );
-              })}
+                  return (
+                    <span className="ticker-item" key={item.id}>
+                      {item.icon} <strong>{item.symbol}</strong>{hsnStr}: <strong style={{ color: '#38bdf8' }}>{ratesText || item.price}</strong>
+                    </span>
+                  );
+                })
+              )}
             </div>
           </div>
 

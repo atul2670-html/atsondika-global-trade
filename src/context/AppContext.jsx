@@ -1385,11 +1385,8 @@ export function AppProvider({ children }) {
     // Exclude any product whose specific ID is in deletedBuiltInIds
     const nonDeleted = rawList.filter(p => p && !deletedSet.has(p.id));
 
-    // Filter products belonging to the active company (fallback to nonDeleted if empty)
-    let companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
-    if (companyProducts.length === 0 && nonDeleted.length > 0) {
-      companyProducts = nonDeleted;
-    }
+    // Filter products strictly belonging to the active company ONLY
+    const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
 
     // Apply persistent photo overrides (custom saved photos take absolute priority)
     const withPhotos = companyProducts.map(prod => {
@@ -1421,15 +1418,13 @@ export function AppProvider({ children }) {
     return sanitizeCustomProductsList(withPhotos);
   };
 
-  // marketTickerList strictly contains ONLY active sub-products
+  // marketTickerList strictly contains ONLY active sub-products for the active company
   const marketTickerList = useMemo(() => {
     const allProds = getAllProducts();
     const subProds = (allProds || []).filter(p => p && p.isSub !== false);
 
-    // Fallback to initial sub-products if subProds is empty for any reason
-    const prodsToUse = subProds.length > 0
-      ? subProds
-      : initialProductsData.filter(p => p && p.isSub !== false);
+    // If active company has 0 sub-products, return empty array (no fallback to other companies or initial products!)
+    if (!subProds || subProds.length === 0) return [];
 
     const overridesMap = new Map();
     (savedMarketTickerList || []).forEach(item => {
@@ -1439,7 +1434,7 @@ export function AppProvider({ children }) {
       if (item.symbol) overridesMap.set(String(item.symbol), item);
     });
 
-    return prodsToUse.map(p => {
+    return subProds.map(p => {
       const pIdStr = String(p.id);
       const pName = p.names?.[currentLang] || p.names?.gu || p.names?.en || p.name || p.code || 'Sub-Product';
       const savedItem = overridesMap.get(pIdStr) || overridesMap.get(`t_prod_${pIdStr}`) || overridesMap.get(pName);
