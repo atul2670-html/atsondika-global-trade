@@ -2986,7 +2986,7 @@ export default function Modals() {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Atulbhai Patel"
+                    placeholder="Name"
                     value={custNameInput}
                     onChange={(e) => setCustNameInput(e.target.value)}
                     required
@@ -2999,7 +2999,7 @@ export default function Modals() {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="+91 98251 23456"
+                      placeholder="0000000000"
                       value={custPhoneInput}
                       onChange={(e) => setCustPhoneInput(e.target.value)}
                       required
@@ -3010,7 +3010,7 @@ export default function Modals() {
                     <input
                       type="email"
                       className="form-control"
-                      placeholder="atul2670@gmail.com"
+                      placeholder="example@domain.com"
                       value={custEmailInput}
                       onChange={(e) => setCustEmailInput(e.target.value)}
                     />
@@ -3022,7 +3022,7 @@ export default function Modals() {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Patel Exports & Traders"
+                    placeholder="Business Name"
                     value={custCompInput}
                     onChange={(e) => setCustCompInput(e.target.value)}
                   />

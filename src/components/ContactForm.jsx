@@ -242,7 +242,7 @@ export default function ContactForm() {
                     id="buyer-name-input"
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Atul Patel"
+                    placeholder="Name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
@@ -254,7 +254,7 @@ export default function ContactForm() {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="e.g. Atul Automation / SST Group"
+                    placeholder="Business Name"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     required
@@ -268,7 +268,7 @@ export default function ContactForm() {
                   <input
                     type="tel"
                     className="form-control"
-                    placeholder="+91 78619 97755"
+                    placeholder="0000000000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     required
@@ -280,7 +280,7 @@ export default function ContactForm() {
                   <input
                     type="email"
                     className="form-control"
-                    placeholder="atul2670@gmail.com"
+                    placeholder="example@domain.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
