@@ -356,12 +356,13 @@ export default function ProductsGrid() {
               {isAdminLoggedIn && (
                 <button
                   type="button"
-                  className="btn-secondary"
+                  className="btn-primary"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    borderColor: 'var(--primary-teal-glow)',
-                    color: 'white',
-                    padding: '10px 18px',
+                    background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                    boxShadow: '0 4px 15px rgba(13, 148, 136, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#ffffff',
+                    padding: '10px 20px',
                     fontSize: '0.92rem',
                     fontWeight: 800
                   }}
