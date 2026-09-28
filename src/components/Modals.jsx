@@ -190,10 +190,44 @@ export default function Modals() {
   const [tickerItemsInput, setTickerItemsInput] = useState([]);
 
   useEffect(() => {
-    if (activeModal === 'ticker' && marketTickerList) {
-      setTickerItemsInput(JSON.parse(JSON.stringify(marketTickerList)));
+    if (activeModal === 'ticker') {
+      const allProds = getAllProducts ? getAllProducts() : [];
+      const currentList = marketTickerList || [];
+      const existingProductIds = new Set(currentList.map(item => item.productId || item.id || item.symbol));
+      const autoNewItems = [];
+
+      allProds.forEach(p => {
+        const pName = p.names?.[currentLang] || p.names?.gu || p.names?.en || p.name || p.code || 'Product';
+        if (!existingProductIds.has(p.id) && !existingProductIds.has(pName)) {
+          const hsn = p.hsCode || p.hsn || '';
+
+          const b2bCurr = p.exportCurrency || p.currency || 'USD';
+          const b2bSymbol = b2bCurr === 'INR' ? '₹' : (b2bCurr === 'USD' ? '$' : `${b2bCurr} `);
+          const b2bVal = p.priceUSD !== undefined && p.priceUSD !== null && p.priceUSD !== '' ? p.priceUSD : (p.priceUSDText || '');
+          const b2bIncoterm = p.incoterm || 'FOB';
+          const b2bUnit = p.unit || p.moqUnitType || 'Pcs';
+          const b2bRateFormatted = b2bVal ? `${b2bSymbol}${b2bVal}/${b2bUnit} (${b2bIncoterm})` : (p.priceUSDText || '');
+
+          const b2cVal = p.price !== undefined && p.price !== null && p.price !== '' ? p.price : (p.mrp || '');
+          const b2cRateFormatted = b2cVal ? `₹${b2cVal}/${b2bUnit}` : (p.mrp ? `₹${p.mrp}/${b2bUnit}` : '');
+
+          autoNewItems.push({
+            id: `t_prod_${p.id}`,
+            productId: p.id,
+            icon: p.icon || '📦',
+            symbol: pName,
+            hsCode: hsn,
+            hsn: hsn,
+            price: b2bRateFormatted || '$14.00/Pcs (FOB)',
+            change: b2cRateFormatted || '₹1,250/Pcs',
+            isPositive: true
+          });
+        }
+      });
+
+      setTickerItemsInput(JSON.parse(JSON.stringify([...currentList, ...autoNewItems])));
     }
-  }, [activeModal, marketTickerList]);
+  }, [activeModal, marketTickerList, currentLang, getAllProducts]);
 
   // Universal Keyboard Navigation (Page Up, Page Down, Arrow Keys Up/Down/Left/Right, Home, End)
   useEffect(() => {

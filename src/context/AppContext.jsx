@@ -1502,13 +1502,45 @@ export function AppProvider({ children }) {
       localStorage.setItem('custom_added_products_v6', JSON.stringify(nextProductsList));
       localStorage.setItem('custom_added_products_master', JSON.stringify(nextProductsList));
     } catch(e) {}
-    syncToServer({ customProductsList: nextProductsList, photoOverrides: updatedPhotoOverrides });
-
-    // Emit Real-Time Broadcast to all open tabs and windows globally!
+    // Auto-sync Sub-Product Rate (4 Columns: Name, HSN, B2B Rate, B2C Rate) to marketTickerList
     try {
-      realtimeEngine.broadcast('PRODUCT_UPDATE', {
+      const pName = dataToSave.names?.[currentLang] || dataToSave.names?.gu || dataToSave.names?.en || dataToSave.name || dataToSave.code || 'Product';
+      const hsn = dataToSave.hsCode || dataToSave.hsn || '';
+
+      const b2bCurr = dataToSave.exportCurrency || dataToSave.currency || 'USD';
+      const b2bSymbol = b2bCurr === 'INR' ? '₹' : (b2bCurr === 'USD' ? '$' : `${b2bCurr} `);
+      const b2bVal = dataToSave.priceUSD !== undefined && dataToSave.priceUSD !== null && dataToSave.priceUSD !== '' ? dataToSave.priceUSD : (dataToSave.priceUSDText || '');
+      const b2bIncoterm = dataToSave.incoterm || 'FOB';
+      const b2bUnit = dataToSave.unit || dataToSave.moqUnitType || 'Pcs';
+      const b2bRateFormatted = b2bVal ? `${b2bSymbol}${b2bVal}/${b2bUnit} (${b2bIncoterm})` : (dataToSave.priceUSDText || '');
+
+      const b2cVal = dataToSave.price !== undefined && dataToSave.price !== null && dataToSave.price !== '' ? dataToSave.price : (dataToSave.mrp || '');
+      const b2cRateFormatted = b2cVal ? `₹${b2cVal}/${b2bUnit}` : (dataToSave.mrp ? `₹${dataToSave.mrp}/${b2bUnit}` : '');
+
+      const tickerItemToSave = {
+        id: `t_prod_${dataToSave.id}`,
         productId: dataToSave.id,
-        productName: dataToSave.names?.en || dataToSave.names?.gu || dataToSave.name
+        icon: dataToSave.icon || '📦',
+        symbol: pName,
+        hsCode: hsn,
+        hsn: hsn,
+        price: b2bRateFormatted || '$14.00/Pcs (FOB)',
+        change: b2cRateFormatted || '₹1,250/Pcs',
+        isPositive: true
+      };
+
+      setMarketTickerList(prev => {
+        const prevList = Array.isArray(prev) ? prev : [];
+        const existsIdx = prevList.findIndex(item => item.productId === dataToSave.id || item.id === `t_prod_${dataToSave.id}` || item.symbol === pName);
+        let updatedTicker;
+        if (existsIdx >= 0) {
+          updatedTicker = prevList.map((item, i) => i === existsIdx ? { ...item, ...tickerItemToSave } : item);
+        } else {
+          updatedTicker = [...prevList, tickerItemToSave];
+        }
+        try { localStorage.setItem('site_market_ticker_v1', JSON.stringify(updatedTicker)); } catch(e){}
+        syncToServer({ marketTickerList: updatedTicker });
+        return updatedTicker;
       });
     } catch(e) {}
 
