@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo } from 'react';
 import { initialProductsData, defaultBranchOffices, defaultCertificates, translations, defaultCompanyProfiles, seaFreightPorts, airCargoRoutes } from '../data/initialData.js';
 import { toUSEnglishAddress, convertGoogleDriveUrl } from '../utils/address.js';
 import { realtimeEngine, pushGlobalCloudSync, pullGlobalCloudSync, subscribeToGlobalCloudPush, fetchLiveExchangeRates, DEFAULT_CURRENCIES, LIVE_TICKER_ITEMS } from '../utils/realtimeSync.js';
@@ -581,28 +581,21 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Default Sub-Product Live Ticker Rates (Sub-Product Rates)
-  const defaultMarketTicker = [
-    { id: 't1', icon: '🌾', symbol: 'COTTON-GUJ', hsCode: '5201', price: '$1.42/kg (FOB)', change: '₹140/kg (Domestic)', isPositive: true },
-    { id: 't2', icon: '🍚', symbol: 'RICE-BASMATI-1121', hsCode: '100630', price: '$1,180/MT (FOB)', change: '₹105/kg (Domestic)', isPositive: true },
-    { id: 't3', icon: '🌿', symbol: 'CUMIN-SEEDS', hsCode: '090931', price: '$3,450/MT (FOB)', change: '₹310/kg (Domestic)', isPositive: false },
-    { id: 't4', icon: '🥜', symbol: 'PEANUT-BOLD', hsCode: '120242', price: '$1,290/MT (FOB)', change: '₹115/kg (Domestic)', isPositive: true },
-    { id: 't5', icon: '🌰', symbol: 'SESAME-HULLED', hsCode: '120740', price: '$1,850/MT (FOB)', change: '₹165/kg (Domestic)', isPositive: true },
-    { id: 't6', icon: '⚙️', symbol: 'CNC-MACHINERY', hsCode: '845811', price: '$18,500/Unit (FOB)', change: '₹15.5 Lakh/Unit', isPositive: true },
-    { id: 't7', icon: '📌', symbol: 'HT-BOLTS-8.8', hsCode: '731815', price: '$1.25/kg (FOB)', change: '₹110/kg (Domestic)', isPositive: true }
-  ];
-
-  const [marketTickerList, setMarketTickerList] = useState(() => {
+  // Saved user overrides for Sub-Product Live Ticker Rates
+  const [savedMarketTickerList, setSavedMarketTickerList] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('site_market_ticker_v1') || 'null');
-      if (stored && Array.isArray(stored) && stored.length > 0) return stored;
+      const stored = JSON.parse(localStorage.getItem('site_market_ticker_v2') || localStorage.getItem('site_market_ticker_v1') || 'null');
+      if (stored && Array.isArray(stored)) return stored;
     } catch(e) {}
-    return defaultMarketTicker;
+    return [];
   });
 
   const saveMarketTickerList = (newList) => {
-    setMarketTickerList(newList);
-    localStorage.setItem('site_market_ticker_v1', JSON.stringify(newList));
+    setSavedMarketTickerList(newList);
+    try {
+      localStorage.setItem('site_market_ticker_v2', JSON.stringify(newList));
+      localStorage.setItem('site_market_ticker_v1', JSON.stringify(newList));
+    } catch(e) {}
     syncToServer({ marketTickerList: newList });
   };
 
@@ -1424,6 +1417,49 @@ export function AppProvider({ children }) {
 
     return sanitizeCustomProductsList(withPhotos);
   };
+
+  // marketTickerList strictly contains ONLY active products from getAllProducts() for the active company
+  const marketTickerList = useMemo(() => {
+    const allProds = getAllProducts();
+    if (!allProds || allProds.length === 0) return [];
+
+    const overridesMap = new Map();
+    (savedMarketTickerList || []).forEach(item => {
+      if (item.productId) overridesMap.set(String(item.productId), item);
+      if (item.id) overridesMap.set(String(item.id), item);
+      if (item.symbol) overridesMap.set(String(item.symbol), item);
+    });
+
+    return allProds.map(p => {
+      const pIdStr = String(p.id);
+      const pName = p.names?.[currentLang] || p.names?.gu || p.names?.en || p.name || p.code || 'Sub-Product';
+      const savedItem = overridesMap.get(pIdStr) || overridesMap.get(`t_prod_${pIdStr}`) || overridesMap.get(pName);
+
+      const hsn = p.hsCode || p.hsn || '';
+
+      const b2bCurr = p.exportCurrency || p.currency || 'USD';
+      const b2bSymbol = b2bCurr === 'INR' ? '₹' : (b2bCurr === 'USD' ? '$' : `${b2bCurr} `);
+      const b2bVal = p.priceUSD !== undefined && p.priceUSD !== null && p.priceUSD !== '' ? p.priceUSD : (p.priceUSDText || '');
+      const b2bIncoterm = p.incoterm || 'FOB';
+      const b2bUnit = p.unit || p.moqUnitType || 'Pcs';
+      const b2bRateFormatted = b2bVal ? `${b2bSymbol}${b2bVal}/${b2bUnit} (${b2bIncoterm})` : (p.priceUSDText || '');
+
+      const b2cVal = p.price !== undefined && p.price !== null && p.price !== '' ? p.price : (p.mrp || '');
+      const b2cRateFormatted = b2cVal ? `₹${b2cVal}/${b2bUnit}` : (p.mrp ? `₹${p.mrp}/${b2bUnit}` : '');
+
+      return {
+        id: `t_prod_${p.id}`,
+        productId: p.id,
+        icon: savedItem?.icon || p.icon || '📦',
+        symbol: savedItem?.symbol || pName,
+        hsCode: savedItem?.hsCode || savedItem?.hsn || hsn,
+        hsn: savedItem?.hsCode || savedItem?.hsn || hsn,
+        price: savedItem?.price || b2bRateFormatted || '$14.00/Pcs (FOB)',
+        change: savedItem?.change || b2cRateFormatted || '₹1,250/Pcs',
+        isPositive: true
+      };
+    });
+  }, [customProductsList, deletedBuiltInIds, photoOverrides, activeCompanyId, savedMarketTickerList, currentLang]);
 
   const saveProduct = (productData) => {
     const targetId = productData.id || editingProductId;
