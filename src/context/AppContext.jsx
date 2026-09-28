@@ -1376,17 +1376,20 @@ export function AppProvider({ children }) {
     const deletedSet = new Set(deletedBuiltInIds);
     const customIds = new Set(customProductsList.map(p => p.id));
     const activeBuiltIn = initialProductsData
-      .filter(p => !deletedSet.has(p.id) && !deletedSet.has(p.category) && !deletedSet.has(p.parentId))
+      .filter(p => !deletedSet.has(p.id))
       .filter(p => !customIds.has(p.id))
       .map(p => ({ ...p, companyId: p.companyId || 'comp_1' }));
 
     const rawList = [...activeBuiltIn, ...customProductsList];
 
-    // Exclude any product whose specific ID, category code, or parentId is present in deletedBuiltInIds
-    const nonDeleted = rawList.filter(p => !deletedSet.has(p.id) && !deletedSet.has(p.category) && !deletedSet.has(p.parentId));
+    // Exclude any product whose specific ID is in deletedBuiltInIds
+    const nonDeleted = rawList.filter(p => p && !deletedSet.has(p.id));
 
-    // Filter products strictly belonging to the active company
-    const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
+    // Filter products belonging to the active company (fallback to nonDeleted if empty)
+    let companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
+    if (companyProducts.length === 0 && nonDeleted.length > 0) {
+      companyProducts = nonDeleted;
+    }
 
     // Apply persistent photo overrides (custom saved photos take absolute priority)
     const withPhotos = companyProducts.map(prod => {
@@ -1418,24 +1421,30 @@ export function AppProvider({ children }) {
     return sanitizeCustomProductsList(withPhotos);
   };
 
-  // marketTickerList strictly contains ONLY active products from getAllProducts() for the active company
+  // marketTickerList strictly contains ONLY active sub-products
   const marketTickerList = useMemo(() => {
     const allProds = getAllProducts();
-    if (!allProds || allProds.length === 0) return [];
+    const subProds = (allProds || []).filter(p => p && p.isSub !== false);
+
+    // Fallback to initial sub-products if subProds is empty for any reason
+    const prodsToUse = subProds.length > 0
+      ? subProds
+      : initialProductsData.filter(p => p && p.isSub !== false);
 
     const overridesMap = new Map();
     (savedMarketTickerList || []).forEach(item => {
+      if (!item) return;
       if (item.productId) overridesMap.set(String(item.productId), item);
       if (item.id) overridesMap.set(String(item.id), item);
       if (item.symbol) overridesMap.set(String(item.symbol), item);
     });
 
-    return allProds.map(p => {
+    return prodsToUse.map(p => {
       const pIdStr = String(p.id);
       const pName = p.names?.[currentLang] || p.names?.gu || p.names?.en || p.name || p.code || 'Sub-Product';
       const savedItem = overridesMap.get(pIdStr) || overridesMap.get(`t_prod_${pIdStr}`) || overridesMap.get(pName);
 
-      const hsn = p.hsCode || p.hsn || '';
+      const hsn = p.hsCode || p.hsn || p.localHsn || '';
 
       const b2bCurr = p.exportCurrency || p.currency || 'USD';
       const b2bSymbol = b2bCurr === 'INR' ? '₹' : (b2bCurr === 'USD' ? '$' : `${b2bCurr} `);
@@ -1444,7 +1453,7 @@ export function AppProvider({ children }) {
       const b2bUnit = p.unit || p.moqUnitType || 'Pcs';
       const b2bRateFormatted = b2bVal ? `${b2bSymbol}${b2bVal}/${b2bUnit} (${b2bIncoterm})` : (p.priceUSDText || '');
 
-      const b2cVal = p.price !== undefined && p.price !== null && p.price !== '' ? p.price : (p.mrp || '');
+      const b2cVal = p.price !== undefined && p.price !== null && p.price !== '' ? p.price : (p.mrp || p.localPrice || '');
       const b2cRateFormatted = b2cVal ? `₹${b2cVal}/${b2bUnit}` : (p.mrp ? `₹${p.mrp}/${b2bUnit}` : '');
 
       return {
