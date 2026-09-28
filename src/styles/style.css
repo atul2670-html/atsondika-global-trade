@@ -91,14 +91,54 @@ body.light-theme .modal-close {
 }
 
 body.light-theme .btn-secondary {
-  background: rgba(15, 23, 42, 0.06) !important;
-  color: #0f172a !important;
-  border-color: rgba(15, 23, 42, 0.25) !important;
+  background: rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.25);
 }
 
 body.light-theme .btn-secondary:hover {
-  background: rgba(20, 184, 166, 0.15) !important;
-  color: #0d9488 !important;
+  background: rgba(20, 184, 166, 0.15);
+  color: #0d9488;
+}
+
+/* RFQ & Local Shopping Cart Drawer High Contrast Light Theme Support */
+body.light-theme .rfq-drawer-content {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-left: 1px solid rgba(15, 23, 42, 0.15) !important;
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light-theme .rfq-drawer-header {
+  background: #f1f5f9 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-theme .rfq-drawer-header h3 {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-drawer-header span {
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-item-card {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+}
+
+/* Navigation Pill Buttons High Contrast in Light Theme */
+body.light-theme .nav-cust-btn {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+body.light-theme .nav-inquiries-btn {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
 }
 
 body.light-theme .product-meta {
