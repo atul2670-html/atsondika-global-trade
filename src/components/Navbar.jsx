@@ -388,16 +388,7 @@ export default function Navbar() {
             {currentCustomer ? (
               <button
                 type="button"
-                className="btn-secondary nav-cust-btn"
-                style={{
-                  background: 'rgba(56, 189, 248, 0.18)',
-                  color: '#38bdf8',
-                  borderColor: 'rgba(56, 189, 248, 0.4)',
-                  padding: '5px 10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
+                className="nav-action-capsule btn-cust"
                 onClick={() => setActiveModal('customer_portal')}
                 title={`Logged in as ${currentCustomer.name} (${currentCustomer.phone || currentCustomer.email})`}
               >
@@ -406,16 +397,7 @@ export default function Navbar() {
             ) : (
               <button
                 type="button"
-                className="btn-secondary nav-cust-btn"
-                style={{
-                  background: 'rgba(56, 189, 248, 0.18)',
-                  color: '#38bdf8',
-                  borderColor: 'rgba(56, 189, 248, 0.35)',
-                  padding: '5px 10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
+                className="nav-action-capsule btn-cust"
                 onClick={() => setActiveModal('customer_auth')}
                 title="Customer Login / Register"
               >
@@ -427,16 +409,7 @@ export default function Navbar() {
             {currentMerchant && currentMerchant.id && currentMerchant.businessName ? (
               <button
                 type="button"
-                className="btn-secondary nav-cust-btn"
-                style={{
-                  background: 'rgba(234, 179, 8, 0.2)',
-                  color: '#facc15',
-                  borderColor: 'rgba(234, 179, 8, 0.4)',
-                  padding: '5px 10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
+                className="nav-action-capsule btn-seller"
                 onClick={() => setActiveModal('seller_portal')}
                 title={`Seller Account: ${currentMerchant.businessName || 'Exporter'}`}
               >
@@ -445,16 +418,7 @@ export default function Navbar() {
             ) : (
               <button
                 type="button"
-                className="btn-secondary nav-cust-btn"
-                style={{
-                  background: 'rgba(234, 179, 8, 0.18)',
-                  color: '#facc15',
-                  borderColor: 'rgba(234, 179, 8, 0.35)',
-                  padding: '5px 10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  whiteSpace: 'nowrap'
-                }}
+                className="nav-action-capsule btn-seller"
                 onClick={() => setActiveModal('seller_portal')}
                 title="Register as Seller / Exporter to sell your products on our platform"
               >
@@ -517,16 +481,7 @@ export default function Navbar() {
             {/* 1. Quick Access to Customer Inquiries / Leads */}
             <button
               type="button"
-              className="btn-secondary nav-inquiries-btn"
-              style={{
-                background: 'rgba(56, 189, 248, 0.15)',
-                color: '#38bdf8',
-                borderColor: 'rgba(56, 189, 248, 0.35)',
-                fontSize: '0.78rem',
-                padding: '5px 10px',
-                fontWeight: 800,
-                whiteSpace: 'nowrap'
-              }}
+              className="nav-action-capsule btn-inq"
               onClick={() => setActiveModal('admin_leads')}
               title="View All Customer Inquiries & Sales Leads"
             >
@@ -536,16 +491,7 @@ export default function Navbar() {
             {/* 3. Official Payment Receipts & Tax Invoice History Button */}
             <button
               type="button"
-              className="btn-secondary"
-              style={{
-                background: 'rgba(250, 204, 21, 0.15)',
-                color: '#facc15',
-                borderColor: 'rgba(250, 204, 21, 0.35)',
-                fontSize: '0.78rem',
-                padding: '5px 10px',
-                fontWeight: 800,
-                whiteSpace: 'nowrap'
-              }}
+              className="nav-action-capsule btn-receipts"
               onClick={() => setActiveModal('payment_receipts')}
               title="View Completed Order Payment Receipts & Tax Invoices"
             >
@@ -555,7 +501,7 @@ export default function Navbar() {
             {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
             <button
               type="button"
-              className="nav-tracker-btn"
+              className="nav-action-capsule btn-track"
               onClick={() => setIsOrderTrackerOpen(true)}
               title="Track Container Shipment Live"
             >

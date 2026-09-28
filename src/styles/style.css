@@ -2369,6 +2369,118 @@ body.light-theme .comp-active-pill {
   color: #047857 !important;
 }
 
+/* --- NAV UTILITY CAPSULE BUTTONS (ROW 3 - Customer Login Line) --- */
+.nav-action-capsule {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+body.light-theme .nav-action-capsule {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.nav-action-capsule:hover {
+  background: rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+body.light-theme .nav-action-capsule:hover {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #0284c7 !important;
+}
+
+/* Specific Accent Variants for Nav Action Capsules */
+.nav-action-capsule.btn-cust {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+body.light-theme .nav-action-capsule.btn-cust {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: #7dd3fc !important;
+}
+
+.nav-action-capsule.btn-seller {
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.4);
+}
+body.light-theme .nav-action-capsule.btn-seller {
+  background: #ffffff !important;
+  color: #b45309 !important;
+  border-color: #fde047 !important;
+}
+
+.nav-action-capsule.btn-inq {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+body.light-theme .nav-action-capsule.btn-inq {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: #7dd3fc !important;
+}
+
+.nav-action-capsule.btn-receipts {
+  background: rgba(250, 204, 21, 0.18);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.4);
+}
+body.light-theme .nav-action-capsule.btn-receipts {
+  background: #ffffff !important;
+  color: #b45309 !important;
+  border-color: #fde047 !important;
+}
+
+.nav-action-capsule.btn-track {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+body.light-theme .nav-action-capsule.btn-track {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: #7dd3fc !important;
+}
+
+/* RFQ & Local Shopping Cart Drawer Footer Light Theme High Contrast */
+body.light-theme .rfq-drawer-footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .forex-buffer-badge {
+  background: #fffbeb !important;
+  border-color: #fde047 !important;
+  color: #b45309 !important;
+}
+
+body.light-theme .rfq-whatsapp-submit-btn {
+  background: #f0f9ff !important;
+  border: 1px solid #0284c7 !important;
+  color: #0284c7 !important;
+  font-weight: 900 !important;
+}
+
 .multi-company-edit-btn {
   background: rgba(245, 158, 11, 0.25);
   color: #facc15;

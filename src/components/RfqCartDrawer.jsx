@@ -1028,8 +1028,8 @@ export default function RfqCartDrawer() {
                   </>
                 ) : (
                   <>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'block' }}>Estimated Container Load</span>
-                    <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-glow)' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.9, display: 'block' }}>Estimated Container Load</span>
+                    <span style={{ fontSize: '1rem', fontWeight: 900, color: '#38bdf8' }}>
                       ~{Math.min(100, Math.round((totalQuantity / 24) * 100))}% of 20ft Container
                     </span>
                   </>
@@ -1039,13 +1039,13 @@ export default function RfqCartDrawer() {
 
             {/* 🛡️ Forex Risk Buffer Impact Badge */}
             {getActiveCurrencyCode() !== 'INR' && (
-              <div style={{
-                background: 'rgba(234, 179, 8, 0.12)',
-                border: '1px solid rgba(234, 179, 8, 0.3)',
+              <div className="forex-buffer-badge" style={{
+                background: 'rgba(234, 179, 8, 0.18)',
+                border: '1px solid rgba(234, 179, 8, 0.4)',
                 padding: '6px 12px',
                 borderRadius: '10px',
                 fontSize: '0.78rem',
-                fontWeight: 700,
+                fontWeight: 800,
                 color: '#fde047',
                 display: 'flex',
                 alignItems: 'center',
@@ -1065,6 +1065,7 @@ export default function RfqCartDrawer() {
                 style={{
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
+                  color: '#ffffff',
                   fontWeight: 900,
                   fontSize: '0.92rem'
                 }}
@@ -1077,16 +1078,17 @@ export default function RfqCartDrawer() {
               {/* SECONDARY WHATSAPP BUTTON */}
               <button
                 type="button"
+                className="rfq-whatsapp-submit-btn"
                 onClick={handleSendRfqWhatsApp}
                 style={{
                   width: '100%',
                   padding: '10px',
                   borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#e2e8f0',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
+                  background: 'rgba(56, 189, 248, 0.16)',
+                  border: '1px solid rgba(56, 189, 248, 0.4)',
+                  color: '#38bdf8',
+                  fontSize: '0.84rem',
+                  fontWeight: 800,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
