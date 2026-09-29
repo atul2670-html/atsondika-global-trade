@@ -10,7 +10,7 @@ export default function ProductsGrid() {
     getAllProducts, customProductsList, deleteProduct,
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
-    productViewMode, setProductViewMode, addToRfqCart, convertPrice, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
+    productViewMode, setProductViewMode, addToRfqCart, convertPrice, liveRates, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
     currentMerchant, syncVersion, deletedBuiltInIds, setDeletedBuiltInIds, showLiveToast
   } = useApp();
 
@@ -63,14 +63,16 @@ export default function ProductsGrid() {
     const usdVal = p.priceUSD ? parseFloat(p.priceUSD) : 0;
     const inrVal = p.localPrice ? parseFloat(p.localPrice) : (p.priceInr ? parseFloat(p.priceInr) : 0);
 
+    const usdToInrRate = liveRates?.INR || 86.45;
+
     if (tradeMode === 'local') {
-      if (inrVal > 0) return '₹' + Math.round(inrVal).toLocaleString('en-IN');
-      if (usdVal > 0) return '₹' + Math.round(usdVal * 86.45).toLocaleString('en-IN');
-      return currentLang === 'gu' ? 'On Request' : 'On Request';
+      if (inrVal > 0) return convertPrice ? convertPrice(inrVal, 'INR') : ('₹' + Math.round(inrVal).toLocaleString('en-IN'));
+      if (usdVal > 0) return convertPrice ? convertPrice(usdVal * usdToInrRate, 'INR') : ('₹' + Math.round(usdVal * usdToInrRate).toLocaleString('en-IN'));
+      return 'On Request';
     } else {
-      if (usdVal > 0) return convertPrice ? convertPrice(usdVal) : ('$' + usdVal);
-      if (inrVal > 0) return convertPrice ? convertPrice(inrVal / 86.45) : ('$' + Math.round(inrVal / 86.45));
-      return currentLang === 'gu' ? 'On Request' : 'On Request';
+      if (usdVal > 0) return convertPrice ? convertPrice(usdVal, 'USD') : ('$' + usdVal);
+      if (inrVal > 0) return convertPrice ? convertPrice(inrVal / usdToInrRate, 'USD') : ('$' + Math.round(inrVal / usdToInrRate));
+      return 'On Request';
     }
   };
 

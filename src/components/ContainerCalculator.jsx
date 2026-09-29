@@ -8,7 +8,8 @@ export default function ContainerCalculator() {
   const {
     freightRoutesList, deleteFreightRoute,
     isAdminLoggedIn, verifyAdminAccess, setActiveModal, setEditingRouteId,
-    currentLang, forexRiskBuffer, saveForexRiskBuffer
+    currentLang, forexRiskBuffer, saveForexRiskBuffer,
+    liveRates, updateLiveFxRates
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('container'); // 'container' | 'currency' | 'routes'
@@ -40,11 +41,17 @@ export default function ContainerCalculator() {
     }
   }, [forexRiskBuffer]);
 
-  const [rates, setRates] = useState(fallbackRates);
+  const [rates, setRates] = useState(() => ({ ...fallbackRates, ...(liveRates || {}) }));
   const [currencyDict, setCurrencyDict] = useState(worldCurrencies);
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [transportMode, setTransportMode] = useState('all'); // 'all' | 'sea' | 'air'
   const [lastUpdated, setLastUpdated] = useState('Live Forex');
+
+  useEffect(() => {
+    if (liveRates && typeof liveRates === 'object') {
+      setRates(prev => ({ ...prev, ...liveRates }));
+    }
+  }, [liveRates]);
 
   // Fetch live exchange rates on mount for ALL world currencies with dual failover
   useEffect(() => {
@@ -54,6 +61,7 @@ export default function ContainerCalculator() {
     const applyLiveRates = (data, sourceName) => {
       if (data && data.rates) {
         setRates(prev => ({ ...prev, ...data.rates }));
+        if (updateLiveFxRates) updateLiveFxRates(data.rates);
         const timeStr = data.time_last_update_utc
           ? new Date(data.time_last_update_utc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
           : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });

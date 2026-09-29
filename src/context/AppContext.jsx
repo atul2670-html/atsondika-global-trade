@@ -59,24 +59,57 @@ export function AppProvider({ children }) {
     });
   }, []);
 
-  useEffect(() => {
-    const updateLiveFxRates = async () => {
-      const liveRates = await fetchLiveExchangeRates();
-      if (liveRates) {
-        setCurrenciesList(prev => {
-          const updated = prev.map(curr => {
-            if (liveRates[curr.code]) {
-              return { ...curr, rate: liveRates[curr.code] };
-            }
-            return curr;
-          });
-          try { localStorage.setItem('site_all_currencies_v1', JSON.stringify(updated)); } catch(e) {}
-          return updated;
+  // Dynamic 50+ Global Currencies with Live FX Auto-Fetcher & Live Rates Sync Map
+  const [liveRates, setLiveRates] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('site_live_fx_map_v1') || 'null');
+      if (stored && typeof stored === 'object' && Object.keys(stored).length > 0) return stored;
+    } catch(e) {}
+    const defMap = {};
+    DEFAULT_CURRENCIES.forEach(c => { defMap[c.code] = c.rate; });
+    return defMap;
+  });
+
+  const updateLiveFxRates = async (incomingRates = null) => {
+    let ratesObj = incomingRates;
+    if (!ratesObj) {
+      ratesObj = await fetchLiveExchangeRates();
+    }
+    if (ratesObj && typeof ratesObj === 'object' && Object.keys(ratesObj).length > 0) {
+      setLiveRates(prev => {
+        const merged = { ...prev, ...ratesObj };
+        try { localStorage.setItem('site_live_fx_map_v1', JSON.stringify(merged)); } catch(e) {}
+        return merged;
+      });
+
+      setCurrenciesList(prev => {
+        const updated = prev.map(curr => {
+          if (ratesObj[curr.code] !== undefined) {
+            return { ...curr, rate: ratesObj[curr.code] };
+          }
+          return curr;
         });
-      }
-    };
+        try { localStorage.setItem('site_all_currencies_v1', JSON.stringify(updated)); } catch(e) {}
+        return updated;
+      });
+
+      setCurrentCurrency(prev => {
+        if (prev && prev.code && ratesObj[prev.code] !== undefined) {
+          const nextRate = ratesObj[prev.code];
+          if (prev.rate !== nextRate) {
+            const nextCurr = { ...prev, rate: nextRate };
+            try { localStorage.setItem('site_active_currency_v1', JSON.stringify(nextCurr)); } catch(e) {}
+            return nextCurr;
+          }
+        }
+        return prev;
+      });
+    }
+  };
+
+  useEffect(() => {
     updateLiveFxRates();
-    const interval = setInterval(updateLiveFxRates, 60000);
+    const interval = setInterval(() => updateLiveFxRates(), 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -362,19 +395,39 @@ export function AppProvider({ children }) {
     setRfqCartItems([]);
   };
 
-  // Convert USD / INR price to currently selected currency
-  const convertPrice = (usdPriceVal, inputCurrency = 'USD') => {
-    if (usdPriceVal === null || usdPriceVal === undefined || usdPriceVal === '') return '';
-    const num = typeof usdPriceVal === 'number' ? usdPriceVal : parseFloat(String(usdPriceVal).replace(/[^0-9.]/g, ''));
-    if (isNaN(num)) return String(usdPriceVal);
+  // Live Currency Converter Engine (Converts from ANY source currency to target currency using live FX rates)
+  const convertCurrency = (amountVal, fromCode = 'USD', toCode = 'USD') => {
+    const num = parseFloat(amountVal);
+    if (isNaN(num) || num <= 0) return 0;
+    const from = (fromCode || 'USD').toUpperCase();
+    const to = (toCode || 'USD').toUpperCase();
+    if (from === to) return num;
 
-    if (inputCurrency === 'INR') {
-      return `₹${Math.round(num).toLocaleString('en-IN')}`;
+    const rateFrom = liveRates?.[from] || (from === 'INR' ? 86.45 : (from === 'EUR' ? 0.92 : 1));
+    const rateTo = liveRates?.[to] || (to === 'INR' ? 86.45 : (to === 'EUR' ? 0.92 : 1));
+
+    const inUsd = from === 'USD' ? num : (num / rateFrom);
+    const inTarget = to === 'USD' ? inUsd : (inUsd * rateTo);
+    return inTarget;
+  };
+
+  // Convert USD / INR price to currently selected active currency with live FX rates
+  const convertPrice = (priceVal, inputCurrency = 'USD') => {
+    if (priceVal === null || priceVal === undefined || priceVal === '') return 'On Request';
+    const num = typeof priceVal === 'number' ? priceVal : parseFloat(String(priceVal).replace(/[^0-9.]/g, ''));
+    if (isNaN(num) || num <= 0) return 'On Request';
+
+    const fromCode = (inputCurrency || 'USD').toUpperCase();
+    const targetCode = currentCurrency?.code || 'USD';
+    const targetSym = currentCurrency?.symbol || '$';
+
+    const convertedVal = convertCurrency(num, fromCode, targetCode);
+
+    if (targetCode === 'INR') {
+      return `${targetSym}${Math.round(convertedVal).toLocaleString('en-IN')}`;
     }
-
-    if (currentCurrency.code === 'USD') return `$${Math.round(num).toLocaleString('en-US')}`;
-    const converted = Math.round(num * (currentCurrency.rate || 1)).toLocaleString('en-US');
-    return `${currentCurrency.symbol || '₹'}${converted}`;
+    const formatted = convertedVal < 10 ? convertedVal.toFixed(2) : Math.round(convertedVal).toLocaleString('en-US');
+    return `${targetSym}${formatted}`;
   };
 
   // Subscribe to RealTimeSyncEngine events across tabs
@@ -2229,7 +2282,7 @@ export function AppProvider({ children }) {
       searchFilterQuery, setSearchFilterQuery,
       tradeMode, setTradeMode: changeTradeMode,
       productViewMode, setProductViewMode,
-      currentCurrency, setCurrentCurrency, convertPrice, currenciesList,
+      currentCurrency, setCurrentCurrency, convertPrice, convertCurrency, liveRates, updateLiveFxRates, currenciesList,
       liveToast, showLiveToast, lastUpdatedProductId,
       rfqCartItems, addToRfqCart, removeFromRfqCart, updateRfqCartQuantity, updateRfqCartUnit, clearRfqCart,
       isRfqDrawerOpen, setIsRfqDrawerOpen,

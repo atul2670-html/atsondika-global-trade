@@ -24,6 +24,8 @@ export default function RfqCartDrawer() {
     updateRfqCartUnit,
     clearRfqCart,
     convertPrice,
+    convertCurrency,
+    liveRates,
     currentCurrency,
     setCurrentCurrency,
     currenciesList,
@@ -134,20 +136,19 @@ export default function RfqCartDrawer() {
     return currSymbolMap[code] || getCurrencySymbol(code);
   };
 
+  const getUsdToInrRate = () => liveRates?.INR || ((currenciesList || []).find(c => c.code === 'INR')?.rate || 86.45);
+
   const getItemInrVal = (item, val) => {
     const num = parseFloat(val) || 0;
     if (num <= 0) return 0;
     const itemCurr = item.currency || 'INR';
     if (itemCurr === 'INR') return num;
 
-    const inrToUsdRate = 86.45;
+    const inrToUsdRate = getUsdToInrRate();
     if (itemCurr === 'USD') return num * inrToUsdRate;
 
-    const itemFx = (currenciesList || []).find(c => c.code === itemCurr);
-    if (itemFx && itemFx.rate) {
-      return (num / itemFx.rate) * inrToUsdRate;
-    }
-    return num;
+    const rateFrom = liveRates?.[itemCurr] || ((currenciesList || []).find(c => c.code === itemCurr)?.rate || 1);
+    return (num / rateFrom) * inrToUsdRate;
   };
 
   const getItemUsdPrice = (item) => {
@@ -158,7 +159,7 @@ export default function RfqCartDrawer() {
       ? parseFloat(item.localPrice) 
       : (item.priceInr ? parseFloat(item.priceInr) : 0);
     if (inrVal > 0) {
-      return inrVal / 86.45;
+      return inrVal / getUsdToInrRate();
     }
     return 0;
   };
@@ -180,7 +181,7 @@ export default function RfqCartDrawer() {
       return `${activeSym}${Math.round(num).toLocaleString('en-IN')}`;
     }
 
-    const inrToUsdRate = 86.45;
+    const inrToUsdRate = getUsdToInrRate();
     let usdVal = num / inrToUsdRate;
 
     if (activeCode === 'USD') {
@@ -188,11 +189,8 @@ export default function RfqCartDrawer() {
       return `$${formatted}`;
     }
 
-    const targetFx = (currenciesList || []).find(c => c.code === activeCode);
-    let targetVal = usdVal;
-    if (targetFx && targetFx.rate) {
-      targetVal = usdVal * targetFx.rate;
-    }
+    const rateTarget = liveRates?.[activeCode] || ((currenciesList || []).find(c => c.code === activeCode)?.rate || 1);
+    let targetVal = usdVal * rateTarget;
     const formatted = targetVal < 10 ? targetVal.toFixed(2) : Math.round(targetVal).toLocaleString('en-US');
     return `${activeSym}${formatted}`;
   };
