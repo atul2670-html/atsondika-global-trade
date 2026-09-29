@@ -1019,7 +1019,7 @@ export default function RfqCartDrawer() {
                       <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, display: 'block', marginTop: '2px' }}>
                         IN Live INR Equivalent: ₹{Math.round(totalLocalAmountInr).toLocaleString('en-IN')} INR
                         <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, display: 'block' }}>
-                          (Live FX Rate: 1 USD = ₹94.55 INR)
+                          (Live Spot: 1 USD = ₹{(getUsdToInrRate()).toFixed(4)} INR | Hedged: 1 USD = ₹{(getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100)).toFixed(4)} INR)
                         </span>
                       </span>
                     )}
