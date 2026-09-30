@@ -1837,8 +1837,9 @@ export function AppProvider({ children }) {
   };
 
   // Dynamic Master Main Product Categories List for Forms & RFQ Dropdowns
-  const getMainCategoryList = () => {
-    const builtInCategories = [
+  // Dynamic Master Main Product Categories List strictly scoped per company
+  const getMainCategoryList = (targetCompId = activeCompanyId, returnAllIfAdmin = false) => {
+    const masterBuiltInCategories = [
       { id: 'agro', nameEn: 'Agro Commodities (Spices, Rice, Oilseeds)', nameGu: 'એગ્રો કોમોડિટીઝ (મસાલા, ચોખા, તેલીબિયાં)' },
       { id: 'dairy', nameEn: 'Dairy Products (Pure Ghee, SMP)', nameGu: 'ડેરી પ્રોડક્ટ્સ (શુદ્ધ ઘી, સ્કિમ્ડ મિલ્ક પાઉડર - SMP)' },
       { id: 'textiles', nameEn: 'Textile Products (Surat Fabrics & Sarees)', nameGu: 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (સુરત ફેબ્રિક્સ, સાડીઓ)' },
@@ -1849,20 +1850,68 @@ export function AppProvider({ children }) {
       { id: 'packaging', nameEn: 'Eco Packaging & Jute Bags', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ (બાયોડિગ્રેડેબલ)' }
     ];
 
-    const seenIds = new Set(builtInCategories.map(c => c.id));
-    const seenNames = new Set(builtInCategories.map(c => c.nameEn.toLowerCase()));
+    if (returnAllIfAdmin) {
+      const seenIds = new Set(masterBuiltInCategories.map(c => c.id));
+      const seenNames = new Set(masterBuiltInCategories.map(c => c.nameEn.toLowerCase()));
+      (customProductsList || []).forEach(cm => {
+        const catSlug = (cm.category || cm.id || '').trim();
+        const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
+        const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
+        const normName = titleEn.toLowerCase();
+        if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
+          seenIds.add(catSlug);
+          seenNames.add(normName);
+          masterBuiltInCategories.push({
+            id: catSlug,
+            category: catSlug,
+            nameEn: titleEn,
+            nameGu: titleGu,
+            isCustom: true
+          });
+        }
+      });
+      return masterBuiltInCategories;
+    }
 
-    // Dynamically append custom categories created by Admin now and in the future
-    (customProductsList || []).forEach(cm => {
+    // Get all products strictly belonging to targetCompId
+    const deletedSet = new Set(deletedBuiltInIds || []);
+    const customIds = new Set((customProductsList || []).map(p => p.id));
+    const companyBuiltIn = initialProductsData
+      .filter(p => !deletedSet.has(p.id))
+      .filter(p => !customIds.has(p.id))
+      .filter(p => (p.companyId || 'comp_1') === targetCompId);
+
+    const companyCustom = (customProductsList || [])
+      .filter(p => p && !deletedSet.has(p.id))
+      .filter(p => (p.companyId || 'comp_1') === targetCompId);
+
+    const companyProducts = [...companyBuiltIn, ...companyCustom];
+
+    // Collect all active category IDs / slugs present in this company's products
+    const companyCatSet = new Set();
+    companyProducts.forEach(p => {
+      if (p.category) companyCatSet.add(p.category.toLowerCase().trim());
+      if (p.id) companyCatSet.add(p.id.toLowerCase().trim());
+      if (p.localCategory) companyCatSet.add(p.localCategory.toLowerCase().trim());
+    });
+
+    // Filter built-in categories so ONLY those present in targetCompId's products are returned
+    const resultCategories = masterBuiltInCategories.filter(c => companyCatSet.has(c.id));
+
+    // Append custom main categories specifically created for targetCompId
+    const seenResultIds = new Set(resultCategories.map(c => c.id));
+    const seenResultNames = new Set(resultCategories.map(c => c.nameEn.toLowerCase()));
+
+    companyCustom.forEach(cm => {
       const catSlug = (cm.category || cm.id || '').trim();
       const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
       const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
       const normName = titleEn.toLowerCase();
 
-      if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
-        seenIds.add(catSlug);
-        seenNames.add(normName);
-        builtInCategories.push({
+      if (catSlug && !seenResultIds.has(catSlug) && !seenResultNames.has(normName)) {
+        seenResultIds.add(catSlug);
+        seenResultNames.add(normName);
+        resultCategories.push({
           id: catSlug,
           category: catSlug,
           nameEn: titleEn,
@@ -1872,7 +1921,7 @@ export function AppProvider({ children }) {
       }
     });
 
-    return builtInCategories;
+    return resultCategories;
   };
 
   const t = translations[currentLang] || translations.en;

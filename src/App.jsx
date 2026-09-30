@@ -111,26 +111,36 @@ export default function App() {
           <div className="footer-col">
             <h4>{t.footer_main_prods}</h4>
             <ul className="footer-links">
-              {(getMainCategoryList ? getMainCategoryList() : []).map(cat => {
-                const labelText = currentLang === 'gu' ? cat.nameGu : cat.nameEn;
-                const catSlug = cat.category || cat.id;
-                return (
-                  <li key={cat.id}>
-                    <a
-                      href="#products"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentCategory(catSlug);
-                        const el = document.querySelector('#products');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {labelText}
-                    </a>
-                  </li>
-                );
-              })}
+              {(() => {
+                const catList = getMainCategoryList ? getMainCategoryList() : [];
+                if (!catList || catList.length === 0) {
+                  return (
+                    <li style={{ fontSize: '0.82rem', color: 'var(--text-sub)', fontStyle: 'italic' }}>
+                      {currentLang === 'gu' ? 'કોઈ કેટેગરી ઉપલબ્ધ નથી' : 'No Categories Available'}
+                    </li>
+                  );
+                }
+                return catList.map(cat => {
+                  const labelText = currentLang === 'gu' ? cat.nameGu : cat.nameEn;
+                  const catSlug = cat.category || cat.id;
+                  return (
+                    <li key={cat.id}>
+                      <a
+                        href="#products"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentCategory(catSlug);
+                          const el = document.querySelector('#products');
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {labelText}
+                      </a>
+                    </li>
+                  );
+                });
+              })()}
             </ul>
           </div>
 
