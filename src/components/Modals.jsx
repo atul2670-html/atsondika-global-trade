@@ -557,11 +557,12 @@ export default function Modals() {
   const openQuoteForInquiry = (cust) => {
     if (!cust) return;
     setActiveQuoteCustomer(cust);
+    if (setQuotationProduct) setQuotationProduct(null);
 
     const bName = cust.name || 'Importer / Buyer';
     const bComp = (cust.companyName && cust.companyName !== 'N/A') ? cust.companyName : (cust.name || 'Importer Corp');
     const location = [cust.city, cust.country].filter(Boolean).join(', ');
-    const bCountry = location || 'Dubai, UAE';
+    const bCountry = cust.destinationPort || location || 'Dubai, UAE';
 
     setBuyerName(bName);
     setBuyerCompany(bComp);
@@ -570,6 +571,35 @@ export default function Modals() {
     setBuyerCountry(bCountry);
 
     const notes = cust.notes || '';
+
+    // Parse Destination Port & Incoterm from customer object or notes
+    let destPort = cust.destinationPort || '';
+    let incoTerm = cust.incoterm || '';
+
+    if (!destPort && notes) {
+      const portMatch = notes.match(/Destination Port:\s*([^\n\r\|]+)/i);
+      if (portMatch) destPort = portMatch[1].trim();
+    }
+    if (!incoTerm && notes) {
+      const incoMatch = notes.match(/Incoterm:\s*([^\n\r\|]+)/i);
+      if (incoMatch) incoTerm = incoMatch[1].trim();
+    }
+
+    if (destPort) {
+      if (destPort.toLowerCase().startsWith('port') || destPort.toLowerCase().includes('port')) {
+        setQuotePortDischarge(destPort);
+      } else {
+        setQuotePortDischarge(`Port of ${destPort}`);
+      }
+    } else if (location) {
+      setQuotePortDischarge(`Port of ${location}`);
+    }
+
+    if (incoTerm) {
+      setQuoteIncoterm(incoTerm);
+    }
+
+    // Parse Quantity and Unit
     const qtyMatch = notes.match(/(\d+)\s*(MT|Metric Tons|Tons|KG|Bags|Cartons|Containers|PCS|Units|Bales|CFT|CBM)/i);
     let parsedQty = '1';
     let parsedUnit = 'Unit / Container';
@@ -587,79 +617,36 @@ export default function Modals() {
     setQuoteQty(parsedQty);
     setQuoteUnit(parsedUnit);
 
-    const allProds = getAllProducts ? getAllProducts() : [];
-    let matchedProd = null;
-
-    if (notes) {
-      const lowerNotes = notes.toLowerCase();
-      matchedProd = allProds.find(p => {
-        const enName = (p.names?.en || '').toLowerCase();
-        const guName = (p.names?.gu || '').toLowerCase();
-        return (enName && lowerNotes.includes(enName)) || (guName && lowerNotes.includes(guName));
-      });
-
-      if (!matchedProd) {
-        matchedProd = allProds.find(p => {
-          const enName = (p.names?.en || '').toLowerCase();
-          return enName.split(' ').some(w => w.length > 3 && lowerNotes.includes(w));
-        });
-      }
-    }
-
-    let prodName = cust.productName || '';
-    let hs = cust.hsCode || '';
-    let unitPrice = '15';
-
-    if (matchedProd) {
-      setQuotationProduct(matchedProd);
-      const info = getCatalogProductInvoiceInfo(matchedProd);
-      if (!prodName) prodName = info.name;
-      if (!hs) hs = info.hsn;
-      unitPrice = info.price;
-      if (info.qty) parsedQty = info.qty;
-      if (info.unit) parsedUnit = info.unit;
-      if (info.incoterm) setQuoteIncoterm(info.incoterm);
-      if (info.currency) setQuoteCurrency(info.currency);
-    } else {
-      let cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for item:|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
-      if (cleanName.includes('MOQ:')) cleanName = cleanName.split('MOQ:')[0].trim();
-      if (!prodName) prodName = cleanName || 'Punjabi Dress';
-      if (!hs) {
-        const hsMatch = notes.match(/HS\s*Code:\s*(\d+)/i) || notes.match(/HS:\s*(\d+)/i);
-        hs = hsMatch ? hsMatch[1] : '620443';
-      }
-    }
-
     // Auto-fill invoice line items table from RFQ!
     let lineItems = [];
+    const allCatalogProds = getAllProducts ? getAllProducts() : [];
 
     // Case 1: Explicit selectedProducts array
     if (cust.selectedProducts && Array.isArray(cust.selectedProducts) && cust.selectedProducts.length > 0) {
       lineItems = cust.selectedProducts.map((p, pIdx) => {
         const info = getCatalogProductInvoiceInfo(p);
-        if (pIdx === 0 && info.incoterm) setQuoteIncoterm(info.incoterm);
+        if (pIdx === 0 && info.incoterm && !incoTerm) setQuoteIncoterm(info.incoterm);
         if (pIdx === 0 && info.currency) setQuoteCurrency(info.currency);
         return {
           id: `item_${Date.now()}_${pIdx}`,
           name: info.name,
           hsn: info.hsn,
-          qty: info.qty,
-          unit: info.unit,
-          price: info.price
+          qty: info.qty || parsedQty,
+          unit: info.unit || parsedUnit,
+          price: info.price || '15'
         };
       });
     }
 
-    // Case 2: Multi-line / regex matching in notes
+    // Case 2: Multi-line / numbered list item matches in notes (e.g., "1. Mobile phone Samsung galaxy S24 Altra (HS Code: 851713) | Export Premium Quality")
     if (lineItems.length === 0 && notes) {
-      const allCatalogProds = getAllProducts ? getAllProducts() : [];
       const itemMatches = [...notes.matchAll(/(\d+)\.\s*([^\n\r<]+)/g)];
 
       if (itemMatches.length > 0) {
         lineItems = itemMatches.map((m, idx) => {
           const lineText = m[2].trim();
           const hsMatch = lineText.match(/\(HS\s*Code:\s*([^\)]+)\)/i) || lineText.match(/\(HS:\s*([^\)]+)\)/i);
-          const itemHs = hsMatch ? hsMatch[1].trim() : '9988';
+          const itemHs = hsMatch ? hsMatch[1].trim() : '';
           let itemTitle = lineText.split('|')[0].replace(/\(HS\s*Code:[^\)]+\)/i, '').replace(/\(HS:[^\)]+\)/i, '').trim();
           itemTitle = itemTitle.replace(/^Inquiry for item:|^Inquiry for|^Need|^Export Order for/gi, '').trim();
 
@@ -671,58 +658,50 @@ export default function Modals() {
                    (guName && (lowTitle.includes(guName) || guName.includes(lowTitle)));
           });
 
-          const info = getCatalogProductInvoiceInfo(matchedProd);
-          if (idx === 0 && info.incoterm) setQuoteIncoterm(info.incoterm);
+          const info = matchedProd ? getCatalogProductInvoiceInfo(matchedProd) : null;
+          if (idx === 0 && info && info.incoterm && !incoTerm) setQuoteIncoterm(info.incoterm);
 
           return {
             id: `item_${Date.now()}_${idx}`,
-            name: itemTitle || info.name || `Item #${idx + 1}`,
-            hsn: itemHs !== '9988' ? itemHs : info.hsn,
-            qty: info.qty || '1',
-            unit: info.unit || 'Pcs (નંગ)',
-            price: info.price || '15'
+            name: itemTitle || (info ? info.name : `Item #${idx + 1}`),
+            hsn: itemHs || (info ? info.hsn : '9988'),
+            qty: info ? info.qty : parsedQty,
+            unit: info ? info.unit : 'MOQ: 100 Pcs (નંગ) / 2 Cartons (કાર્ટન)',
+            price: info ? info.price : '15'
           };
         });
       }
     }
 
-    // Case 3: Comma separated productNames
-    if (lineItems.length === 0 && cust.productName && cust.productName.includes(',')) {
-      const pNames = cust.productName.split(',').map(s => s.trim()).filter(Boolean);
-      const hsList = (cust.hsCode || '').split(',').map(s => s.trim()).filter(Boolean);
-
-      lineItems = pNames.map((pn, pIdx) => ({
-        id: `item_${Date.now()}_${pIdx}`,
-        name: pn,
-        hsn: hsList[pIdx] || hsList[0] || '9988',
-        qty: '1',
-        unit: 'Pcs (નંગ)',
-        price: '15'
-      }));
-    }
-
-    // Fallback: 1 single item
+    // Case 3: Single item from cust.productName and cust.hsCode or notes
     if (lineItems.length === 0) {
+      let prodName = cust.productName || '';
+      let hs = cust.hsCode || '';
+
+      if (notes && !prodName) {
+        let cleanName = notes.replace(/🔴 LIVE TEST INQUIRY:|Inquiry Details:|Urgent Quotation Required for|Inquiry for item:|Inquiry for|Need|Export Order for|to Jebel Ali Port|to Dubai Port|\./gi, '').trim();
+        if (cleanName.includes('MOQ:')) cleanName = cleanName.split('MOQ:')[0].trim();
+        prodName = cleanName;
+      }
+
+      if (notes && !hs) {
+        const hsMatch = notes.match(/HS\s*Code:\s*(\d+)/i) || notes.match(/HS:\s*(\d+)/i);
+        if (hsMatch) hs = hsMatch[1];
+      }
+
       lineItems = [
         {
           id: `item_${Date.now()}`,
-          name: prodName,
-          hsn: hs,
+          name: prodName || 'Export Commodity',
+          hsn: hs || '9988',
           qty: parsedQty,
           unit: parsedUnit,
-          price: unitPrice
+          price: '15'
         }
       ];
     }
 
     setInvoiceItems(lineItems);
-
-    if (location.toLowerCase().includes('dubai') || notes.toLowerCase().includes('dubai') || notes.toLowerCase().includes('jebel ali')) {
-      setQuotePortDischarge('Jebel Ali Port, Dubai (AEJEA)');
-    } else if (location) {
-      setQuotePortDischarge(`Port of ${location}`);
-    }
-
     setActiveModal('quotation');
   };
 
@@ -734,43 +713,32 @@ export default function Modals() {
       setBuyerPhoneInput(cust.phone || '');
       setBuyerEmailInput(cust.email || '');
       const location = [cust.city, cust.country].filter(Boolean).join(', ');
-      setBuyerCountry(location || 'Dubai, UAE');
+      setBuyerCountry(cust.destinationPort || location || 'Dubai, UAE');
     }
   }, [activeModal, activeQuoteCustomer]);
 
   useEffect(() => {
-    if (activeModal === 'quotation') {
+    if (activeModal === 'quotation' && quotationProduct && !activeQuoteCustomer) {
       const allProds = getAllProducts ? getAllProducts() : [];
       let targetProd = quotationProduct;
-      if (!targetProd && invoiceItems && invoiceItems.length > 0) {
-        targetProd = allProds.find(p => p.hsCode === invoiceItems[0].hsn || (p.names?.en && invoiceItems[0].name.includes(p.names.en)) || (p.names?.gu && invoiceItems[0].name.includes(p.names.gu)));
-      }
-      if (!targetProd && allProds.length > 0) {
-        targetProd = allProds[0];
-      }
       if (targetProd) {
         const info = getCatalogProductInvoiceInfo(targetProd);
-        if (quotationProduct) {
-          setInvoiceItems([
-            {
-              id: `item_${Date.now()}`,
-              name: info.name,
-              hsn: info.hsn,
-              qty: info.qty,
-              unit: info.unit,
-              price: info.price
-            }
-          ]);
-          if (info.incoterm) {
-            setQuoteIncoterm(info.incoterm);
+        setInvoiceItems([
+          {
+            id: `item_${Date.now()}`,
+            name: info.name,
+            hsn: info.hsn,
+            qty: info.qty,
+            unit: info.unit,
+            price: info.price
           }
-        }
-        if (info.currency) {
-          setQuoteCurrency(info.currency);
+        ]);
+        if (info.incoterm) {
+          setQuoteIncoterm(info.incoterm);
         }
       }
     }
-  }, [activeModal, quotationProduct]);
+  }, [activeModal, quotationProduct, activeQuoteCustomer]);
 
   // Lightbox Image Preview State
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
@@ -6828,6 +6796,7 @@ export default function Modals() {
                   <select
                     className="form-control"
                     style={{ flex: 1, minWidth: '220px', fontSize: '0.82rem', fontWeight: 700, padding: '5px 10px', background: '#0f172a', color: 'white', borderColor: '#0d9488' }}
+                    value={activeQuoteCustomer?.id || ''}
                     onChange={(e) => {
                       const found = customerList.find(c => c.id === e.target.value);
                       if (found) openQuoteForInquiry(found);
