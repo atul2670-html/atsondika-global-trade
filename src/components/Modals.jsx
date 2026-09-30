@@ -141,7 +141,8 @@ export default function Modals() {
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
-    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess
+    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
+    activeIncoterm, setActiveIncoterm
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -7775,10 +7776,12 @@ export default function Modals() {
                 <div
                   key={row.code}
                   onClick={() => {
+                    if (setActiveIncoterm) setActiveIncoterm(row.code);
                     if (setExportIncoterm) setExportIncoterm(row.code);
                     if (setQuoteIncoterm) setQuoteIncoterm(`${row.code} Port/Factory`);
                     setShowIncotermsModal(false);
                     if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
+                    if (showLiveToast) showLiveToast(`📊 Incoterm ${row.code} selected for RFQ & Quotation!`, 'success');
                   }}
                   style={{
                     display: 'grid',
@@ -7909,10 +7912,12 @@ export default function Modals() {
                           borderColor: isSelected ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
                         }}
                         onClick={() => {
+                          if (setActiveIncoterm) setActiveIncoterm(term.code);
                           if (setExportIncoterm) setExportIncoterm(term.code);
                           if (setQuoteIncoterm) setQuoteIncoterm(term.sampleTerm);
                           setShowIncotermsModal(false);
                           if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
+                          if (showLiveToast) showLiveToast(`📊 Incoterm ${term.code} selected for RFQ & Quotation!`, 'success');
                         }}
                       >
                         {isSelected ? '✓ Selected' : `Select ${term.code}`}

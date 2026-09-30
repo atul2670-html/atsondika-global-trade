@@ -2320,9 +2320,28 @@ export function AppProvider({ children }) {
     alert('✅ Site Database restored successfully!');
   };
 
+  const [activeIncoterm, setActiveIncotermState] = useState('FOB (Free On Board - Loading Port)');
+  const changeActiveIncoterm = (raw) => {
+    if (!raw) return;
+    const s = String(raw).toUpperCase();
+    let normalized = 'FOB (Free On Board - Loading Port)';
+    if (s.includes('CIF')) normalized = 'CIF (Cost, Insurance & Freight - Destination Port)';
+    else if (s.includes('CFR') || s.includes('CNF')) normalized = 'CFR (Cost & Freight - Destination Port)';
+    else if (s.includes('DDP')) normalized = 'DDP (Delivered Duty Paid - Buyer Doorstep)';
+    else if (s.includes('EXW')) normalized = 'EXW (Ex Works - Seller Factory/Warehouse)';
+    else if (s.includes('DAP')) normalized = 'DAP (Delivered At Place - Buyer Warehouse)';
+    else if (s.includes('FCA')) normalized = 'FCA (Free Carrier - Inland Depot)';
+    else if (s.includes('FAS')) normalized = 'FAS (Free Alongside Ship)';
+    else if (s.includes('CPT')) normalized = 'CPT (Carriage Paid To)';
+    else if (s.includes('CIP')) normalized = 'CIP (Carriage & Insurance Paid To)';
+    else if (s.includes('FOB')) normalized = 'FOB (Free On Board - Loading Port)';
+    setActiveIncotermState(normalized);
+  };
+
   return (
     <AppContext.Provider value={{
       currentLang, setCurrentLang,
+      activeIncoterm, setActiveIncoterm: changeActiveIncoterm,
       isAdminLoggedIn, setIsAdminLoggedIn,
       adminPassword, saveAdminPassword,
       adminMobile, setAdminMobile,

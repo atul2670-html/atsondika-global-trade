@@ -6,7 +6,7 @@ export default function ContactForm() {
     t, currentLang, selectedRfqProduct, setSelectedRfqProduct,
     selectedRfqProducts, setSelectedRfqProducts, addRfqProduct, removeRfqProduct, clearRfqProducts,
     activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems,
-    clearRfqCart, removeFromRfqCart, setActiveModal
+    clearRfqCart, removeFromRfqCart, setActiveModal, activeIncoterm, setActiveIncoterm
   } = useApp();
 
   const activeProducts = (selectedRfqProducts && selectedRfqProducts.length > 0)
@@ -21,10 +21,16 @@ export default function ContactForm() {
     phone: '',
     email: '',
     destinationPort: 'Jebel Ali Port, UAE',
-    incoterm: 'FOB (Free On Board - Loading Port)',
+    incoterm: activeIncoterm || 'FOB (Free On Board - Loading Port)',
     product: 'Agro Commodities',
     msg: ''
   });
+
+  useEffect(() => {
+    if (activeIncoterm) {
+      setFormData(prev => ({ ...prev, incoterm: activeIncoterm }));
+    }
+  }, [activeIncoterm]);
 
   const activeProdKey = activeProducts.map(p => p.id || p.name).join('|');
 
@@ -341,7 +347,11 @@ export default function ContactForm() {
                   <select
                     className="form-control"
                     value={formData.incoterm}
-                    onChange={(e) => setFormData({ ...formData, incoterm: e.target.value })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFormData(prev => ({ ...prev, incoterm: val }));
+                      if (setActiveIncoterm) setActiveIncoterm(val);
+                    }}
                     style={{ fontWeight: 800, color: '#facc15', background: '#0f172a' }}
                     required
                   >

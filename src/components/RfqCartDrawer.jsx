@@ -36,13 +36,21 @@ export default function RfqCartDrawer() {
     paymentGatewaysConfig,
     setSelectedRfqProducts,
     forexRiskBuffer,
-    setActiveModal
+    setActiveModal,
+    activeIncoterm,
+    setActiveIncoterm
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
   const [destinationPort, setDestinationPort] = useState('Jebel Ali, UAE');
   const [domesticCity, setDomesticCity] = useState('Surat, Gujarat');
-  const [selectedIncoterm, setSelectedIncoterm] = useState('FOB');
+  const [selectedIncoterm, setSelectedIncoterm] = useState(activeIncoterm || 'FOB');
+
+  useEffect(() => {
+    if (activeIncoterm) {
+      setSelectedIncoterm(activeIncoterm);
+    }
+  }, [activeIncoterm]);
   const [buyerName, setBuyerName] = useState('');
   const [buyerPhone, setBuyerPhone] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
@@ -859,7 +867,11 @@ export default function RfqCartDrawer() {
                           <select
                             className="rfq-select"
                             value={selectedIncoterm}
-                            onChange={(e) => setSelectedIncoterm(e.target.value)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedIncoterm(val);
+                              if (setActiveIncoterm) setActiveIncoterm(val);
+                            }}
                           >
                             <option value="FOB">FOB (Free on Board)</option>
                             <option value="CIF">CIF (Cost, Insurance & Freight)</option>
