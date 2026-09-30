@@ -6,7 +6,7 @@ export default function ContactForm() {
     t, currentLang, selectedRfqProduct, setSelectedRfqProduct,
     selectedRfqProducts, setSelectedRfqProducts, addRfqProduct, removeRfqProduct, clearRfqProducts,
     activeCompany, getMainCategoryList, getAllProducts, registerCustomer, rfqCartItems,
-    clearRfqCart, removeFromRfqCart
+    clearRfqCart, removeFromRfqCart, setActiveModal
   } = useApp();
 
   const activeProducts = (selectedRfqProducts && selectedRfqProducts.length > 0)
@@ -15,7 +15,16 @@ export default function ContactForm() {
       ? rfqCartItems
       : (selectedRfqProduct ? [selectedRfqProduct] : []));
 
-  const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    phone: '',
+    email: '',
+    destinationPort: 'Jebel Ali Port, UAE',
+    incoterm: 'FOB (Free On Board - Loading Port)',
+    product: 'Agro Commodities',
+    msg: ''
+  });
 
   const activeProdKey = activeProducts.map(p => p.id || p.name).join('|');
 
@@ -71,7 +80,7 @@ export default function ContactForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (registerCustomer) {
-      const prodNames = activeProducts.map(p => p.names?.[currentLang] || p.names?.en || p.names?.gu).join(', ');
+      const prodNames = activeProducts.map(p => p.names?.[currentLang] || p.names?.en || p.names?.gu || p.name).join(', ');
       const hsCodes = activeProducts.map(p => p.hsCode).filter(Boolean).join(', ');
 
       registerCustomer({
@@ -81,12 +90,23 @@ export default function ContactForm() {
         email: formData.email,
         productName: prodNames || formData.product,
         hsCode: hsCodes || '',
+        destinationPort: formData.destinationPort,
+        incoterm: formData.incoterm,
         selectedProducts: activeProducts,
-        notes: `Inquiry for ${formData.product}:\n${formData.msg}`
+        notes: `Inquiry for ${formData.product} | Destination Port: ${formData.destinationPort} | Incoterm: ${formData.incoterm}:\n${formData.msg}`
       });
     }
-    alert(`✅ Thank you ${formData.name}! Your quotation request for ${activeProducts.length || 1} product(s) has been submitted and saved successfully.`);
-    setFormData({ name: '', company: '', phone: '', email: '', product: 'Agro Commodities', msg: '' });
+    alert(`✅ Thank you ${formData.name}! Your quotation request for ${activeProducts.length || 1} product(s) [Port: ${formData.destinationPort} | Term: ${formData.incoterm}] has been submitted and saved successfully.`);
+    setFormData({
+      name: '',
+      company: '',
+      phone: '',
+      email: '',
+      destinationPort: 'Jebel Ali Port, UAE',
+      incoterm: 'FOB (Free On Board - Loading Port)',
+      product: 'Agro Commodities',
+      msg: ''
+    });
     if (clearRfqProducts) clearRfqProducts();
     if (clearRfqCart) clearRfqCart();
     if (setSelectedRfqProduct) setSelectedRfqProduct(null);
@@ -96,8 +116,8 @@ export default function ContactForm() {
     const compName = activeCompany?.name || 'ADIDEV SMART SOLUTION';
     let text = `Hello ${compName}, I want to inquire about export commodities.`;
     if (activeProducts.length > 0) {
-      const titles = activeProducts.map(p => p.names?.en || p.names?.gu).join(', ');
-      text = `Hello ${compName}, I am interested in importing ${titles}. Please send quotation.`;
+      const titles = activeProducts.map(p => p.names?.en || p.names?.gu || p.name).join(', ');
+      text = `Hello ${compName}, I am interested in importing ${titles}.\n📍 Destination Port: ${formData.destinationPort}\n📊 Incoterm: ${formData.incoterm}\nPlease send quotation.`;
     }
     const cleanPhone = (activeCompany?.phone || '7861997755').replace(/\D/g, '');
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
@@ -284,6 +304,55 @@ export default function ContactForm() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
+                </div>
+              </div>
+
+              {/* Destination Port & Incoterms Selection Row */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#38bdf8', fontWeight: 800 }}>
+                    🚢 {currentLang === 'gu' ? 'ડેસ્ટિનેશન પોર્ટ / દેશ (Destination Sea/Air Port) *' : 'Destination Sea/Air Port *'}
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. Jebel Ali Port, UAE / Houston, USA"
+                    value={formData.destinationPort}
+                    onChange={(e) => setFormData({ ...formData, destinationPort: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label className="form-label" style={{ color: '#facc15', fontWeight: 800, margin: 0 }}>
+                      📊 {currentLang === 'gu' ? 'ઇનકોટર્મ્સ પસંદગી (Incoterms) *' : 'Incoterms Selection *'}
+                    </label>
+                    {setActiveModal && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveModal('incoterms_chart')}
+                        style={{ background: 'none', border: 'none', color: '#38bdf8', fontSize: '0.74rem', cursor: 'pointer', fontWeight: 800, textDecoration: 'underline' }}
+                      >
+                        📊 {currentLang === 'gu' ? 'ચાર્ટ જુઓ' : 'View Chart'}
+                      </button>
+                    )}
+                  </div>
+                  <select
+                    className="form-control"
+                    value={formData.incoterm}
+                    onChange={(e) => setFormData({ ...formData, incoterm: e.target.value })}
+                    style={{ fontWeight: 800, color: '#facc15', background: '#0f172a' }}
+                    required
+                  >
+                    <option value="FOB (Free On Board - Loading Port)">FOB (Free On Board - Loading Port)</option>
+                    <option value="CIF (Cost, Insurance & Freight - Destination Port)">CIF (Cost, Insurance & Freight - Destination Port)</option>
+                    <option value="CFR (Cost & Freight - Destination Port)">CFR (Cost & Freight - Destination Port)</option>
+                    <option value="DDP (Delivered Duty Paid - Buyer Doorstep)">DDP (Delivered Duty Paid - Buyer Doorstep)</option>
+                    <option value="EXW (Ex Works - Seller Factory/Warehouse)">EXW (Ex Works - Seller Factory/Warehouse)</option>
+                    <option value="DAP (Delivered At Place - Buyer Warehouse)">DAP (Delivered At Place - Buyer Warehouse)</option>
+                    <option value="FCA (Free Carrier - Inland Depot)">FCA (Free Carrier - Inland Depot)</option>
+                  </select>
                 </div>
               </div>
 
