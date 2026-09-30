@@ -7559,62 +7559,69 @@ export default function Modals() {
                     </div>
 
                     <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '8px', border: '1px solid #bbf7d0', textAlign: 'right' }}>
-                      <div style={{ fontSize: '0.82rem', color: '#166534', fontWeight: 700 }}>
-                        {invoiceTradeMode === 'export' ? 'FOB COMMODITY SUB-TOTAL:' : 'SUBTOTAL TAXABLE VALUE:'}
-                      </div>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#15803d', marginTop: '2px' }}>
-                        {quoteCurrency} {subtotalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </div>
+                      {(() => {
+                        const activeIncoCode = (getNormalizedIncotermString(invoiceItems[0]?.incoterm || quoteIncoterm || exportIncoterm).split(' ')[0] || 'FOB').toUpperCase();
+                        return (
+                          <>
+                            <div style={{ fontSize: '0.82rem', color: '#166534', fontWeight: 700 }}>
+                              {invoiceTradeMode === 'export' ? `${activeIncoCode} COMMODITY SUB-TOTAL:` : 'SUBTOTAL TAXABLE VALUE:'}
+                            </div>
+                            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#15803d', marginTop: '2px' }}>
+                              {quoteCurrency} {subtotalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </div>
 
-                      {invoiceTradeMode === 'export' && totalIncotermCharges > 0 && (
-                        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #a7f3d0', fontSize: '0.78rem', color: '#166534' }}>
-                          {freightVal > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                              <span>+ Ocean / Air Freight Charge:</span>
-                              <strong>+ {quoteCurrency} {freightVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                            </div>
-                          )}
-                          {insuranceVal > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                              <span>+ Marine Transit Insurance:</span>
-                              <strong>+ {quoteCurrency} {insuranceVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                            </div>
-                          )}
-                          {dutyVal > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                              <span>+ Destination Import Customs Duty:</span>
-                              <strong>+ {quoteCurrency} {dutyVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                            </div>
-                          )}
-                          {brokerVal > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                              <span>+ Customs Clearance Broker Fee:</span>
-                              <strong>+ {quoteCurrency} {brokerVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                            </div>
-                          )}
-                          {deliveryVal > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                              <span>+ Destination Doorstep Delivery:</span>
-                              <strong>+ {quoteCurrency} {deliveryVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                            </div>
-                          )}
-                          {customIncotermChargesList.map((cItem, i) => {
-                            const amt = getNumericValue(cItem.amount, 0);
-                            if (amt <= 0) return null;
-                            return (
-                              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
-                                <span>+ {cItem.name}:</span>
-                                <strong>+ {quoteCurrency} {amt.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                            {invoiceTradeMode === 'export' && totalIncotermCharges > 0 && (
+                              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #a7f3d0', fontSize: '0.78rem', color: '#166534' }}>
+                                {freightVal > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                    <span>+ Ocean / Air Freight Charge:</span>
+                                    <strong>+ {quoteCurrency} {freightVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                  </div>
+                                )}
+                                {insuranceVal > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                    <span>+ Marine Transit Insurance:</span>
+                                    <strong>+ {quoteCurrency} {insuranceVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                  </div>
+                                )}
+                                {dutyVal > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                    <span>+ Destination Import Customs Duty:</span>
+                                    <strong>+ {quoteCurrency} {dutyVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                  </div>
+                                )}
+                                {brokerVal > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                    <span>+ Customs Clearance Broker Fee:</span>
+                                    <strong>+ {quoteCurrency} {brokerVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                  </div>
+                                )}
+                                {deliveryVal > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                    <span>+ Destination Doorstep Delivery:</span>
+                                    <strong>+ {quoteCurrency} {deliveryVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                  </div>
+                                )}
+                                {customIncotermChargesList.map((cItem, i) => {
+                                  const amt = getNumericValue(cItem.amount, 0);
+                                  if (amt <= 0) return null;
+                                  return (
+                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', margin: '2px 0' }}>
+                                      <span>+ {cItem.name}:</span>
+                                      <strong>+ {quoteCurrency} {amt.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                    </div>
+                                  );
+                                })}
+
+                                <div style={{ display: 'flex', justifyContent: 'space-between', margin: '6px 0 0 0', paddingTop: '6px', borderTop: '2px solid #15803d', fontWeight: 900, fontSize: '0.92rem', color: '#065f46' }}>
+                                  <span>TOTAL AMOUNT ({activeIncoCode}):</span>
+                                  <span>{quoteCurrency} {grandTotalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                </div>
                               </div>
-                            );
-                          })}
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', margin: '6px 0 0 0', paddingTop: '6px', borderTop: '2px solid #15803d', fontWeight: 900, fontSize: '0.92rem', color: '#065f46' }}>
-                            <span>TOTAL AMOUNT ({((quoteIncoterm || 'FOB').split(' ')[0]).toUpperCase()}):</span>
-                            <span>{quoteCurrency} {grandTotalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                          </div>
-                        </div>
-                      )}
+                            )}
+                          </>
+                        );
+                      })()}
 
                       {invoiceTradeMode === 'interstate' && (
                         <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #a7f3d0', fontSize: '0.78rem', color: '#166534' }}>
