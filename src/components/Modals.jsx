@@ -7192,11 +7192,11 @@ export default function Modals() {
                   const code = (currentInco.split(' ')[0] || '').toUpperCase();
                   const isFob = code === 'FOB';
 
-                  const showFreight = ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU'].includes(code);
-                  const showInsurance = ['CIF', 'CIP', 'DDP', 'DAP', 'DPU'].includes(code);
-                  const showCustomsDuty = ['DDP'].includes(code);
-                  const showBrokerFee = ['DDP'].includes(code);
-                  const showDoorDelivery = ['DDP', 'DAP', 'DPU'].includes(code);
+                  const showFreight = !isFob || ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU', 'EXW', 'FCA'].includes(code);
+                  const showInsurance = true; // ALWAYS SHOW Marine Transit Insurance Box
+                  const showCustomsDuty = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
+                  const showBrokerFee = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
+                  const showDoorDelivery = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
                   const showOriginTrucking = ['EXW', 'FCA', 'FAS'].includes(code);
 
                   return (
@@ -7739,7 +7739,7 @@ export default function Modals() {
               {/* Stage Icons Header Row */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '70px repeat(8, minmax(80px, 1fr))',
+                gridTemplateColumns: '70px repeat(9, minmax(70px, 1fr))',
                 gap: '4px',
                 textAlign: 'center',
                 fontSize: '0.65rem',
@@ -7754,6 +7754,7 @@ export default function Modals() {
                 <div>🚚<br/>FIRST CARRIER</div>
                 <div>⚓<br/>PORT QUAY</div>
                 <div>🚢<br/>ON BOARD</div>
+                <div style={{ color: '#4ade80', fontWeight: 900 }}>🛡️<br/>INSURANCE</div>
                 <div>🛳️<br/>ON ARRIVAL</div>
                 <div>⚓<br/>DEST PORT</div>
                 <div>🏬<br/>DEST PLACE</div>
@@ -7762,16 +7763,16 @@ export default function Modals() {
 
               {/* Diagram Rows for Each Key Incoterm */}
               {[
-                { code: 'EXW', name: 'Ex Works', sellerEnd: 1, riskPoint: 'Factory Gate' },
-                { code: 'FCA', name: 'Free Carrier', sellerEnd: 2, riskPoint: 'First Carrier' },
-                { code: 'FAS', name: 'Free Alongside Ship', sellerEnd: 3, riskPoint: 'Port Quay' },
-                { code: 'FOB', name: 'Free On Board', sellerEnd: 4, riskPoint: 'Vessel Onboard' },
-                { code: 'CFR', name: 'Cost & Freight', sellerEnd: 6, riskPoint: 'Vessel Onboard' },
-                { code: 'CIF', name: 'Cost, Insurance & Freight', sellerEnd: 6, riskPoint: 'Vessel Onboard' },
-                { code: 'CPT', name: 'Carriage Paid To', sellerEnd: 7, riskPoint: 'First Carrier' },
-                { code: 'CIP', name: 'Carriage & Insurance Paid', sellerEnd: 7, riskPoint: 'First Carrier' },
-                { code: 'DAP', name: 'Delivered at Place', sellerEnd: 7, riskPoint: 'Destination Place' },
-                { code: 'DDP', name: 'Delivered Duty Paid', sellerEnd: 8, riskPoint: 'Buyer Warehouse' }
+                { code: 'EXW', name: 'Ex Works', sellerEnd: 1, hasSellerInsurance: false, riskPoint: 'Factory Gate' },
+                { code: 'FCA', name: 'Free Carrier', sellerEnd: 2, hasSellerInsurance: false, riskPoint: 'First Carrier' },
+                { code: 'FAS', name: 'Free Alongside Ship', sellerEnd: 3, hasSellerInsurance: false, riskPoint: 'Port Quay' },
+                { code: 'FOB', name: 'Free On Board', sellerEnd: 4, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
+                { code: 'CFR', name: 'Cost & Freight', sellerEnd: 7, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
+                { code: 'CIF', name: 'Cost, Insurance & Freight', sellerEnd: 7, hasSellerInsurance: true, riskPoint: 'Vessel Onboard' },
+                { code: 'CPT', name: 'Carriage Paid To', sellerEnd: 8, hasSellerInsurance: false, riskPoint: 'First Carrier' },
+                { code: 'CIP', name: 'Carriage & Insurance Paid', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'First Carrier' },
+                { code: 'DAP', name: 'Delivered at Place', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'Destination Place' },
+                { code: 'DDP', name: 'Delivered Duty Paid', sellerEnd: 9, hasSellerInsurance: true, riskPoint: 'Buyer Warehouse' }
               ].map((row) => (
                 <div
                   key={row.code}
@@ -7785,7 +7786,7 @@ export default function Modals() {
                   }}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '70px repeat(8, minmax(80px, 1fr))',
+                    gridTemplateColumns: '70px repeat(9, minmax(70px, 1fr))',
                     gap: '4px',
                     alignItems: 'center',
                     padding: '6px 0',
@@ -7802,17 +7803,21 @@ export default function Modals() {
                     {row.code}
                   </div>
 
-                  {/* 8 Stage Columns with Orange (Seller) vs Blue (Buyer) bars */}
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((stageIdx) => {
-                    const isSeller = stageIdx <= row.sellerEnd;
+                  {/* 9 Stage Columns with Orange (Seller) vs Blue (Buyer) bars */}
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((stageIdx) => {
+                    let isSeller = stageIdx <= row.sellerEnd;
+                    if (stageIdx === 5) {
+                      // Stage 5 is Insurance: Seller covers on CIF, CIP, DDP, DAP
+                      isSeller = row.hasSellerInsurance;
+                    }
                     const isRiskTransfer = (
                       (row.code === 'EXW' && stageIdx === 1) ||
                       (row.code === 'FCA' && stageIdx === 2) ||
                       (row.code === 'FAS' && stageIdx === 3) ||
                       ((row.code === 'FOB' || row.code === 'CFR' || row.code === 'CIF') && stageIdx === 4) ||
                       ((row.code === 'CPT' || row.code === 'CIP') && stageIdx === 2) ||
-                      (row.code === 'DAP' && stageIdx === 7) ||
-                      (row.code === 'DDP' && stageIdx === 8)
+                      (row.code === 'DAP' && stageIdx === 8) ||
+                      (row.code === 'DDP' && stageIdx === 9)
                     );
 
                     return (
@@ -7822,6 +7827,7 @@ export default function Modals() {
                           height: '20px',
                           borderRadius: '4px',
                           background: isSeller ? 'linear-gradient(90deg, #f97316, #ea580c)' : '#0284c7',
+                          border: stageIdx === 5 ? '1px solid #4ade80' : 'none',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -7830,11 +7836,16 @@ export default function Modals() {
                           color: 'white',
                           position: 'relative'
                         }}
+                        title={stageIdx === 5 ? `Marine Insurance: ${isSeller ? 'Seller Covered' : 'Buyer Covered'}` : ''}
                       >
-                        {isRiskTransfer && (
-                          <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '15px', height: '15px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900, boxShadow: '0 0 6px #ef4444' }} title={`Transfer of Risk Point: ${row.riskPoint}`}>
-                            !
-                          </span>
+                        {stageIdx === 5 ? (
+                          <span style={{ fontSize: '0.6rem' }}>🛡️</span>
+                        ) : (
+                          isRiskTransfer && (
+                            <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '15px', height: '15px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900, boxShadow: '0 0 6px #ef4444' }} title={`Transfer of Risk Point: ${row.riskPoint}`}>
+                              !
+                            </span>
+                          )
                         )}
                       </div>
                     );
