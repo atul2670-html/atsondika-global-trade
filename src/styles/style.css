@@ -2833,5 +2833,81 @@ body.light-theme .modal-card code {
   z-index: 99999 !important;
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE LAYOUT OPTIMIZATIONS (320px - 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .modal-card {
+    padding: 14px 12px !important;
+    width: 98% !important;
+    max-height: 94vh !important;
+    border-radius: 12px !important;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .rfq-drawer-content {
+    max-width: 100% !important;
+  }
+
+  .multi-company-bar-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .multi-company-tabs-list {
+    overflow-x: auto !important;
+    width: 100% !important;
+    padding-bottom: 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #printableProformaSheet {
+    padding: 8px !important;
+  }
+
+  #printableProformaSheet table {
+    font-size: 0.78rem !important;
+  }
+
+  #printableProformaSheet th, #printableProformaSheet td {
+    padding: 6px 4px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1, .hero-title {
+    font-size: 1.6rem !important;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  h3 {
+    font-size: 1.15rem !important;
+  }
+
+  .modal-card {
+    padding: 10px 8px !important;
+  }
+
+  .form-control, .rfq-input, .rfq-select {
+    font-size: 0.8rem !important;
+    padding: 6px 8px !important;
+  }
+
+  .live-toast-banner {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 15px !important;
+    max-width: none !important;
+  }
+}
+
 
 
