@@ -438,17 +438,17 @@ export default function Modals() {
   const getNormalizedIncotermString = (raw) => {
     if (!raw) return 'FOB (Free On Board - Loading Port)';
     const s = String(raw).trim().toUpperCase();
-    if (s.startsWith('DDP')) return 'DDP (Delivered Duty Paid - Buyer Doorstep)';
-    if (s.startsWith('CIF')) return 'CIF (Cost, Insurance & Freight - Destination Port)';
-    if (s.startsWith('EXW')) return 'EXW (Ex Works - Seller Factory/Warehouse)';
-    if (s.startsWith('CFR')) return 'CFR (Cost & Freight - Destination Port)';
-    if (s.startsWith('FCA')) return 'FCA (Free Carrier - Inland Depot)';
-    if (s.startsWith('FAS')) return 'FAS (Free Alongside Ship)';
-    if (s.startsWith('CPT')) return 'CPT (Carriage Paid To)';
-    if (s.startsWith('CIP')) return 'CIP (Carriage & Insurance Paid To)';
-    if (s.startsWith('DAP')) return 'DAP (Delivered At Place)';
-    if (s.startsWith('FOB')) return 'FOB (Free On Board - Loading Port)';
-    return raw;
+    if (s.includes('CIF')) return 'CIF (Cost, Insurance & Freight - Destination Port)';
+    if (s.includes('CFR') || s.includes('CNF')) return 'CFR (Cost & Freight - Destination Port)';
+    if (s.includes('DDP')) return 'DDP (Delivered Duty Paid - Buyer Doorstep)';
+    if (s.includes('EXW')) return 'EXW (Ex Works - Seller Factory/Warehouse)';
+    if (s.includes('DAP')) return 'DAP (Delivered At Place - Buyer Warehouse)';
+    if (s.includes('FCA')) return 'FCA (Free Carrier - Inland Depot)';
+    if (s.includes('FAS')) return 'FAS (Free Alongside Ship)';
+    if (s.includes('CPT')) return 'CPT (Carriage Paid To)';
+    if (s.includes('CIP')) return 'CIP (Carriage & Insurance Paid To)';
+    if (s.includes('FOB')) return 'FOB (Free On Board - Loading Port)';
+    return 'FOB (Free On Board - Loading Port)';
   };
 
   const getCatalogProductInvoiceInfo = (prod) => {
@@ -596,7 +596,9 @@ export default function Modals() {
     }
 
     if (incoTerm) {
-      setQuoteIncoterm(incoTerm);
+      const normalizedInco = getNormalizedIncotermString(incoTerm);
+      setQuoteIncoterm(normalizedInco);
+      incoTerm = normalizedInco;
     }
 
     // Parse Quantity and Unit
@@ -7143,7 +7145,7 @@ export default function Modals() {
                         <label style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '2px' }}>📊 Incoterm (Terms of Delivery)</label>
                         <select
                           className="form-control"
-                          value={item.incoterm || 'FOB (Free On Board - Loading Port)'}
+                          value={getNormalizedIncotermString(item.incoterm || quoteIncoterm)}
                           onChange={(e) => {
                             const val = e.target.value;
                             setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, incoterm: val } : i));
