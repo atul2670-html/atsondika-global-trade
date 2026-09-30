@@ -450,7 +450,7 @@ export default function Modals() {
     if (s.includes('CFR') || s.includes('CNF')) return 'CFR (Cost & Freight - Destination Port)';
     if (s.includes('DDP')) return 'DDP (Delivered Duty Paid - Buyer Doorstep)';
     if (s.includes('EXW')) return 'EXW (Ex Works - Seller Factory/Warehouse)';
-    if (s.includes('DAP')) return 'DAP (Delivered At Place - Buyer Warehouse)';
+    if (s.includes('DAP')) return 'DAP (Delivered At Place)';
     if (s.includes('FCA')) return 'FCA (Free Carrier - Inland Depot)';
     if (s.includes('FAS')) return 'FAS (Free Alongside Ship)';
     if (s.includes('CPT')) return 'CPT (Carriage Paid To)';
@@ -7156,6 +7156,7 @@ export default function Modals() {
                           value={getNormalizedIncotermString(item.incoterm || quoteIncoterm)}
                           onChange={(e) => {
                             const val = e.target.value;
+                            setQuoteIncoterm(val);
                             setInvoiceItems(prev => prev.map((i, iIdx) => iIdx === idx ? { ...i, incoterm: val } : i));
                           }}
                           style={{ fontSize: '0.78rem', fontWeight: 800, color: '#facc15', background: '#0f172a', padding: '4px 8px' }}
@@ -7183,252 +7184,183 @@ export default function Modals() {
                     </div>
                   </div>
                 ))}
-              </div>
 
-              <div className="form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Buyer Name / Contact</label>
-                  <input type="text" className="form-control" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
-                </div>
+                {/* DYNAMIC INCOTERMS CHARGES BREAKDOWN MODULE */}
+                {invoiceTradeMode === 'export' && (() => {
+                  const currentInco = getNormalizedIncotermString(invoiceItems[0]?.incoterm || quoteIncoterm || exportIncoterm);
+                  const code = (currentInco.split(' ')[0] || '').toUpperCase();
+                  const isFob = code === 'FOB';
 
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Buyer Company / Business Name</label>
-                  <input type="text" className="form-control" value={buyerCompany} onChange={(e) => setBuyerCompany(e.target.value)} />
-                </div>
+                  const showFreight = ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU'].includes(code);
+                  const showInsurance = ['CIF', 'CIP', 'DDP', 'DAP', 'DPU'].includes(code);
+                  const showCustomsDuty = ['DDP'].includes(code);
+                  const showBrokerFee = ['DDP'].includes(code);
+                  const showDoorDelivery = ['DDP', 'DAP', 'DPU'].includes(code);
+                  const showOriginTrucking = ['EXW', 'FCA', 'FAS'].includes(code);
 
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label style={{ fontSize: '0.78rem', color: '#25D366', fontWeight: 800, display: 'block' }}>📱 Buyer WhatsApp / Mobile No.</label>
-                  <input type="text" className="form-control" placeholder="e.g. +91 98765 43210 / +971 50 123 4567" value={buyerPhoneInput} onChange={(e) => setBuyerPhoneInput(e.target.value)} />
-                </div>
-
-                <div className="form-group" style={{ marginBottom: '8px' }}>
-                  <label style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 800, display: 'block' }}>✉️ Buyer Email Address</label>
-                  <input type="email" className="form-control" placeholder="e.g. import@globaltrade.com" value={buyerEmailInput} onChange={(e) => setBuyerEmailInput(e.target.value)} />
-                </div>
-
-                {invoiceTradeMode !== 'export' ? (
-                  <>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Buyer GSTIN Number</label>
-                      <input type="text" className="form-control" placeholder="e.g. 27AAAAA0000A1Z5" value={buyerGstinInput} onChange={(e) => setBuyerGstinInput(e.target.value)} />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Place of Supply / Destination State</label>
-                      <input type="text" className="form-control" placeholder="e.g. Maharashtra (27) / Gujarat (24)" value={placeOfSupplyStateInput} onChange={(e) => setPlaceOfSupplyStateInput(e.target.value)} />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>GST Rate (Domestic Sale)</label>
-                      <select className="form-control" value={domesticGstRate} onChange={(e) => setDomesticGstRate(Number(e.target.value))} style={{ fontWeight: 800 }}>
-                        <option value={5}>5% GST ({invoiceTradeMode === 'intrastate' ? '2.5% CGST + 2.5% SGST' : '5% IGST'})</option>
-                        <option value={12}>12% GST ({invoiceTradeMode === 'intrastate' ? '6% CGST + 6% SGST' : '12% IGST'})</option>
-                        <option value={18}>18% GST ({invoiceTradeMode === 'intrastate' ? '9% CGST + 9% SGST' : '18% IGST'})</option>
-                        <option value={28}>28% GST ({invoiceTradeMode === 'intrastate' ? '14% CGST + 14% SGST' : '28% IGST'})</option>
-                      </select>
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Transporter Name & LR / Bilty No.</label>
-                      <input type="text" className="form-control" placeholder="e.g. VRL Logistics / LR #8899" value={transporterLrInput} onChange={(e) => setTransporterLrInput(e.target.value)} />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Dispatch Truck / Vehicle No.</label>
-                      <input type="text" className="form-control" placeholder="e.g. GJ-05-BX-9988" value={vehicleNoInput} onChange={(e) => setVehicleNoInput(e.target.value)} />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block' }}>Destination Country / City</label>
-                      <input type="text" className="form-control" value={buyerCountry} onChange={(e) => setBuyerCountry(e.target.value)} placeholder="e.g. Dubai, UAE / Canada / USA..." />
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 800, display: 'block' }}>⚓ Port of Loading (Origin)</label>
-                      <input type="text" className="form-control" value={quotePortLoading} onChange={(e) => setQuotePortLoading(e.target.value)} placeholder="e.g. Mundra Port / Hazira Port, India" style={{ fontWeight: 700 }} />
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: '8px' }}>
-                      <label style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 800, display: 'block' }}>🚢 Port of Discharge (Destination)</label>
-                      <input type="text" className="form-control" value={quotePortDischarge} onChange={(e) => setQuotePortDischarge(e.target.value)} placeholder="e.g. Jebel Ali Port, Dubai / Port of New York" style={{ fontWeight: 700 }} />
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* DYNAMIC INCOTERMS CHARGES BREAKDOWN MODULE */}
-              {invoiceTradeMode === 'export' && (() => {
-                const currentInco = getNormalizedIncotermString(invoiceItems[0]?.incoterm || quoteIncoterm || exportIncoterm);
-                const code = (currentInco.split(' ')[0] || '').toUpperCase();
-                const isFob = code === 'FOB';
-
-                const showFreight = ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU'].includes(code);
-                const showInsurance = ['CIF', 'CIP', 'DDP', 'DAP', 'DPU'].includes(code);
-                const showCustomsDuty = ['DDP'].includes(code);
-                const showBrokerFee = ['DDP'].includes(code);
-                const showDoorDelivery = ['DDP', 'DAP', 'DPU'].includes(code);
-                const showOriginTrucking = ['EXW', 'FCA', 'FAS'].includes(code);
-
-                return (
-                  <div style={{ background: 'rgba(15, 23, 42, 0.85)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(56, 189, 248, 0.4)', marginBottom: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-                      <span style={{ fontSize: '0.86rem', color: '#facc15', fontWeight: 900 }}>
-                        💲 Incoterm ({code}) Additional Charges Breakdown ({quoteCurrency || 'USD'}):
-                      </span>
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={() => {
-                          setCustomIncotermChargesList(prev => [
-                            ...prev,
-                            { id: `c_${Date.now()}`, name: 'Extra Handling Charge', amount: '0' }
-                          ]);
-                        }}
-                        style={{ fontSize: '0.74rem', padding: '3px 8px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', background: 'rgba(34, 197, 94, 0.15)', fontWeight: 800 }}
-                      >
-                        ➕ + Add Custom Charge Field
-                      </button>
-                    </div>
-
-                    {isFob && (!exportFreightCharge || exportFreightCharge === '0') && (!exportInsuranceCharge || exportInsuranceCharge === '0') && (!exportCustomsDutyCharge || exportCustomsDutyCharge === '0') && (!exportDoorDeliveryCharge || exportDoorDeliveryCharge === '0') && customIncotermChargesList.length === 0 ? (
-                      <div style={{ fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 700 }}>
-                        ℹ️ Active term is <strong>FOB (Free On Board)</strong>. Base product unit price covers factory export packing & port loading. If you select <strong>CIF, CFR, DDP, DAP, CIP</strong>, additional freight & duty input boxes will appear automatically below!
+                  return (
+                    <div style={{ background: 'rgba(15, 23, 42, 0.95)', padding: '14px', borderRadius: '12px', border: '2px solid #facc15', marginTop: '10px', marginBottom: '4px', boxShadow: '0 0 15px rgba(250, 204, 21, 0.2)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                        <span style={{ fontSize: '0.88rem', color: '#facc15', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          💲 Incoterm ({code}) Additional Charges Breakdown ({quoteCurrency || 'USD'}):
+                        </span>
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => {
+                            setCustomIncotermChargesList(prev => [
+                              ...prev,
+                              { id: `c_${Date.now()}`, name: 'Extra Handling Charge', amount: '0' }
+                            ]);
+                          }}
+                          style={{ fontSize: '0.74rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.6)', background: 'rgba(34, 197, 94, 0.2)', fontWeight: 800 }}
+                        >
+                          ➕ + Add Custom Charge Field
+                        </button>
                       </div>
-                    ) : (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
-                        {showFreight && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              🚢 Ocean / Air Freight Charge ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 15.00"
-                              value={exportFreightCharge}
-                              onChange={(e) => setExportFreightCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#38bdf8' }}
-                            />
-                          </div>
-                        )}
 
-                        {showInsurance && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              🛡️ Marine Transit Insurance ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 1.00"
-                              value={exportInsuranceCharge}
-                              onChange={(e) => setExportInsuranceCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#4ade80' }}
-                            />
-                          </div>
-                        )}
-
-                        {showCustomsDuty && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              🏛️ Destination Import Duty & Tax ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 11.60"
-                              value={exportCustomsDutyCharge}
-                              onChange={(e) => setExportCustomsDutyCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#f59e0b' }}
-                            />
-                          </div>
-                        )}
-
-                        {showBrokerFee && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#a855f7', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              📑 Customs Clearance Broker Fee ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 10.00"
-                              value={exportBrokerFeeCharge}
-                              onChange={(e) => setExportBrokerFeeCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#a855f7' }}
-                            />
-                          </div>
-                        )}
-
-                        {showDoorDelivery && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              🚚 Destination Doorstep Delivery ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 12.00"
-                              value={exportDoorDeliveryCharge}
-                              onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#ec4899' }}
-                            />
-                          </div>
-                        )}
-
-                        {showOriginTrucking && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label style={{ fontSize: '0.74rem', color: '#60a5fa', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
-                              🚛 Origin Inland Trucking Charge ({quoteCurrency})
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="e.g. 5.00"
-                              value={exportDoorDeliveryCharge}
-                              onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#60a5fa' }}
-                            />
-                          </div>
-                        )}
-
-                        {/* CUSTOM USER CHARGES */}
-                        {customIncotermChargesList.map((cItem, cIdx) => (
-                          <div key={cItem.id || cIdx} className="form-group" style={{ marginBottom: 0, position: 'relative' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                      {isFob && (!exportFreightCharge || exportFreightCharge === '0') && (!exportInsuranceCharge || exportInsuranceCharge === '0') && (!exportCustomsDutyCharge || exportCustomsDutyCharge === '0') && (!exportDoorDeliveryCharge || exportDoorDeliveryCharge === '0') && customIncotermChargesList.length === 0 ? (
+                        <div style={{ fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 700, background: 'rgba(45, 212, 191, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(45, 212, 191, 0.3)' }}>
+                          ℹ️ Active term is <strong>FOB (Free On Board)</strong>. Base product unit price covers factory export packing & port loading. If you select <strong>CIF, CFR, DDP, DAP, CIP</strong>, additional freight & duty input boxes will appear automatically below!
+                        </div>
+                      ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+                          {showFreight && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                🚢 Ocean / Air Freight Charge ({quoteCurrency})
+                              </label>
                               <input
                                 type="text"
-                                value={cItem.name}
+                                className="form-control"
+                                placeholder="e.g. 15.00"
+                                value={exportFreightCharge}
+                                onChange={(e) => setExportFreightCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#38bdf8', background: '#0f172a', borderColor: '#38bdf8' }}
+                              />
+                            </div>
+                          )}
+
+                          {showInsurance && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                🛡️ Marine Transit Insurance ({quoteCurrency})
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. 1.00"
+                                value={exportInsuranceCharge}
+                                onChange={(e) => setExportInsuranceCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#4ade80', background: '#0f172a', borderColor: '#4ade80' }}
+                              />
+                            </div>
+                          )}
+
+                          {showCustomsDuty && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                🏛️ Destination Import Duty & Tax ({quoteCurrency})
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. 11.60"
+                                value={exportCustomsDutyCharge}
+                                onChange={(e) => setExportCustomsDutyCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#f59e0b', background: '#0f172a', borderColor: '#f59e0b' }}
+                              />
+                            </div>
+                          )}
+
+                          {showBrokerFee && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#a855f7', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                📑 Customs Clearance Broker Fee ({quoteCurrency})
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. 10.00"
+                                value={exportBrokerFeeCharge}
+                                onChange={(e) => setExportBrokerFeeCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#a855f7', background: '#0f172a', borderColor: '#a855f7' }}
+                              />
+                            </div>
+                          )}
+
+                          {showDoorDelivery && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                🚚 Destination Doorstep Delivery ({quoteCurrency})
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. 12.00"
+                                value={exportDoorDeliveryCharge}
+                                onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#ec4899', background: '#0f172a', borderColor: '#ec4899' }}
+                              />
+                            </div>
+                          )}
+
+                          {showOriginTrucking && (
+                            <div className="form-group" style={{ marginBottom: 0 }}>
+                              <label style={{ fontSize: '0.74rem', color: '#60a5fa', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                                🚛 Origin Inland Trucking Charge ({quoteCurrency})
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. 5.00"
+                                value={exportDoorDeliveryCharge}
+                                onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#60a5fa', background: '#0f172a', borderColor: '#60a5fa' }}
+                              />
+                            </div>
+                          )}
+
+                          {/* CUSTOM USER CHARGES */}
+                          {customIncotermChargesList.map((cItem, cIdx) => (
+                            <div key={cItem.id || cIdx} className="form-group" style={{ marginBottom: 0, position: 'relative' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                                <input
+                                  type="text"
+                                  value={cItem.name}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, name: val } : item));
+                                  }}
+                                  style={{ fontSize: '0.74rem', background: 'none', border: 'none', color: '#4ade80', fontWeight: 800, padding: 0 }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setCustomIncotermChargesList(prev => prev.filter((_, i) => i !== cIdx))}
+                                  style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="0.00"
+                                value={cItem.amount}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, name: val } : item));
+                                  setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, amount: val } : item));
                                 }}
-                                style={{ fontSize: '0.74rem', background: 'none', border: 'none', color: '#4ade80', fontWeight: 800, padding: 0 }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', background: '#0f172a', borderColor: '#4ade80' }}
                               />
-                              <button
-                                type="button"
-                                onClick={() => setCustomIncotermChargesList(prev => prev.filter((_, i) => i !== cIdx))}
-                                style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
-                              >
-                                ✕
-                              </button>
                             </div>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="0.00"
-                              value={cItem.amount}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, amount: val } : item));
-                              }}
-                              style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
 
               {/* PRINT OPTIONS & TOGGLES (BANK DETAILS & DIGITAL STAMP) */}
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed var(--border-glass)' }}>
