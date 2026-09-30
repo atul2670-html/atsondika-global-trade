@@ -7192,11 +7192,11 @@ export default function Modals() {
                   const code = (currentInco.split(' ')[0] || '').toUpperCase();
                   const isFob = code === 'FOB';
 
-                  const showFreight = !isFob || ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU', 'EXW', 'FCA'].includes(code);
-                  const showInsurance = true; // ALWAYS SHOW Marine Transit Insurance Box
-                  const showCustomsDuty = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
-                  const showBrokerFee = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
-                  const showDoorDelivery = !isFob || ['DDP', 'DAP', 'DPU', 'CIF', 'CFR'].includes(code);
+                  const showFreight = ['CIF', 'CFR', 'CNF', 'CIP', 'CPT', 'DDP', 'DAP', 'DPU'].includes(code) || (exportFreightCharge && exportFreightCharge !== '0');
+                  const showInsurance = ['CIF', 'CIP', 'DDP', 'DAP', 'DPU'].includes(code) || (exportInsuranceCharge && exportInsuranceCharge !== '0');
+                  const showCustomsDuty = ['DDP'].includes(code) || (exportCustomsDutyCharge && exportCustomsDutyCharge !== '0');
+                  const showBrokerFee = ['DDP'].includes(code) || (exportBrokerFeeCharge && exportBrokerFeeCharge !== '0');
+                  const showDoorDelivery = ['DDP', 'DAP', 'DPU'].includes(code) || (exportDoorDeliveryCharge && exportDoorDeliveryCharge !== '0');
                   const showOriginTrucking = ['EXW', 'FCA', 'FAS'].includes(code);
 
                   return (
