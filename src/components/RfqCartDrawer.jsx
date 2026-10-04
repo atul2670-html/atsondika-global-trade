@@ -144,7 +144,13 @@ export default function RfqCartDrawer() {
     return currSymbolMap[code] || getCurrencySymbol(code);
   };
 
-  const getUsdToInrRate = () => liveRates?.INR || ((currenciesList || []).find(c => c.code === 'INR')?.rate || 86.45);
+  const getSpotUsdToInrRate = () => liveRates?.INR || ((currenciesList || []).find(c => c.code === 'INR')?.rate || 86.45);
+
+  const getUsdToInrRate = () => {
+    const spot = getSpotUsdToInrRate();
+    const buffer = (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100;
+    return spot * (1 + buffer);
+  };
 
   const getItemInrVal = (item, val) => {
     const num = parseFloat(val) || 0;
@@ -1036,9 +1042,9 @@ export default function RfqCartDrawer() {
                     </span>
                     {getActiveCurrencyCode() !== 'INR' && (
                       <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, display: 'block', marginTop: '2px' }}>
-                        IN Live INR Equivalent: ₹{((totalLocalAmountInr / getUsdToInrRate()) * (getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100))).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
+                        IN Live INR Equivalent: ₹{totalLocalAmountInr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
                         <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, display: 'block' }}>
-                          (Live Spot: 1 USD = ₹{(getUsdToInrRate()).toFixed(4)} INR | Hedged: 1 USD = ₹{(getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100)).toFixed(4)} INR)
+                          (Live Spot: 1 USD = ₹{(getSpotUsdToInrRate()).toFixed(4)} INR | Hedged: 1 USD = ₹{(getUsdToInrRate()).toFixed(4)} INR)
                         </span>
                       </span>
                     )}
@@ -1189,7 +1195,7 @@ export default function RfqCartDrawer() {
 
               {getActiveCurrencyCode() !== 'INR' && (
                 <div style={{ fontSize: '0.76rem', color: '#4ade80', fontWeight: 800, textAlign: 'right', marginTop: '6px' }}>
-                  IN Live INR Equivalent: ₹{((totalLocalAmountInr / getUsdToInrRate()) * (getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100))).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
+                  IN Live INR Equivalent: ₹{totalLocalAmountInr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
                 </div>
               )}
             </div>
@@ -1203,7 +1209,7 @@ export default function RfqCartDrawer() {
                       📱 Scan QR Code to Pay via GPay / PhonePe / Paytm
                     </h5>
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${Math.round(getActiveCurrencyCode() === 'INR' ? totalLocalAmountInr : ((totalLocalAmountInr / getUsdToInrRate()) * (getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100))))}&cu=INR`)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${Math.round(totalLocalAmountInr)}&cu=INR`)}`}
                       alt="UPI QR Code"
                       style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)', width: '160px', height: '160px' }}
                     />
