@@ -2112,7 +2112,7 @@ export function AppProvider({ children }) {
       state: merchantData.state || 'Gujarat',
       gstin: merchantData.gstin || '',
       businessType: merchantData.businessType || 'Manufacturer & Exporter',
-      status: merchantData.status || 'approved',
+      status: merchantData.status || 'pending',
       registeredAt: new Date().toLocaleDateString(),
       certificates: merchantData.certificates || [],
       iecCertUrl: merchantData.iecCertUrl || '',
@@ -2128,7 +2128,7 @@ export function AppProvider({ children }) {
       localStorage.setItem('site_current_merchant_v1', JSON.stringify(newMerchant));
     } catch(e) {}
     syncToServer({ merchantsList: nextMerchants });
-    showLiveToast(`🏬 Registered as Seller "${newMerchant.businessName}"!`, 'success');
+    showLiveToast(`⏳ Seller registration for "${newMerchant.businessName}" submitted! Pending Admin approval ⏳`, 'info');
     return newMerchant;
   };
 
@@ -2158,6 +2158,11 @@ export function AppProvider({ children }) {
   const updateMerchantStatus = (merchantId, newStatus) => {
     const nextMerchants = merchantsList.map(m => m.id === merchantId ? { ...m, status: newStatus } : m);
     setMerchantsList(nextMerchants);
+    if (currentMerchant?.id === merchantId) {
+      const updatedCurr = { ...currentMerchant, status: newStatus };
+      setCurrentMerchant(updatedCurr);
+      try { localStorage.setItem('site_current_merchant_v1', JSON.stringify(updatedCurr)); } catch(e) {}
+    }
     try { localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants)); } catch(e) {}
     syncToServer({ merchantsList: nextMerchants });
     const statusLabels = { approved: 'Approved ✅', blocked: 'Blocked 🚫', pending: 'Pending ⏳' };
@@ -2192,7 +2197,7 @@ export function AppProvider({ children }) {
       merchantPhone: currentMerchant.phone,
       merchantEmail: currentMerchant.email,
       isSub: true,
-      approvalStatus: 'approved',
+      approvalStatus: currentMerchant?.status === 'approved' ? (isApprovedByDefault ? 'approved' : 'pending') : 'pending',
       names: productData.names || { en: productData.nameEn || 'Merchant Product', gu: productData.nameGu || 'વેપારી પ્રોડક્ટ' },
       category: productData.category || 'garments',
       hsCode: productData.hsCode || '9988',
@@ -2217,7 +2222,7 @@ export function AppProvider({ children }) {
     } catch(e) {}
 
     syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
-    if (isApprovedByDefault) {
+    if (newProduct.approvalStatus === 'approved') {
       showLiveToast(`📦 Product "${newProduct.names?.en}" published and live on website!`, 'success');
     } else {
       showLiveToast(`📦 Product "${newProduct.names?.en}" submitted! Sent for Admin Approval ⏳`, 'info');

@@ -8282,10 +8282,18 @@ export default function Modals() {
             {/* TAB 3: SELLER DASHBOARD / MY PRODUCTS */}
             {sellerTab === 'dashboard' && currentMerchant && (
               <div>
-                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: currentMerchant.status === 'approved' ? 'rgba(16, 185, 129, 0.1)' : currentMerchant.status === 'pending' ? 'rgba(234, 179, 8, 0.1)' : 'rgba(239, 68, 68, 0.1)', padding: '14px', borderRadius: '12px', border: `1px solid ${currentMerchant.status === 'approved' ? 'rgba(16, 185, 129, 0.3)' : currentMerchant.status === 'pending' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`, marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#34d399', fontWeight: 900 }}>
-                      🏬 {currentMerchant.businessName} <span style={{ fontSize: '0.78rem', background: '#059669', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>⭐ Verified Exporter</span>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: currentMerchant.status === 'approved' ? '#34d399' : currentMerchant.status === 'pending' ? '#facc15' : '#f87171', fontWeight: 900 }}>
+                      🏬 {currentMerchant.businessName} {
+                        currentMerchant.status === 'approved' ? (
+                          <span style={{ fontSize: '0.78rem', background: '#059669', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>⭐ Verified Exporter</span>
+                        ) : currentMerchant.status === 'pending' ? (
+                          <span style={{ fontSize: '0.78rem', background: '#d97706', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>⏳ Pending Admin Approval (એડમિન એપ્રુઅલ બાકી)</span>
+                        ) : (
+                          <span style={{ fontSize: '0.78rem', background: '#dc2626', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>🚫 Account Blocked</span>
+                        )
+                      }
                     </h4>
                     <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-sub)' }}>
                       📞 {currentMerchant.phone} | 📍 {currentMerchant.city}, {currentMerchant.state} | GST: {currentMerchant.gstin || 'N/A'}
@@ -8300,6 +8308,24 @@ export default function Modals() {
                     ➕ Add Product
                   </button>
                 </div>
+
+                {currentMerchant.status === 'pending' && (
+                  <div style={{ background: 'rgba(234, 179, 8, 0.12)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#fef08a', padding: '12px 16px', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.4rem' }}>⏳</span>
+                    <div>
+                      <strong>નોંધ (Registration Pending):</strong> તમારું સેલર રજિસ્ટ્રેશન સફળતાપૂર્વક સબમિટ થયું છે પરંતુ હાલ એડમિન એપ્રુવલ માટે પેન્ડિંગ છે. એડમિન વેરિફિકેશન કરીને એપ્રુવ કરશે ત્યારબાદ જ તમારું પ્રોફાઇલ અને પ્રોડક્ટ્સ પબ્લિકલી એક્ટિવ થશે.
+                    </div>
+                  </div>
+                )}
+
+                {currentMerchant.status === 'blocked' && (
+                  <div style={{ background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5', padding: '12px 16px', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.4rem' }}>🚫</span>
+                    <div>
+                      <strong>એકાઉન્ટ બ્લોક છે (Account Blocked):</strong> તમારું સેલર એકાઉન્ટ એડમિન દ્વારા બ્લોક કરવામાં આવ્યું છે. વધુ માહિતી માટે એડમિન સપોર્ટનો સંપર્ક કરો.
+                    </div>
+                  </div>
+                )}
 
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '10px' }}>📦 Published Products List:</h4>
 

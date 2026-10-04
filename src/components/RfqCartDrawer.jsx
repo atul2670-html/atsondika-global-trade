@@ -258,6 +258,13 @@ export default function RfqCartDrawer() {
   // 5. Grand Total in INR
   const totalLocalAmountInr = itemsSubtotalInr + totalGstAmountInr + totalPackingChargeInr + totalCourierChargeInr;
 
+  // Amount Aliases for Checkout Modal and Order Receipts
+  const itemsSubtotal = itemsSubtotalInr;
+  const totalPackingCharge = totalPackingChargeInr;
+  const totalCourierCharge = totalCourierChargeInr;
+  const totalGstAmount = totalGstAmountInr;
+  const totalLocalAmount = totalLocalAmountInr;
+
   const cartCurrency = rfqCartItems[0]?.currency || 'INR';
   const cartCurrSym = getCurrencySymbol(cartCurrency);
 
