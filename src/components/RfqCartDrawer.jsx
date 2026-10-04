@@ -1156,27 +1156,27 @@ export default function RfqCartDrawer() {
             <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Subtotal ({rfqCartItems.length} Products):</span>
-                <span style={{ fontWeight: 700, color: '#ffffff' }}>{cartCurrSym + Number(itemsSubtotal).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                <span style={{ fontWeight: 700, color: '#ffffff' }}>{formatPriceFromInr(itemsSubtotalInr)}</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>📦 Packing Charge:</span>
-                <span style={{ fontWeight: 800, color: totalPackingCharge > 0 ? '#f59e0b' : '#4ade80' }}>
-                  {totalPackingCharge > 0 ? cartCurrSym + Number(totalPackingCharge).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'FREE (0)'}
+                <span style={{ fontWeight: 800, color: totalPackingChargeInr > 0 ? '#f59e0b' : '#4ade80' }}>
+                  {totalPackingChargeInr > 0 ? formatPriceFromInr(totalPackingChargeInr) : 'FREE (0)'}
                 </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>🚚 Courier Delivery Charge:</span>
-                <span style={{ fontWeight: 800, color: totalCourierCharge > 0 ? '#38bdf8' : '#4ade80' }}>
-                  {totalCourierCharge > 0 ? cartCurrSym + Number(totalCourierCharge).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'FREE (0)'}
+                <span style={{ fontWeight: 800, color: totalCourierChargeInr > 0 ? '#38bdf8' : '#4ade80' }}>
+                  {totalCourierChargeInr > 0 ? formatPriceFromInr(totalCourierChargeInr) : 'FREE (0)'}
                 </span>
               </div>
 
-              {totalGstAmount > 0 && (
+              {totalGstAmountInr > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.78rem' }}>
                   <span style={{ color: '#94a3b8' }}>🏛️ GST Tax (+ GST Extra):</span>
-                  <span style={{ color: '#facc15', fontWeight: 700 }}>+ {cartCurrSym + Number(totalGstAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                  <span style={{ color: '#facc15', fontWeight: 700 }}>+ {formatPriceFromInr(totalGstAmountInr)}</span>
                 </div>
               )}
 
@@ -1184,8 +1184,14 @@ export default function RfqCartDrawer() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 900 }}>
                 <span style={{ color: '#ffffff' }}>Payable Amount:</span>
-                <span style={{ color: '#facc15' }}>{cartCurrSym + Number(totalLocalAmount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                <span style={{ color: '#facc15' }}>{formatPriceFromInr(totalLocalAmountInr)}</span>
               </div>
+
+              {getActiveCurrencyCode() !== 'INR' && (
+                <div style={{ fontSize: '0.76rem', color: '#4ade80', fontWeight: 800, textAlign: 'right', marginTop: '6px' }}>
+                  IN Live INR Equivalent: ₹{((totalLocalAmountInr / getUsdToInrRate()) * (getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100))).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
+                </div>
+              )}
             </div>
 
             {paymentStep === 'pay' && (
@@ -1197,7 +1203,7 @@ export default function RfqCartDrawer() {
                       📱 Scan QR Code to Pay via GPay / PhonePe / Paytm
                     </h5>
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${totalLocalAmount}&cu=INR`)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=7861997755@ybl&pn=AtsondikaGlobalTrade&am=${Math.round(getActiveCurrencyCode() === 'INR' ? totalLocalAmountInr : ((totalLocalAmountInr / getUsdToInrRate()) * (getUsdToInrRate() * (1 + (forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5) / 100))))}&cu=INR`)}`}
                       alt="UPI QR Code"
                       style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)', width: '160px', height: '160px' }}
                     />
