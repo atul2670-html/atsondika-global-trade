@@ -126,7 +126,7 @@ export default function Modals() {
     adminPassword, saveAdminPassword, adminMobile, setAdminMobile,
     companiesList, activeCompanyId, activeCompany, setActiveCompanyId, updateCompanyProfile,
     fetchServerData, exportDatabase, importDatabase,
-    editingProductId, saveProduct, getAllProducts, customProductsList,
+    editingProductId, setEditingProductId, saveProduct, getAllProducts, customProductsList,
     editingCertId, saveCertificate, certificatesList,
     editingBranchId, saveBranch, branchesList,
     editingRouteId, saveFreightRoute, freightRoutesList,
