@@ -1064,8 +1064,8 @@ export default function Modals() {
       const mainCatOptions = getMainProductCategoryOptions();
       const firstParentCat = mainCatOptions.length > 0 ? mainCatOptions[0].category : 'agro';
 
-      if (activeModal === 'product_main') setProdType('main');
-      if (activeModal === 'product_sub') setProdType('sub');
+      if (activeModal === 'product_main' && (!currentMerchant || isAdminLoggedIn)) setProdType('main');
+      if (activeModal === 'product_sub' || activeModal === 'product' || (currentMerchant && !isAdminLoggedIn)) setProdType('sub');
 
       if (editingProductId) {
         const target = getAllProducts().find(p => p.id === editingProductId);
@@ -4784,7 +4784,7 @@ export default function Modals() {
       {(activeModal === 'product' || activeModal === 'product_main' || activeModal === 'product_sub') && (
         <div className="modal-backdrop show">
           <div className="glass-card modal-card" style={{ maxWidth: '1180px', width: '95%', maxHeight: '92vh', overflowY: 'auto', borderRadius: '20px' }}>
-            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <button className="modal-close" onClick={() => setActiveModal((currentMerchant && !isAdminLoggedIn) ? 'seller_portal' : null)}>&times;</button>
             
             {/* REGISTERED SELLER MODE STATUS BANNER */}
             {currentMerchant && !editingProductId && (
@@ -4822,44 +4822,46 @@ export default function Modals() {
             )}
 
             {/* FORM SWITCHER TABS */}
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: 'var(--radius-pill)', marginBottom: '20px' }}>
-              <button
-                type="button"
-                onClick={() => setProdType('main')}
-                style={{
-                  flex: 1,
-                  padding: '9px 14px',
-                  borderRadius: 'var(--radius-pill)',
-                  border: 'none',
-                  fontSize: '0.86rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  background: prodType === 'main' ? 'var(--primary-teal)' : 'transparent',
-                  color: prodType === 'main' ? 'white' : 'var(--text-sub)',
-                  transition: 'all 0.25s'
-                }}
-              >
-                🏷️ 1. Main Category Form
-              </button>
-              <button
-                type="button"
-                onClick={() => setProdType('sub')}
-                style={{
-                  flex: 1,
-                  padding: '9px 14px',
-                  borderRadius: 'var(--radius-pill)',
-                  border: 'none',
-                  fontSize: '0.86rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  background: prodType === 'sub' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
-                  color: prodType === 'sub' ? 'white' : 'var(--text-sub)',
-                  transition: 'all 0.25s'
-                }}
-              >
-                📦 2. Sub-Product Form
-              </button>
-            </div>
+            {(!currentMerchant || isAdminLoggedIn) && (
+              <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: 'var(--radius-pill)', marginBottom: '20px' }}>
+                <button
+                  type="button"
+                  onClick={() => setProdType('main')}
+                  style={{
+                    flex: 1,
+                    padding: '9px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: 'none',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    background: prodType === 'main' ? 'var(--primary-teal)' : 'transparent',
+                    color: prodType === 'main' ? 'white' : 'var(--text-sub)',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  🏷️ 1. Main Category Form
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProdType('sub')}
+                  style={{
+                    flex: 1,
+                    padding: '9px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: 'none',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    background: prodType === 'sub' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
+                    color: prodType === 'sub' ? 'white' : 'var(--text-sub)',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  📦 2. Sub-Product Form
+                </button>
+              </div>
+            )}
 
             {/* ======================================================== */}
             {/* FORM 1: MAIN PRODUCT / CATEGORY FORM                     */}
@@ -5142,6 +5144,10 @@ export default function Modals() {
                     isCustom: true
                   });
                   alert(`✅ Sub-Product "${baseEnglishName}" with International HS Code "${hsCode}" saved successfully!`);
+                  if (currentMerchant && !isAdminLoggedIn) {
+                    setActiveModal('seller_portal');
+                    setSellerTab('dashboard');
+                  }
                 }}>
                   {/* 1. SELECT PRODUCT TYPE */}
                   <div className="form-group">
@@ -8068,7 +8074,7 @@ export default function Modals() {
                     onClick={() => {
                       setEditingProductId(null);
                       setProdType('sub');
-                      setActiveModal('product');
+                      setActiveModal('product_sub');
                     }}
                   >
                     ➕ Upload New Product (નવી પ્રોડક્ટ)
@@ -8389,7 +8395,7 @@ export default function Modals() {
                     onClick={() => {
                       setEditingProductId(null);
                       setProdType('sub');
-                      setActiveModal('product');
+                      setActiveModal('product_sub');
                     }}
                   >
                     ➕ Add Product
@@ -8475,7 +8481,7 @@ export default function Modals() {
                                   onClick={() => {
                                     setEditingProductId(null);
                                     setProdType('sub');
-                                    setActiveModal('product');
+                                    setActiveModal('product_sub');
                                   }}
                                 >
                                   ➕ Upload New Product
@@ -8528,7 +8534,7 @@ export default function Modals() {
                   onClick={() => {
                     setEditingProductId(null);
                     setProdType('sub');
-                    setActiveModal('product');
+                    setActiveModal('product_sub');
                   }}
                 >
                   🚀 Open Master Product Upload Form (ફુલ પ્રોડક્ટ ફોર્મ ખોલો)
