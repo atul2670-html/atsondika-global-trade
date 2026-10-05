@@ -316,6 +316,10 @@ export default function Modals() {
   const [mGstinInput, setMGstinInput] = useState('');
   const [mBizTypeInput, setMBizTypeInput] = useState('Manufacturer & Exporter');
   const [mSellerLoginQuery, setMSellerLoginQuery] = useState('');
+  const [mPasswordInput, setMPasswordInput] = useState('');
+  const [mConfirmPasswordInput, setMConfirmPasswordInput] = useState('');
+  const [mSellerPasswordQuery, setMSellerPasswordQuery] = useState('');
+  const [showMPassword, setShowMPassword] = useState(false);
 
   // Seller Certificate Upload States
   const [mIecCertInput, setMIecCertInput] = useState('');
@@ -8065,12 +8069,17 @@ export default function Modals() {
                   alert("⚠️ Please enter Business Name and Mobile/WhatsApp Number!");
                   return;
                 }
+                if (mPasswordInput !== mConfirmPasswordInput) {
+                  alert("⚠️ Passwords do not match! Please check and re-type your password.");
+                  return;
+                }
                 registerMerchant({
                   businessName: mBizNameInput,
                   brandName: mBrandInput || mBizNameInput,
                   contactPerson: mContactInput || mBizNameInput,
                   phone: mPhoneInput,
                   email: mEmailInput,
+                  password: mPasswordInput,
                   city: mCityInput,
                   state: mStateInput,
                   gstin: mGstinInput,
@@ -8105,6 +8114,42 @@ export default function Modals() {
                   <div className="form-group">
                     <label className="form-label">Email Address</label>
                     <input type="email" className="form-control" value={mEmailInput} onChange={(e) => setMEmailInput(e.target.value)} placeholder="e.g. info@suratsilks.com" />
+                  </div>
+                </div>
+
+                {/* SELLER PASSWORD CREATION ROW */}
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Create Password / પાસવર્ડ બનાવો *</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showMPassword ? "text" : "password"}
+                        className="form-control"
+                        value={mPasswordInput}
+                        onChange={(e) => setMPasswordInput(e.target.value)}
+                        placeholder="Set secret seller password for login"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowMPassword(!showMPassword)}
+                        style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                        title={showMPassword ? "Hide password" : "Show password"}
+                      >
+                        {showMPassword ? '👁️' : '🙈'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Confirm Password / પાસવર્ડ ફરીથી લખો *</label>
+                    <input
+                      type={showMPassword ? "text" : "password"}
+                      className="form-control"
+                      value={mConfirmPasswordInput}
+                      onChange={(e) => setMConfirmPasswordInput(e.target.value)}
+                      placeholder="Re-enter secret password"
+                      required
+                    />
                   </div>
                 </div>
 
@@ -8262,7 +8307,7 @@ export default function Modals() {
                   alert("Please enter Mobile or Email!");
                   return;
                 }
-                const res = loginMerchant(mSellerLoginQuery);
+                const res = loginMerchant(mSellerLoginQuery, mSellerPasswordQuery);
                 if (res.success) {
                   setSellerTab('dashboard');
                 } else {
@@ -8272,6 +8317,26 @@ export default function Modals() {
                 <div className="form-group">
                   <label className="form-label">Registered Mobile / Email / Business Name *</label>
                   <input type="text" className="form-control" value={mSellerLoginQuery} onChange={(e) => setMSellerLoginQuery(e.target.value)} placeholder="e.g. +91 98250 11223 or info@suratsilks.com" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Seller Account Password / પાસવર્ડ (ઓપ્શનલ)</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showMPassword ? "text" : "password"}
+                      className="form-control"
+                      value={mSellerPasswordQuery}
+                      onChange={(e) => setMSellerPasswordQuery(e.target.value)}
+                      placeholder="Enter secret seller password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowMPassword(!showMPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                      title={showMPassword ? "Hide password" : "Show password"}
+                    >
+                      {showMPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
                 </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem' }}>
                   🔑 Login to Seller Portal

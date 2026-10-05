@@ -1130,6 +1130,8 @@ export function AppProvider({ children }) {
         certificatesList: overrides.certificatesList || certificatesList,
         freightRoutesList: overrides.freightRoutesList || freightRoutesList,
         customerList: overrides.customerList || customerList,
+        merchantsList: overrides.merchantsList || merchantsList,
+        merchantProductsList: overrides.merchantProductsList || merchantProductsList,
         heroBanner: overrides.heroBanner || heroBanner,
         aboutData: overrides.aboutData || aboutData,
         activeCompanyId: overrides.activeCompanyId || activeCompanyId,
@@ -1213,6 +1215,31 @@ export function AppProvider({ children }) {
               return activeServerList;
             }
             return activePrev;
+          });
+        }
+
+        // Always sync merchantsList & merchantProductsList across devices/browsers
+        if (Array.isArray(data.merchantsList) && data.merchantsList.length > 0) {
+          setMerchantsList(prev => {
+            const prevStr = JSON.stringify(prev);
+            const nextStr = JSON.stringify(data.merchantsList);
+            if (prevStr !== nextStr) {
+              try { localStorage.setItem('site_merchants_list_v1', nextStr); } catch(e) {}
+              return data.merchantsList;
+            }
+            return prev;
+          });
+        }
+
+        if (Array.isArray(data.merchantProductsList) && data.merchantProductsList.length > 0) {
+          setMerchantProductsList(prev => {
+            const prevStr = JSON.stringify(prev);
+            const nextStr = JSON.stringify(data.merchantProductsList);
+            if (prevStr !== nextStr) {
+              try { localStorage.setItem('site_merchant_products_v1', nextStr); } catch(e) {}
+              return data.merchantProductsList;
+            }
+            return prev;
           });
         }
 
@@ -2108,6 +2135,7 @@ export function AppProvider({ children }) {
       contactPerson: merchantData.contactPerson || 'N/A',
       phone: merchantData.phone || '',
       email: merchantData.email || '',
+      password: merchantData.password || '',
       city: merchantData.city || 'Surat',
       state: merchantData.state || 'Gujarat',
       gstin: merchantData.gstin || '',
@@ -2132,15 +2160,41 @@ export function AppProvider({ children }) {
     return newMerchant;
   };
 
-  const loginMerchant = (identifier) => {
+  const loginMerchant = (identifier, password = '') => {
     if (!identifier) return { success: false, message: 'Please enter Mobile or Email!' };
-    const query = identifier.trim().toLowerCase();
-    const found = merchantsList.find(m =>
-      (m.phone && m.phone.toLowerCase().includes(query)) ||
-      (m.email && m.email.toLowerCase().includes(query)) ||
-      (m.businessName && m.businessName.toLowerCase().includes(query))
-    );
-    if (found) {
+    const rawQuery = identifier.trim().toLowerCase();
+    const cleanDigitQuery = rawQuery.replace(/[^0-9]/g, '');
+
+    const matchingMerchants = merchantsList.filter(m => {
+      if (!m) return false;
+      const mPhone = (m.phone || '').toLowerCase();
+      const mPhoneDigits = mPhone.replace(/[^0-9]/g, '');
+      const mEmail = (m.email || '').toLowerCase().trim();
+      const mName = (m.businessName || '').toLowerCase().trim();
+      const mBrand = (m.brandName || '').toLowerCase().trim();
+
+      const isPhoneMatch = (mPhone && mPhone.includes(rawQuery)) ||
+                           (cleanDigitQuery && cleanDigitQuery.length >= 6 && mPhoneDigits.includes(cleanDigitQuery));
+      const isEmailMatch = (mEmail && (mEmail === rawQuery || mEmail.includes(rawQuery)));
+      const isNameMatch = (mName && mName.includes(rawQuery)) || (mBrand && mBrand.includes(rawQuery));
+
+      return isPhoneMatch || isEmailMatch || isNameMatch;
+    });
+
+    if (matchingMerchants.length > 0) {
+      // Prioritize approved seller if multiple exist with same phone/email
+      const found = matchingMerchants.find(m => m.status === 'approved') || matchingMerchants[0];
+
+      // Validate Password if merchant set a password
+      if (found.password && found.password.trim() !== '') {
+        if (!password || password.trim() === '') {
+          return { success: false, message: '🔑 Password Required! Please enter your Seller Password to log in.' };
+        }
+        if (found.password !== password) {
+          return { success: false, message: '❌ Incorrect Password! Please enter the correct seller password.' };
+        }
+      }
+
       setCurrentMerchant(found);
       try { localStorage.setItem('site_current_merchant_v1', JSON.stringify(found)); } catch(e) {}
       showLiveToast(`🔑 Welcome back, ${found.businessName}!`, 'success');
