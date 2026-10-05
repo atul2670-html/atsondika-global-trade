@@ -1756,7 +1756,14 @@ export default function Modals() {
                 style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_product_approvals')}
               >
-                📦 Seller Product Approvals — એડમિન એપ્રુઅલ ({(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'pending').length})
+                📦 Seller Product Approvals — એડમિન એપ્રુઅલ ({
+                  (() => {
+                    const map = new Map();
+                    (customProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                    (merchantProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                    return Array.from(map.values()).filter(p => (p.approvalStatus === 'pending' || ((p.merchantId || p.merchantName) && p.approvalStatus !== 'approved' && p.approvalStatus !== 'rejected'))).length;
+                  })()
+                })
               </button>
 
               <button
@@ -2237,37 +2244,56 @@ export default function Modals() {
                 onChange={(e) => setAdminProductSearch(e.target.value)}
                 style={{ flex: '1 1 240px', padding: '10px 14px', fontSize: '0.88rem' }}
               />
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {['pending', 'approved', 'rejected', 'all'].map((st) => (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => setAdminProductApprovalFilter(st)}
-                    className="btn-secondary"
-                    style={{
-                      padding: '8px 12px',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      borderRadius: '10px',
-                      textTransform: 'capitalize',
-                      background: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
-                      color: adminProductApprovalFilter === st ? '#fff' : '#a1a1aa',
-                      borderColor: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
-                    }}
-                  >
-                    {st === 'pending' ? `Pending ⏳ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'pending').length})` :
-                     st === 'approved' ? `Approved ✅ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'approved').length})` :
-                     st === 'rejected' ? `Rejected ❌ (${(customProductsList || []).filter(p => p.isSub && p.approvalStatus === 'rejected').length})` :
-                     `All Sellers' (${(customProductsList || []).filter(p => p.isSub).length})`}
-                  </button>
-                ))}
-              </div>
+              {(() => {
+                const map = new Map();
+                (customProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                (merchantProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                const allSellerProds = Array.from(map.values());
+
+                const getStatus = (p) => p.approvalStatus || ((p.merchantId || p.merchantName) ? 'pending' : 'approved');
+
+                const pendingCount = allSellerProds.filter(p => getStatus(p) === 'pending').length;
+                const approvedCount = allSellerProds.filter(p => getStatus(p) === 'approved').length;
+                const rejectedCount = allSellerProds.filter(p => getStatus(p) === 'rejected').length;
+
+                return (
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {['pending', 'approved', 'rejected', 'all'].map((st) => (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => setAdminProductApprovalFilter(st)}
+                        className="btn-secondary"
+                        style={{
+                          padding: '8px 12px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          borderRadius: '10px',
+                          textTransform: 'capitalize',
+                          background: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+                          color: adminProductApprovalFilter === st ? '#fff' : '#a1a1aa',
+                          borderColor: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
+                        }}
+                      >
+                        {st === 'pending' ? `Pending ⏳ (${pendingCount})` :
+                         st === 'approved' ? `Approved ✅ (${approvedCount})` :
+                         st === 'rejected' ? `Rejected ❌ (${rejectedCount})` :
+                         `All Sellers' (${allSellerProds.length})`}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Product Approvals List */}
             <div style={{ display: 'grid', gap: '14px' }}>
               {(() => {
-                const sellerProducts = (customProductsList || []).filter(p => p.isSub);
+                const map = new Map();
+                (customProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                (merchantProductsList || []).forEach(p => { if (p.isSub) map.set(p.id, p); });
+                const sellerProducts = Array.from(map.values());
+
                 const filtered = sellerProducts.filter(p => {
                   const titleEn = p.names?.en || p.name || '';
                   const titleGu = p.names?.gu || '';
@@ -2278,7 +2304,7 @@ export default function Modals() {
                     (p.hsCode && p.hsCode.toLowerCase().includes(adminProductSearch.toLowerCase())) ||
                     (p.merchantName && p.merchantName.toLowerCase().includes(adminProductSearch.toLowerCase()));
                   
-                  const status = p.approvalStatus || 'approved';
+                  const status = p.approvalStatus || ((p.merchantId || p.merchantName) ? 'pending' : 'approved');
                   const matchStatus = adminProductApprovalFilter === 'all' || status === adminProductApprovalFilter;
                   return matchQuery && matchStatus;
                 });
