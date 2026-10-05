@@ -8414,47 +8414,100 @@ export default function Modals() {
                   </div>
                 )}
 
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '10px' }}>📦 Published Products List:</h4>
+                {(() => {
+                  const merchantAllProds = (Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName)));
+                  const pendingProds = merchantAllProds.filter(p => p.approvalStatus === 'pending');
+                  const approvedProds = merchantAllProds.filter(p => p.approvalStatus === 'approved' || !p.approvalStatus);
 
-                {(Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName))).length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', color: 'var(--text-sub)' }}>
-                    📦 No products published yet! Click below to add your items to the website.
-                    <div style={{ marginTop: '12px' }}>
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        style={{ padding: '8px 18px', fontSize: '0.82rem', fontWeight: 800, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-                        onClick={() => {
-                          setEditingProductId(null);
-                          setProdType('sub');
-                          setActiveModal('product');
-                        }}
-                      >
-                        ➕ Open Full Product Upload Form
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
-                    {(Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName))).map((p, pIdx) => (
-                      <div key={p.id || pIdx} style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                        <img src={p.image || (p.images && p.images[0]) || 'images/agro_spices_grains.png'} alt={p.names?.en} style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px' }} />
-                        <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{p.names?.en || p.names?.gu}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#38bdf8' }}>HS: {p.hsCode || '9988'} | Price: USD {p.priceUsd || '500'}</div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 800 }}>✓ Published</span>
-                          <button
-                            type="button"
-                            style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
-                            onClick={() => deleteMerchantProduct(p.id)}
-                          >
-                            🗑️ Delete
-                          </button>
+                  return (
+                    <div style={{ display: 'grid', gap: '18px' }}>
+                      {/* 1. PENDING ADMIN APPROVAL HOLD QUEUE */}
+                      {pendingProds.length > 0 && (
+                        <div style={{ background: 'rgba(234, 179, 8, 0.08)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
+                          <h4 style={{ fontSize: '0.95rem', fontWeight: 900, color: '#facc15', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            ⏳ Products Held for Admin Approval ({pendingProds.length})
+                          </h4>
+                          <p style={{ fontSize: '0.78rem', color: '#fef08a', margin: '0 0 12px 0' }}>
+                            ℹ️ આ પ્રોડક્ટ્સ સફળતાપૂર્વક સબમિટ થઈ ગઈ છે પરંતુ હાલ એડમિન ચકાસણી માટે હોલ્ડ પર છે. એડમિન દ્વારા એપ્રુવ કરાયા પછી જ તે વેબસાઈટ પર પબ્લિકલી લાઈવ ડિસ્પલે થશે.
+                          </p>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                            {pendingProds.map((p, pIdx) => (
+                              <div key={p.id || pIdx} style={{ background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '10px', border: '1px dashed rgba(234, 179, 8, 0.5)' }}>
+                                <img src={p.image || (p.images && p.images[0]) || 'images/agro_spices_grains.png'} alt={p.names?.en} style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px', opacity: 0.85 }} />
+                                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fef08a' }}>{p.names?.en || p.names?.gu}</div>
+                                <div style={{ fontSize: '0.76rem', color: '#9ca3af' }}>HS: {p.hsCode || '9988'} | Price: USD {p.priceUSD || p.priceUsd || '500'}</div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', alignItems: 'center' }}>
+                                  <span style={{ fontSize: '0.7rem', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>⏳ Pending Admin Review</span>
+                                  <button
+                                    type="button"
+                                    style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
+                                    onClick={() => deleteMerchantProduct(p.id)}
+                                  >
+                                    🗑️ Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
+                      )}
+
+                      {/* 2. APPROVED & PUBLISHED LIVE PRODUCTS */}
+                      <div>
+                        <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          📦 Published & Live Products ({approvedProds.length}):
+                        </h4>
+
+                        {approvedProds.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', color: 'var(--text-sub)' }}>
+                            📦 No live approved products published yet.
+                            {pendingProds.length > 0 ? (
+                              <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#facc15', fontWeight: 700 }}>
+                                ⏳ ({pendingProds.length}) product is currently waiting for Admin Approval.
+                              </div>
+                            ) : (
+                              <div style={{ marginTop: '12px' }}>
+                                <button
+                                  type="button"
+                                  className="btn-primary"
+                                  style={{ padding: '8px 18px', fontSize: '0.82rem', fontWeight: 800, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                                  onClick={() => {
+                                    setEditingProductId(null);
+                                    setProdType('sub');
+                                    setActiveModal('product');
+                                  }}
+                                >
+                                  ➕ Upload New Product
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                            {approvedProds.map((p, pIdx) => (
+                              <div key={p.id || pIdx} style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
+                                <img src={p.image || (p.images && p.images[0]) || 'images/agro_spices_grains.png'} alt={p.names?.en} style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '6px' }} />
+                                <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{p.names?.en || p.names?.gu}</div>
+                                <div style={{ fontSize: '0.78rem', color: '#38bdf8' }}>HS: {p.hsCode || '9988'} | Price: USD {p.priceUSD || p.priceUsd || '500'}</div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', alignItems: 'center' }}>
+                                  <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 800 }}>✓ Published Live</span>
+                                  <button
+                                    type="button"
+                                    style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: 'none', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
+                                    onClick={() => deleteMerchantProduct(p.id)}
+                                  >
+                                    🗑️ Delete
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 

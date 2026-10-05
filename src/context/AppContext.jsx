@@ -1551,11 +1551,7 @@ export function AppProvider({ children }) {
     let targetCompanyId = productData.companyId || (targetExisting ? targetExisting.companyId : null) || activeCompanyId;
 
     const isSellerSubmission = Boolean(currentMerchant && !isAdminLoggedIn);
-    const approval = productData.approvalStatus || (
-      isSellerSubmission
-        ? ((currentMerchant.status === 'approved' || !requireProductApproval) ? 'approved' : 'pending')
-        : 'approved'
-    );
+    const approval = isSellerSubmission ? 'pending' : (productData.approvalStatus || 'approved');
 
     let dataToSave = {
       ...productData,
@@ -2279,8 +2275,8 @@ export function AppProvider({ children }) {
       ? productData.images.map(img => convertGoogleDriveUrl(img))
       : [cleanImg];
 
-    // Determine initial approval status: Approved merchants or when requireProductApproval is false -> auto approve
-    const initialStatus = (currentMerchant?.status === 'approved' || !requireProductApproval) ? 'approved' : 'pending';
+    // All seller uploaded products require mandatory admin approval
+    const initialStatus = 'pending';
 
     const newProduct = {
       id: `mprod-${Date.now()}`,
