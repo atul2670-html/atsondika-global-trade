@@ -1155,7 +1155,7 @@ export function AppProvider({ children }) {
     } catch(e) {
       console.warn('Network sync POST failed:', e);
     } finally {
-      setTimeout(() => { isSyncing.current = false; }, 200);
+      setTimeout(() => { isSyncing.current = false; }, 2500);
     }
   };
 
@@ -1188,6 +1188,11 @@ export function AppProvider({ children }) {
       }
 
       if (data) {
+        const serverTs = Number(data.updatedAt) || 0;
+        if (serverTs > 0 && serverTs < lastServerUpdate.current) {
+          return; // Ignore stale cloud data if local state is newer
+        }
+
         if (Array.isArray(data.deletedInquiryIds)) {
           setDeletedInquiryIds(prev => {
             const merged = Array.from(new Set([...prev, ...data.deletedInquiryIds]));
@@ -1238,7 +1243,6 @@ export function AppProvider({ children }) {
           });
         }
 
-        const serverTs = Number(data.updatedAt) || 0;
         lastServerUpdate.current = Math.max(lastServerUpdate.current, serverTs);
         try { localStorage.setItem('site_last_updated_at_v1', lastServerUpdate.current.toString()); } catch(e) {}
 
@@ -1361,22 +1365,27 @@ export function AppProvider({ children }) {
     // 1. Millisecond Push Stream Listener (Fires in ~50ms when Admin/Seller makes changes anywhere in the world)
     const unsubPush = subscribeToGlobalCloudPush((pushedData) => {
       if (pushedData) {
-        if (Array.isArray(pushedData.customProductsList) && pushedData.customProductsList.length > 0) {
-          setCustomProductsList(sanitizeCustomProductsList(pushedData.customProductsList));
+        const pushedTs = Number(pushedData.updatedAt) || 0;
+        if (pushedTs >= lastServerUpdate.current) {
+          if (pushedTs > 0) lastServerUpdate.current = pushedTs;
+          if (Array.isArray(pushedData.customProductsList) && pushedData.customProductsList.length > 0) {
+            setCustomProductsList(sanitizeCustomProductsList(pushedData.customProductsList));
+          }
+          if (Array.isArray(pushedData.merchantProductsList) && pushedData.merchantProductsList.length > 0) {
+            setMerchantProductsList(pushedData.merchantProductsList);
+          }
+          triggerRealtimeRefresh();
         }
-        if (Array.isArray(pushedData.merchantProductsList) && pushedData.merchantProductsList.length > 0) {
-          setMerchantProductsList(pushedData.merchantProductsList);
-        }
-        fetchServerData();
-        triggerRealtimeRefresh();
       }
     });
 
-    // 2. High-speed 500-millisecond Heartbeat Backup Poll
+    // 2. Backup poll every 4 seconds to avoid race conditions with in-flight requests
     const timer = setInterval(() => {
-      fetchServerData();
-      triggerRealtimeRefresh();
-    }, 500);
+      if (!isSyncing.current) {
+        fetchServerData();
+        triggerRealtimeRefresh();
+      }
+    }, 4000);
 
     return () => {
       unsubPush();
