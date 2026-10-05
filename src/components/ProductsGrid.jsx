@@ -146,20 +146,18 @@ export default function ProductsGrid() {
     return true;
   });
 
-  // Filter out pending/rejected seller products and unapproved merchant products for public visitors
+  // Filter out pending/rejected seller products and unapproved merchant products from the main page
   filtered = filtered.filter(p => {
     if (p.isSub) {
+      // 1. MANDATORY ADMIN APPROVAL CHECK: If product status is NOT approved, hide from main page grid completely
       if (p.approvalStatus && p.approvalStatus !== 'approved') {
-        if (!isAdminLoggedIn && currentMerchant?.id !== p.merchantId) {
-          return false;
-        }
+        return false;
       }
+      // 2. SELLER MERCHANT VERIFICATION CHECK: If seller account is not approved by admin, hide from main page
       if (p.merchantId) {
         const m = (merchantsList || []).find(merchant => merchant.id === p.merchantId);
         if (m && m.status !== 'approved') {
-          if (!isAdminLoggedIn && currentMerchant?.id !== p.merchantId) {
-            return false;
-          }
+          return false;
         }
       }
     }
