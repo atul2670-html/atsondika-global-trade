@@ -1263,7 +1263,7 @@ export function AppProvider({ children }) {
                 } else {
                   const existingTime = Number(existing.updatedAt || 0);
                   const serverTime = Number(p.updatedAt || 0);
-                  if (serverTime > existingTime) {
+                  if (serverTime >= existingTime || p.approvalStatus !== existing.approvalStatus) {
                     map.set(p.id, { ...existing, ...p });
                   }
                 }
@@ -1361,6 +1361,12 @@ export function AppProvider({ children }) {
     // 1. Millisecond Push Stream Listener (Fires in ~50ms when Admin/Seller makes changes anywhere in the world)
     const unsubPush = subscribeToGlobalCloudPush((pushedData) => {
       if (pushedData) {
+        if (Array.isArray(pushedData.customProductsList) && pushedData.customProductsList.length > 0) {
+          setCustomProductsList(sanitizeCustomProductsList(pushedData.customProductsList));
+        }
+        if (Array.isArray(pushedData.merchantProductsList) && pushedData.merchantProductsList.length > 0) {
+          setMerchantProductsList(pushedData.merchantProductsList);
+        }
         fetchServerData();
         triggerRealtimeRefresh();
       }
@@ -2313,28 +2319,34 @@ export function AppProvider({ children }) {
   };
 
   const approveMerchantProduct = (productId) => {
-    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved' } : p);
+    const now = Date.now();
+    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved', updatedAt: now } : p);
     setCustomProductsList(nextCustom);
-    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved' } : p);
+    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'approved', updatedAt: now } : p);
     setMerchantProductsList(nextMerchantProds);
     try {
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(nextCustom));
       localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
       localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
     } catch(e) {}
-    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds, updatedAt: now });
+    triggerRealtimeRefresh();
     showLiveToast(`✅ Product approved and live on site!`, 'success');
   };
 
   const rejectMerchantProduct = (productId) => {
-    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected' } : p);
+    const now = Date.now();
+    const nextCustom = customProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected', updatedAt: now } : p);
     setCustomProductsList(nextCustom);
-    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected' } : p);
+    const nextMerchantProds = merchantProductsList.map(p => p.id === productId ? { ...p, approvalStatus: 'rejected', updatedAt: now } : p);
     setMerchantProductsList(nextMerchantProds);
     try {
+      localStorage.setItem('custom_added_products_v8', JSON.stringify(nextCustom));
       localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
       localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
     } catch(e) {}
-    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds });
+    syncToServer({ customProductsList: nextCustom, merchantProductsList: nextMerchantProds, updatedAt: now });
+    triggerRealtimeRefresh();
     showLiveToast(`❌ Product rejected!`, 'info');
   };
 
