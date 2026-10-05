@@ -4786,6 +4786,18 @@ export default function Modals() {
           <div className="glass-card modal-card" style={{ maxWidth: '1180px', width: '95%', maxHeight: '92vh', overflowY: 'auto', borderRadius: '20px' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
             
+            {/* REGISTERED SELLER MODE STATUS BANNER */}
+            {currentMerchant && !editingProductId && (
+              <div style={{ background: 'rgba(16, 185, 129, 0.12)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.4)', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>🏬 Registered Seller Mode:</span> Uploading Product as <strong>{currentMerchant.businessName}</strong> (📞 {currentMerchant.phone})
+                </div>
+                <span style={{ fontSize: '0.75rem', background: '#059669', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                  ⭐ Verified Exporter
+                </span>
+              </div>
+            )}
+
             {/* EDITING MODE STATUS BANNER */}
             {editingProductId && (
               <div style={{ background: 'rgba(245, 158, 11, 0.15)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.4)', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
@@ -8048,12 +8060,16 @@ export default function Modals() {
                       fontWeight: 800,
                       borderRadius: 'var(--radius-pill)',
                       border: '1px solid',
-                      background: sellerTab === 'add_product' ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'rgba(255,255,255,0.06)',
-                      color: sellerTab === 'add_product' ? 'black' : 'var(--text-sub)',
-                      borderColor: sellerTab === 'add_product' ? '#eab308' : 'var(--border-glass)',
+                      background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                      color: 'black',
+                      borderColor: '#eab308',
                       cursor: 'pointer'
                     }}
-                    onClick={() => setSellerTab('add_product')}
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setProdType('sub');
+                      setActiveModal('product');
+                    }}
                   >
                     ➕ Upload New Product (નવી પ્રોડક્ટ)
                   </button>
@@ -8089,7 +8105,9 @@ export default function Modals() {
                   qualityCertUrl: mQualityCertInput,
                   factoryPhotoUrl: mFactoryPhotoInput
                 });
-                setSellerTab('add_product');
+                setEditingProductId(null);
+                setProdType('sub');
+                setActiveModal('product');
               }}>
                 <div style={{ background: 'rgba(234, 179, 8, 0.08)', padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(234, 179, 8, 0.3)', marginBottom: '16px', fontSize: '0.84rem', color: '#facc15' }}>
                   🤝 <strong>Join as a Verified Exporter & Supplier:</strong> Display your Agro, Garment, Textile, Fastener & Industrial products to international buyers across the world!
@@ -8368,7 +8386,11 @@ export default function Modals() {
                     type="button"
                     className="btn-primary"
                     style={{ fontSize: '0.8rem', padding: '6px 12px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black' }}
-                    onClick={() => setSellerTab('add_product')}
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setProdType('sub');
+                      setActiveModal('product');
+                    }}
                   >
                     ➕ Add Product
                   </button>
@@ -8396,7 +8418,21 @@ export default function Modals() {
 
                 {(Array.isArray(customProductsList) ? customProductsList : []).filter(p => (currentMerchant && (p.merchantId === currentMerchant.id || p.merchantName === currentMerchant.businessName))).length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', color: 'var(--text-sub)' }}>
-                    📦 No products published yet! Click "Upload New Product" to add your items to the website.
+                    📦 No products published yet! Click below to add your items to the website.
+                    <div style={{ marginTop: '12px' }}>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        style={{ padding: '8px 18px', fontSize: '0.82rem', fontWeight: 800, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                        onClick={() => {
+                          setEditingProductId(null);
+                          setProdType('sub');
+                          setActiveModal('product');
+                        }}
+                      >
+                        ➕ Open Full Product Upload Form
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
@@ -8422,113 +8458,29 @@ export default function Modals() {
               </div>
             )}
 
-            {/* TAB 4: UPLOAD NEW PRODUCT */}
-            {(sellerTab === 'add_product' || (sellerTab === 'register' && currentMerchant)) && (
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (!mProdNameEn || !mProdHsCode) {
-                  alert("⚠️ Please enter Product Name and HS Code!");
-                  return;
-                }
-                addMerchantProduct({
-                  names: { en: mProdNameEn, gu: mProdNameGu || mProdNameEn, hi: mProdNameEn, fr: mProdNameEn },
-                  category: mProdCategory,
-                  hsCode: mProdHsCode,
-                  priceUsd: mProdPrice,
-                  moq: mProdMoq,
-                  image: mProdImage || 'images/agro_spices_grains.png',
-                  images: mProdImage ? [mProdImage] : ['images/agro_spices_grains.png'],
-                  specifications: { en: mProdSpecEn, gu: mProdSpecEn }
-                });
-                setSellerTab('dashboard');
-              }}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Product Title (English) *</label>
-                    <input type="text" className="form-control" value={mProdNameEn} onChange={(e) => setMProdNameEn(e.target.value)} placeholder="e.g. Premium Cotton Sarees / CNC Lathe" required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Product Title (ગુજરાતી)</label>
-                    <input type="text" className="form-control" value={mProdNameGu} onChange={(e) => setMProdNameGu(e.target.value)} placeholder="e.g. પ્રીમિયમ કોટન સાડી" />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Category *</label>
-                    <select className="form-control" value={mProdCategory} onChange={(e) => setMProdCategory(e.target.value)}>
-                      {getMainCategoryList().map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.nameEn}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">HS Code (6-Digit International) *</label>
-                    <input type="text" className="form-control" value={mProdHsCode} onChange={(e) => setMProdHsCode(e.target.value)} placeholder="e.g. 520811 / 620443 / 845811" required />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">FOB Price (USD) *</label>
-                    <input type="text" className="form-control" value={mProdPrice} onChange={(e) => setMProdPrice(e.target.value)} placeholder="e.g. 500" required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Minimum Order Quantity (MOQ)</label>
-                    <input type="text" className="form-control" value={mProdMoq} onChange={(e) => setMProdMoq(e.target.value)} placeholder="e.g. 1 Container / 100 Units" />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Product Image (ફોટો લિંક અથવા ગેલેરીમાંથી પસંદ કરો)</label>
-                  <div style={{ display: 'grid', gap: '8px' }}>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={mProdImage}
-                      onChange={(e) => setMProdImage(e.target.value)}
-                      placeholder="Google Drive link or Image URL (e.g. https://drive.google.com/...)"
-                    />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>અથવા ઉપકરણમાંથી ફોટો પસંદ કરો:</span>
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/*"
-                        style={{ flex: 1, minWidth: '180px' }}
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (evt) => setMProdImage(evt.target.result);
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {mProdImage && (
-                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(16, 185, 129, 0.08)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                      <img
-                        src={convertGoogleDriveUrl(mProdImage)}
-                        alt="Preview"
-                        style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #10b981' }}
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                      <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700 }}>✅ Product Image Ready for Publish!</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Key Specifications & Quality Grade</label>
-                  <textarea className="form-control" rows="2" value={mProdSpecEn} onChange={(e) => setMProdSpecEn(e.target.value)} placeholder="e.g. Export Quality Grade A Standard Packing"></textarea>
-                </div>
-
-                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', fontWeight: 900 }}>
-                  🚀 Publish Product on Website
+            {/* TAB 4: UPLOAD NEW PRODUCT LINK TO MASTER FORM */}
+            {sellerTab === 'add_product' && (
+              <div style={{ textAlign: 'center', padding: '36px 20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📦</div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#38bdf8', marginBottom: '8px' }}>
+                  Full Master Product Specification & Packaging Form
+                </h3>
+                <p style={{ color: '#9ca3af', fontSize: '0.84rem', marginBottom: '20px', maxWidth: '600px', margin: '0 auto 20px auto', lineHeight: '1.5' }}>
+                  તમારા ઉત્પાદન માટે સંપૂર્ણ ગ્લોબલ સ્પેસિફિકેશન, HS કોડ સર્ચ, 3-ડિવિઝન MOQ અને પેકેજિંગ વિગતો સાથે નવું ઉત્પાદન ઉમેરવા માટે નીચેના બટન પર ક્લિક કરો.
+                </p>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ padding: '12px 24px', fontSize: '0.95rem', fontWeight: 900, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                  onClick={() => {
+                    setEditingProductId(null);
+                    setProdType('sub');
+                    setActiveModal('product');
+                  }}
+                >
+                  🚀 Open Master Product Upload Form (ફુલ પ્રોડક્ટ ફોર્મ ખોલો)
                 </button>
-              </form>
+              </div>
             )}
           </div>
         </div>

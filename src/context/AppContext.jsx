@@ -1550,11 +1550,22 @@ export function AppProvider({ children }) {
     let targetExisting = targetId ? getAllProducts().find(p => p.id === targetId) : null;
     let targetCompanyId = productData.companyId || (targetExisting ? targetExisting.companyId : null) || activeCompanyId;
 
+    const isSellerSubmission = Boolean(currentMerchant && !isAdminLoggedIn);
+    const approval = productData.approvalStatus || (
+      isSellerSubmission
+        ? ((currentMerchant.status === 'approved' || !requireProductApproval) ? 'approved' : 'pending')
+        : 'approved'
+    );
+
     let dataToSave = {
       ...productData,
       companyId: targetCompanyId,
       isSub: productData.isSub !== undefined ? productData.isSub : true,
-      approvalStatus: 'approved',
+      approvalStatus: approval,
+      merchantId: productData.merchantId || (currentMerchant ? currentMerchant.id : (targetExisting ? targetExisting.merchantId : undefined)),
+      merchantName: productData.merchantName || (currentMerchant ? currentMerchant.businessName : (targetExisting ? targetExisting.merchantName : undefined)),
+      merchantPhone: productData.merchantPhone || (currentMerchant ? currentMerchant.phone : (targetExisting ? targetExisting.merchantPhone : undefined)),
+      merchantEmail: productData.merchantEmail || (currentMerchant ? currentMerchant.email : (targetExisting ? targetExisting.merchantEmail : undefined)),
       updatedAt: Date.now()
     };
     
@@ -1622,6 +1633,25 @@ export function AppProvider({ children }) {
       localStorage.setItem('custom_added_products_v6', JSON.stringify(nextProductsList));
       localStorage.setItem('custom_added_products_master', JSON.stringify(nextProductsList));
     } catch(e) {}
+
+    // Synchronize to merchantProductsList if this product belongs to a merchant
+    let nextMerchantProds = merchantProductsList;
+    if (dataToSave.merchantId) {
+      const filtered = (merchantProductsList || []).filter(p => p.id !== dataToSave.id);
+      nextMerchantProds = [dataToSave, ...filtered];
+      setMerchantProductsList(nextMerchantProds);
+      try { localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds)); } catch(e) {}
+    }
+
+    syncToServer({ customProductsList: nextProductsList, merchantProductsList: nextMerchantProds });
+
+    if (isSellerSubmission) {
+      if (dataToSave.approvalStatus === 'approved') {
+        showLiveToast(`📦 Product "${dataToSave.names?.en || dataToSave.names?.gu || 'Product'}" published & live on website!`, 'success');
+      } else {
+        showLiveToast(`📦 Product "${dataToSave.names?.en || dataToSave.names?.gu || 'Product'}" submitted! Sent for Admin Approval ⏳`, 'info');
+      }
+    }
     // Auto-sync Sub-Product Rate (4 Columns: Name, HSN, B2B Rate, B2C Rate) to marketTickerList
     try {
       const pName = dataToSave.names?.[currentLang] || dataToSave.names?.gu || dataToSave.names?.en || dataToSave.name || dataToSave.code || 'Product';
