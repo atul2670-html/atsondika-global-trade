@@ -8480,8 +8480,44 @@ export default function Modals() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Product Image Link / File URL</label>
-                  <input type="text" className="form-control" value={mProdImage} onChange={(e) => setMProdImage(e.target.value)} placeholder="https://example.com/photo.jpg or data:image/png..." />
+                  <label className="form-label">Product Image (ફોટો લિંક અથવા ગેલેરીમાંથી પસંદ કરો)</label>
+                  <div style={{ display: 'grid', gap: '8px' }}>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={mProdImage}
+                      onChange={(e) => setMProdImage(e.target.value)}
+                      placeholder="Google Drive link or Image URL (e.g. https://drive.google.com/...)"
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>અથવા ઉપકરણમાંથી ફોટો પસંદ કરો:</span>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        style={{ flex: 1, minWidth: '180px' }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setMProdImage(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {mProdImage && (
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(16, 185, 129, 0.08)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                      <img
+                        src={convertGoogleDriveUrl(mProdImage)}
+                        alt="Preview"
+                        style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #10b981' }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                      <span style={{ fontSize: '0.78rem', color: '#4ade80', fontWeight: 700 }}>✅ Product Image Ready for Publish!</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-group">

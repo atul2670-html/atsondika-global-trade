@@ -2244,6 +2244,14 @@ export function AppProvider({ children }) {
       alert("Please log in as a seller first!");
       return;
     }
+    const cleanImg = convertGoogleDriveUrl(productData.image || 'images/agro_spices_grains.png');
+    const cleanImages = (productData.images && productData.images.length > 0)
+      ? productData.images.map(img => convertGoogleDriveUrl(img))
+      : [cleanImg];
+
+    // Determine initial approval status: Approved merchants or when requireProductApproval is false -> auto approve
+    const initialStatus = (currentMerchant?.status === 'approved' || !requireProductApproval) ? 'approved' : 'pending';
+
     const newProduct = {
       id: `mprod-${Date.now()}`,
       merchantId: currentMerchant.id,
@@ -2251,14 +2259,14 @@ export function AppProvider({ children }) {
       merchantPhone: currentMerchant.phone,
       merchantEmail: currentMerchant.email,
       isSub: true,
-      approvalStatus: currentMerchant?.status === 'approved' ? (isApprovedByDefault ? 'approved' : 'pending') : 'pending',
+      approvalStatus: initialStatus,
       names: productData.names || { en: productData.nameEn || 'Merchant Product', gu: productData.nameGu || 'વેપારી પ્રોડક્ટ' },
       category: productData.category || 'garments',
       hsCode: productData.hsCode || '9988',
       priceUsd: productData.priceUsd || '500',
       moq: productData.moq || '1 Container',
-      image: productData.image || 'images/agro_spices_grains.png',
-      images: productData.images || [productData.image || 'images/agro_spices_grains.png'],
+      image: cleanImg,
+      images: cleanImages,
       specifications: productData.specifications || { en: 'Export Quality Standard Grade', gu: 'એક્સપોર્ટ ક્વાલિટી ગ્રેડ એ' },
       companyId: activeCompanyId || 'comp_1',
       createdAt: new Date().toLocaleDateString()
