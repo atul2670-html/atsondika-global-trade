@@ -820,11 +820,6 @@ export function AppProvider({ children }) {
         copy.category = 'agro';
       }
 
-      // Rule 0c: Ensure sub-products are approved by default for instant microsecond display on all screens
-      if (copy.isSub && copy.approvalStatus === 'pending') {
-        copy.approvalStatus = 'approved';
-      }
-
       // Rule 2: Deduplicate Main Category Tabs PER COMPANY (prevents cross-company deletion)
       if (!copy.isSub) {
         const titleKey = (copy.names?.en || copy.names?.gu || '').trim().toLowerCase();
