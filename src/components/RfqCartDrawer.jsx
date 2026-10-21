@@ -480,20 +480,10 @@ export default function RfqCartDrawer() {
             {/* Quick IN ₹ INR Toggle Button */}
             <button
               type="button"
+              className={`rfq-inr-quick-btn ${getActiveCurrencyCode() === 'INR' ? 'active' : ''}`}
               onClick={() => {
                 const inrObj = (currenciesList || []).find(c => c.code === 'INR') || { code: 'INR', symbol: '₹', name: 'Indian Rupee' };
                 if (setCurrentCurrency) setCurrentCurrency(inrObj);
-              }}
-              style={{
-                padding: '5px 10px',
-                borderRadius: '16px',
-                border: '1px solid ' + (getActiveCurrencyCode() === 'INR' ? '#f59e0b' : 'rgba(255,255,255,0.2)'),
-                background: getActiveCurrencyCode() === 'INR' ? 'rgba(245, 158, 11, 0.25)' : 'rgba(255,255,255,0.06)',
-                color: getActiveCurrencyCode() === 'INR' ? '#f59e0b' : '#e2e8f0',
-                fontSize: '0.74rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
               }}
               title="Switch to Indian Rupee (₹ INR)"
             >
@@ -523,38 +513,18 @@ export default function RfqCartDrawer() {
             <>
               {/* TRADE SALE TYPE TOGGLE BAR (Only visible in B2B Global mode) */}
               {tradeMode !== 'local' && (
-                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '12px', display: 'flex', gap: '6px', marginBottom: '14px', border: '1px solid var(--border-glass)' }}>
+                <div className="rfq-trade-switcher">
                   <button
                     type="button"
                     onClick={() => setRfqTradeCategory('export')}
-                    style={{
-                      flex: 1,
-                      padding: '6px 10px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      background: rfqTradeCategory === 'export' ? 'var(--primary-teal)' : 'transparent',
-                      color: rfqTradeCategory === 'export' ? 'white' : 'var(--text-sub)'
-                    }}
+                    className={`rfq-trade-tab-btn ${rfqTradeCategory === 'export' ? 'active-export' : ''}`}
                   >
                     🌐 Export Trade (Global)
                   </button>
                   <button
                     type="button"
                     onClick={() => setRfqTradeCategory('domestic')}
-                    style={{
-                      flex: 1,
-                      padding: '6px 10px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      background: rfqTradeCategory === 'domestic' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
-                      color: rfqTradeCategory === 'domestic' ? 'white' : 'var(--text-sub)'
-                    }}
+                    className={`rfq-trade-tab-btn ${rfqTradeCategory === 'domestic' ? 'active-domestic' : ''}`}
                   >
                     🇮🇳 Domestic India Sale (₹)
                   </button>
@@ -582,16 +552,16 @@ export default function RfqCartDrawer() {
                           {tradeMode !== 'local' && (
                             <span className="rfq-item-hscode">HS: {item.hsCode || '090931'}</span>
                           )}
-                          <span className="rfq-item-price" style={{ color: '#f59e0b', fontWeight: 800 }}>
+                          <span className="rfq-item-price">
                             {tradeMode === 'local'
                               ? (itemPrice > 0 ? formatItemPrice(item, itemPrice) : 'On Request')
                               : (usdPrice > 0 ? convertPrice(usdPrice) : 'On Request')}
                           </span>
                           {tradeMode === 'local' && (parseFloat(item.packingCharge) > 0 || parseFloat(item.courierCharge) > 0 || parseFloat(item.localGstRate) > 0) && (
-                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {parseFloat(item.packingCharge) > 0 && <span style={{ color: '#f59e0b' }}>+ {formatItemPrice(item, item.packingCharge)} Packing</span>}
-                              {parseFloat(item.courierCharge) > 0 && <span style={{ color: '#38bdf8' }}>+ {formatItemPrice(item, item.courierCharge)} Courier</span>}
-                              {parseFloat(item.localGstRate) > 0 && <span style={{ color: '#4ade80' }}>(+ {item.localGstRate}% GST)</span>}
+                            <div className="rfq-item-charges-meta">
+                              {parseFloat(item.packingCharge) > 0 && <span className="charge-packing">+ {formatItemPrice(item, item.packingCharge)} Packing</span>}
+                              {parseFloat(item.courierCharge) > 0 && <span className="charge-courier">+ {formatItemPrice(item, item.courierCharge)} Courier</span>}
+                              {parseFloat(item.localGstRate) > 0 && <span className="charge-gst">(+ {item.localGstRate}% GST)</span>}
                             </div>
                           )}
                         </div>
@@ -602,6 +572,7 @@ export default function RfqCartDrawer() {
                             <button
                               type="button"
                               onClick={() => updateRfqCartQuantity(item.id, item.incoterm, Math.max(1, (parseFloat(item.quantity) || 1) - 1))}
+                              aria-label="Decrease quantity"
                             >
                               -
                             </button>
@@ -610,10 +581,12 @@ export default function RfqCartDrawer() {
                               min="1"
                               value={item.quantity}
                               onChange={(e) => updateRfqCartQuantity(item.id, item.incoterm, Math.max(1, parseFloat(e.target.value) || 1))}
+                              aria-label="Item quantity"
                             />
                             <button
                               type="button"
                               onClick={() => updateRfqCartQuantity(item.id, item.incoterm, (parseFloat(item.quantity) || 1) + 1)}
+                              aria-label="Increase quantity"
                             >
                               +
                             </button>
@@ -623,33 +596,22 @@ export default function RfqCartDrawer() {
                             className="rfq-unit-select"
                             value={item.unit || (tradeMode === 'local' ? (name.toLowerCase().includes('ghee') || name.toLowerCase().includes('ઘી') ? 'kg' : 'pcs') : 'MT')}
                             onChange={(e) => updateRfqCartUnit && updateRfqCartUnit(item.id, item.incoterm, e.target.value)}
-                            style={{
-                              padding: '5px 8px',
-                              fontSize: '0.78rem',
-                              fontWeight: 800,
-                              background: 'rgba(255, 255, 255, 0.1)',
-                              color: '#facc15',
-                              border: '1px solid var(--border-glass)',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
                             title="Select Item Unit (યુનિટ પસંદ કરો)"
                           >
-                            <option value="kg" style={{ background: '#0f172a', color: 'white' }}>kg (કિલોગ્રામ)</option>
-                            <option value="gm" style={{ background: '#0f172a', color: 'white' }}>gm (ગ્રામ)</option>
-                            <option value="pcs" style={{ background: '#0f172a', color: 'white' }}>pcs (પીસ)</option>
-                            <option value="Sets" style={{ background: '#0f172a', color: 'white' }}>Sets (સેટ / ડ્રેસ)</option>
-                            <option value="Pairs" style={{ background: '#0f172a', color: 'white' }}>Pairs (જોડી / શૂઝ)</option>
-                            <option value="Dozen" style={{ background: '#0f172a', color: 'white' }}>Dozen (ડઝન - 12 Pcs)</option>
-                            <option value="Litre" style={{ background: '#0f172a', color: 'white' }}>Litre (લીટર / Liquid)</option>
-                            <option value="Box" style={{ background: '#0f172a', color: 'white' }}>Box (બોક્સ / ખોખું)</option>
-                            <option value="Tin" style={{ background: '#0f172a', color: 'white' }}>Tin (ડબ્બો / ઘી 15kg)</option>
-                            <option value="Packet" style={{ background: '#0f172a', color: 'white' }}>Packet (પેકેટ)</option>
-                            <option value="Bags" style={{ background: '#0f172a', color: 'white' }}>Bags (કોથળા / ગુણી)</option>
-                            <option value="Meter" style={{ background: '#0f172a', color: 'white' }}>Meter (મીટર / કાપડ)</option>
-                            <option value="Rolls" style={{ background: '#0f172a', color: 'white' }}>Rolls (રોલ / ફાબ્રિક)</option>
-                            <option value="MT" style={{ background: '#0f172a', color: 'white' }}>MT (મીટ્રિક ટન)</option>
+                            <option value="kg">kg (કિલોગ્રામ)</option>
+                            <option value="gm">gm (ગ્રામ)</option>
+                            <option value="pcs">pcs (પીસ)</option>
+                            <option value="Sets">Sets (સેટ / ડ્રેસ)</option>
+                            <option value="Pairs">Pairs (જોડી / શૂઝ)</option>
+                            <option value="Dozen">Dozen (ડઝન - 12 Pcs)</option>
+                            <option value="Litre">Litre (લીટર / Liquid)</option>
+                            <option value="Box">Box (બોક્સ / ખોખું)</option>
+                            <option value="Tin">Tin (ડબ્બો / ઘી 15kg)</option>
+                            <option value="Packet">Packet (પેકેટ)</option>
+                            <option value="Bags">Bags (કોથળા / ગુણી)</option>
+                            <option value="Meter">Meter (મીટર / કાપડ)</option>
+                            <option value="Rolls">Rolls (રોલ / ફાબ્રિક)</option>
+                            <option value="MT">MT (મીટ્રિક ટન)</option>
                           </select>
                           <button
                             type="button"
@@ -668,7 +630,7 @@ export default function RfqCartDrawer() {
 
               {/* Customer & Address Form */}
               <div className="rfq-customer-form">
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', color: 'var(--accent-gold)' }}>
+                <h4 className="rfq-form-section-title">
                   📋 {tradeMode === 'local'
                     ? (currentLang === 'gu' ? 'ડિલિવરી & પેમેન્ટ વિગત (Delivery & Payment Setup):' : 'Delivery & Payment Setup:')
                     : (rfqTradeCategory === 'export' ? 'Export Destination & Inquiry Details:' : 'Domestic India Delivery Details:')}
@@ -678,7 +640,7 @@ export default function RfqCartDrawer() {
                 {tradeMode === 'local' ? (
                   <>
                     <div className="rfq-form-group">
-                      <label style={{ fontWeight: 800, color: '#38bdf8' }}>
+                      <label className="rfq-label-shipping">
                         🚚 {currentLang === 'gu' ? 'બાયર ડિલિવરી સરનામું (Buyer Delivery Shipping Address)' : 'Buyer Delivery Shipping Address'}
                       </label>
                       <textarea
@@ -715,8 +677,8 @@ export default function RfqCartDrawer() {
                     </div>
 
                     {/* Same as Delivery Address Checkbox */}
-                    <div style={{ margin: '8px 0 12px 0', background: 'rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.82rem', color: '#e2e8f0', margin: 0 }}>
+                    <div className="rfq-billing-same-box">
+                      <label className="rfq-billing-same-label">
                         <input
                           type="checkbox"
                           checked={sameAsBilling}
@@ -728,7 +690,7 @@ export default function RfqCartDrawer() {
 
                       {!sameAsBilling && (
                         <div style={{ marginTop: '10px' }}>
-                          <label style={{ fontSize: '0.8rem', color: '#facc15', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                          <label className="rfq-label-billing-sep">
                             🏛️ {currentLang === 'gu' ? 'અલગ બિલિંગ એડ્રેસ લખો (GST Billing Address)' : 'Separate GST Billing Address'}
                           </label>
                           <textarea
@@ -744,23 +706,14 @@ export default function RfqCartDrawer() {
 
                     {/* Select Payment Method Bar */}
                     <div className="rfq-form-group" style={{ marginTop: '10px' }}>
-                      <label style={{ fontWeight: 800, color: '#facc15' }}>
+                      <label className="rfq-label-payment">
                         💳 {currentLang === 'gu' ? 'ચુકવણીનો પ્રકાર પસંદ કરો (Payment Method):' : 'Select Payment Option:'}
                       </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '6px' }}>
+                      <div className="rfq-pay-methods-grid">
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('upi')}
-                          style={{
-                            padding: '10px',
-                            borderRadius: '8px',
-                            border: '1px solid ' + (paymentMethod === 'upi' ? '#10b981' : 'rgba(255,255,255,0.15)'),
-                            background: paymentMethod === 'upi' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.04)',
-                            color: paymentMethod === 'upi' ? '#4ade80' : '#e2e8f0',
-                            fontSize: '0.8rem',
-                            fontWeight: 800,
-                            cursor: 'pointer'
-                          }}
+                          className={`rfq-pay-method-btn upi ${paymentMethod === 'upi' ? 'active' : ''}`}
                         >
                           📱 UPI / QR (GPay/Paytm)
                         </button>
@@ -768,16 +721,7 @@ export default function RfqCartDrawer() {
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('card')}
-                          style={{
-                            padding: '10px',
-                            borderRadius: '8px',
-                            border: '1px solid ' + (paymentMethod === 'card' ? '#38bdf8' : 'rgba(255,255,255,0.15)'),
-                            background: paymentMethod === 'card' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255,255,255,0.04)',
-                            color: paymentMethod === 'card' ? '#38bdf8' : '#e2e8f0',
-                            fontSize: '0.8rem',
-                            fontWeight: 800,
-                            cursor: 'pointer'
-                          }}
+                          className={`rfq-pay-method-btn card ${paymentMethod === 'card' ? 'active' : ''}`}
                         >
                           💳 Card / NetBanking
                         </button>
@@ -785,16 +729,7 @@ export default function RfqCartDrawer() {
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('bank')}
-                          style={{
-                            padding: '10px',
-                            borderRadius: '8px',
-                            border: '1px solid ' + (paymentMethod === 'bank' ? '#f59e0b' : 'rgba(255,255,255,0.15)'),
-                            background: paymentMethod === 'bank' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.04)',
-                            color: paymentMethod === 'bank' ? '#fbbf24' : '#e2e8f0',
-                            fontSize: '0.8rem',
-                            fontWeight: 800,
-                            cursor: 'pointer'
-                          }}
+                          className={`rfq-pay-method-btn bank ${paymentMethod === 'bank' ? 'active' : ''}`}
                         >
                           🏦 Bank NEFT / IMPS
                         </button>
@@ -802,16 +737,7 @@ export default function RfqCartDrawer() {
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('cod')}
-                          style={{
-                            padding: '10px',
-                            borderRadius: '8px',
-                            border: '1px solid ' + (paymentMethod === 'cod' ? '#a855f7' : 'rgba(255,255,255,0.15)'),
-                            background: paymentMethod === 'cod' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.04)',
-                            color: paymentMethod === 'cod' ? '#c084fc' : '#e2e8f0',
-                            fontSize: '0.8rem',
-                            fontWeight: 800,
-                            cursor: 'pointer'
-                          }}
+                          className={`rfq-pay-method-btn cod ${paymentMethod === 'cod' ? 'active' : ''}`}
                         >
                           💵 Cash on Delivery
                         </button>
@@ -819,11 +745,11 @@ export default function RfqCartDrawer() {
                     </div>
 
                     {/* LIVE LOCAL GATEWAY STATUS BADGE FOR CUSTOMERS */}
-                    <div style={{ marginTop: '10px', background: 'rgba(37,99,235,0.12)', border: '1px solid rgba(59,130,246,0.3)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="rfq-gateway-badge razorpay">
                       <span style={{ fontSize: '1.1rem' }}>🔒</span>
                       <div>
-                        <strong style={{ color: 'white', display: 'block' }}>💳 Local Payment Gateway: Razorpay (Live Active)</strong>
-                        <span style={{ fontSize: '0.74rem', color: '#cbd5e1' }}>Supports Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking</span>
+                        <strong>💳 Local Payment Gateway: Razorpay (Live Active)</strong>
+                        <span>Supports Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking</span>
                       </div>
                     </div>
                   </>
@@ -907,15 +833,15 @@ export default function RfqCartDrawer() {
                     )}
 
                     {/* LIVE SKYDO GLOBAL B2B GATEWAY BADGE FOR CUSTOMERS */}
-                    <div style={{ marginTop: '10px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', padding: '12px 14px', borderRadius: '12px', fontSize: '0.8rem', color: '#6ee7b7' }}>
+                    <div className="rfq-gateway-badge skydo">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <span style={{ fontSize: '1.1rem' }}>🌐</span>
-                        <strong style={{ color: 'white', fontSize: '0.85rem' }}>Skydo Global B2B Inward Remittance Gateway (Live Active)</strong>
+                        <strong>Skydo Global B2B Inward Remittance Gateway (Live Active)</strong>
                       </div>
-                      <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '2px 0 6px' }}>
+                      <p>
                         RBI PA-CB Certified • 0% Forex Markup • Automatic Free FIRA / FIRC Receipt Issued for Zero-Rated GST Export Filing.
                       </p>
-                      <div style={{ fontSize: '0.74rem', color: '#fde047', background: 'rgba(0,0,0,0.3)', padding: '6px 10px', borderRadius: '8px', fontFamily: 'monospace' }}>
+                      <div className="escrow-box">
                         Bank Escrow ID: {paymentGatewaysConfig?.global?.accountId || 'SKYDO-EXP-ATS-2026'} | SWIFT: {paymentGatewaysConfig?.global?.swiftCode || 'SKYDUS33XXX'}
                       </div>
                     </div>
@@ -1032,18 +958,18 @@ export default function RfqCartDrawer() {
               <div style={{ textAlign: 'right' }}>
                 {tradeMode === 'local' ? (
                   <>
-                    <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'block', textAlign: 'right', marginBottom: '2px' }}>
+                    <span className="rfq-breakdown-meta">
                       {totalCourierChargeInr > 0 ? `🚚 Courier: ${formatPriceFromInr(totalCourierChargeInr)}` : '🚚 FREE Delivery'}
                       {totalPackingChargeInr > 0 ? ` • 📦 Packing: ${formatPriceFromInr(totalPackingChargeInr)}` : ''}
                       {totalGstAmountInr > 0 ? ` • 🏛️ GST: +${formatPriceFromInr(totalGstAmountInr)}` : ''}
                     </span>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#f59e0b', display: 'block' }}>
+                    <span className="rfq-total-amount">
                       Total: {formatPriceFromInr(totalLocalAmountInr)}
                     </span>
                     {getActiveCurrencyCode() !== 'INR' && (
-                      <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800, display: 'block', marginTop: '2px' }}>
+                      <span className="rfq-inr-equiv">
                         IN Live INR Equivalent: ₹{totalLocalAmountInr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, display: 'block' }}>
+                        <span className="rfq-inr-equiv-sub">
                           (Live Spot: 1 USD = ₹{(getSpotUsdToInrRate()).toFixed(4)} INR | Hedged: 1 USD = ₹{(getUsdToInrRate()).toFixed(4)} INR)
                         </span>
                       </span>
@@ -1051,8 +977,8 @@ export default function RfqCartDrawer() {
                   </>
                 ) : (
                   <>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.9, display: 'block' }}>Estimated Container Load</span>
-                    <span style={{ fontSize: '1rem', fontWeight: 900, color: '#38bdf8' }}>
+                    <span className="rfq-container-load-label">Estimated Container Load</span>
+                    <span className="rfq-container-load-val">
                       ~{Math.min(100, Math.round((totalQuantity / 24) * 100))}% of 20ft Container
                     </span>
                   </>
@@ -1062,21 +988,9 @@ export default function RfqCartDrawer() {
 
             {/* 🛡️ Forex Risk Buffer Impact Badge */}
             {getActiveCurrencyCode() !== 'INR' && (
-              <div className="forex-buffer-badge" style={{
-                background: 'rgba(234, 179, 8, 0.18)',
-                border: '1px solid rgba(234, 179, 8, 0.4)',
-                padding: '6px 12px',
-                borderRadius: '10px',
-                fontSize: '0.78rem',
-                fontWeight: 800,
-                color: '#fde047',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '10px'
-              }}>
+              <div className="forex-buffer-badge">
                 <span>🛡️ {currentLang === 'gu' ? 'ફોરેક્સ રિસ્ક બફર ઈમ્પેક્ટ:' : 'Forex Risk Buffer Impact:'}</span>
-                <span style={{ color: '#4ade80', fontWeight: 900 }}>+{forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}% Hedged Buffer</span>
+                <span className="forex-buffer-val">+{forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}% Hedged Buffer</span>
               </div>
             )}
 
@@ -1085,13 +999,6 @@ export default function RfqCartDrawer() {
               <button
                 className="btn-submit-rfq-whatsapp"
                 onClick={handleInitiatePayment}
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
-                  color: '#ffffff',
-                  fontWeight: 900,
-                  fontSize: '0.92rem'
-                }}
               >
                 <span>💳</span> {currentLang === 'gu'
                   ? `Pay Now & Complete Order (${tradeMode === 'local' ? (totalLocalAmountInr > 0 ? formatPriceFromInr(totalLocalAmountInr) : 'On Request') : (totalExportAmount > 0 ? convertPrice(totalExportAmount) : 'On Request')})`
@@ -1103,22 +1010,6 @@ export default function RfqCartDrawer() {
                 type="button"
                 className="rfq-whatsapp-submit-btn"
                 onClick={handleSendRfqWhatsApp}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  borderRadius: '12px',
-                  background: 'rgba(56, 189, 248, 0.16)',
-                  border: '1px solid rgba(56, 189, 248, 0.4)',
-                  color: '#38bdf8',
-                  fontSize: '0.84rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  transition: 'all 0.2s ease'
-                }}
               >
                 <span>📲</span> {currentLang === 'gu' ? '📲 વોટ્સએપ દ્વારા ઓફિશિયલ ક્વોટેશન મંગાવો' : 'Submit Official RFQ via WhatsApp'}
               </button>
@@ -1128,16 +1019,7 @@ export default function RfqCartDrawer() {
 
         {/* INTERACTIVE PAYMENT CHECKOUT MODAL OVERLAY */}
         {showCheckoutModal && (
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 100,
-            background: '#090d16',
-            padding: '20px',
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+          <div className="rfq-checkout-modal-overlay">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <h3 style={{ margin: 0, color: '#facc15', fontSize: '1.2rem', fontWeight: 800 }}>
                 💳 {currentLang === 'gu' ? 'સુરક્ષિત ઓનલાઈન પેમેન્ટ (Local Checkout)' : 'Secure Payment Checkout'}
@@ -1159,7 +1041,7 @@ export default function RfqCartDrawer() {
             </div>
 
             {/* Order Amount Summary */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+            <div className="rfq-checkout-summary">
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Items Subtotal ({rfqCartItems.length} Products):</span>
                 <span style={{ fontWeight: 700, color: '#ffffff' }}>{formatPriceFromInr(itemsSubtotalInr)}</span>

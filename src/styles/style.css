@@ -1859,31 +1859,36 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   padding: 40px 0;
 }
 
-.rfq-items-list {
+/* --- RFQ CART DRAWER LIST & ITEMS --- */
+.rfq-cart-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.rfq-item-card {
+.rfq-cart-item {
   display: flex;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px;
   border-radius: 12px;
-  align-items: center;
+  align-items: flex-start;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .rfq-item-img {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   object-fit: cover;
   border-radius: 8px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .rfq-item-info {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1893,65 +1898,385 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   margin: 0;
   font-size: 0.92rem;
   font-weight: 800;
-  color: var(--text-main);
-}
-
-.rfq-item-remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.85rem;
-  opacity: 0.7;
+  color: #f8fafc;
+  line-height: 1.3;
 }
 
 .rfq-item-meta {
   display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 0.78rem;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.badge-incoterm {
-  background: rgba(56, 189, 248, 0.2);
-  color: #38bdf8;
+.rfq-item-hscode {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
   padding: 1px 6px;
   border-radius: 4px;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 700;
+  width: fit-content;
 }
 
 .rfq-item-price {
-  color: var(--accent-gold);
+  color: #f59e0b;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.rfq-item-charges-meta {
+  font-size: 0.72rem;
+  margin-top: 2px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.charge-packing {
+  color: #f59e0b;
   font-weight: 700;
 }
 
-.rfq-qty-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
+.charge-courier {
+  color: #38bdf8;
+  font-weight: 700;
 }
 
-.qty-btn {
-  width: 24px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border-glass);
-  color: white;
-  border-radius: 4px;
+.charge-gst {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+/* Quantity Row & Controls */
+.rfq-item-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.qty-picker {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.85);
+  overflow: hidden;
+  height: 32px;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.qty-picker button {
+  width: 28px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.qty-picker button:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #38bdf8;
+}
+
+.qty-picker button:active {
+  background: rgba(56, 189, 248, 0.35);
+}
+
+.qty-picker input {
+  width: 38px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 800;
+  -moz-appearance: textfield;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+.qty-picker input::-webkit-outer-spin-button,
+.qty-picker input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rfq-unit-select {
+  height: 32px;
+  padding: 0 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fde047;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  flex: 1;
+  min-width: 90px;
+  max-width: 135px;
+}
+
+.rfq-unit-select option {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 4px;
+}
+
+.remove-item-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.remove-item-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: scale(1.05);
+  border-color: rgba(239, 68, 68, 0.7);
+}
+
+/* Quick IN ₹ INR Toggle in Header */
+.rfq-inr-quick-btn {
+  padding: 5px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.rfq-inr-quick-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rfq-inr-quick-btn.active {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.25);
+  color: #f59e0b;
+}
+
+/* Trade Switcher Bar */
+.rfq-trade-switcher {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px;
+  border-radius: 12px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border-glass);
+}
+
+.rfq-trade-tab-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-sub);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.rfq-trade-tab-btn:hover {
+  color: #ffffff;
+}
+
+.rfq-trade-tab-btn.active-export {
+  background: var(--primary-teal);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.rfq-trade-tab-btn.active-domestic {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+
+/* Customer & Address Form inside RFQ Drawer */
+.rfq-customer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rfq-form-section-title {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  color: var(--accent-gold);
   font-weight: 800;
 }
 
-.qty-input {
-  width: 50px;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.3);
+.rfq-label-shipping {
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.rfq-billing-same-box {
+  margin: 8px 0 12px 0;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 12px;
+  border-radius: 8px;
   border: 1px solid var(--border-glass);
-  color: white;
-  border-radius: 4px;
-  padding: 2px;
+}
+
+.rfq-billing-same-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
   font-size: 0.82rem;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.rfq-label-billing-sep {
+  font-size: 0.8rem;
+  color: #facc15;
   font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rfq-label-payment {
+  font-weight: 800;
+  color: #facc15;
+}
+
+.rfq-pay-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.rfq-pay-method-btn {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rfq-pay-method-btn.upi.active {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  color: #4ade80;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+}
+
+.rfq-pay-method-btn.card.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+}
+
+.rfq-pay-method-btn.bank.active {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+}
+
+.rfq-pay-method-btn.cod.active {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
+/* Gateway Badges in RFQ Drawer */
+.rfq-gateway-badge {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rfq-gateway-badge.razorpay {
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.rfq-gateway-badge.razorpay strong {
+  color: #ffffff;
+  display: block;
+}
+
+.rfq-gateway-badge.razorpay span {
+  font-size: 0.74rem;
+  color: #cbd5e1;
+}
+
+.rfq-gateway-badge.skydo {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.rfq-gateway-badge.skydo strong {
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.rfq-gateway-badge.skydo p {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  margin: 2px 0 6px;
+}
+
+.rfq-gateway-badge.skydo .escrow-box {
+  font-size: 0.74rem;
+  color: #fde047;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: monospace;
 }
 
 .rfq-shipment-form {
@@ -1986,6 +2311,7 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   outline: none;
 }
 
+/* Footer Totals & Summary */
 .rfq-drawer-footer {
   padding: 20px 24px;
   border-top: 1px solid var(--border-glass);
@@ -2001,28 +2327,484 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   font-size: 0.78rem;
   cursor: pointer;
   font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.btn-clear-cart:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.rfq-breakdown-meta {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  display: block;
+  text-align: right;
+  margin-bottom: 2px;
+}
+
+.rfq-total-amount {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #f59e0b;
+  display: block;
+}
+
+.rfq-inr-equiv {
+  font-size: 0.75rem;
+  color: #4ade80;
+  font-weight: 800;
+  display: block;
+  margin-top: 2px;
+}
+
+.rfq-inr-equiv-sub {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+  display: block;
+}
+
+.rfq-container-load-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.9;
+  display: block;
+}
+
+.rfq-container-load-val {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #38bdf8;
+}
+
+.forex-buffer-badge {
+  background: rgba(234, 179, 8, 0.18);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fde047;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.forex-buffer-val {
+  color: #4ade80;
+  font-weight: 900;
 }
 
 .btn-submit-rfq-whatsapp {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  color: white;
+  padding: 13px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
   border: none;
   border-radius: 10px;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 900;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
   transition: transform 0.2s;
 }
 
 .btn-submit-rfq-whatsapp:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+}
+
+.rfq-whatsapp-submit-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.rfq-whatsapp-submit-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+}
+
+/* In-Drawer Payment Checkout Modal Overlay */
+.rfq-checkout-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: #090d16;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.rfq-checkout-summary {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  margin-bottom: 16px;
+}
+
+/* =========================================================
+   LIGHT THEME OVERRIDES FOR RFQ DRAWER & CART (HIGH CONTRAST)
+   ========================================================= */
+body.light-theme .rfq-drawer-content {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-left: 1px solid rgba(15, 23, 42, 0.15) !important;
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light-theme .rfq-drawer-header {
+  background: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+body.light-theme .rfq-drawer-header h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .rfq-drawer-header span {
+  color: #475569 !important;
+}
+
+body.light-theme .drawer-close-btn {
+  color: #64748b !important;
+}
+
+body.light-theme .drawer-close-btn:hover {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-inr-quick-btn {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .rfq-inr-quick-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-inr-quick-btn.active {
+  border-color: #d97706 !important;
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+}
+
+/* Trade Switcher Light Theme */
+body.light-theme .rfq-trade-switcher {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .rfq-trade-tab-btn {
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-trade-tab-btn:hover {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-trade-tab-btn.active-export {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3) !important;
+}
+
+body.light-theme .rfq-trade-tab-btn.active-domestic {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Cart Item Light Theme */
+body.light-theme .rfq-cart-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme .rfq-item-img {
+  border-color: #cbd5e1 !important;
+}
+
+body.light-theme .rfq-item-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-item-hscode {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-item-price {
+  color: #b45309 !important;
+}
+
+body.light-theme .charge-packing {
+  color: #b45309 !important;
+}
+
+body.light-theme .charge-courier {
+  color: #0284c7 !important;
+}
+
+body.light-theme .charge-gst {
+  color: #15803d !important;
+}
+
+/* Quantity Picker Light Theme */
+body.light-theme .qty-picker {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme .qty-picker button {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .qty-picker button:hover {
+  background: #e2e8f0 !important;
+  color: #0284c7 !important;
+}
+
+body.light-theme .qty-picker input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .rfq-unit-select {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme .rfq-unit-select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .remove-item-btn {
+  background: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+}
+
+body.light-theme .remove-item-btn:hover {
+  background: #fecaca !important;
+}
+
+/* Customer Form Light Theme */
+body.light-theme .rfq-form-section-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-label-shipping {
+  color: #0284c7 !important;
+}
+
+body.light-theme .rfq-form-group label {
+  color: #334155 !important;
+}
+
+body.light-theme .rfq-input,
+body.light-theme .rfq-select,
+body.light-theme .rfq-textarea {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-input::placeholder,
+body.light-theme .rfq-textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.light-theme .rfq-billing-same-box {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .rfq-billing-same-label {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-label-billing-sep {
+  color: #b45309 !important;
+}
+
+body.light-theme .rfq-label-payment {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-pay-method-btn {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+body.light-theme .rfq-pay-method-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-pay-method-btn.upi.active {
+  border-color: #059669 !important;
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  box-shadow: 0 0 0 1px #059669 !important;
+}
+
+body.light-theme .rfq-pay-method-btn.card.active {
+  border-color: #0284c7 !important;
+  background: #f0f9ff !important;
+  color: #0369a1 !important;
+  box-shadow: 0 0 0 1px #0284c7 !important;
+}
+
+body.light-theme .rfq-pay-method-btn.bank.active {
+  border-color: #d97706 !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  box-shadow: 0 0 0 1px #d97706 !important;
+}
+
+body.light-theme .rfq-pay-method-btn.cod.active {
+  border-color: #9333ea !important;
+  background: #faf5ff !important;
+  color: #7e22ce !important;
+  box-shadow: 0 0 0 1px #9333ea !important;
+}
+
+/* Gateway Badges Light Theme */
+body.light-theme .rfq-gateway-badge.razorpay {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1e40af !important;
+}
+
+body.light-theme .rfq-gateway-badge.razorpay strong {
+  color: #1e3a8a !important;
+}
+
+body.light-theme .rfq-gateway-badge.razorpay span {
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-gateway-badge.skydo {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+body.light-theme .rfq-gateway-badge.skydo strong {
+  color: #14532d !important;
+}
+
+body.light-theme .rfq-gateway-badge.skydo p {
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-gateway-badge.skydo .escrow-box {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+/* Footer Light Theme */
+body.light-theme .rfq-drawer-footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+body.light-theme .btn-clear-cart {
+  background: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+}
+
+body.light-theme .btn-clear-cart:hover {
+  background: #fecaca !important;
+}
+
+body.light-theme .rfq-breakdown-meta {
+  color: #475569 !important;
+}
+
+body.light-theme .rfq-total-amount {
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-inr-equiv {
+  color: #15803d !important;
+}
+
+body.light-theme .rfq-inr-equiv-sub {
+  color: #64748b !important;
+}
+
+body.light-theme .rfq-container-load-label {
+  color: #334155 !important;
+}
+
+body.light-theme .rfq-container-load-val {
+  color: #0284c7 !important;
+}
+
+body.light-theme .forex-buffer-badge {
+  background: #fef3c7 !important;
+  border: 1px solid #fcd34d !important;
+  color: #92400e !important;
+}
+
+body.light-theme .forex-buffer-val {
+  color: #166534 !important;
+}
+
+body.light-theme .rfq-whatsapp-submit-btn {
+  background: #f0f9ff !important;
+  border: 1px solid #bae6fd !important;
+  color: #0284c7 !important;
+}
+
+body.light-theme .rfq-whatsapp-submit-btn:hover {
+  background: #e0f2fe !important;
+}
+
+/* Checkout Modal Light Theme */
+body.light-theme .rfq-checkout-modal-overlay {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .rfq-checkout-summary {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.light-theme .rfq-checkout-summary span {
+  color: #0f172a !important;
 }
 
 /* --- ORDER TRACKER MODAL --- */
