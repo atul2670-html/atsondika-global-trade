@@ -2682,40 +2682,39 @@ export default function Modals() {
       {/* 3.5 ADMIN PAYMENT GATEWAYS SETUP MODAL */}
       {activeModal === 'admin_payment_gateways' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '650px', borderRadius: '24px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={() => setActiveModal(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', fontSize: '1.2rem', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', zIndex: 10 }}>✕</button>
-            <button className="modal-close" onClick={() => setActiveModal('admin_control')} style={{ position: 'absolute', top: '16px', left: '16px' }}>← Admin Panel</button>
+          <div className="glass-card modal-card admin-pg-modal" style={{ maxWidth: '650px', borderRadius: '24px', position: 'relative' }}>
+            <button className="modal-close-round" onClick={() => setActiveModal(null)} title="Close">✕</button>
+            <button className="modal-back-btn" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
             
-            <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '12px' }}>
               <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💳</span>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 className="admin-pg-title" style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>
                 Payment Gateways & Banking Setup
               </h3>
-              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+              <p className="admin-pg-subtitle" style={{ fontSize: '0.85rem', margin: '4px 0 0' }}>
                 ભારતીય ગ્રાહકો માટે Razorpay અને વિદેશી બાયર્સ માટે Skydo B2B Remittance એકાઉન્ટ લિંક કરો
               </p>
             </div>
 
             <div style={{ display: 'grid', gap: '20px' }}>
               {/* 1. LOCAL TRADE GATEWAY (INR) */}
-              <div style={{ background: 'rgba(37,99,235,0.08)', padding: '18px', borderRadius: '18px', border: '1px solid rgba(37,99,235,0.25)' }}>
+              <div className="admin-pg-card local-pg-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#60a5fa', margin: 0 }}>
+                  <h4 className="pg-card-title local-pg-title">
                     🇮🇳 Local Trade Gateway (ભારતીય ગ્રાહકો / ₹ INR)
                   </h4>
-                  <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '12px', background: localGateway.status === 'active' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: localGateway.status === 'active' ? '#4ade80' : '#f87171', fontWeight: 800 }}>
+                  <span className={`pg-status-badge ${localGateway.status === 'active' ? 'active' : 'disabled'}`}>
                     {localGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
                   </span>
                 </div>
 
                 <div style={{ display: 'grid', gap: '12px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                    <label className="admin-pg-label">
                       ગેટવે પ્રોવાઈડર (Gateway Provider)
                     </label>
                     <select
                       className="input-field"
-                      style={{ fontSize: '0.9rem', fontWeight: 700 }}
                       value={localGateway.provider || 'razorpay'}
                       onChange={(e) => setLocalGateway({ ...localGateway, provider: e.target.value })}
                     >
@@ -2727,26 +2726,24 @@ export default function Modals() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      <label className="admin-pg-label">
                         Razorpay Key ID (API Key)
                       </label>
                       <input
                         type="text"
                         className="input-field"
-                        style={{ fontSize: '0.85rem' }}
                         placeholder="rzp_live_..."
                         value={localGateway.keyId || ''}
                         onChange={(e) => setLocalGateway({ ...localGateway, keyId: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      <label className="admin-pg-label">
                         Razorpay Key Secret
                       </label>
                       <input
                         type="password"
                         className="input-field"
-                        style={{ fontSize: '0.85rem' }}
                         placeholder="••••••••••••••••"
                         value={localGateway.keySecret || ''}
                         onChange={(e) => setLocalGateway({ ...localGateway, keySecret: e.target.value })}
@@ -2754,31 +2751,30 @@ export default function Modals() {
                     </div>
                   </div>
 
-                  <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#93c5fd' }}>
+                  <div className="admin-pg-info local-info">
                     ✓ <strong>ગ્રાહક સપોર્ટ:</strong> Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking supported.
                   </div>
                 </div>
               </div>
 
               {/* 2. GLOBAL TRADE B2B EXPORT GATEWAY (USD/EUR) */}
-              <div style={{ background: 'rgba(16,185,129,0.08)', padding: '18px', borderRadius: '18px', border: '1px solid rgba(16,185,129,0.25)' }}>
+              <div className="admin-pg-card global-pg-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#34d399', margin: 0 }}>
+                  <h4 className="pg-card-title global-pg-title">
                     🌐 Global Trade B2B Gateway (આંતરરાષ્ટ્રીય ગ્રાહકો / $ USD, € EUR)
                   </h4>
-                  <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '12px', background: globalGateway.status === 'active' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: globalGateway.status === 'active' ? '#4ade80' : '#f87171', fontWeight: 800 }}>
+                  <span className={`pg-status-badge ${globalGateway.status === 'active' ? 'active' : 'disabled'}`}>
                     {globalGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
                   </span>
                 </div>
 
                 <div style={{ display: 'grid', gap: '12px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                    <label className="admin-pg-label">
                       એક્સપોર્ટ ગેટવે પ્રોવાઈડર (Export Gateway)
                     </label>
                     <select
                       className="input-field"
-                      style={{ fontSize: '0.9rem', fontWeight: 700 }}
                       value={globalGateway.provider || 'skydo'}
                       onChange={(e) => setGlobalGateway({ ...globalGateway, provider: e.target.value })}
                     >
@@ -2789,26 +2785,24 @@ export default function Modals() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      <label className="admin-pg-label">
                         Skydo Account ID / IBAN
                       </label>
                       <input
                         type="text"
                         className="input-field"
-                        style={{ fontSize: '0.85rem' }}
                         placeholder="SKYDO-EXP-..."
                         value={globalGateway.accountId || ''}
                         onChange={(e) => setGlobalGateway({ ...globalGateway, accountId: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                      <label className="admin-pg-label">
                         SWIFT / BIC Code
                       </label>
                       <input
                         type="text"
                         className="input-field"
-                        style={{ fontSize: '0.85rem' }}
                         placeholder="SKYDUS33XXX"
                         value={globalGateway.swiftCode || ''}
                         onChange={(e) => setGlobalGateway({ ...globalGateway, swiftCode: e.target.value })}
@@ -2817,20 +2811,19 @@ export default function Modals() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 700, marginBottom: '4px' }}>
+                    <label className="admin-pg-label">
                       Export Escrow Account Name
                     </label>
                     <input
                       type="text"
                       className="input-field"
-                      style={{ fontSize: '0.85rem' }}
                       placeholder="Atsondika Global Trade Export Escrow Account"
                       value={globalGateway.accountName || ''}
                       onChange={(e) => setGlobalGateway({ ...globalGateway, accountName: e.target.value })}
                     />
                   </div>
 
-                  <div style={{ background: 'rgba(0,0,0,0.25)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#6ee7b7' }}>
+                  <div className="admin-pg-info global-info">
                     ✓ <strong>RBI Compliance:</strong> RBI PA-CB certified, 0% Forex Markup, Automated Free FIRA / FIRC generation for zero-rated GST export filing.
                   </div>
                 </div>
@@ -2839,8 +2832,7 @@ export default function Modals() {
               {/* SAVE BUTTON */}
               <button
                 type="button"
-                className="btn-primary"
-                style={{ padding: '14px', fontSize: '1rem', fontWeight: 900, background: 'linear-gradient(135deg, #059669, #047857)', cursor: 'pointer', textAlign: 'center' }}
+                className="btn-primary admin-pg-save-btn"
                 onClick={() => {
                   if (savePaymentGatewaysConfig) {
                     savePaymentGatewaysConfig({

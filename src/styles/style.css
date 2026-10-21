@@ -2807,6 +2807,312 @@ body.light-theme .rfq-checkout-summary span {
   color: #0f172a !important;
 }
 
+/* --- UNIVERSAL INPUT FIELD (.input-field) --- */
+.input-field {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.input-field:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+}
+
+.input-field option {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 6px;
+}
+
+body.light-theme .input-field {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme .input-field:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18) !important;
+}
+
+body.light-theme .input-field option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .input-field::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+/* --- ADMIN PAYMENT GATEWAYS SETUP MODAL --- */
+.admin-pg-modal {
+  padding: 24px 28px 36px !important;
+  max-height: 92vh !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+.modal-close-round {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-round:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #f87171;
+}
+
+.modal-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
+.modal-back-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.admin-pg-title {
+  color: #ffffff;
+}
+
+.admin-pg-subtitle {
+  color: #94a3b8;
+}
+
+.admin-pg-card {
+  padding: 18px;
+  border-radius: 18px;
+  transition: all 0.2s ease;
+}
+
+.admin-pg-card.local-pg-card {
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.admin-pg-card.global-pg-card {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.pg-card-title.local-pg-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #60a5fa;
+  margin: 0;
+}
+
+.pg-card-title.global-pg-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #34d399;
+  margin: 0;
+}
+
+.pg-status-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pg-status-badge.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.pg-status-badge.disabled {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.admin-pg-label {
+  display: block;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.admin-pg-info {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.admin-pg-info.local-info {
+  background: rgba(0, 0, 0, 0.35);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.admin-pg-info.global-info {
+  background: rgba(0, 0, 0, 0.35);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.admin-pg-save-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #059669, #047857);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.35);
+  margin-top: 4px;
+  margin-bottom: 12px;
+  transition: transform 0.15s ease;
+}
+
+.admin-pg-save-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Light Theme Overrides for Admin Payment Gateways Setup */
+body.light-theme .admin-pg-modal {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18) !important;
+}
+
+body.light-theme .modal-close-round {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .modal-close-round:hover {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+}
+
+body.light-theme .modal-back-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .modal-back-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0284c7 !important;
+}
+
+body.light-theme .admin-pg-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .admin-pg-subtitle {
+  color: #475569 !important;
+}
+
+body.light-theme .admin-pg-card.local-pg-card {
+  background: #f0f7ff !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+body.light-theme .admin-pg-card.global-pg-card {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+body.light-theme .pg-card-title.local-pg-title {
+  color: #1d4ed8 !important;
+}
+
+body.light-theme .pg-card-title.global-pg-title {
+  color: #047857 !important;
+}
+
+body.light-theme .pg-status-badge.active {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #86efac !important;
+}
+
+body.light-theme .pg-status-badge.disabled {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
+}
+
+body.light-theme .admin-pg-label {
+  color: #1e293b !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .admin-pg-info.local-info {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1e40af !important;
+}
+
+body.light-theme .admin-pg-info.local-info strong {
+  color: #1e3a8a !important;
+}
+
+body.light-theme .admin-pg-info.global-info {
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  color: #065f46 !important;
+}
+
+body.light-theme .admin-pg-info.global-info strong {
+  color: #064e3b !important;
+}
+
 /* --- ORDER TRACKER MODAL --- */
 .tracker-modal-card {
   max-width: 780px !important;
