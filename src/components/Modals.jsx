@@ -1696,7 +1696,7 @@ export default function Modals() {
             
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '4px' }}>⚙️</span>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
                 Admin Control Panel
               </h3>
               <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
@@ -1983,21 +1983,21 @@ export default function Modals() {
               
               <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '4px' }}>🏷️</span>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
                   Manage & Delete Main Products ({activeCompany?.name || 'Sister Company'})
                 </h3>
-                <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: '4px 0 0' }}>
                   દરેક મેઈન પ્રોડક્ટ કેટેગરી કંટ્રોલ પેનલ — Delete or Edit any Main Category & its sub-products.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#2dd4bf' }}>
                   📦 Total Main Categories: {mainCatsList.length}
                 </span>
                 <button
                   type="button"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: 'white', padding: '6px 14px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer' }}
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer' }}
                   onClick={() => {
                     setEditingProductId(null);
                     setActiveModal('product_main');
@@ -2008,8 +2008,8 @@ export default function Modals() {
               </div>
 
               {mainCatsList.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px border-dashed rgba(255,255,255,0.1)' }}>
-                  <p style={{ fontSize: '0.95rem', color: '#94a3b8', margin: 0 }}>
+                <div style={{ textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed var(--border-glass)' }}>
+                  <p style={{ fontSize: '0.95rem', color: 'var(--text-sub)', margin: 0 }}>
                     {currentLang === 'gu' ? 'હાલમાં કોઈ મેઈન પ્રોડક્ટ કેટેગરી નથી. નવી ઉમેરવા ઉપરના બટન પર ક્લિક કરો.' : 'No Main Product Categories. Click above to add your company main products.'}
                   </p>
                 </div>
@@ -2024,17 +2024,17 @@ export default function Modals() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          background: 'rgba(15, 23, 42, 0.7)',
+                          background: 'var(--bg-deep)',
                           padding: '12px 16px',
                           borderRadius: '14px',
                           border: '1px solid var(--border-glass)'
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: 'white' }}>
+                          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-main)' }}>
                             {cat.title}
                           </div>
-                          <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px' }}>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginTop: '2px' }}>
                             📦 {subCount} {subCount === 1 ? 'Sub-Product' : 'Sub-Products'} included
                           </div>
                         </div>
@@ -2043,7 +2043,7 @@ export default function Modals() {
                           {cat.isCustom && (
                             <button
                               type="button"
-                              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-glass)', color: 'var(--text-main)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
                               onClick={() => {
                                 setEditingProductId(cat.id);
                                 setActiveModal('product_main');
@@ -2055,7 +2055,7 @@ export default function Modals() {
 
                           <button
                             type="button"
-                            style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', border: 'none', color: 'white', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
+                            style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', border: 'none', color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
                             onClick={() => {
                               deleteProduct(cat.id, cat.code, cat.title, true);
                             }}
@@ -2081,10 +2081,10 @@ export default function Modals() {
             
             <div style={{ textAlign: 'center', marginBottom: '18px' }}>
               <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>🏬</span>
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 className="admin-sellers-title" style={{ fontSize: '1.35rem', fontWeight: 900, margin: 0 }}>
                 Registered Sellers & Exporters Control
               </h3>
-              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+              <p className="admin-sellers-subtitle" style={{ fontSize: '0.82rem', margin: '4px 0 0' }}>
                 વિક્રેતા રજિસ્ટ્રેશન કંટ્રોલ પેનલ — Manage, verify, block or delete registered global suppliers.
               </p>
             </div>
@@ -2105,17 +2105,7 @@ export default function Modals() {
                     key={st}
                     type="button"
                     onClick={() => setAdminSellerStatusFilter(st)}
-                    className="btn-secondary"
-                    style={{
-                      padding: '8px 12px',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      borderRadius: '10px',
-                      textTransform: 'capitalize',
-                      background: adminSellerStatusFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
-                      color: adminSellerStatusFilter === st ? '#fff' : '#a1a1aa',
-                      borderColor: adminSellerStatusFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
-                    }}
+                    className={`btn-approval-filter ${adminSellerStatusFilter === st ? 'active' : ''}`}
                   >
                     {st === 'all' ? `All (${merchantsList?.length || 0})` :
                      st === 'approved' ? `Approved ✅ (${merchantsList?.filter(m => m.status === 'approved').length || 0})` :
@@ -2144,7 +2134,7 @@ export default function Modals() {
 
                 if (filtered.length === 0) {
                   return (
-                    <div style={{ textAlign: 'center', padding: '32px', color: '#9ca3af', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+                    <div className="admin-empty-state-box">
                       🚫 No registered sellers found matching criteria.
                     </div>
                   );
@@ -2153,24 +2143,14 @@ export default function Modals() {
                 return filtered.map((seller) => {
                   const sellerProdsCount = (customProductsList || []).filter(p => p.merchantId === seller.id).length;
                   return (
-                    <div
-                      key={seller.id}
-                      style={{
-                        padding: '16px',
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: '16px',
-                        display: 'grid',
-                        gap: '10px'
-                      }}
-                    >
+                    <div key={seller.id} className="admin-seller-card">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                         <div>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <h4 className="admin-seller-title">
                             🏢 {seller.businessName}
-                            {seller.brandName && <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600 }}>({seller.brandName})</span>}
+                            {seller.brandName && <span className="admin-seller-brand">({seller.brandName})</span>}
                           </h4>
-                          <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '2px' }}>
+                          <div className="admin-seller-meta-line">
                             👤 Contact: <strong>{seller.contactPerson || 'N/A'}</strong> | 📍 {seller.city || 'Surat'}, {seller.state || 'Gujarat'}
                           </div>
                         </div>
@@ -2190,7 +2170,7 @@ export default function Modals() {
                         </span>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', fontSize: '0.82rem', background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '10px' }}>
+                      <div className="admin-prod-details-grid">
                         <div>📱 Phone: <a href={`tel:${seller.phone}`} style={{ color: '#38bdf8', fontWeight: 700 }}>{seller.phone || 'N/A'}</a></div>
                         <div>✉️ Email: <a href={`mailto:${seller.email}`} style={{ color: '#38bdf8', fontWeight: 700 }}>{seller.email || 'N/A'}</a></div>
                         <div>📄 GSTIN/IEC: <strong>{seller.gstin || 'Not Provided'}</strong></div>
@@ -2298,30 +2278,30 @@ export default function Modals() {
       {/* 2. ADMIN SELLER PRODUCT APPROVALS MODAL (એડમિન એપ્રુઅલ) */}
       {activeModal === 'admin_product_approvals' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
+          <div className="glass-card modal-card admin-approvals-modal" style={{ maxWidth: '850px', width: '92vw', borderRadius: '24px' }}>
             <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
             
             <div style={{ textAlign: 'center', marginBottom: '18px' }}>
               <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>📦</span>
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 className="admin-approvals-title" style={{ fontSize: '1.35rem', fontWeight: 900, margin: 0 }}>
                 Seller Product Admin Approvals (એડમિન એપ્રુઅલ)
               </h3>
-              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+              <p className="admin-approvals-subtitle" style={{ fontSize: '0.82rem', margin: '4px 0 0' }}>
                 Review seller-uploaded products before publishing them live on the public global site.
               </p>
             </div>
 
             {/* Product Approval Policy Settings Capsule */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px 18px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '4px' }}>
+            <div className="admin-approval-policy-box">
+              <label className="approval-policy-main-label">
                 🔒 Seller Product Submission Policy (સેલર પ્રોડક્ટ અપ્રુવલ પોલિસી)
               </label>
-              <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+              <p className="approval-policy-desc">
                 નવા સેલર દ્વારા ઉમેરાતી પ્રોડક્ટ્સ એડમિન મંજૂરી બાદ જ લાઈવ થશે કે ઓટો-અપ્રુવ થશે તેનું સેટિંગ.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: requireProductApproval ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${requireProductApproval ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                <label className={`admin-approval-option-card ${requireProductApproval ? 'policy-active-manual' : ''}`}>
                   <input
                     type="radio"
                     name="approvalPolicy"
@@ -2334,12 +2314,12 @@ export default function Modals() {
                     }}
                   />
                   <div>
-                    <strong style={{ fontSize: '0.86rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (એડમિન મંજૂરી જરૂરી)</strong>
-                    <span style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>Seller products remain in "Pending" until Admin reviews & approves.</span>
+                    <strong className="policy-opt-title">🔒 Require Manual Admin Approval (એડમિન મંજૂરી જરૂરી)</strong>
+                    <span className="policy-opt-sub">Seller products remain in "Pending" until Admin reviews & approves.</span>
                   </div>
                 </label>
 
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: !requireProductApproval ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${!requireProductApproval ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                <label className={`admin-approval-option-card ${!requireProductApproval ? 'policy-active-auto' : ''}`}>
                   <input
                     type="radio"
                     name="approvalPolicy"
@@ -2352,8 +2332,8 @@ export default function Modals() {
                     }}
                   />
                   <div>
-                    <strong style={{ fontSize: '0.86rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products (ઓટો-અપ્રુવ)</strong>
-                    <span style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>Seller products go live immediately upon upload without manual review.</span>
+                    <strong className="policy-opt-title">⚡ Auto-Approve Seller Products (ઓટો-અપ્રુવ)</strong>
+                    <span className="policy-opt-sub">Seller products go live immediately upon upload without manual review.</span>
                   </div>
                 </label>
               </div>
@@ -2388,17 +2368,7 @@ export default function Modals() {
                         key={st}
                         type="button"
                         onClick={() => setAdminProductApprovalFilter(st)}
-                        className="btn-secondary"
-                        style={{
-                          padding: '8px 12px',
-                          fontSize: '0.78rem',
-                          fontWeight: 800,
-                          borderRadius: '10px',
-                          textTransform: 'capitalize',
-                          background: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
-                          color: adminProductApprovalFilter === st ? '#fff' : '#a1a1aa',
-                          borderColor: adminProductApprovalFilter === st ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'
-                        }}
+                        className={`btn-approval-filter ${adminProductApprovalFilter === st ? 'active' : ''}`}
                       >
                         {st === 'pending' ? `Pending ⏳ (${pendingCount})` :
                          st === 'approved' ? `Approved ✅ (${approvedCount})` :
@@ -2436,7 +2406,7 @@ export default function Modals() {
 
                 if (filtered.length === 0) {
                   return (
-                    <div style={{ textAlign: 'center', padding: '36px', color: '#9ca3af', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+                    <div className="admin-empty-state-box">
                       ✨ No products found for filter "{adminProductApprovalFilter}".
                     </div>
                   );
@@ -2448,21 +2418,9 @@ export default function Modals() {
                   const status = prod.approvalStatus || 'approved';
 
                   return (
-                    <div
-                      key={prod.id}
-                      style={{
-                        padding: '16px',
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: '16px',
-                        display: 'grid',
-                        gridTemplateColumns: 'auto 1fr',
-                        gap: '14px',
-                        alignItems: 'start'
-                      }}
-                    >
+                    <div key={prod.id} className="admin-product-approval-card">
                       {/* Thumbnail */}
-                      <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#000', flexShrink: 0 }}>
+                      <div className="admin-prod-thumb">
                         <img
                           src={prod.image || 'images/agro_spices_grains.png'}
                           alt={prod.names?.en}
@@ -2475,36 +2433,25 @@ export default function Modals() {
                       <div style={{ display: 'grid', gap: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
                           <div>
-                            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white', margin: 0 }}>
-                              {prod.names?.en} {prod.names?.gu && <span style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 600 }}>({prod.names.gu})</span>}
+                            <h4 className="admin-prod-card-title">
+                              {prod.names?.en} {prod.names?.gu && <span className="admin-prod-gu-name">({prod.names.gu})</span>}
                             </h4>
-                            <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '2px' }}>
-                              🏷️ Category: <strong style={{ color: '#cbd5e1' }}>{prod.category}</strong> | 🔢 HS Code: <strong>{prod.hsCode || 'N/A'}</strong>
+                            <div className="admin-prod-meta-line">
+                              🏷️ Category: <strong className="admin-prod-meta-val">{prod.category}</strong> | 🔢 HS Code: <strong className="admin-prod-meta-val">{prod.hsCode || 'N/A'}</strong>
                             </div>
                           </div>
 
-                          <span
-                            style={{
-                              padding: '4px 10px',
-                              borderRadius: '12px',
-                              fontSize: '0.75rem',
-                              fontWeight: 800,
-                              textTransform: 'uppercase',
-                              background: status === 'approved' ? 'rgba(34,197,94,0.15)' : status === 'pending' ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
-                              color: status === 'approved' ? '#4ade80' : status === 'pending' ? '#fde047' : '#f87171',
-                              border: `1px solid ${status === 'approved' ? 'rgba(34,197,94,0.3)' : status === 'pending' ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'}`
-                            }}
-                          >
+                          <span className={`admin-prod-status-tag ${status}`}>
                             {status === 'approved' ? 'Live & Approved ✅' : status === 'pending' ? 'Pending Approval ⏳' : 'Rejected ❌'}
                           </span>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '6px', fontSize: '0.8rem', background: 'rgba(0,0,0,0.25)', padding: '8px 12px', borderRadius: '10px' }}>
+                        <div className="admin-prod-details-grid">
                           <div>🏬 Seller: <strong>{prod.merchantName || 'Exporter'}</strong></div>
                           <div>📞 Phone: <span>{prod.merchantPhone || 'N/A'}</span></div>
-                          <div>💵 FOB Price: <strong style={{ color: '#4ade80' }}>${prod.priceUsd || '0'} / MT</strong></div>
+                          <div>💵 FOB Price: <strong className="fob-price">${prod.priceUsd || '0'} / MT</strong></div>
                           <div>📦 MOQ: <span>{prod.moq || '1 Container'}</span></div>
-                          <div>💰 Platform Comm. ({adminCommissionRate}%): <strong style={{ color: '#facc15' }}>${estimatedComm} / MT</strong></div>
+                          <div>💰 Platform Comm. ({adminCommissionRate}%): <strong className="comm-price">${estimatedComm} / MT</strong></div>
                           <div>📅 Date: <span>{prod.createdAt || 'Recent'}</span></div>
                         </div>
 
@@ -2514,7 +2461,7 @@ export default function Modals() {
                             <button
                               type="button"
                               className="btn-primary"
-                              style={{ padding: '6px 14px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
+                              style={{ padding: '6px 14px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #16a34a, #15803d)', border: 'none', color: '#fff' }}
                               onClick={() => approveMerchantProduct(prod.id)}
                             >
                               ✅ Approve & Make Live
@@ -2523,8 +2470,7 @@ export default function Modals() {
                           {status !== 'rejected' && (
                             <button
                               type="button"
-                              className="btn-secondary"
-                              style={{ padding: '6px 14px', fontSize: '0.8rem', color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                              className="btn-secondary btn-reject-prod"
                               onClick={() => rejectMerchantProduct(prod.id)}
                             >
                               ❌ Reject Product
@@ -2532,8 +2478,7 @@ export default function Modals() {
                           )}
                           <button
                             type="button"
-                            className="btn-secondary"
-                            style={{ padding: '6px 12px', fontSize: '0.78rem', color: '#ef4444' }}
+                            className="btn-secondary btn-delete-prod"
                             onClick={() => deleteMerchantProduct(prod.id)}
                           >
                             🗑️ Delete
@@ -2558,21 +2503,21 @@ export default function Modals() {
             
             <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
               <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💰</span>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 className="admin-comm-title" style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>
                 Admin Commission, Platform & Forex Risk Buffer Settings
               </h3>
-              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', margin: '4px 0 0' }}>
+              <p className="admin-comm-subtitle" style={{ fontSize: '0.82rem', margin: '4px 0 0' }}>
                 એડમિન કમિશન અને સેલર પ્રોડક્ટ પોલિસી સેટિંગ્સ
               </p>
             </div>
 
             <div style={{ display: 'grid', gap: '18px' }}>
               {/* Commission Rate Settings */}
-              <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
+              <div className="admin-comm-box">
+                <label className="admin-comm-label">
                   💰 Global Admin Platform Commission Rate (%) (પ્લેટફોર્મ કમિશન દર)
                 </label>
-                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                <p className="admin-comm-desc">
                   સેલર દ્વારા થતા એક્સપોર્ટ અને લોકલ વેચાણ પર લેવાતો પ્લેટફોર્મ કમિશન દર.
                 </p>
 
@@ -2605,8 +2550,8 @@ export default function Modals() {
                 </div>
 
                 {/* Preset Quick Buttons */}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', alignSelf: 'center' }}>Presets:</span>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', alignSelf: 'center' }}>Presets:</span>
                   {[1.0, 2.0, 2.5, 3.5, 5.0, 10.0].map((rateVal) => (
                     <button
                       key={rateVal}
@@ -2618,16 +2563,7 @@ export default function Modals() {
                           showLiveToast(`✅ Admin Commission Rate updated to ${rateVal}%!`, 'success');
                         }
                       }}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        borderRadius: '8px',
-                        background: parseFloat(commissionInputRate) === rateVal ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
-                        color: parseFloat(commissionInputRate) === rateVal ? '#fde047' : '#d4d4d8',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer'
-                      }}
+                      className={`comm-preset-btn ${parseFloat(commissionInputRate) === rateVal ? 'active' : ''}`}
                     >
                       {rateVal}%
                     </button>
@@ -2636,16 +2572,16 @@ export default function Modals() {
               </div>
 
               {/* 🛡️ Forex Risk Buffer Impact Controls */}
-              <div style={{ background: 'rgba(234,179,8,0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(234,179,8,0.3)' }}>
+              <div className="admin-forex-box">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <label style={{ display: 'block', fontSize: '0.92rem', fontWeight: 800, color: '#fde047', margin: 0 }}>
+                  <label className="admin-forex-label">
                     🛡️ Forex Risk Buffer Rate (%) (ફોરેક્સ રિસ્ક બફર દર)
                   </label>
                   <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '3px 8px', borderRadius: '6px' }}>
                     +{forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5}% Active
                   </span>
                 </div>
-                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                <p className="admin-comm-desc">
                   ગ્લોબલ કન્વર્ઝન અને ફોરેક્ષ કેલ્ક્યુલેટર માટે રિસ્ક હેજિંગ બફર સેટિંગ. આપડા ફોરેક્ષ કેલ્ક્યુલેટર સાથે સિન્ક રહેશે.
                 </p>
 
@@ -2680,7 +2616,7 @@ export default function Modals() {
 
                 {/* Preset Quick Buttons */}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', alignSelf: 'center' }}>Presets:</span>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', alignSelf: 'center' }}>Presets:</span>
                   {[0, 1.0, 1.5, 2.0, 2.5, 3.5, 5.0, 10.0].map((pct) => (
                     <button
                       key={pct}
@@ -2692,16 +2628,7 @@ export default function Modals() {
                           showLiveToast(`✅ Forex Risk Buffer updated to +${pct}%!`, 'success');
                         }
                       }}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        borderRadius: '8px',
-                        background: (parseFloat(forexInputRate) === pct) ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)',
-                        color: (parseFloat(forexInputRate) === pct) ? '#fde047' : '#d4d4d8',
-                        border: '1px solid ' + ((parseFloat(forexInputRate) === pct) ? 'rgba(234,179,8,0.5)' : 'rgba(255,255,255,0.1)'),
-                        cursor: 'pointer'
-                      }}
+                      className={`forex-preset-btn ${(parseFloat(forexInputRate) === pct) ? 'active' : ''}`}
                     >
                       {pct === 0 ? '0% Exact' : `+${pct}%`}
                     </button>
@@ -2711,17 +2638,17 @@ export default function Modals() {
 
               {/* Summary Stats */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', textAlign: 'center' }}>
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#38bdf8', display: 'block' }}>{merchantsList?.length || 0}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Registered Sellers</span>
+                <div className="admin-comm-stat-card">
+                  <span className="stat-num" style={{ color: '#38bdf8' }}>{merchantsList?.length || 0}</span>
+                  <span className="stat-lbl">Registered Sellers</span>
                 </div>
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#facc15', display: 'block' }}>{(customProductsList || []).filter(p => p.isSub).length}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Seller Products</span>
+                <div className="admin-comm-stat-card">
+                  <span className="stat-num" style={{ color: '#facc15' }}>{(customProductsList || []).filter(p => p.isSub).length}</span>
+                  <span className="stat-lbl">Seller Products</span>
                 </div>
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80', display: 'block' }}>{adminCommissionRate}%</span>
-                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Platform Rate</span>
+                <div className="admin-comm-stat-card">
+                  <span className="stat-num" style={{ color: '#4ade80' }}>{adminCommissionRate}%</span>
+                  <span className="stat-lbl">Platform Rate</span>
                 </div>
               </div>
             </div>
@@ -3293,7 +3220,7 @@ export default function Modals() {
 
             <div style={{ background: 'rgba(20, 184, 166, 0.15)', border: '1px solid var(--primary-teal-glow)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '18px', textAlign: 'center' }}>
               <span style={{ fontSize: '2.5rem' }}>👤</span>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: '6px 0 2px 0' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
                 Welcome, {currentCustomer.name}!
               </h3>
               <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
@@ -3302,31 +3229,31 @@ export default function Modals() {
             </div>
 
             <div style={{ display: 'grid', gap: '10px', fontSize: '0.88rem', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>🏢 Business / Company:</span>
-                <strong style={{ color: 'white' }}>{currentCustomer.companyName || 'Individual Buyer'}</strong>
+                <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.companyName || 'Individual Buyer'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>📞 Phone / WhatsApp:</span>
                 <strong style={{ color: '#4ade80' }}>{currentCustomer.phone || 'N/A'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>✉️ Email:</span>
                 <strong style={{ color: '#38bdf8' }}>{currentCustomer.email || 'N/A'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>🚚 Delivery Address:</span>
                 <strong style={{ color: '#facc15', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.deliveryAddress || 'Not Provided'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>🏢 Billing Address:</span>
-                <strong style={{ color: 'white', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
+                <strong style={{ color: 'var(--text-main)', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>📍 Location:</span>
-                <strong style={{ color: 'white' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
+                <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ color: 'var(--text-sub)' }}>📅 Account Created:</span>
                 <span style={{ color: 'var(--text-sub)' }}>{currentCustomer.registeredAt}</span>
               </div>
@@ -3437,16 +3364,16 @@ export default function Modals() {
                              (c.city || '').toLowerCase().includes(q);
                     })
                     .map(cust => (
-                      <tr key={cust.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(15,23,42,0.4)' }}>
+                      <tr key={cust.id} style={{ borderBottom: '1px solid var(--border-glass)', background: 'rgba(255,255,255,0.02)' }}>
                         <td style={{ padding: '10px 14px', minWidth: '150px' }}>
-                          <strong style={{ color: 'white', display: 'block', fontSize: '0.9rem' }}>{cust.name}</strong>
+                          <strong style={{ color: 'var(--text-main)', display: 'block', fontSize: '0.9rem' }}>{cust.name}</strong>
                           <span style={{ color: 'var(--text-sub)', fontSize: '0.76rem' }}>🏢 {cust.companyName || 'Individual Buyer'}</span>
                         </td>
                         <td style={{ padding: '10px 14px', minWidth: '220px', maxWidth: '280px' }}>
                           <div style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.76rem', marginBottom: '2px' }}>
                             💬 Inquiry Details:
                           </div>
-                          <div style={{ color: 'white', fontSize: '0.78rem', lineHeight: '1.4', background: 'rgba(255,255,255,0.05)', padding: '6px 8px', borderRadius: '6px', whiteSpace: 'pre-wrap', border: '1px solid var(--border-glass)' }}>
+                          <div style={{ color: 'var(--text-main)', fontSize: '0.78rem', lineHeight: '1.4', background: 'rgba(255,255,255,0.05)', padding: '6px 8px', borderRadius: '6px', whiteSpace: 'pre-wrap', border: '1px solid var(--border-glass)' }}>
                             {cust.notes || 'General Quotation Request'}
                           </div>
                         </td>
@@ -7088,7 +7015,7 @@ export default function Modals() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px', paddingRight: '36px' }}>
               <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {selectedCertForView.icon && (selectedCertForView.icon.startsWith('data:image') || selectedCertForView.icon.startsWith('http') || selectedCertForView.icon.startsWith('/') || selectedCertForView.icon.includes('.')) ? (
                     <img src={selectedCertForView.icon} alt={selectedCertForView.title} style={{ width: '32px', height: '32px', objectFit: 'contain', borderRadius: '6px' }} />
                   ) : (
@@ -7228,7 +7155,7 @@ export default function Modals() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', margin: 0 }}>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
                   📄 Instant Export Proforma Invoice Generator
                 </h3>
                 <span style={{ fontSize: '0.82rem', color: 'var(--primary-teal-glow)', fontWeight: 700 }}>
@@ -8338,7 +8265,7 @@ export default function Modals() {
             
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '4px' }}>📊</span>
-              <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'white', margin: 0 }}>
+              <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
                 ICC INCOTERMS® Official Responsibilities & Risk Transfer Chart
               </h3>
               <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginTop: '4px' }}>
@@ -8350,11 +8277,11 @@ export default function Modals() {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: '12px', marginBottom: '18px', fontSize: '0.82rem', flexWrap: 'wrap', border: '1px solid var(--border-glass)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ display: 'inline-block', width: '20px', height: '12px', background: 'linear-gradient(90deg, #f97316, #ea580c)', borderRadius: '3px' }}></span>
-                <strong style={{ color: 'white' }}>Seller's Obligation (વેચનારની જવાબદારી)</strong>
+                <strong style={{ color: 'var(--text-main)' }}>Seller's Obligation (વેચનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ display: 'inline-block', width: '20px', height: '12px', background: '#0284c7', borderRadius: '3px' }}></span>
-                <strong style={{ color: 'white' }}>Buyer's Obligation (ખરીદનારની જવાબદારી)</strong>
+                <strong style={{ color: 'var(--text-main)' }}>Buyer's Obligation (ખરીદનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900 }}>!</span>
@@ -8518,7 +8445,7 @@ export default function Modals() {
                         <span style={{ background: '#0f766e', color: 'white', padding: '3px 9px', borderRadius: '6px', fontWeight: 900, fontSize: '0.9rem' }}>
                           {term.code}
                         </span>
-                        <strong style={{ fontSize: '0.9rem', color: 'white' }}>{term.code}</strong>
+                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>{term.code}</strong>
                       </div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginTop: '4px', fontWeight: 600 }}>
                         {term.name}
@@ -8590,7 +8517,7 @@ export default function Modals() {
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <div>
-                <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span>🏬</span> Seller & Exporter Portal (વિક્રેતા રજિસ્ટ્રેશન પ્લેટફોર્મ)
                 </h3>
                 <span style={{ fontSize: '0.8rem', color: '#facc15', fontWeight: 700 }}>
@@ -9227,7 +9154,7 @@ export default function Modals() {
               <div style={{ maxWidth: 'calc(100% - 220px)', minWidth: '260px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '1.4rem' }}>🔍</span>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', margin: 0, wordBreak: 'break-word', overflowWrap: 'anywhere', maxWidth: '100%' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, wordBreak: 'break-word', overflowWrap: 'anywhere', maxWidth: '100%' }}>
                     {imagePreviewData.title ? imagePreviewData.title.replace(/data:image\/[^;]+;base64,[^\s]+/g, '').trim() : ''}
                   </h3>
                 </div>
@@ -9618,8 +9545,8 @@ export default function Modals() {
                           <h4 style={{ margin: '2px 0 0 0', color: '#facc15', fontSize: '1.1rem', fontWeight: 900 }}>
                             {ord.orderId}
                           </h4>
-                          <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '2px' }}>
-                            📅 Date: {ord.date} | 💳 Method: <strong style={{ color: 'white' }}>{ord.paymentMethod}</strong>
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: '2px' }}>
+                            📅 Date: {ord.date} | 💳 Method: <strong style={{ color: 'var(--text-main)' }}>{ord.paymentMethod}</strong>
                           </div>
                         </div>
 
@@ -9643,7 +9570,7 @@ export default function Modals() {
                       </div>
 
                       {/* Customer Details */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.82rem', color: '#e2e8f0', marginBottom: '14px', background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '10px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.82rem', color: 'var(--text-main)', marginBottom: '14px', background: 'var(--bg-deep)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
                         <div>
                           <div>👤 <b>Customer Name:</b> {ord.customerName}</div>
                           <div>📞 <b>Phone / WhatsApp:</b> {ord.phone}</div>
@@ -9657,7 +9584,7 @@ export default function Modals() {
 
                       {/* Order Items Table */}
                       <div style={{ overflowX: 'auto', marginBottom: '12px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', color: 'white' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', color: 'var(--text-main)' }}>
                           <thead>
                             <tr style={{ background: 'rgba(255,255,255,0.06)', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                               <th style={{ padding: '8px' }}>Product</th>
