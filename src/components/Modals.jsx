@@ -302,6 +302,11 @@ export default function Modals() {
   const [custCompInput, setCustCompInput] = useState('');
   const [custCityInput, setCustCityInput] = useState('Surat');
   const [custCountryInput, setCustCountryInput] = useState('India');
+  const [custDeliveryAddress, setCustDeliveryAddress] = useState('');
+  const [custBillingAddress, setCustBillingAddress] = useState('');
+  const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(true);
+  const [custStateInput, setCustStateInput] = useState('Gujarat');
+  const [custZipInput, setCustZipInput] = useState('');
   const [custLeadSearch, setCustLeadSearch] = useState('');
   const [custPasswordInput, setCustPasswordInput] = useState('');
   const [showCustPassword, setShowCustPassword] = useState(false);
@@ -2256,6 +2261,54 @@ export default function Modals() {
               </p>
             </div>
 
+            {/* Product Approval Policy Settings Capsule */}
+            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '14px 18px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '18px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '4px' }}>
+                🔒 Seller Product Submission Policy (સેલર પ્રોડક્ટ અપ્રુવલ પોલિસી)
+              </label>
+              <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
+                નવા સેલર દ્વારા ઉમેરાતી પ્રોડક્ટ્સ એડમિન મંજૂરી બાદ જ લાઈવ થશે કે ઓટો-અપ્રુવ થશે તેનું સેટિંગ.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: requireProductApproval ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${requireProductApproval ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <input
+                    type="radio"
+                    name="approvalPolicy"
+                    checked={requireProductApproval === true}
+                    onChange={() => {
+                      if (setRequireProductApproval) {
+                        setRequireProductApproval(true);
+                        showLiveToast('🔒 Manual Admin Approval Policy Enabled!', 'info');
+                      }
+                    }}
+                  />
+                  <div>
+                    <strong style={{ fontSize: '0.86rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (એડમિન મંજૂરી જરૂરી)</strong>
+                    <span style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>Seller products remain in "Pending" until Admin reviews & approves.</span>
+                  </div>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: !requireProductApproval ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${!requireProductApproval ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <input
+                    type="radio"
+                    name="approvalPolicy"
+                    checked={requireProductApproval === false}
+                    onChange={() => {
+                      if (setRequireProductApproval) {
+                        setRequireProductApproval(false);
+                        showLiveToast('⚡ Auto-Approve Seller Products Policy Enabled!', 'success');
+                      }
+                    }}
+                  />
+                  <div>
+                    <strong style={{ fontSize: '0.86rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products (ઓટો-અપ્રુવ)</strong>
+                    <span style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>Seller products go live immediately upon upload without manual review.</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             {/* Filter & Search Bar */}
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
               <input
@@ -2603,54 +2656,6 @@ export default function Modals() {
                       {pct === 0 ? '0% Exact' : `+${pct}%`}
                     </button>
                   ))}
-                </div>
-              </div>
-
-              {/* Product Approval Policy Settings */}
-              <div style={{ background: 'rgba(255,255,255,0.04)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: 'white', marginBottom: '6px' }}>
-                  🔒 Seller Product Submission Policy (સેલર પ્રોડક્ટ અપ્રુવલ પોલિસી)
-                </label>
-                <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginBottom: '12px' }}>
-                  નવા સેલર દ્વારા ઉમેરાતી પ્રોડક્ટ્સ એડમિન મંજૂરી બાદ જ લાઈવ થશે કે ઓટો-અપ્રુવ થશે તેનું સેટિંગ.
-                </p>
-
-                <div style={{ display: 'grid', gap: '10px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: requireProductApproval ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${requireProductApproval ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="approvalPolicy"
-                      checked={requireProductApproval === true}
-                      onChange={() => {
-                        if (setRequireProductApproval) {
-                          setRequireProductApproval(true);
-                          showLiveToast('🔒 Manual Admin Approval Policy Enabled!', 'info');
-                        }
-                      }}
-                    />
-                    <div>
-                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>🔒 Require Manual Admin Approval (એડમિન મંજૂરી જરૂરી)</strong>
-                      <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products remain in "Pending" until Admin reviews & approves.</span>
-                    </div>
-                  </label>
-
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: !requireProductApproval ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${!requireProductApproval ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="approvalPolicy"
-                      checked={requireProductApproval === false}
-                      onChange={() => {
-                        if (setRequireProductApproval) {
-                          setRequireProductApproval(false);
-                          showLiveToast('⚡ Auto-Approve Seller Products Policy Enabled!', 'success');
-                        }
-                      }}
-                    />
-                    <div>
-                      <strong style={{ fontSize: '0.88rem', color: 'white', display: 'block' }}>⚡ Auto-Approve Seller Products (ઓટો-અપ્રુવ)</strong>
-                      <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>Seller products go live immediately upon upload without manual review.</span>
-                    </div>
-                  </label>
                 </div>
               </div>
 
@@ -3046,19 +3051,24 @@ export default function Modals() {
                   alert("⚠️ Passwords do not match! Please check and re-type your password.");
                   return;
                 }
+                const finalBilling = billingSameAsDelivery ? custDeliveryAddress.trim() : (custBillingAddress.trim() || custDeliveryAddress.trim());
                 const cust = registerCustomer({
                   name: custNameInput.trim(),
                   phone: custPhoneInput.trim(),
                   email: custEmailInput.trim(),
                   password: custRegPass.trim(),
                   companyName: custCompInput.trim() || 'N/A',
+                  deliveryAddress: custDeliveryAddress.trim(),
+                  billingAddress: finalBilling,
                   city: custCityInput.trim() || 'Surat',
+                  state: custStateInput.trim() || 'Gujarat',
+                  pincode: custZipInput.trim() || '',
                   country: custCountryInput.trim() || 'India'
                 });
-                alert(`✅ Registration successful! Welcome ${cust.name}. Your details have been saved.`);
+                alert(`✅ Registration successful! Welcome ${cust.name}. Your account & delivery addresses have been saved.`);
                 setActiveModal(null);
                 setCustNameInput(''); setCustPhoneInput(''); setCustEmailInput(''); setCustCompInput('');
-                setCustRegPass(''); setCustRegConfirmPass('');
+                setCustRegPass(''); setCustRegConfirmPass(''); setCustDeliveryAddress(''); setCustBillingAddress(''); setCustZipInput('');
               }}>
                 <div className="form-group">
                   <label className="form-label" style={{ fontWeight: 800 }}>Full Name / Person Name *</label>
@@ -3130,9 +3140,57 @@ export default function Modals() {
                   />
                 </div>
 
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    🚚 Delivery / Shipping Address (ડિલિવરી એડ્રેસ) *
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    placeholder="Enter full delivery/shipping address (House/Shop/Street/Area)..."
+                    value={custDeliveryAddress}
+                    onChange={(e) => {
+                      setCustDeliveryAddress(e.target.value);
+                      if (billingSameAsDelivery) setCustBillingAddress(e.target.value);
+                    }}
+                    required
+                  />
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--text-sub)' }}>
+                    <input
+                      type="checkbox"
+                      checked={billingSameAsDelivery}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBillingSameAsDelivery(checked);
+                        if (checked) setCustBillingAddress(custDeliveryAddress);
+                      }}
+                    />
+                    <span>☑️ Billing Address is same as Delivery Address (બિલિંગ એડ્રેસ ડિલિવરી એડ્રેસ જેવું જ છે)</span>
+                  </label>
+                </div>
+
+                {!billingSameAsDelivery && (
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>
+                      🏢 Billing Address (બિલિંગ એડ્રેસ) *
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows="2"
+                      placeholder="Enter legal billing address for invoices..."
+                      value={custBillingAddress}
+                      onChange={(e) => setCustBillingAddress(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 800 }}>City</label>
+                    <label className="form-label" style={{ fontWeight: 800 }}>City (શહેર)</label>
                     <input
                       type="text"
                       className="form-control"
@@ -3142,13 +3200,36 @@ export default function Modals() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 800 }}>Country</label>
+                    <label className="form-label" style={{ fontWeight: 800 }}>State (રાજ્ય)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Gujarat"
+                      value={custStateInput}
+                      onChange={(e) => setCustStateInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Country (દેશ)</label>
                     <input
                       type="text"
                       className="form-control"
                       placeholder="India"
                       value={custCountryInput}
                       onChange={(e) => setCustCountryInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>PIN / Postal Code (પિનકોડ)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. 395003"
+                      value={custZipInput}
+                      onChange={(e) => setCustZipInput(e.target.value)}
                     />
                   </div>
                 </div>
@@ -3192,8 +3273,16 @@ export default function Modals() {
                 <strong style={{ color: '#38bdf8' }}>{currentCustomer.email || 'N/A'}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+                <span style={{ color: 'var(--text-sub)' }}>🚚 Delivery Address:</span>
+                <strong style={{ color: '#facc15', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.deliveryAddress || 'Not Provided'}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+                <span style={{ color: 'var(--text-sub)' }}>🏢 Billing Address:</span>
+                <strong style={{ color: 'white', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
                 <span style={{ color: 'var(--text-sub)' }}>📍 Location:</span>
-                <strong style={{ color: 'white' }}>{currentCustomer.city}, {currentCustomer.country}</strong>
+                <strong style={{ color: 'white' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
                 <span style={{ color: 'var(--text-sub)' }}>📅 Account Created:</span>
@@ -3335,9 +3424,19 @@ export default function Modals() {
                               ✉️ {cust.email}
                             </a>
                           )}
+                          {cust.deliveryAddress && (
+                            <div style={{ marginTop: '4px', fontSize: '0.74rem', color: '#facc15' }} title="Delivery Address">
+                              🚚 {cust.deliveryAddress}
+                            </div>
+                          )}
                         </td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-sub)', whiteSpace: 'nowrap' }}>
-                          📍 {cust.city}, {cust.country}
+                        <td style={{ padding: '10px 14px', color: 'var(--text-sub)' }}>
+                          <div>📍 {cust.city}{cust.state ? `, ${cust.state}` : ''}{cust.pincode ? ` (${cust.pincode})` : ''}, {cust.country}</div>
+                          {cust.billingAddress && cust.billingAddress !== cust.deliveryAddress && (
+                            <div style={{ marginTop: '2px', fontSize: '0.72rem', color: '#cbd5e1' }} title="Billing Address">
+                              🏢 <strong>Bill:</strong> {cust.billingAddress}
+                            </div>
+                          )}
                         </td>
                         <td style={{ padding: '10px 14px', color: 'var(--text-sub)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                           {cust.registeredAt}
