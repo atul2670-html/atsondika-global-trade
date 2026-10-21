@@ -142,7 +142,8 @@ export default function Modals() {
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
-    activeIncoterm, setActiveIncoterm
+    activeIncoterm, setActiveIncoterm,
+    isCodEnabled, toggleCodEnabled
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -1866,6 +1867,55 @@ export default function Modals() {
                 onClick={() => setActiveModal('admin_security')}
               >
                 🔑 Change Admin Password (OTP)
+              </button>
+
+              {/* CASH ON DELIVERY (COD) ENABLE/DISABLE TOGGLE BUTTON */}
+              <button
+                type="button"
+                className={`btn-primary admin-cod-toggle-btn ${isCodEnabled ? 'cod-enabled' : 'cod-disabled'}`}
+                style={{
+                  padding: '14px 18px',
+                  justifyContent: 'space-between',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: isCodEnabled ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #475569, #334155)',
+                  boxShadow: isCodEnabled ? '0 4px 16px rgba(5, 150, 105, 0.35)' : 'none',
+                  border: isCodEnabled ? '1px solid rgba(52, 211, 153, 0.4)' : '1px solid rgba(255,255,255,0.15)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  if (toggleCodEnabled) toggleCodEnabled();
+                }}
+                title={isCodEnabled ? "Click to Disable Cash on Delivery (COD)" : "Click to Enable Cash on Delivery (COD)"}
+              >
+                <div>
+                  <div style={{ color: '#ffffff', fontWeight: 900 }}>
+                    💵 Cash on Delivery (COD)
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: isCodEnabled ? '#d1fae5' : '#cbd5e1', fontWeight: 600, marginTop: '2px' }}>
+                    {isCodEnabled
+                      ? (currentLang === 'gu' ? 'કાર્ટમાં ચાલુ છે (Enabled)' : 'Active in Shopping Cart')
+                      : (currentLang === 'gu' ? 'કાર્ટમાં બંધ છે (Disabled)' : 'Disabled in Shopping Cart')}
+                  </div>
+                </div>
+                <span style={{
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.76rem',
+                  fontWeight: 900,
+                  background: isCodEnabled ? '#10b981' : '#ef4444',
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                }}>
+                  {isCodEnabled ? 'ON' : 'OFF'}
+                </span>
               </button>
 
               <button

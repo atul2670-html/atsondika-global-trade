@@ -38,7 +38,8 @@ export default function RfqCartDrawer() {
     forexRiskBuffer,
     setActiveModal,
     activeIncoterm,
-    setActiveIncoterm
+    setActiveIncoterm,
+    isCodEnabled
   } = useApp();
 
   const [rfqTradeCategory, setRfqTradeCategory] = useState('export'); // 'export' | 'domestic'
@@ -216,6 +217,13 @@ export default function RfqCartDrawer() {
   const [highlightField, setHighlightField] = useState('');
 
   const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'bank' | 'cod'
+
+  // If COD is disabled by admin in Admin Panel, automatically fallback to UPI
+  useEffect(() => {
+    if (!isCodEnabled && paymentMethod === 'cod') {
+      setPaymentMethod('upi');
+    }
+  }, [isCodEnabled, paymentMethod]);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [upiUtxRef, setUpiUtxRef] = useState('');
   const [cardNum, setCardNum] = useState('');
@@ -734,13 +742,15 @@ export default function RfqCartDrawer() {
                           🏦 Bank NEFT / IMPS
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod('cod')}
-                          className={`rfq-pay-method-btn cod ${paymentMethod === 'cod' ? 'active' : ''}`}
-                        >
-                          💵 Cash on Delivery
-                        </button>
+                        {isCodEnabled && (
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod('cod')}
+                            className={`rfq-pay-method-btn cod ${paymentMethod === 'cod' ? 'active' : ''}`}
+                          >
+                            💵 Cash on Delivery
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -1185,7 +1195,7 @@ export default function RfqCartDrawer() {
                 )}
 
                 {/* COD Gate */}
-                {paymentMethod === 'cod' && (
+                {paymentMethod === 'cod' && isCodEnabled && (
                   <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
                     <h5 style={{ margin: '0 0 8px 0', color: '#c084fc', fontSize: '0.95rem' }}>
                       💵 Cash on Delivery (COD) Order Verification

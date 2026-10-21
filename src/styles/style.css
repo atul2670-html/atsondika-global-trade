@@ -3113,6 +3113,32 @@ body.light-theme .admin-pg-info.global-info strong {
   color: #064e3b !important;
 }
 
+/* --- ADMIN COD TOGGLE BUTTON --- */
+.admin-cod-toggle-btn {
+  transition: all 0.2s ease;
+}
+
+body.light-theme .admin-cod-toggle-btn.cod-enabled {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+body.light-theme .admin-cod-toggle-btn.cod-disabled {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.light-theme .admin-cod-toggle-btn.cod-disabled div > div:first-child {
+  color: #0f172a !important;
+}
+
+body.light-theme .admin-cod-toggle-btn.cod-disabled div > div:last-child {
+  color: #64748b !important;
+}
+
 /* --- ORDER TRACKER MODAL --- */
 .tracker-modal-card {
   max-width: 780px !important;

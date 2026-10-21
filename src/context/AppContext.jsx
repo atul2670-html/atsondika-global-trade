@@ -317,6 +317,31 @@ export function AppProvider({ children }) {
     showLiveToast('💳 Payment Gateways Configuration Saved & Active!', 'success');
   };
 
+  // Cash on Delivery (COD) Enable/Disable State for Local Shopping Cart
+  const [isCodEnabled, setIsCodEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_cod_enabled_v1');
+      if (stored !== null && stored !== undefined) return stored === 'true';
+    } catch(e) {}
+    return true; // Default enabled
+  });
+
+  const toggleCodEnabled = (forcedVal) => {
+    const nextVal = typeof forcedVal === 'boolean' ? forcedVal : !isCodEnabled;
+    setIsCodEnabled(nextVal);
+    try {
+      localStorage.setItem('site_cod_enabled_v1', nextVal ? 'true' : 'false');
+    } catch(e) {}
+    syncToServer({ isCodEnabled: nextVal });
+    if (showLiveToast) {
+      if (nextVal) {
+        showLiveToast(currentLang === 'gu' ? '💵 કેશ ઓન ડિલિવરી (COD) સક્ષમ (Enabled) થઈ ગયું છે.' : '💵 Cash on Delivery (COD) Enabled Successfully.', 'success');
+      } else {
+        showLiveToast(currentLang === 'gu' ? '🚫 કેશ ઓન ડિલિવરી (COD) અક્ષમ (Disabled) થઈ ગયું છે.' : '🚫 Cash on Delivery (COD) Disabled Successfully.', 'warning');
+      }
+    }
+  };
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1338,6 +1363,10 @@ export function AppProvider({ children }) {
         if (data.paymentGatewaysConfig && typeof data.paymentGatewaysConfig === 'object') {
           setPaymentGatewaysConfig(data.paymentGatewaysConfig);
           try { localStorage.setItem('site_payment_gateways_config_v1', JSON.stringify(data.paymentGatewaysConfig)); } catch(e) {}
+        }
+        if (data.isCodEnabled !== undefined) {
+          setIsCodEnabled(data.isCodEnabled);
+          try { localStorage.setItem('site_cod_enabled_v1', data.isCodEnabled ? 'true' : 'false'); } catch(e) {}
         }
         isInitialCloudLoadComplete.current = true;
       }
@@ -2582,6 +2611,7 @@ export function AppProvider({ children }) {
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,
       exportDatabase, importDatabase,
       paymentGatewaysConfig, savePaymentGatewaysConfig,
+      isCodEnabled, toggleCodEnabled, setIsCodEnabled: toggleCodEnabled,
       syncVersion, triggerRealtimeRefresh,
       verifyAdminAccess, t
     }}>
