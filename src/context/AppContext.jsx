@@ -2087,6 +2087,7 @@ export function AppProvider({ children }) {
       name: data.name || 'Valued Customer',
       phone: data.phone || '',
       email: data.email || '',
+      password: data.password || '',
       companyName: data.companyName || 'N/A',
       city: data.city || 'Surat',
       country: data.country || 'India',
@@ -2109,15 +2110,27 @@ export function AppProvider({ children }) {
     return newCust;
   };
 
-  const loginCustomer = (identifier) => {
+  const loginCustomer = (identifier, password = '') => {
     const query = identifier.trim().toLowerCase();
-    const found = customerList.find(c =>
-      (c.phone && c.phone.toLowerCase().includes(query)) ||
-      (c.email && c.email.toLowerCase() === query) ||
-      (c.name && c.name.toLowerCase().includes(query))
-    );
+    const cleanDigits = query.replace(/[^0-9]/g, '');
+    const found = customerList.find(c => {
+      if (!c) return false;
+      const cPhoneDigits = (c.phone || '').replace(/[^0-9]/g, '');
+      return (c.phone && c.phone.toLowerCase().includes(query)) ||
+             (cleanDigits && cleanDigits.length >= 6 && cPhoneDigits.includes(cleanDigits)) ||
+             (c.email && c.email.toLowerCase() === query) ||
+             (c.name && c.name.toLowerCase().includes(query));
+    });
 
     if (found) {
+      if (found.password && found.password.trim() !== '') {
+        if (!password || password.trim() === '') {
+          return { success: false, requirePassword: true, message: '🔑 Password Required! Please enter your Customer Password to log in.' };
+        }
+        if (found.password !== password) {
+          return { success: false, message: '⚠️ Incorrect Password! Please enter the correct customer password.' };
+        }
+      }
       setCurrentCustomer(found);
       return { success: true, customer: found };
     }
@@ -2127,6 +2140,7 @@ export function AppProvider({ children }) {
       name: identifier.includes('@') ? identifier.split('@')[0] : identifier,
       phone: identifier.includes('@') ? '' : identifier,
       email: identifier.includes('@') ? identifier : '',
+      password: password || '',
       companyName: 'N/A',
       city: 'Surat',
       country: 'India',
@@ -2139,6 +2153,48 @@ export function AppProvider({ children }) {
     setCurrentCustomer(newCust);
     syncToServer({ customerList: nextList });
     return { success: true, customer: newCust };
+  };
+
+  const updateCustomerPassword = (identifier, newPassword, fallbackData = null) => {
+    const query = (identifier || '').trim().toLowerCase();
+    const cleanDigits = query.replace(/[^0-9]/g, '');
+    let foundIndex = customerList.findIndex(c => {
+      if (!c) return false;
+      if (c.id === identifier) return true;
+      const cPhoneDigits = (c.phone || '').replace(/[^0-9]/g, '');
+      return (c.phone && c.phone.toLowerCase().includes(query)) ||
+             (cleanDigits && cleanDigits.length >= 6 && cPhoneDigits.includes(cleanDigits)) ||
+             (c.email && c.email.toLowerCase() === query);
+    });
+
+    let updatedCust;
+    let nextList;
+    if (foundIndex !== -1) {
+      updatedCust = { ...customerList[foundIndex], password: newPassword };
+      nextList = [...customerList];
+      nextList[foundIndex] = updatedCust;
+    } else {
+      updatedCust = {
+        id: fallbackData?.id || `cust-${Date.now()}`,
+        name: fallbackData?.name || (query.includes('@') ? query.split('@')[0] : (cleanDigits ? `User ${cleanDigits.slice(-4)}` : 'Customer')),
+        phone: fallbackData?.phone || (query.includes('@') ? '' : query),
+        email: fallbackData?.email || (query.includes('@') ? query : ''),
+        password: newPassword,
+        companyName: fallbackData?.companyName || 'N/A',
+        city: fallbackData?.city || 'Surat',
+        country: fallbackData?.country || 'India',
+        registeredAt: new Date().toLocaleString(),
+        inquiriesCount: 1,
+        notes: 'Password Reset Registration'
+      };
+      nextList = [updatedCust, ...customerList];
+    }
+    setCustomerList(nextList);
+    setCurrentCustomer(updatedCust);
+    try { localStorage.setItem('site_registered_customers_v1', JSON.stringify(nextList)); } catch(e) {}
+    syncToServer({ customerList: nextList });
+    showLiveToast(`🔐 Customer password updated for ${updatedCust.name}`, 'success');
+    return updatedCust;
   };
 
   const logoutCustomer = () => {
@@ -2243,6 +2299,40 @@ export function AppProvider({ children }) {
     setCurrentMerchant(null);
     try { localStorage.removeItem('site_current_merchant_v1'); } catch(e) {}
     showLiveToast(`🚪 Seller Logged Out`, 'info');
+  };
+
+  const updateMerchantPassword = (identifier, newPassword) => {
+    const query = (identifier || '').trim().toLowerCase();
+    const cleanDigits = query.replace(/[^0-9]/g, '');
+    let foundIndex = merchantsList.findIndex(m => {
+      if (!m) return false;
+      if (m.id === identifier) return true;
+      const mPhoneDigits = (m.phone || '').replace(/[^0-9]/g, '');
+      return (m.phone && m.phone.toLowerCase().includes(query)) ||
+             (cleanDigits && cleanDigits.length >= 6 && mPhoneDigits.includes(cleanDigits)) ||
+             (m.email && m.email.toLowerCase() === query) ||
+             (m.businessName && m.businessName.toLowerCase() === query);
+    });
+
+    if (foundIndex !== -1) {
+      const updatedMerchant = { ...merchantsList[foundIndex], password: newPassword };
+      const nextList = [...merchantsList];
+      nextList[foundIndex] = updatedMerchant;
+      setMerchantsList(nextList);
+      if (currentMerchant?.id === updatedMerchant.id) {
+        setCurrentMerchant(updatedMerchant);
+      }
+      try {
+        localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextList));
+        if (currentMerchant?.id === updatedMerchant.id) {
+          localStorage.setItem('site_current_merchant_v1', JSON.stringify(updatedMerchant));
+        }
+      } catch(e) {}
+      syncToServer({ merchantsList: nextList });
+      showLiveToast(`🔐 Seller password updated for ${updatedMerchant.businessName}`, 'success');
+      return updatedMerchant;
+    }
+    return null;
   };
 
   const updateMerchantStatus = (merchantId, newStatus) => {
@@ -2481,8 +2571,8 @@ export function AppProvider({ children }) {
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       deletedBuiltInIds, setDeletedBuiltInIds,
-      customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
-      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+      customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer, updateCustomerPassword,
+      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
       forexRiskBuffer, saveForexRiskBuffer, setForexRiskBuffer: saveForexRiskBuffer,
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,

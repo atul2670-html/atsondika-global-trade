@@ -137,8 +137,8 @@ export default function Modals() {
     heroBanner, saveHeroBanner,
     aboutData, saveAboutData, getMainCategoryList,
     marketTickerList, saveMarketTickerList,
-    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer,
-    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer, updateCustomerPassword,
+    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
@@ -303,6 +303,19 @@ export default function Modals() {
   const [custCityInput, setCustCityInput] = useState('Surat');
   const [custCountryInput, setCustCountryInput] = useState('India');
   const [custLeadSearch, setCustLeadSearch] = useState('');
+  const [custPasswordInput, setCustPasswordInput] = useState('');
+  const [showCustPassword, setShowCustPassword] = useState(false);
+  const [custRegPass, setCustRegPass] = useState('');
+  const [custRegConfirmPass, setCustRegConfirmPass] = useState('');
+
+  // Customer Forgot / Reset Password via Mobile & Email OTP State
+  const [custOtpStep, setCustOtpStep] = useState(0); // 0: enter phone/email, 1: enter OTP & new password
+  const [custOtpTarget, setCustOtpTarget] = useState('');
+  const [custGeneratedOtp, setCustGeneratedOtp] = useState('');
+  const [custUserOtp, setCustUserOtp] = useState('');
+  const [custNewPass, setCustNewPass] = useState('');
+  const [custConfirmPass, setCustConfirmPass] = useState('');
+  const [matchedCustObj, setMatchedCustObj] = useState(null);
 
   // Seller Portal & Multi-Vendor Merchant State
   const [sellerTab, setSellerTab] = useState('register'); // 'register' | 'login' | 'dashboard' | 'add_product'
@@ -320,6 +333,15 @@ export default function Modals() {
   const [mConfirmPasswordInput, setMConfirmPasswordInput] = useState('');
   const [mSellerPasswordQuery, setMSellerPasswordQuery] = useState('');
   const [showMPassword, setShowMPassword] = useState(false);
+
+  // Seller Forgot / Reset Password via Mobile & Email OTP State
+  const [sellerOtpStep, setSellerOtpStep] = useState(0); // 0: enter phone/email, 1: enter OTP & new password
+  const [sellerOtpTarget, setSellerOtpTarget] = useState('');
+  const [sellerGeneratedOtp, setSellerGeneratedOtp] = useState('');
+  const [sellerUserOtp, setSellerUserOtp] = useState('');
+  const [sellerNewPass, setSellerNewPass] = useState('');
+  const [sellerConfirmPass, setSellerConfirmPass] = useState('');
+  const [matchedSellerObj, setMatchedSellerObj] = useState(null);
 
   // Seller Certificate Upload States
   const [mIecCertInput, setMIecCertInput] = useState('');
@@ -2880,7 +2902,7 @@ export default function Modals() {
                     setActiveModal('admin_security');
                   }}
                 >
-                  📱 Forgot / Reset Admin Password via Mobile OTP
+                  📱 Forgot / Reset Admin Password via Mobile & email OTP
                 </button>
               </div>
             </form>
@@ -2950,11 +2972,14 @@ export default function Modals() {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 if (!custLoginInput.trim()) return;
-                const res = loginCustomer(custLoginInput);
+                const res = loginCustomer(custLoginInput, custPasswordInput);
                 if (res.success) {
                   alert(`✅ Welcome back, ${res.customer.name}! You are now logged in.`);
                   setActiveModal(null);
                   setCustLoginInput('');
+                  setCustPasswordInput('');
+                } else {
+                  alert(res.message || '⚠️ Login failed! Please check your credentials.');
                 }
               }}>
                 <div className="form-group">
@@ -2970,18 +2995,62 @@ export default function Modals() {
                     required
                   />
                 </div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    Customer Account Password / પાસવર્ડ (ઓપ્શનલ)
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showCustPassword ? "text" : "password"}
+                      className="form-control"
+                      placeholder="Enter customer password (if set)"
+                      value={custPasswordInput}
+                      onChange={(e) => setCustPasswordInput(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCustPassword(!showCustPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                      title={showCustPassword ? "Hide password" : "Show password"}
+                    >
+                      {showCustPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem' }}>
                   🔑 {currentLang === 'gu' ? 'લોગઈન કરો' : 'Login / Continue'}
                 </button>
+
+                <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed var(--border-glass)' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => {
+                      setCustOtpStep(0);
+                      setCustOtpTarget(custLoginInput || '');
+                      setCustUserOtp('');
+                      setCustNewPass('');
+                      setCustConfirmPass('');
+                      setActiveModal('customer_security');
+                    }}
+                  >
+                    📱 Forgot / Reset Customer Password via Mobile & email OTP
+                  </button>
+                </div>
               </form>
             ) : (
               <form onSubmit={(e) => {
                 e.preventDefault();
                 if (!custNameInput.trim()) return;
+                if (custRegPass && custRegPass !== custRegConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-type your password.");
+                  return;
+                }
                 const cust = registerCustomer({
                   name: custNameInput.trim(),
                   phone: custPhoneInput.trim(),
                   email: custEmailInput.trim(),
+                  password: custRegPass.trim(),
                   companyName: custCompInput.trim() || 'N/A',
                   city: custCityInput.trim() || 'Surat',
                   country: custCountryInput.trim() || 'India'
@@ -2989,6 +3058,7 @@ export default function Modals() {
                 alert(`✅ Registration successful! Welcome ${cust.name}. Your details have been saved.`);
                 setActiveModal(null);
                 setCustNameInput(''); setCustPhoneInput(''); setCustEmailInput(''); setCustCompInput('');
+                setCustRegPass(''); setCustRegConfirmPass('');
               }}>
                 <div className="form-group">
                   <label className="form-label" style={{ fontWeight: 800 }}>Full Name / Person Name *</label>
@@ -3022,6 +3092,29 @@ export default function Modals() {
                       placeholder="example@domain.com"
                       value={custEmailInput}
                       onChange={(e) => setCustEmailInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Password / પાસવર્ડ (ઓપ્શનલ)</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="Create secret password"
+                      value={custRegPass}
+                      onChange={(e) => setCustRegPass(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Confirm Password / કન્ફર્મ</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="Confirm password"
+                      value={custRegConfirmPass}
+                      onChange={(e) => setCustRegConfirmPass(e.target.value)}
                     />
                   </div>
                 </div>
@@ -4037,20 +4130,21 @@ export default function Modals() {
         </div>
       )}
 
-      {/* ADMIN SECURITY & MOBILE OTP PASSWORD RESET MODAL */}
+      {/* ADMIN SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
       {activeModal === 'admin_security' && (
         <div className="modal-backdrop show">
           <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
-            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <button className="modal-close" onClick={() => setActiveModal('admin')}>&times;</button>
             <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px' }}>
-              🔑 Change Admin Password (Mobile OTP)
+              🔑 Change Admin Password (Mobile & email OTP)
             </h3>
             <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
-              Secure password change requiring 6-digit OTP verification sent to registered admin mobile number.
+              Secure password change requiring 6-digit OTP verification sent to registered admin mobile number & email.
             </p>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '16px', fontSize: '0.84rem' }}>
-              <strong>📱 Registered Admin Mobile:</strong> <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{adminMobile}</span>
+              <div><strong>📱 Registered Admin Mobile:</strong> <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{adminMobile}</span></div>
+              <div style={{ marginTop: '4px' }}><strong>✉️ Admin Contact Email:</strong> <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{activeCompany?.email || 'admin@atsondika.com'}</span></div>
             </div>
 
             {otpStep === 0 ? (
@@ -4074,17 +4168,27 @@ export default function Modals() {
                     const code = Math.floor(100000 + Math.random() * 900000).toString();
                     setGeneratedOtp(code);
                     setOtpStep(1);
-                    alert(`📱 SMS Sent to ${adminMobile}\n\n🔐 Your 6-Digit OTP Verification Code is: ${code}`);
+                    alert(`📱 SMS Sent to ${adminMobile}\n✉️ Email Sent to ${activeCompany?.email || 'admin@atsondika.com'}\n\n🔐 Your 6-Digit OTP Verification Code is: ${code}`);
                   }}
                 >
                   📲 Send 6-Digit Verification OTP Code
                 </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('admin')}
+                  >
+                    ← Back to Admin Login
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={(e) => {
                 e.preventDefault();
                 if (userOtpInput.trim() !== generatedOtp) {
-                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent to your mobile.");
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent to your mobile & email.");
                   return;
                 }
                 if (!newPassInput || newPassInput.length < 6) {
@@ -4146,6 +4250,345 @@ export default function Modals() {
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }}>
                   💾 Save & Update Admin Password
                 </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* SELLER SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
+      {activeModal === 'seller_security' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('seller_portal')}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🏬</span> {currentLang === 'gu' ? 'સેલર પાસવર્ડ રીસેટ (Mobile & email OTP)' : 'Reset Seller Password via Mobile & email OTP'}
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              {currentLang === 'gu'
+                ? 'રજીસ્ટર્ડ સેલર મોબાઈલ નંબર અથવા ઈમેલ પર 6-ડિજિટ OTP મેળવી નવો પાસવર્ડ સેટ કરો.'
+                : 'Secure password reset with 6-digit OTP verification sent to your registered seller Mobile & Email.'}
+            </p>
+
+            {sellerOtpStep === 0 ? (
+              <div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    📱 Registered Mobile Number or ✉️ Email *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter registered mobile or email..."
+                    value={sellerOtpTarget}
+                    onChange={(e) => setSellerOtpTarget(e.target.value)}
+                    required
+                  />
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                    Enter the phone number (+91...) or email address registered with your seller account.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 900 }}
+                  onClick={() => {
+                    if (!sellerOtpTarget.trim()) {
+                      alert("⚠️ Please enter registered Mobile number or Email address!");
+                      return;
+                    }
+                    const q = sellerOtpTarget.trim().toLowerCase();
+                    const cleanDigits = q.replace(/[^0-9]/g, '');
+                    const found = (merchantsList || []).find(m => {
+                      if (!m) return false;
+                      const p = (m.phone || '').toLowerCase().replace(/[^0-9]/g, '');
+                      const e = (m.email || '').toLowerCase().trim();
+                      const n = (m.businessName || '').toLowerCase().trim();
+                      return (cleanDigits && cleanDigits.length >= 6 && p.includes(cleanDigits)) ||
+                             (e && (e === q || e.includes(q))) ||
+                             (n && n.includes(q));
+                    });
+
+                    if (!found) {
+                      alert(`⚠️ No registered Seller found matching "${sellerOtpTarget}".\nPlease check your mobile/email or register as a new seller.`);
+                      return;
+                    }
+
+                    const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    setSellerGeneratedOtp(code);
+                    setMatchedSellerObj(found);
+                    setSellerOtpStep(1);
+                    alert(`📱 SMS Sent to: ${found.phone || sellerOtpTarget}\n✉️ Email Sent to: ${found.email || 'Registered Email'}\n\n🔐 Your 6-Digit Seller OTP Verification Code is: ${code}`);
+                  }}
+                >
+                  📲 Send 6-Digit Verification OTP Code
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('seller_portal')}
+                  >
+                    ← Back to Seller Login
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (sellerUserOtp.trim() !== sellerGeneratedOtp) {
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent via SMS / Email.");
+                  return;
+                }
+                if (!sellerNewPass || sellerNewPass.length < 4) {
+                  alert("⚠️ Password must be at least 4 characters long!");
+                  return;
+                }
+                if (sellerNewPass !== sellerConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-enter.");
+                  return;
+                }
+
+                updateMerchantPassword(matchedSellerObj?.id || sellerOtpTarget, sellerNewPass.trim());
+                alert(`✅ Seller Password successfully updated for "${matchedSellerObj?.businessName || 'Seller'}"! You are now logged in.`);
+                setSellerOtpStep(0);
+                setSellerUserOtp('');
+                setSellerNewPass('');
+                setSellerConfirmPass('');
+                setSellerTab('dashboard');
+                setActiveModal('seller_portal');
+              }}>
+                <div style={{ background: 'rgba(34, 197, 94, 0.12)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)', marginBottom: '14px', fontSize: '0.82rem', color: '#4ade80' }}>
+                  ✅ Verification OTP sent to <strong>{matchedSellerObj?.phone || sellerOtpTarget}</strong> & <strong>{matchedSellerObj?.email || 'Email'}</strong>
+                  <br />(Simulated OTP Code: <strong>{sellerGeneratedOtp}</strong>)
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem' }}>
+                  🏬 <strong>Seller Account:</strong> {matchedSellerObj?.businessName} {matchedSellerObj?.brandName ? `(${matchedSellerObj.brandName})` : ''}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Enter 6-Digit OTP Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter 6-digit OTP code"
+                    value={sellerUserOtp}
+                    onChange={(e) => setSellerUserOtp(e.target.value)}
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>New Seller Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter new seller password"
+                    value={sellerNewPass}
+                    onChange={(e) => setSellerNewPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Confirm New Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Confirm new seller password"
+                    value={sellerConfirmPass}
+                    onChange={(e) => setSellerConfirmPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', fontWeight: 900 }}>
+                  💾 Save & Update Seller Password
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setSellerOtpStep(0)}
+                  >
+                    ← Re-send OTP or Change Number/Email
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOMER SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
+      {activeModal === 'customer_security' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('customer_auth')}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>👤</span> {currentLang === 'gu' ? 'કસ્ટમર પાસવર્ડ રીસેટ (Mobile & email OTP)' : 'Reset Customer Password via Mobile & email OTP'}
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              {currentLang === 'gu'
+                ? 'રજીસ્ટર્ડ કસ્ટમર મોબાઈલ નંબર અથવા ઈમેલ પર 6-ડિજિટ OTP મેળવી નવો પાસવર્ડ સેટ કરો.'
+                : 'Secure password reset with 6-digit OTP verification sent to your registered Customer Mobile & Email.'}
+            </p>
+
+            {custOtpStep === 0 ? (
+              <div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    📱 Registered Mobile Number or ✉️ Email *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter registered mobile or email..."
+                    value={custOtpTarget}
+                    onChange={(e) => setCustOtpTarget(e.target.value)}
+                    required
+                  />
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                    Enter the phone number (+91...) or email address associated with your customer account.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', color: 'white', fontWeight: 900 }}
+                  onClick={() => {
+                    if (!custOtpTarget.trim()) {
+                      alert("⚠️ Please enter registered Mobile number or Email address!");
+                      return;
+                    }
+                    const q = custOtpTarget.trim().toLowerCase();
+                    const cleanDigits = q.replace(/[^0-9]/g, '');
+                    const found = (customerList || []).find(c => {
+                      if (!c) return false;
+                      const p = (c.phone || '').toLowerCase().replace(/[^0-9]/g, '');
+                      const e = (c.email || '').toLowerCase().trim();
+                      const n = (c.name || '').toLowerCase().trim();
+                      return (cleanDigits && cleanDigits.length >= 6 && p.includes(cleanDigits)) ||
+                             (e && (e === q || e.includes(q))) ||
+                             (n && n.includes(q));
+                    });
+
+                    const targetCustomer = found || {
+                      id: `cust-${Date.now()}`,
+                      name: q.includes('@') ? q.split('@')[0] : (cleanDigits ? `User ${cleanDigits.slice(-4)}` : 'Customer'),
+                      phone: q.includes('@') ? '' : q,
+                      email: q.includes('@') ? q : ''
+                    };
+
+                    const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    setCustGeneratedOtp(code);
+                    setMatchedCustObj(targetCustomer);
+                    setCustOtpStep(1);
+                    alert(`📱 SMS Sent to: ${targetCustomer.phone || custOtpTarget}\n✉️ Email Sent to: ${targetCustomer.email || 'Registered Email'}\n\n🔐 Your 6-Digit Customer OTP Verification Code is: ${code}`);
+                  }}
+                >
+                  📲 Send 6-Digit Verification OTP Code
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('customer_auth')}
+                  >
+                    ← Back to Customer Login
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (custUserOtp.trim() !== custGeneratedOtp) {
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent via SMS / Email.");
+                  return;
+                }
+                if (!custNewPass || custNewPass.length < 4) {
+                  alert("⚠️ Password must be at least 4 characters long!");
+                  return;
+                }
+                if (custNewPass !== custConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-enter.");
+                  return;
+                }
+
+                const updatedCust = updateCustomerPassword(matchedCustObj?.id || custOtpTarget, custNewPass.trim(), matchedCustObj);
+                alert(`✅ Customer Password successfully updated for "${updatedCust?.name || 'Customer'}"! You are now logged in.`);
+                setCustOtpStep(0);
+                setCustUserOtp('');
+                setCustNewPass('');
+                setCustConfirmPass('');
+                setActiveModal('customer_portal');
+              }}>
+                <div style={{ background: 'rgba(34, 197, 94, 0.12)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)', marginBottom: '14px', fontSize: '0.82rem', color: '#4ade80' }}>
+                  ✅ Verification OTP sent to <strong>{matchedCustObj?.phone || custOtpTarget}</strong> & <strong>{matchedCustObj?.email || 'Email'}</strong>
+                  <br />(Simulated OTP Code: <strong>{custGeneratedOtp}</strong>)
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem' }}>
+                  👤 <strong>Customer Account:</strong> {matchedCustObj?.name} {matchedCustObj?.companyName && matchedCustObj?.companyName !== 'N/A' ? `(${matchedCustObj.companyName})` : ''}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Enter 6-Digit OTP Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter 6-digit OTP code"
+                    value={custUserOtp}
+                    onChange={(e) => setCustUserOtp(e.target.value)}
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>New Customer Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter new customer password"
+                    value={custNewPass}
+                    onChange={(e) => setCustNewPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Confirm New Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Confirm new customer password"
+                    value={custConfirmPass}
+                    onChange={(e) => setCustConfirmPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', fontWeight: 900 }}>
+                  💾 Save & Update Customer Password
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setCustOtpStep(0)}
+                  >
+                    ← Re-send OTP or Change Number/Email
+                  </button>
+                </div>
               </form>
             )}
           </div>
@@ -8391,6 +8834,23 @@ export default function Modals() {
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem' }}>
                   🔑 Login to Seller Portal
                 </button>
+
+                <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed var(--border-glass)' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => {
+                      setSellerOtpStep(0);
+                      setSellerOtpTarget(mSellerLoginQuery || '');
+                      setSellerUserOtp('');
+                      setSellerNewPass('');
+                      setSellerConfirmPass('');
+                      setActiveModal('seller_security');
+                    }}
+                  >
+                    📱 Forgot / Reset Seller Password via Mobile & email OTP
+                  </button>
+                </div>
               </form>
             )}
 
