@@ -2230,6 +2230,40 @@ export function AppProvider({ children }) {
     return updatedCust;
   };
 
+  const updateCustomerProfile = (updatedData) => {
+    if (!currentCustomer) return { success: false, message: 'No customer logged in' };
+    const customerId = currentCustomer.id;
+    const merged = { ...currentCustomer, ...updatedData };
+
+    let found = false;
+    const nextList = customerList.map(c => {
+      if (c && c.id === customerId) {
+        found = true;
+        return merged;
+      }
+      return c;
+    });
+    if (!found) {
+      nextList.unshift(merged);
+    }
+
+    setCustomerList(nextList);
+    setCurrentCustomer(merged);
+    try {
+      localStorage.setItem('site_registered_customers_v1', JSON.stringify(nextList));
+      localStorage.setItem('site_active_logged_customer_v1', JSON.stringify(merged));
+    } catch(e) {}
+
+    syncToServer({ customerList: nextList });
+    showLiveToast(
+      currentLang === 'gu'
+        ? `✅ કસ્ટમર પ્રોફાઇલ સફળતાપૂર્વક અપડેટ થઈ ગઈ છે!`
+        : `✅ Customer profile updated successfully!`,
+      'success'
+    );
+    return { success: true, customer: merged };
+  };
+
   const logoutCustomer = () => {
     setCurrentCustomer(null);
   };
@@ -2334,6 +2368,106 @@ export function AppProvider({ children }) {
     showLiveToast(`🚪 Seller Logged Out`, 'info');
   };
 
+  const updateMerchantProfile = (updatedData) => {
+    if (!currentMerchant) return { success: false, message: 'No seller logged in' };
+    const merchantId = currentMerchant.id;
+    // When a seller updates their profile, admin approval is required!
+    const requiresApproval = !isAdminLoggedIn;
+    const merged = {
+      ...currentMerchant,
+      ...updatedData,
+      status: requiresApproval ? 'pending' : (updatedData.status || currentMerchant.status || 'approved'),
+      profileUpdatedPending: requiresApproval,
+      profileUpdatedAt: new Date().toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    };
+
+    let found = false;
+    const nextMerchants = merchantsList.map(m => {
+      if (m && m.id === merchantId) {
+        found = true;
+        return merged;
+      }
+      return m;
+    });
+    if (!found) {
+      nextMerchants.unshift(merged);
+    }
+
+    setMerchantsList(nextMerchants);
+    setCurrentMerchant(merged);
+    try {
+      localStorage.setItem('site_merchants_list_v1', JSON.stringify(nextMerchants));
+      localStorage.setItem('site_current_merchant_v1', JSON.stringify(merged));
+    } catch(e) {}
+
+    // If businessName or phone changed, sync merchant products list
+    let nextCustom = customProductsList;
+    let nextMerchantProds = merchantProductsList;
+    let productsUpdated = false;
+
+    if (
+      (updatedData.businessName && updatedData.businessName !== currentMerchant.businessName) ||
+      (updatedData.phone && updatedData.phone !== currentMerchant.phone)
+    ) {
+      if (Array.isArray(customProductsList)) {
+        nextCustom = customProductsList.map(p => {
+          if (p && (p.merchantId === merchantId || p.merchantName === currentMerchant.businessName)) {
+            productsUpdated = true;
+            return {
+              ...p,
+              merchantName: updatedData.businessName || p.merchantName,
+              merchantPhone: updatedData.phone || p.merchantPhone,
+              merchantEmail: updatedData.email || p.merchantEmail
+            };
+          }
+          return p;
+        });
+      }
+      if (Array.isArray(merchantProductsList)) {
+        nextMerchantProds = merchantProductsList.map(p => {
+          if (p && (p.merchantId === merchantId || p.merchantName === currentMerchant.businessName)) {
+            productsUpdated = true;
+            return {
+              ...p,
+              merchantName: updatedData.businessName || p.merchantName,
+              merchantPhone: updatedData.phone || p.merchantPhone,
+              merchantEmail: updatedData.email || p.merchantEmail
+            };
+          }
+          return p;
+        });
+      }
+    }
+
+    if (productsUpdated) {
+      setCustomProductsList(nextCustom);
+      setMerchantProductsList(nextMerchantProds);
+      try {
+        localStorage.setItem('custom_added_products_v7', JSON.stringify(nextCustom));
+        localStorage.setItem('site_merchant_products_v1', JSON.stringify(nextMerchantProds));
+      } catch(e) {}
+      syncToServer({
+        merchantsList: nextMerchants,
+        customProductsList: nextCustom,
+        merchantProductsList: nextMerchantProds
+      });
+    } else {
+      syncToServer({ merchantsList: nextMerchants });
+    }
+
+    showLiveToast(
+      currentLang === 'gu'
+        ? (requiresApproval
+            ? `⏳ સેલર પ્રોફાઇલ અપડેટ સબમિટ થઈ ગઈ છે! એડમિન એપ્રુવલ (Admin Approval) બાકી છે.`
+            : `✅ સેલર પ્રોફાઇલ સફળતાપૂર્વક અપડેટ થઈ ગઈ છે!`)
+        : (requiresApproval
+            ? `⏳ Profile update submitted! Pending Admin Approval.`
+            : `✅ Seller profile updated successfully!`),
+      requiresApproval ? 'info' : 'success'
+    );
+    return { success: true, merchant: merged };
+  };
+
   const updateMerchantPassword = (identifier, newPassword) => {
     const query = (identifier || '').trim().toLowerCase();
     const cleanDigits = query.replace(/[^0-9]/g, '');
@@ -2369,10 +2503,18 @@ export function AppProvider({ children }) {
   };
 
   const updateMerchantStatus = (merchantId, newStatus) => {
-    const nextMerchants = merchantsList.map(m => m.id === merchantId ? { ...m, status: newStatus } : m);
+    const nextMerchants = merchantsList.map(m => m.id === merchantId ? {
+      ...m,
+      status: newStatus,
+      profileUpdatedPending: newStatus === 'approved' ? false : m.profileUpdatedPending
+    } : m);
     setMerchantsList(nextMerchants);
     if (currentMerchant?.id === merchantId) {
-      const updatedCurr = { ...currentMerchant, status: newStatus };
+      const updatedCurr = {
+        ...currentMerchant,
+        status: newStatus,
+        profileUpdatedPending: newStatus === 'approved' ? false : currentMerchant.profileUpdatedPending
+      };
       setCurrentMerchant(updatedCurr);
       try { localStorage.setItem('site_current_merchant_v1', JSON.stringify(updatedCurr)); } catch(e) {}
     }
@@ -2604,8 +2746,8 @@ export function AppProvider({ children }) {
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       deletedBuiltInIds, setDeletedBuiltInIds,
-      customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer, updateCustomerPassword,
-      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+      customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, updateCustomerProfile, deleteCustomer, updateCustomerPassword,
+      merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantProfile, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
       forexRiskBuffer, saveForexRiskBuffer, setForexRiskBuffer: saveForexRiskBuffer,
       requireProductApproval, setRequireProductApproval: saveRequireProductApproval,

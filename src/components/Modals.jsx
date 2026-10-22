@@ -137,8 +137,8 @@ export default function Modals() {
     heroBanner, saveHeroBanner,
     aboutData, saveAboutData, getMainCategoryList,
     marketTickerList, saveMarketTickerList,
-    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, deleteCustomer, updateCustomerPassword,
-    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
+    customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, updateCustomerProfile, deleteCustomer, updateCustomerPassword,
+    merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantProfile, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
@@ -323,8 +323,47 @@ export default function Modals() {
   const [custConfirmPass, setCustConfirmPass] = useState('');
   const [matchedCustObj, setMatchedCustObj] = useState(null);
 
+  // Customer Edit Profile Modal State
+  const [isEditingCustomerProfile, setIsEditingCustomerProfile] = useState(false);
+  const [editCustName, setEditCustName] = useState('');
+  const [editCustCompany, setEditCustCompany] = useState('');
+  const [editCustPhone, setEditCustPhone] = useState('');
+  const [editCustEmail, setEditCustEmail] = useState('');
+  const [editCustDelivery, setEditCustDelivery] = useState('');
+  const [editCustBilling, setEditCustBilling] = useState('');
+  const [editCustBillingSame, setEditCustBillingSame] = useState(true);
+  const [editCustCity, setEditCustCity] = useState('Surat');
+  const [editCustState, setEditCustState] = useState('Gujarat');
+  const [editCustZip, setEditCustZip] = useState('');
+  const [editCustCountry, setEditCustCountry] = useState('India');
+  const [editCustPassword, setEditCustPassword] = useState('');
+  const [showEditCustPassword, setShowEditCustPassword] = useState(false);
+
+  const initCustomerEditForm = () => {
+    if (!currentCustomer) return;
+    setEditCustName(currentCustomer.name || '');
+    setEditCustCompany(currentCustomer.companyName === 'Individual Buyer' || currentCustomer.companyName === 'N/A' ? '' : (currentCustomer.companyName || ''));
+    setEditCustPhone(currentCustomer.phone || '');
+    setEditCustEmail(currentCustomer.email || '');
+    setEditCustDelivery(currentCustomer.deliveryAddress || '');
+    setEditCustBilling(currentCustomer.billingAddress || currentCustomer.deliveryAddress || '');
+    setEditCustBillingSame(!currentCustomer.billingAddress || currentCustomer.billingAddress === currentCustomer.deliveryAddress);
+    setEditCustCity(currentCustomer.city || 'Surat');
+    setEditCustState(currentCustomer.state || 'Gujarat');
+    setEditCustZip(currentCustomer.pincode || '');
+    setEditCustCountry(currentCustomer.country || 'India');
+    setEditCustPassword(currentCustomer.password || '');
+    setIsEditingCustomerProfile(true);
+  };
+
   // Seller Portal & Multi-Vendor Merchant State
-  const [sellerTab, setSellerTab] = useState('register'); // 'register' | 'login' | 'dashboard' | 'add_product'
+  const [sellerTab, setSellerTab] = useState(currentMerchant ? 'dashboard' : 'register'); // 'register' | 'login' | 'dashboard' | 'add_product' | 'edit_profile'
+
+  useEffect(() => {
+    if (activeModal === 'seller_portal' && currentMerchant && sellerTab === 'register') {
+      setSellerTab('dashboard');
+    }
+  }, [activeModal, currentMerchant]);
   const [mBizNameInput, setMBizNameInput] = useState('');
   const [mBrandInput, setMBrandInput] = useState('');
   const [mContactInput, setMContactInput] = useState('');
@@ -354,6 +393,43 @@ export default function Modals() {
   const [mGstCertInput, setMGstCertInput] = useState('');
   const [mQualityCertInput, setMQualityCertInput] = useState('');
   const [mFactoryPhotoInput, setMFactoryPhotoInput] = useState('');
+
+  // Seller Edit Profile State
+  const [editMBizName, setEditMBizName] = useState('');
+  const [editMBrand, setEditMBrand] = useState('');
+  const [editMContact, setEditMContact] = useState('');
+  const [editMPhone, setEditMPhone] = useState('');
+  const [editMEmail, setEditMEmail] = useState('');
+  const [editMCity, setEditMCity] = useState('Surat');
+  const [editMState, setEditMState] = useState('Gujarat');
+  const [editMGstin, setEditMGstin] = useState('');
+  const [editMBizType, setEditMBizType] = useState('Manufacturer & Exporter');
+  const [editMPassword, setEditMPassword] = useState('');
+  const [editMConfirmPassword, setEditMConfirmPassword] = useState('');
+  const [showEditMPassword, setShowEditMPassword] = useState(false);
+  const [editMIecCert, setEditMIecCert] = useState('');
+  const [editMGstCert, setEditMGstCert] = useState('');
+  const [editMQualityCert, setEditMQualityCert] = useState('');
+  const [editMFactoryPhoto, setEditMFactoryPhoto] = useState('');
+
+  const populateMerchantEditForm = () => {
+    if (!currentMerchant) return;
+    setEditMBizName(currentMerchant.businessName || '');
+    setEditMBrand(currentMerchant.brandName || currentMerchant.businessName || '');
+    setEditMContact(currentMerchant.contactPerson || '');
+    setEditMPhone(currentMerchant.phone || '');
+    setEditMEmail(currentMerchant.email || '');
+    setEditMCity(currentMerchant.city || 'Surat');
+    setEditMState(currentMerchant.state || 'Gujarat');
+    setEditMGstin(currentMerchant.gstin || '');
+    setEditMBizType(currentMerchant.businessType || 'Manufacturer & Exporter');
+    setEditMPassword('');
+    setEditMConfirmPassword('');
+    setEditMIecCert(currentMerchant.iecCertUrl || '');
+    setEditMGstCert(currentMerchant.gstCertUrl || '');
+    setEditMQualityCert(currentMerchant.qualityCertUrl || '');
+    setEditMFactoryPhoto(currentMerchant.factoryPhotoUrl || '');
+  };
 
   // Seller New Product Upload Form State
   const [mProdNameEn, setMProdNameEn] = useState('');
@@ -2146,12 +2222,20 @@ export default function Modals() {
                     <div key={seller.id} className="admin-seller-card">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                         <div>
-                          <h4 className="admin-seller-title">
+                          <h4 className="admin-seller-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             🏢 {seller.businessName}
                             {seller.brandName && <span className="admin-seller-brand">({seller.brandName})</span>}
+                            {seller.profileUpdatedPending && (
+                              <span style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.4)', fontWeight: 800 }}>
+                                🔄 Profile Updated (Pending Admin Review)
+                              </span>
+                            )}
                           </h4>
                           <div className="admin-seller-meta-line">
                             👤 Contact: <strong>{seller.contactPerson || 'N/A'}</strong> | 📍 {seller.city || 'Surat'}, {seller.state || 'Gujarat'}
+                            {seller.profileUpdatedAt && (
+                              <span style={{ marginLeft: '6px', color: '#facc15', fontSize: '0.74rem' }}>• ⏱️ Updated: {seller.profileUpdatedAt}</span>
+                            )}
                           </div>
                         </div>
                         <span
@@ -2234,7 +2318,7 @@ export default function Modals() {
                             style={{ padding: '6px 12px', fontSize: '0.78rem', background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
                             onClick={() => updateMerchantStatus(seller.id, 'approved')}
                           >
-                            ✅ Approve Seller
+                            ✅ {seller.profileUpdatedPending ? 'Approve Profile Updates' : 'Approve Seller'}
                           </button>
                         )}
                         {seller.status !== 'blocked' && (
@@ -3215,75 +3299,262 @@ export default function Modals() {
       {/* 2. LOGGED-IN CUSTOMER PORTAL DASHBOARD MODAL */}
       {activeModal === 'customer_portal' && currentCustomer && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '540px', borderRadius: '24px' }}>
-            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+          <div className="glass-card modal-card" style={{ maxWidth: '560px', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => { setActiveModal(null); setIsEditingCustomerProfile(false); }}>&times;</button>
 
-            <div style={{ background: 'rgba(20, 184, 166, 0.15)', border: '1px solid var(--primary-teal-glow)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '18px', textAlign: 'center' }}>
-              <span style={{ fontSize: '2.5rem' }}>👤</span>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
-                Welcome, {currentCustomer.name}!
-              </h3>
-              <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
-                ✓ Registered Customer Account Active
-              </span>
-            </div>
+            {!isEditingCustomerProfile ? (
+              <>
+                <div style={{ background: 'rgba(20, 184, 166, 0.15)', border: '1px solid var(--primary-teal-glow)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '18px', textAlign: 'center', position: 'relative' }}>
+                  <button
+                    type="button"
+                    onClick={initCustomerEditForm}
+                    title={currentLang === 'gu' ? 'પ્રોફાઇલ એડિટ કરો' : 'Edit Profile'}
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      background: 'rgba(14, 165, 233, 0.18)',
+                      border: '1px solid #38bdf8',
+                      borderRadius: '20px',
+                      padding: '4px 12px',
+                      color: '#38bdf8',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    ✏️ {currentLang === 'gu' ? 'એડિટ પ્રોફાઇલ' : 'Edit Profile'}
+                  </button>
+                  <span style={{ fontSize: '2.5rem' }}>👤</span>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
+                    Welcome, {currentCustomer.name}!
+                  </h3>
+                  <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                    ✓ Registered Customer Account Active
+                  </span>
+                </div>
 
-            <div style={{ display: 'grid', gap: '10px', fontSize: '0.88rem', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>🏢 Business / Company:</span>
-                <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.companyName || 'Individual Buyer'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>📞 Phone / WhatsApp:</span>
-                <strong style={{ color: '#4ade80' }}>{currentCustomer.phone || 'N/A'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>✉️ Email:</span>
-                <strong style={{ color: '#38bdf8' }}>{currentCustomer.email || 'N/A'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>🚚 Delivery Address:</span>
-                <strong style={{ color: '#facc15', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.deliveryAddress || 'Not Provided'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>🏢 Billing Address:</span>
-                <strong style={{ color: 'var(--text-main)', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>📍 Location:</span>
-                <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ color: 'var(--text-sub)' }}>📅 Account Created:</span>
-                <span style={{ color: 'var(--text-sub)' }}>{currentCustomer.registeredAt}</span>
-              </div>
-            </div>
+                <div style={{ display: 'grid', gap: '10px', fontSize: '0.88rem', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🏢 Business / Company:</span>
+                    <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.companyName || 'Individual Buyer'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📞 Phone / WhatsApp:</span>
+                    <strong style={{ color: '#4ade80' }}>{currentCustomer.phone || 'N/A'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>✉️ Email:</span>
+                    <strong style={{ color: '#38bdf8' }}>{currentCustomer.email || 'N/A'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🚚 Delivery Address:</span>
+                    <strong style={{ color: '#facc15', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.deliveryAddress || 'Not Provided'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🏢 Billing Address:</span>
+                    <strong style={{ color: 'var(--text-main)', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📍 Location:</span>
+                    <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📅 Account Created:</span>
+                    <span style={{ color: 'var(--text-sub)' }}>{currentCustomer.registeredAt}</span>
+                  </div>
+                </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                type="button"
-                className="btn-primary"
-                style={{ flex: 1, justifyContent: 'center' }}
-                onClick={() => {
-                  setActiveModal('quotation');
-                }}
-              >
-                📄 {currentLang === 'gu' ? 'ઝડપી કોટેશન માંગો' : 'Request Instant Quotation'}
-              </button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{
+                      flex: '1 1 auto',
+                      justifyContent: 'center',
+                      borderColor: '#0284c7',
+                      color: '#38bdf8',
+                      background: 'rgba(14, 165, 233, 0.15)',
+                      fontWeight: 800
+                    }}
+                    onClick={initCustomerEditForm}
+                  >
+                    ✏️ {currentLang === 'gu' ? 'પ્રોફાઇલ અપડેટ (Edit)' : 'Edit Profile'}
+                  </button>
 
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.4)' }}
-                onClick={() => {
-                  logoutCustomer();
-                  setActiveModal(null);
-                  alert('🔒 Customer logged out successfully.');
-                }}
-              >
-                🔒 {currentLang === 'gu' ? 'લોગઆઉટ' : 'Logout'}
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ flex: '1 1 auto', justifyContent: 'center' }}
+                    onClick={() => {
+                      setActiveModal('quotation');
+                    }}
+                  >
+                    📄 {currentLang === 'gu' ? 'ઝડપી કોટેશન માંગો' : 'Request Instant Quotation'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.4)' }}
+                    onClick={() => {
+                      logoutCustomer();
+                      setActiveModal(null);
+                      setIsEditingCustomerProfile(false);
+                      alert('🔒 Customer logged out successfully.');
+                    }}
+                  >
+                    🔒 {currentLang === 'gu' ? 'લોગઆઉટ' : 'Logout'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!editCustName.trim()) {
+                  alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું નામ લખો!' : '⚠️ Please enter your Name!');
+                  return;
+                }
+                if (!editCustPhone.trim() && !editCustEmail.trim()) {
+                  alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને મોબાઇલ નંબર અથવા ઇમેઇલ દાખલ કરો!' : '⚠️ Please enter Phone Number or Email!');
+                  return;
+                }
+                const finalDelivery = editCustDelivery.trim();
+                const finalBilling = editCustBillingSame ? finalDelivery : (editCustBilling.trim() || finalDelivery);
+
+                updateCustomerProfile({
+                  name: editCustName.trim(),
+                  companyName: editCustCompany.trim() || 'Individual Buyer',
+                  phone: editCustPhone.trim(),
+                  email: editCustEmail.trim(),
+                  deliveryAddress: finalDelivery,
+                  billingAddress: finalBilling,
+                  city: editCustCity.trim() || 'Surat',
+                  state: editCustState.trim() || 'Gujarat',
+                  pincode: editCustZip.trim(),
+                  country: editCustCountry.trim() || 'India',
+                  ...(editCustPassword ? { password: editCustPassword } : {})
+                });
+                setIsEditingCustomerProfile(false);
+              }}>
+                <div style={{ background: 'rgba(14, 165, 233, 0.12)', border: '1px solid rgba(14, 165, 233, 0.3)', padding: '14px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.8rem' }}>✏️</span>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
+                      {currentLang === 'gu' ? 'કસ્ટમર પ્રોફાઇલ અપડેટ કરો' : 'Update Customer Profile'}
+                    </h3>
+                    <span style={{ fontSize: '0.8rem', color: '#38bdf8' }}>
+                      {currentLang === 'gu' ? 'તમારી સંપર્ક વિગતો અને સરનામું અપડેટ કરો' : 'Edit your personal, contact, and delivery details'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'પૂરું નામ *' : 'Full Name *'}</label>
+                    <input type="text" className="form-control" value={editCustName} onChange={(e) => setEditCustName(e.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'કંપની / બિઝનેસ નામ' : 'Business / Company Name'}</label>
+                    <input type="text" className="form-control" value={editCustCompany} onChange={(e) => setEditCustCompany(e.target.value)} placeholder="e.g. Acme Imports Ltd" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'મોબાઇલ / વોટ્સએપ *' : 'Phone / WhatsApp *'}</label>
+                    <input type="tel" className="form-control" value={editCustPhone} onChange={(e) => setEditCustPhone(e.target.value)} placeholder="+91 98250..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'ઈમેલ એડ્રેસ' : 'Email Address'}</label>
+                    <input type="email" className="form-control" value={editCustEmail} onChange={(e) => setEditCustEmail(e.target.value)} placeholder="customer@domain.com" />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{currentLang === 'gu' ? 'ડિલિવરી સરનામું (Delivery Address)' : 'Delivery Address'}</label>
+                  <textarea className="form-control" rows="2" value={editCustDelivery} onChange={(e) => setEditCustDelivery(e.target.value)} placeholder="Plot / Street / Area / Landmark" />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+                    <input type="checkbox" checked={editCustBillingSame} onChange={(e) => setEditCustBillingSame(e.target.checked)} />
+                    {currentLang === 'gu' ? 'બિલિંગ સરનામું ડિલિવરી સરનામાં જેવું જ છે (Same as Delivery)' : 'Billing Address is same as Delivery Address'}
+                  </label>
+                </div>
+
+                {!editCustBillingSame && (
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'બિલિંગ સરનામું (Billing Address)' : 'Billing Address'}</label>
+                    <textarea className="form-control" rows="2" value={editCustBilling} onChange={(e) => setEditCustBilling(e.target.value)} placeholder="Registered Billing Address" />
+                  </div>
+                )}
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'શહેર (City)' : 'City'}</label>
+                    <input type="text" className="form-control" value={editCustCity} onChange={(e) => setEditCustCity(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'રાજ્ય (State)' : 'State'}</label>
+                    <input type="text" className="form-control" value={editCustState} onChange={(e) => setEditCustState(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'પિનકોડ / Zip' : 'Pincode / Postal Code'}</label>
+                    <input type="text" className="form-control" value={editCustZip} onChange={(e) => setEditCustZip(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'દેશ (Country)' : 'Country'}</label>
+                    <input type="text" className="form-control" value={editCustCountry} onChange={(e) => setEditCustCountry(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{currentLang === 'gu' ? 'પાસવર્ડ (ઓપ્શનલ - જો બદલવો હોય તો જ લખો)' : 'Password (Optional - leave blank to keep unchanged)'}</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showEditCustPassword ? "text" : "password"}
+                      className="form-control"
+                      value={editCustPassword}
+                      onChange={(e) => setEditCustPassword(e.target.value)}
+                      placeholder="Enter new customer password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditCustPassword(!showEditCustPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                      title={showEditCustPassword ? "Hide password" : "Show password"}
+                    >
+                      {showEditCustPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ flex: 1, justifyContent: 'center', padding: '11px', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', fontWeight: 800 }}
+                  >
+                    💾 {currentLang === 'gu' ? 'પ્રોફાઇલ સાચવો (Save)' : 'Save Profile Changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ padding: '11px 18px', justifyContent: 'center' }}
+                    onClick={() => setIsEditingCustomerProfile(false)}
+                  >
+                    ❌ {currentLang === 'gu' ? 'રદ કરો (Cancel)' : 'Cancel'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -8616,6 +8887,26 @@ export default function Modals() {
                   >
                     ➕ Upload New Product (નવી પ્રોડક્ટ)
                   </button>
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.84rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      border: '1px solid',
+                      background: sellerTab === 'edit_profile' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'rgba(255,255,255,0.06)',
+                      color: sellerTab === 'edit_profile' ? 'white' : 'var(--text-sub)',
+                      borderColor: sellerTab === 'edit_profile' ? '#0284c7' : 'var(--border-glass)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      populateMerchantEditForm();
+                      setSellerTab('edit_profile');
+                    }}
+                  >
+                    ✏️ {currentLang === 'gu' ? 'પ્રોફાઇલ અપડેટ (Edit Profile)' : 'Edit Profile'}
+                  </button>
                 </>
               )}
             </div>
@@ -8942,25 +9233,62 @@ export default function Modals() {
                       📞 {currentMerchant.phone} | 📍 {currentMerchant.city}, {currentMerchant.state} | GST: {currentMerchant.gstin || 'N/A'}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ fontSize: '0.8rem', padding: '6px 12px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black' }}
-                    onClick={() => {
-                      setEditingProductId(null);
-                      setProdType('sub');
-                      setActiveModal('product_sub');
-                    }}
-                  >
-                    ➕ Add Product
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      style={{
+                        fontSize: '0.8rem',
+                        padding: '6px 14px',
+                        background: 'rgba(14, 165, 233, 0.15)',
+                        borderColor: '#0284c7',
+                        color: '#38bdf8',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                      onClick={() => {
+                        populateMerchantEditForm();
+                        setSellerTab('edit_profile');
+                      }}
+                    >
+                      ✏️ {currentLang === 'gu' ? 'પ્રોફાઇલ અપડેટ (Edit Profile)' : 'Edit Profile'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ fontSize: '0.8rem', padding: '6px 14px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 800, borderRadius: '8px' }}
+                      onClick={() => {
+                        setEditingProductId(null);
+                        setProdType('sub');
+                        setActiveModal('product_sub');
+                      }}
+                    >
+                      ➕ Add Product
+                    </button>
+                  </div>
                 </div>
 
                 {currentMerchant.status === 'pending' && (
                   <div style={{ background: 'rgba(234, 179, 8, 0.12)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#fef08a', padding: '12px 16px', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ fontSize: '1.4rem' }}>⏳</span>
                     <div>
-                      <strong>નોંધ (Registration Pending):</strong> તમારું સેલર રજિસ્ટ્રેશન સફળતાપૂર્વક સબમિટ થયું છે પરંતુ હાલ એડમિન એપ્રુવલ માટે પેન્ડિંગ છે. એડમિન વેરિફિકેશન કરીને એપ્રુવ કરશે ત્યારબાદ જ તમારું પ્રોફાઇલ અને પ્રોડક્ટ્સ પબ્લિકલી એક્ટિવ થશે.
+                      <strong>
+                        {currentMerchant.profileUpdatedPending
+                          ? (currentLang === 'gu' ? 'નોંધ (પ્રોફાઇલ અપડેટ એડમિન એપ્રુઅલ બાકી):' : 'Notice (Profile Update Pending Admin Approval):')
+                          : (currentLang === 'gu' ? 'નોંધ (Registration Pending):' : 'Notice (Registration Pending):')}
+                      </strong>{' '}
+                      {currentMerchant.profileUpdatedPending
+                        ? (currentLang === 'gu'
+                            ? 'તમે કરેલ પ્રોફાઇલ અપડેટ સફળતાપૂર્વક સબમિટ થઈ ગયું છે પરંતુ હાલ એડમિન એપ્રુવલ (Admin Approval) માટે પેન્ડિંગ છે. એડમિન દ્વારા ચકાસણી કરીને એપ્રુવ કરવામાં આવ્યા પછી જ પ્રોફાઇલ લાઇવ થશે.'
+                            : 'Your profile updates have been submitted and are pending Admin Approval before going live.')
+                        : (currentLang === 'gu'
+                            ? 'તમારું સેલર રજિસ્ટ્રેશન સફળતાપૂર્વક સબમિટ થયું છે પરંતુ હાલ એડમિન એપ્રુઅલ માટે પેન્ડિંગ છે. એડમિન વેરિફિકેશન કરીને એપ્રુવ કરશે ત્યારબાદ જ તમારું પ્રોફાઇલ અને પ્રોડક્ટ્સ પબ્લિકલી એક્ટિવ થશે.'
+                            : 'Your seller registration has been submitted and is pending admin approval.')
+                      }
                     </div>
                   </div>
                 )}
@@ -9069,6 +9397,293 @@ export default function Modals() {
                   );
                 })()}
               </div>
+            )}
+
+            {/* TAB: SELLER PROFILE EDIT FORM */}
+            {sellerTab === 'edit_profile' && currentMerchant && (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!editMBizName.trim() || !editMPhone.trim()) {
+                  alert(currentLang === 'gu' ? "⚠️ કૃપા કરીને વેપારી/બિઝનેસ નામ અને મોબાઇલ નંબર દાખલ કરો!" : "⚠️ Please enter Business Name and Mobile/WhatsApp Number!");
+                  return;
+                }
+                if (editMPassword && editMPassword !== editMConfirmPassword) {
+                  alert(currentLang === 'gu' ? "⚠️ બંને પાસવર્ડ સરખા નથી! કૃપા કરીને તપાસીને ફરીથી ટાઈપ કરો." : "⚠️ Passwords do not match! Please check and re-type.");
+                  return;
+                }
+                updateMerchantProfile({
+                  businessName: editMBizName.trim(),
+                  brandName: editMBrand.trim() || editMBizName.trim(),
+                  contactPerson: editMContact.trim() || editMBizName.trim(),
+                  phone: editMPhone.trim(),
+                  email: editMEmail.trim(),
+                  city: editMCity.trim() || 'Surat',
+                  state: editMState.trim() || 'Gujarat',
+                  gstin: editMGstin.trim(),
+                  businessType: editMBizType,
+                  iecCertUrl: editMIecCert,
+                  gstCertUrl: editMGstCert,
+                  qualityCertUrl: editMQualityCert,
+                  factoryPhotoUrl: editMFactoryPhoto,
+                  ...(editMPassword ? { password: editMPassword } : {})
+                });
+                alert(currentLang === 'gu'
+                  ? "⏳ તમારી પ્રોફાઇલ અપડેટ સફળતાપૂર્વક સબમિટ થઈ ગઈ છે! એડમિન એપ્રુઅલ (Admin Approval) મળ્યા બાદ જ આ ફેરફારો લાઇવ થશે."
+                  : "⏳ Profile updates submitted successfully! It is pending Admin Approval before going live on the platform."
+                );
+                setSellerTab('dashboard');
+              }}>
+                <div style={{ background: 'rgba(14, 165, 233, 0.1)', padding: '14px 18px', borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.3)', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '1.15rem', color: '#38bdf8', fontWeight: 900 }}>
+                      🏢 {currentLang === 'gu' ? 'સેલર પ્રોફાઇલ અપડેટ (Update Seller Profile)' : 'Update Seller & Exporter Profile'}
+                    </h4>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
+                      {currentLang === 'gu' ? 'તમારી કંપનીની વિગતો, સંપર્ક નંબર, GST/IEC અને સર્ટિફિકેટ્સ અપડેટ કરો' : 'Update your business information, contact details, GSTIN/IEC, and certificates'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ fontSize: '0.78rem', padding: '5px 12px' }}
+                    onClick={() => setSellerTab('dashboard')}
+                  >
+                    ⬅️ {currentLang === 'gu' ? 'પ્રોડક્ટ્સ પર પાછા જાઓ' : 'Back to Products'}
+                  </button>
+                </div>
+
+                {/* Important Admin Approval Notice */}
+                <div style={{ background: 'rgba(234, 179, 8, 0.12)', border: '1px solid rgba(234, 179, 8, 0.4)', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px', fontSize: '0.84rem', color: '#fef08a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🛡️</span>
+                  <div>
+                    <strong>{currentLang === 'gu' ? 'એડમિન એપ્રુઅલ આવશ્યક:' : 'Admin Approval Required:'}</strong>{' '}
+                    {currentLang === 'gu'
+                      ? 'સેલર દ્વારા કરવામાં આવેલ પ્રોફાઇલ અપડેટ માટે એડમિન એપ્રુઅલ (Admin Approval) જરૂરી રહેશે. એડમિન દ્વારા ચકાસણી કરીને મંજૂર કર્યા બાદ જ તમામ ફેરફારો લાઇવ થશે.'
+                      : 'Profile updates made by a seller require Admin Approval before going live publicly on the platform.'
+                    }
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'કંપની / બિઝનેસ નામ *' : 'Business / Company Name *'}</label>
+                    <input type="text" className="form-control" value={editMBizName} onChange={(e) => setEditMBizName(e.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'બ્રાન્ડ નામ (Brand Name)' : 'Brand Name'}</label>
+                    <input type="text" className="form-control" value={editMBrand} onChange={(e) => setEditMBrand(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'મોબાઇલ / વોટ્સએપ નંબર *' : 'Mobile / WhatsApp Number *'}</label>
+                    <input type="tel" className="form-control" value={editMPhone} onChange={(e) => setEditMPhone(e.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'ઈમેલ એડ્રેસ' : 'Email Address'}</label>
+                    <input type="email" className="form-control" value={editMEmail} onChange={(e) => setEditMEmail(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'સંપર્ક વ્યક્તિનું નામ' : 'Contact Person Name'}</label>
+                    <input type="text" className="form-control" value={editMContact} onChange={(e) => setEditMContact(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'GSTIN / IEC નંબર' : 'GSTIN / IEC Number'}</label>
+                    <input type="text" className="form-control" value={editMGstin} onChange={(e) => setEditMGstin(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'શહેર (City)' : 'City'}</label>
+                    <input type="text" className="form-control" value={editMCity} onChange={(e) => setEditMCity(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'રાજ્ય (State)' : 'State'}</label>
+                    <input type="text" className="form-control" value={editMState} onChange={(e) => setEditMState(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{currentLang === 'gu' ? 'વેપારનો પ્રકાર' : 'Business Type'}</label>
+                  <select className="form-control" value={editMBizType} onChange={(e) => setEditMBizType(e.target.value)}>
+                    <option value="Manufacturer & Exporter">{currentLang === 'gu' ? 'Manufacturer & Exporter (ઉત્પાદક અને નિકાસકાર)' : 'Manufacturer & Exporter'}</option>
+                    <option value="Merchant Exporter">{currentLang === 'gu' ? 'Merchant Exporter (મર્ચન્ટ એક્સપોર્ટર)' : 'Merchant Exporter'}</option>
+                    <option value="Wholesaler & Supplier">{currentLang === 'gu' ? 'Wholesaler & Supplier (જથ્થાબંધ વેપારી)' : 'Wholesaler & Supplier'}</option>
+                  </select>
+                </div>
+
+                {/* Optional Password Update */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#facc15', marginBottom: '8px' }}>
+                    🔐 {currentLang === 'gu' ? 'પાસવર્ડ બદલો (ઓપ્શનલ - જો બદલવો હોય તો જ લખો)' : 'Change Seller Password (Optional - leave blank if unchanged)'}
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem' }}>{currentLang === 'gu' ? 'નવો પાસવર્ડ' : 'New Password'}</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type={showEditMPassword ? "text" : "password"}
+                          className="form-control"
+                          value={editMPassword}
+                          onChange={(e) => setEditMPassword(e.target.value)}
+                          placeholder="Enter new password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowEditMPassword(!showEditMPassword)}
+                          style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                        >
+                          {showEditMPassword ? '👁️' : '🙈'}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem' }}>{currentLang === 'gu' ? 'પાસવર્ડ ફરીથી લખો' : 'Confirm New Password'}</label>
+                      <input
+                        type={showEditMPassword ? "text" : "password"}
+                        className="form-control"
+                        value={editMConfirmPassword}
+                        onChange={(e) => setEditMConfirmPassword(e.target.value)}
+                        placeholder="Re-type new password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certificates and Documents */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '18px' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38bdf8', marginBottom: '8px' }}>
+                    📁 {currentLang === 'gu' ? 'નિકાસ સર્ટિફિકેટ્સ અને દસ્તાવેજો (Documents)' : 'Export Certificates & Business Documents'}
+                  </div>
+
+                  <div className="form-row">
+                    {/* IEC */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        📄 Import Export Code (IEC) Certificate
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setEditMIecCert(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {editMIecCert && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          ✅ Attached <button type="button" onClick={() => setEditMIecCert('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.72rem' }}>[Remove]</button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* GST */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        📜 GST Registration Certificate
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setEditMGstCert(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {editMGstCert && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          ✅ Attached <button type="button" onClick={() => setEditMGstCert('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.72rem' }}>[Remove]</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    {/* Quality */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        🏅 Quality Cert (APEDA / FSSAI / ISO / FIEO)
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setEditMQualityCert(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {editMQualityCert && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          ✅ Attached <button type="button" onClick={() => setEditMQualityCert('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.72rem' }}>[Remove]</button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Factory Photo */}
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                        🏭 Factory / Premises Photo
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => setEditMFactoryPhoto(evt.target.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      {editMFactoryPhoto && (
+                        <div style={{ fontSize: '0.74rem', color: '#4ade80', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          ✅ Attached <button type="button" onClick={() => setEditMFactoryPhoto('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.72rem' }}>[Remove]</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ flex: 1, justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', fontWeight: 900 }}
+                  >
+                    💾 {currentLang === 'gu' ? 'પ્રોફાઇલ સાચવો (Save Changes)' : 'Save Profile Changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ padding: '12px 20px', justifyContent: 'center' }}
+                    onClick={() => setSellerTab('dashboard')}
+                  >
+                    ⬅️ {currentLang === 'gu' ? 'રદ કરો (Cancel)' : 'Cancel'}
+                  </button>
+                </div>
+              </form>
             )}
 
             {/* TAB 4: UPLOAD NEW PRODUCT LINK TO MASTER FORM */}
