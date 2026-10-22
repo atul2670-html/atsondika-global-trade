@@ -8014,124 +8014,124 @@ export default function Modals() {
                   const showOriginTrucking = ['EXW', 'FCA', 'FAS'].includes(code);
 
                   return (
-                    <div style={{ background: 'rgba(15, 23, 42, 0.95)', padding: '14px', borderRadius: '12px', border: '2px solid #facc15', marginTop: '10px', marginBottom: '4px', boxShadow: '0 0 15px rgba(250, 204, 21, 0.2)' }}>
+                    <div className="proforma-inco-breakdown-card" style={{ padding: '14px', borderRadius: '12px', marginTop: '10px', marginBottom: '4px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-                        <span style={{ fontSize: '0.88rem', color: '#facc15', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="inco-breakdown-title" style={{ fontSize: '0.88rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '6px' }}>
                           💲 Incoterm ({code}) Additional Charges Breakdown ({quoteCurrency || 'USD'}):
                         </span>
                         <button
                           type="button"
-                          className="btn-secondary"
+                          className="inco-breakdown-add-btn btn-secondary"
                           onClick={() => {
                             setCustomIncotermChargesList(prev => [
                               ...prev,
                               { id: `c_${Date.now()}`, name: 'Extra Handling Charge', amount: '0' }
                             ]);
                           }}
-                          style={{ fontSize: '0.74rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.6)', background: 'rgba(34, 197, 94, 0.2)', fontWeight: 800 }}
+                          style={{ fontSize: '0.74rem', padding: '4px 10px', fontWeight: 800 }}
                         >
                           ➕ + Add Custom Charge Field
                         </button>
                       </div>
 
                       {isFob && (!exportFreightCharge || exportFreightCharge === '0') && (!exportInsuranceCharge || exportInsuranceCharge === '0') && (!exportCustomsDutyCharge || exportCustomsDutyCharge === '0') && (!exportDoorDeliveryCharge || exportDoorDeliveryCharge === '0') && customIncotermChargesList.length === 0 ? (
-                        <div style={{ fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 700, background: 'rgba(45, 212, 191, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(45, 212, 191, 0.3)' }}>
+                        <div className="inco-fob-notice" style={{ fontSize: '0.78rem', fontWeight: 700, padding: '8px 12px', borderRadius: '8px' }}>
                           ℹ️ Active term is <strong>FOB (Free On Board)</strong>. Base product unit price covers factory export packing & port loading. If you select <strong>CIF, CFR, DDP, DAP, CIP</strong>, additional freight & duty input boxes will appear automatically below!
                         </div>
                       ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                           {showFreight && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-freight" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 🚢 Ocean / Air Freight Charge ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-freight"
                                 placeholder="e.g. 15.00"
                                 value={exportFreightCharge}
                                 onChange={(e) => setExportFreightCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#38bdf8', background: '#0f172a', borderColor: '#38bdf8' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
 
                           {showInsurance && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-insurance" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 🛡️ Marine Transit Insurance ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-insurance"
                                 placeholder="e.g. 1.00"
                                 value={exportInsuranceCharge}
                                 onChange={(e) => setExportInsuranceCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#4ade80', background: '#0f172a', borderColor: '#4ade80' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
 
                           {showCustomsDuty && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-duty" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 🏛️ Destination Import Duty & Tax ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-duty"
                                 placeholder="e.g. 11.60"
                                 value={exportCustomsDutyCharge}
                                 onChange={(e) => setExportCustomsDutyCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#f59e0b', background: '#0f172a', borderColor: '#f59e0b' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
 
                           {showBrokerFee && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#a855f7', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-broker" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 📑 Customs Clearance Broker Fee ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-broker"
                                 placeholder="e.g. 10.00"
                                 value={exportBrokerFeeCharge}
                                 onChange={(e) => setExportBrokerFeeCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#a855f7', background: '#0f172a', borderColor: '#a855f7' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
 
                           {showDoorDelivery && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-delivery" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 🚚 Destination Doorstep Delivery ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-delivery"
                                 placeholder="e.g. 12.00"
                                 value={exportDoorDeliveryCharge}
                                 onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#ec4899', background: '#0f172a', borderColor: '#ec4899' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
 
                           {showOriginTrucking && (
                             <div className="form-group" style={{ marginBottom: 0 }}>
-                              <label style={{ fontSize: '0.74rem', color: '#60a5fa', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                              <label className="inco-charge-label inco-label-trucking" style={{ fontSize: '0.74rem', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
                                 🚛 Origin Inland Trucking Charge ({quoteCurrency})
                               </label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-trucking"
                                 placeholder="e.g. 5.00"
                                 value={exportDoorDeliveryCharge}
                                 onChange={(e) => setExportDoorDeliveryCharge(e.target.value)}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', color: '#60a5fa', background: '#0f172a', borderColor: '#60a5fa' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           )}
@@ -8142,12 +8142,13 @@ export default function Modals() {
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                                 <input
                                   type="text"
+                                  className="inco-charge-custom-name"
                                   value={cItem.name}
                                   onChange={(e) => {
                                     const val = e.target.value;
                                     setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, name: val } : item));
                                   }}
-                                  style={{ fontSize: '0.74rem', background: 'none', border: 'none', color: '#4ade80', fontWeight: 800, padding: 0 }}
+                                  style={{ fontSize: '0.74rem', background: 'none', border: 'none', fontWeight: 800, padding: 0 }}
                                 />
                                 <button
                                   type="button"
@@ -8159,14 +8160,14 @@ export default function Modals() {
                               </div>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control inco-charge-input inco-input-custom"
                                 placeholder="0.00"
                                 value={cItem.amount}
                                 onChange={(e) => {
                                   const val = e.target.value;
                                   setCustomIncotermChargesList(prev => prev.map((item, i) => i === cIdx ? { ...item, amount: val } : item));
                                 }}
-                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px', background: '#0f172a', borderColor: '#4ade80' }}
+                                style={{ fontSize: '0.82rem', fontWeight: 700, padding: '4px 8px' }}
                               />
                             </div>
                           ))}
