@@ -35,21 +35,6 @@ export default function App() {
         <CertificatesSection />
         <BranchOfficesSection />
 
-        {/* Global Reach Section */}
-        <section className="section" id="global">
-          <div className="section-container" style={{ textAlign: 'center' }}>
-            <h2 className="section-title">{t.global_title}</h2>
-            <p style={{ color: 'var(--text-sub)', maxWidth: '600px', margin: '0 auto 40px auto' }}>{t.global_sub}</p>
-            
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-              <div className="glass-card" style={{ padding: '20px 30px', fontWeight: 800 }}>{t.region_me}</div>
-              <div className="glass-card" style={{ padding: '20px 30px', fontWeight: 800 }}>{t.region_eu}</div>
-              <div className="glass-card" style={{ padding: '20px 30px', fontWeight: 800 }}>{t.region_us}</div>
-              <div className="glass-card" style={{ padding: '20px 30px', fontWeight: 800 }}>{t.region_asia}</div>
-            </div>
-          </div>
-        </section>
-
         <ContactForm />
       </main>
 

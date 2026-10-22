@@ -3368,27 +3368,11 @@ export default function Modals() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    style={{
-                      flex: '1 1 auto',
-                      justifyContent: 'center',
-                      borderColor: '#0284c7',
-                      color: '#38bdf8',
-                      background: 'rgba(14, 165, 233, 0.15)',
-                      fontWeight: 800
-                    }}
-                    onClick={initCustomerEditForm}
-                  >
-                    ✏️ {currentLang === 'gu' ? 'પ્રોફાઇલ અપડેટ (Edit)' : 'Edit Profile'}
-                  </button>
-
+                <div style={{ display: 'flex', gap: '10px' }}>
                   <button
                     type="button"
                     className="btn-primary"
-                    style={{ flex: '1 1 auto', justifyContent: 'center' }}
+                    style={{ flex: 1, justifyContent: 'center' }}
                     onClick={() => {
                       setActiveModal('quotation');
                     }}
@@ -9233,43 +9217,18 @@ export default function Modals() {
                       📞 {currentMerchant.phone} | 📍 {currentMerchant.city}, {currentMerchant.state} | GST: {currentMerchant.gstin || 'N/A'}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      style={{
-                        fontSize: '0.8rem',
-                        padding: '6px 14px',
-                        background: 'rgba(14, 165, 233, 0.15)',
-                        borderColor: '#0284c7',
-                        color: '#38bdf8',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        borderRadius: '8px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}
-                      onClick={() => {
-                        populateMerchantEditForm();
-                        setSellerTab('edit_profile');
-                      }}
-                    >
-                      ✏️ {currentLang === 'gu' ? 'પ્રોફાઇલ અપડેટ (Edit Profile)' : 'Edit Profile'}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      style={{ fontSize: '0.8rem', padding: '6px 14px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 800, borderRadius: '8px' }}
-                      onClick={() => {
-                        setEditingProductId(null);
-                        setProdType('sub');
-                        setActiveModal('product_sub');
-                      }}
-                    >
-                      ➕ Add Product
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ fontSize: '0.8rem', padding: '6px 14px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 800, borderRadius: '8px' }}
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setProdType('sub');
+                      setActiveModal('product_sub');
+                    }}
+                  >
+                    ➕ Add Product
+                  </button>
                 </div>
 
                 {currentMerchant.status === 'pending' && (
