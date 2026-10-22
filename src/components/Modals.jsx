@@ -8529,74 +8529,96 @@ export default function Modals() {
             </div>
 
             {/* IncoTerms Visual Legend */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: '12px', marginBottom: '18px', fontSize: '0.82rem', flexWrap: 'wrap', border: '1px solid var(--border-glass)' }}>
+            <div className="incoterms-legend-box" style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '12px 16px', borderRadius: '14px', marginBottom: '18px', fontSize: '0.84rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: 'linear-gradient(90deg, #f97316, #ea580c)', borderRadius: '3px' }}></span>
+                <span className="incoterms-bar-seller" style={{ display: 'inline-block', width: '22px', height: '14px', borderRadius: '4px' }}></span>
                 <strong style={{ color: 'var(--text-main)' }}>Seller's Obligation (વેચનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ display: 'inline-block', width: '20px', height: '12px', background: '#0284c7', borderRadius: '3px' }}></span>
+                <span className="incoterms-bar-buyer" style={{ display: 'inline-block', width: '22px', height: '14px', borderRadius: '4px' }}></span>
                 <strong style={{ color: 'var(--text-main)' }}>Buyer's Obligation (ખરીદનારની જવાબદારી)</strong>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900 }}>!</span>
-                <strong style={{ color: '#f87171' }}>Transfer of Risk Point (જોખમ બદલાવનું સ્થળ)</strong>
+                <span className="incoterms-risk-beacon">!</span>
+                <strong style={{ color: '#ef4444' }}>Transfer of Risk Point (જોખમ બદલાવનું સ્થળ)</strong>
               </div>
             </div>
 
             {/* Visual Stage-by-Stage Diagram Header & Rows (Matching Screenshot 1) */}
-            <div style={{
-              background: 'rgba(15, 23, 42, 0.95)',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
-              borderRadius: '16px',
-              padding: '14px',
-              marginBottom: '20px',
-              overflowX: 'auto'
-            }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 900, color: '#38bdf8', textAlign: 'center', marginBottom: '12px' }}>
+            <div className="incoterms-diagram-card">
+              <div className="incoterms-diagram-title" style={{ fontSize: '0.9rem', fontWeight: 900, textAlign: 'center', marginBottom: '14px', letterSpacing: '0.4px' }}>
                 🌐 INCOTERMS® RESPONSIBILITIES & RISK TRANSFER DIAGRAM CHART
               </div>
 
               {/* Stage Icons Header Row */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '70px repeat(9, minmax(70px, 1fr))',
-                gap: '4px',
+                gridTemplateColumns: '76px repeat(9, minmax(70px, 1fr))',
+                gap: '5px',
                 textAlign: 'center',
-                fontSize: '0.65rem',
+                fontSize: '0.66rem',
                 fontWeight: 800,
-                color: '#cbd5e1',
-                borderBottom: '2px solid rgba(255,255,255,0.1)',
-                paddingBottom: '8px',
-                marginBottom: '8px'
+                paddingBottom: '10px',
+                marginBottom: '10px',
+                borderBottom: '2px solid rgba(148, 163, 184, 0.2)'
               }}>
-                <div style={{ color: '#facc15' }}>TERM</div>
-                <div>🏭<br/>FACTORY</div>
-                <div>🚚<br/>FIRST CARRIER</div>
-                <div>⚓<br/>PORT QUAY</div>
-                <div>🚢<br/>ON BOARD</div>
-                <div style={{ color: '#4ade80', fontWeight: 900 }}>🛡️<br/>INSURANCE</div>
-                <div>🛳️<br/>ON ARRIVAL</div>
-                <div>⚓<br/>DEST PORT</div>
-                <div>🏬<br/>DEST PLACE</div>
-                <div>🏪<br/>BUYER DOOR</div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span className="stage-name" style={{ fontWeight: 900 }}>TERM</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🏭</span>
+                  <span className="stage-name">FACTORY</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🚚</span>
+                  <span className="stage-name">FIRST CARRIER</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>⚓</span>
+                  <span className="stage-name">PORT QUAY</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🚢</span>
+                  <span className="stage-name">ON BOARD</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px', border: '1.5px solid #10b981' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🛡️</span>
+                  <span className="stage-name" style={{ color: '#10b981', fontWeight: 900 }}>INSURANCE</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🛳️</span>
+                  <span className="stage-name">ON ARRIVAL</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>⚓</span>
+                  <span className="stage-name">DEST PORT</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🏬</span>
+                  <span className="stage-name">DEST PLACE</span>
+                </div>
+                <div className="incoterms-stage-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6px 2px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '1rem', marginBottom: '1px' }}>🏪</span>
+                  <span className="stage-name">BUYER DOOR</span>
+                </div>
               </div>
 
               {/* Diagram Rows for Each Key Incoterm */}
               {[
-                { code: 'EXW', name: 'Ex Works', sellerEnd: 1, hasSellerInsurance: false, riskPoint: 'Factory Gate' },
-                { code: 'FCA', name: 'Free Carrier', sellerEnd: 2, hasSellerInsurance: false, riskPoint: 'First Carrier' },
-                { code: 'FAS', name: 'Free Alongside Ship', sellerEnd: 3, hasSellerInsurance: false, riskPoint: 'Port Quay' },
-                { code: 'FOB', name: 'Free On Board', sellerEnd: 4, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
-                { code: 'CFR', name: 'Cost & Freight', sellerEnd: 7, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
-                { code: 'CIF', name: 'Cost, Insurance & Freight', sellerEnd: 7, hasSellerInsurance: true, riskPoint: 'Vessel Onboard' },
-                { code: 'CPT', name: 'Carriage Paid To', sellerEnd: 8, hasSellerInsurance: false, riskPoint: 'First Carrier' },
-                { code: 'CIP', name: 'Carriage & Insurance Paid', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'First Carrier' },
-                { code: 'DAP', name: 'Delivered at Place', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'Destination Place' },
-                { code: 'DDP', name: 'Delivered Duty Paid', sellerEnd: 9, hasSellerInsurance: true, riskPoint: 'Buyer Warehouse' }
+                { code: 'EXW', name: 'Ex Works', badgeClass: 'incoterm-badge-e', sellerEnd: 1, hasSellerInsurance: false, riskPoint: 'Factory Gate' },
+                { code: 'FCA', name: 'Free Carrier', badgeClass: 'incoterm-badge-f', sellerEnd: 2, hasSellerInsurance: false, riskPoint: 'First Carrier' },
+                { code: 'FAS', name: 'Free Alongside Ship', badgeClass: 'incoterm-badge-f', sellerEnd: 3, hasSellerInsurance: false, riskPoint: 'Port Quay' },
+                { code: 'FOB', name: 'Free On Board', badgeClass: 'incoterm-badge-f', sellerEnd: 4, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
+                { code: 'CFR', name: 'Cost & Freight', badgeClass: 'incoterm-badge-c', sellerEnd: 7, hasSellerInsurance: false, riskPoint: 'Vessel Onboard' },
+                { code: 'CIF', name: 'Cost, Insurance & Freight', badgeClass: 'incoterm-badge-c', sellerEnd: 7, hasSellerInsurance: true, riskPoint: 'Vessel Onboard' },
+                { code: 'CPT', name: 'Carriage Paid To', badgeClass: 'incoterm-badge-c', sellerEnd: 8, hasSellerInsurance: false, riskPoint: 'First Carrier' },
+                { code: 'CIP', name: 'Carriage & Insurance Paid', badgeClass: 'incoterm-badge-c', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'First Carrier' },
+                { code: 'DAP', name: 'Delivered at Place', badgeClass: 'incoterm-badge-d', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'Destination Place' },
+                { code: 'DDP', name: 'Delivered Duty Paid', badgeClass: 'incoterm-badge-d', sellerEnd: 9, hasSellerInsurance: true, riskPoint: 'Buyer Warehouse' }
               ].map((row) => (
                 <div
                   key={row.code}
+                  className="incoterms-diagram-row"
                   onClick={() => {
                     if (setActiveIncoterm) setActiveIncoterm(row.code);
                     if (setExportIncoterm) setExportIncoterm(row.code);
@@ -8607,20 +8629,18 @@ export default function Modals() {
                   }}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '70px repeat(9, minmax(70px, 1fr))',
-                    gap: '4px',
+                    gridTemplateColumns: '76px repeat(9, minmax(70px, 1fr))',
+                    gap: '5px',
                     alignItems: 'center',
-                    padding: '6px 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    padding: '5px 4px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
-                    transition: 'background 0.2s'
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   title={`Click to Select ${row.code} (${row.name})`}
                 >
                   {/* Code Badge */}
-                  <div style={{ fontWeight: 900, fontSize: '0.76rem', color: '#fde047', background: 'rgba(234,179,8,0.2)', padding: '2px 4px', borderRadius: '4px', textAlign: 'center' }}>
+                  <div className={row.badgeClass} style={{ fontWeight: 900, fontSize: '0.78rem', padding: '4px 6px', borderRadius: '6px', textAlign: 'center', letterSpacing: '0.4px' }}>
                     {row.code}
                   </div>
 
@@ -8641,29 +8661,33 @@ export default function Modals() {
                       (row.code === 'DDP' && stageIdx === 9)
                     );
 
+                    let barClass = isSeller ? 'incoterms-bar-seller' : 'incoterms-bar-buyer';
+                    if (stageIdx === 5 && isSeller) {
+                      barClass = 'incoterms-bar-insurance-seller';
+                    }
+
                     return (
                       <div
                         key={stageIdx}
+                        className={`incoterms-bar-cell ${barClass}`}
                         style={{
-                          height: '20px',
-                          borderRadius: '4px',
-                          background: isSeller ? 'linear-gradient(90deg, #f97316, #ea580c)' : '#0284c7',
-                          border: stageIdx === 5 ? '1px solid #4ade80' : 'none',
+                          height: '24px',
+                          borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '0.65rem',
+                          fontSize: '0.66rem',
                           fontWeight: 800,
-                          color: 'white',
-                          position: 'relative'
+                          position: 'relative',
+                          transition: 'transform 0.15s ease'
                         }}
-                        title={stageIdx === 5 ? `Marine Insurance: ${isSeller ? 'Seller Covered' : 'Buyer Covered'}` : ''}
+                        title={stageIdx === 5 ? `Marine Insurance: ${isSeller ? 'Seller Covered (CIF/CIP)' : 'Buyer Covered'}` : (isSeller ? 'Seller Responsibility' : 'Buyer Responsibility')}
                       >
                         {stageIdx === 5 ? (
-                          <span style={{ fontSize: '0.6rem' }}>🛡️</span>
+                          <span style={{ fontSize: '0.7rem', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>🛡️</span>
                         ) : (
                           isRiskTransfer && (
-                            <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '15px', height: '15px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 900, boxShadow: '0 0 6px #ef4444' }} title={`Transfer of Risk Point: ${row.riskPoint}`}>
+                            <span className="incoterms-risk-beacon" title={`Transfer of Risk Point: ${row.riskPoint}`}>
                               !
                             </span>
                           )
@@ -8713,9 +8737,9 @@ export default function Modals() {
                     <div>
                       {/* Visual Risk Bar */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                        <div style={{ flex: 1, height: '12px', background: '#334155', borderRadius: '6px', overflow: 'hidden', position: 'relative', display: 'flex' }}>
-                          <div style={{ width: `${term.sellerRisk}%`, background: 'linear-gradient(90deg, #0284c7, #38bdf8)' }} title={`Seller Risk: ${term.sellerRisk}%`}></div>
-                          <div style={{ width: `${term.buyerRisk}%`, background: '#64748b' }} title={`Buyer Risk: ${term.buyerRisk}%`}></div>
+                        <div style={{ flex: 1, height: '14px', background: 'rgba(100, 116, 139, 0.25)', borderRadius: '8px', overflow: 'hidden', position: 'relative', display: 'flex' }}>
+                          <div style={{ width: `${term.sellerRisk}%`, background: 'linear-gradient(90deg, #f97316, #ea580c)' }} title={`Seller Risk: ${term.sellerRisk}%`}></div>
+                          <div style={{ width: `${term.buyerRisk}%`, background: 'linear-gradient(90deg, #0284c7, #2563eb)' }} title={`Buyer Risk: ${term.buyerRisk}%`}></div>
                         </div>
                         <span style={{ fontSize: '0.74rem', color: 'var(--text-sub)', width: '80px', fontWeight: 700 }}>
                           {term.sellerRisk}% Seller
