@@ -8615,10 +8615,12 @@ export default function Modals() {
                 { code: 'CIP', name: 'Carriage & Insurance Paid', badgeClass: 'incoterm-badge-c', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'First Carrier' },
                 { code: 'DAP', name: 'Delivered at Place', badgeClass: 'incoterm-badge-d', sellerEnd: 8, hasSellerInsurance: true, riskPoint: 'Destination Place' },
                 { code: 'DDP', name: 'Delivered Duty Paid', badgeClass: 'incoterm-badge-d', sellerEnd: 9, hasSellerInsurance: true, riskPoint: 'Buyer Warehouse' }
-              ].map((row) => (
-                <div
-                  key={row.code}
-                  className="incoterms-diagram-row"
+              ].map((row) => {
+                const isRowSelected = (exportIncoterm === row.code) || (quoteIncoterm && quoteIncoterm.includes(row.code));
+                return (
+                  <div
+                    key={row.code}
+                    className={`incoterms-diagram-row ${isRowSelected ? 'selected-row' : ''}`}
                   onClick={() => {
                     if (setActiveIncoterm) setActiveIncoterm(row.code);
                     if (setExportIncoterm) setExportIncoterm(row.code);
@@ -8696,7 +8698,8 @@ export default function Modals() {
                     );
                   })}
                 </div>
-              ))}
+              );
+            })}
             </div>
 
             {/* List of 11 Incoterms Cards */}
@@ -8706,10 +8709,8 @@ export default function Modals() {
                 return (
                   <div
                     key={term.code}
-                    className="incoterm-risk-card"
+                    className={`incoterm-risk-card ${isSelected ? 'selected' : ''}`}
                     style={{
-                      background: isSelected ? 'rgba(20, 184, 166, 0.18)' : 'rgba(15, 23, 42, 0.6)',
-                      border: isSelected ? '2px solid var(--primary-teal-glow)' : '1px solid var(--border-glass)',
                       borderRadius: '14px',
                       padding: '14px 18px',
                       display: 'grid',
@@ -8746,7 +8747,7 @@ export default function Modals() {
                         </span>
                       </div>
 
-                      <div style={{ fontSize: '0.78rem', color: '#e2e8f0', lineHeight: '1.4' }}>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', lineHeight: '1.4' }}>
                         <strong>⚠️ Risk Point:</strong> <span style={{ color: '#f87171', fontWeight: 700 }}>{term.riskTransferPoint}</span>
                       </div>
                       <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: '2px' }}>
@@ -8757,16 +8758,7 @@ export default function Modals() {
                     <div style={{ textAlign: 'right' }}>
                       <button
                         type="button"
-                        className="btn-primary"
-                        style={{
-                          padding: '8px 14px',
-                          fontSize: '0.8rem',
-                          fontWeight: 800,
-                          width: '100%',
-                          justifyContent: 'center',
-                          background: isSelected ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255,255,255,0.08)',
-                          borderColor: isSelected ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
-                        }}
+                        className={`incoterm-select-btn ${isSelected ? 'selected' : ''}`}
                         onClick={() => {
                           if (setActiveIncoterm) setActiveIncoterm(term.code);
                           if (setExportIncoterm) setExportIncoterm(term.code);
