@@ -528,6 +528,7 @@ export default function Modals() {
   const [destGstRate, setDestGstRate] = useState('5');
   const [destDutyRate, setDestDutyRate] = useState('5');
   const [showIncotermsModal, setShowIncotermsModal] = useState(false);
+  const [activeIncotermItemIdx, setActiveIncotermItemIdx] = useState(0);
   const [invoiceRefSeq, setInvoiceRefSeq] = useState('');
 
   // Incoterms Export Additional Charges State (Freight, Insurance, Customs Duty, Last-Mile Delivery)
@@ -7965,7 +7966,35 @@ export default function Modals() {
 
                       {/* INCOTERM DROPDOWN */}
                       <div style={{ gridColumn: 'span 2' }}>
-                        <label style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '2px' }}>📊 Incoterm (Terms of Delivery)</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px', flexWrap: 'nowrap', gap: '6px' }}>
+                          <label style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 800, margin: 0, display: 'inline-flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+                            📊 Incoterm (Terms of Delivery)
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveIncotermItemIdx(idx);
+                              setShowIncotermsModal(true);
+                            }}
+                            className="inco-view-chart-btn"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              fontSize: '0.72rem',
+                              cursor: 'pointer',
+                              fontWeight: 800,
+                              textDecoration: 'underline',
+                              padding: 0,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                              whiteSpace: 'nowrap'
+                            }}
+                            title="Open Incoterms Responsibilities & Risk Transfer Chart"
+                          >
+                            📊 {currentLang === 'gu' ? 'ચાર્ટ જુઓ' : 'View Chart'}
+                          </button>
+                        </div>
                         <select
                           className="form-control"
                           value={getNormalizedIncotermString(item.incoterm || quoteIncoterm)}
@@ -8626,6 +8655,7 @@ export default function Modals() {
                     if (setActiveIncoterm) setActiveIncoterm(row.code);
                     if (setExportIncoterm) setExportIncoterm(row.code);
                     if (setQuoteIncoterm) setQuoteIncoterm(`${row.code} Port/Factory`);
+                    setInvoiceItems(prev => prev.map((item, iIdx) => iIdx === activeIncotermItemIdx ? { ...item, incoterm: `${row.code} Port/Factory` } : item));
                     setShowIncotermsModal(false);
                     if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
                     if (showLiveToast) showLiveToast(`📊 Incoterm ${row.code} selected for RFQ & Quotation!`, 'success');
@@ -8764,6 +8794,7 @@ export default function Modals() {
                           if (setActiveIncoterm) setActiveIncoterm(term.code);
                           if (setExportIncoterm) setExportIncoterm(term.code);
                           if (setQuoteIncoterm) setQuoteIncoterm(term.sampleTerm);
+                          setInvoiceItems(prev => prev.map((item, iIdx) => iIdx === activeIncotermItemIdx ? { ...item, incoterm: term.sampleTerm } : item));
                           setShowIncotermsModal(false);
                           if (setActiveModal && activeModal === 'incoterms_chart') setActiveModal(null);
                           if (showLiveToast) showLiveToast(`📊 Incoterm ${term.code} selected for RFQ & Quotation!`, 'success');

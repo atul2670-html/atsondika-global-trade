@@ -4449,7 +4449,7 @@ body.light-theme .modal-close {
 }
 
 /* Modal Inner Stat Boxes & Feature Cards in Light Theme (Excluding Incoterms Chart & Proforma Breakdown) */
-body.light-theme .modal-card div[style*="background"]:not(.incoterms-diagram-card):not(.incoterms-bar-cell):not(.incoterms-code-badge):not(.incoterms-risk-beacon):not(.incoterms-stage-card):not(.incoterms-diagram-card *):not(.proforma-inco-breakdown-card):not(.proforma-inco-breakdown-card *) {
+body.light-theme .modal-card div[style*="background"]:not(.incoterms-diagram-card):not(.incoterms-bar-cell):not(.incoterms-code-badge):not(.incoterms-risk-beacon):not(.incoterms-stage-card):not(.incoterms-diagram-card *):not(.proforma-inco-breakdown-card):not(.proforma-inco-breakdown-card *):not(.inco-view-chart-btn) {
   color: #0f172a !important;
   font-weight: 800 !important;
 }
@@ -4819,6 +4819,36 @@ body.light-theme .incoterm-risk-card button:not(.selected):not([style*="linear-g
   background: #f1f5f9 !important;
   border: 1.5px solid #cbd5e1 !important;
   color: #0f172a !important;
+}
+
+/* ==========================================================================
+   INCOTERM VIEW CHART LINK / BUTTON (PROFORMA & RFQ MODALS)
+   ========================================================================== */
+.inco-view-chart-btn {
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  padding: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+body:not(.light-theme) .inco-view-chart-btn {
+  color: #38bdf8 !important;
+}
+
+body:not(.light-theme) .inco-view-chart-btn:hover {
+  color: #7dd3fc !important;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.4) !important;
+}
+
+body.light-theme .inco-view-chart-btn {
+  color: #0284c7 !important;
+}
+
+body.light-theme .inco-view-chart-btn:hover {
+  color: #0369a1 !important;
 }
 
 /* ==========================================================================
