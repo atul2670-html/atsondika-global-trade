@@ -1942,31 +1942,41 @@ export function AppProvider({ children }) {
       { id: 'packaging', nameEn: 'Eco Packaging & Jute Bags', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ (બાયોડિગ્રેડેબલ)' }
     ];
 
+    const deletedSet = new Set(deletedBuiltInIds || []);
+
     if (returnAllIfAdmin) {
-      const seenIds = new Set(masterBuiltInCategories.map(c => c.id));
-      const seenNames = new Set(masterBuiltInCategories.map(c => c.nameEn.toLowerCase()));
-      (customProductsList || []).forEach(cm => {
-        const catSlug = (cm.category || cm.id || '').trim();
-        const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
-        const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
-        const normName = titleEn.toLowerCase();
-        if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
-          seenIds.add(catSlug);
-          seenNames.add(normName);
-          masterBuiltInCategories.push({
-            id: catSlug,
-            category: catSlug,
-            nameEn: titleEn,
-            nameGu: titleGu,
-            isCustom: true
-          });
-        }
-      });
-      return masterBuiltInCategories;
+      const filteredMaster = masterBuiltInCategories.filter(c => !deletedSet.has(c.id));
+      const seenIds = new Set(filteredMaster.map(c => c.id));
+      const seenNames = new Set(filteredMaster.map(c => c.nameEn.toLowerCase()));
+
+      (customProductsList || [])
+        .filter(cm => cm && !cm.isSub && !deletedSet.has(cm.id) && !deletedSet.has(cm.category))
+        .forEach(cm => {
+          const catSlug = (cm.category || cm.id || '').trim();
+          const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
+          const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
+          const normName = titleEn.toLowerCase();
+          if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
+            seenIds.add(catSlug);
+            seenNames.add(normName);
+            filteredMaster.push({
+              id: catSlug,
+              category: catSlug,
+              nameEn: titleEn,
+              nameGu: titleGu,
+              isCustom: true
+            });
+          }
+        });
+      return filteredMaster;
     }
 
-    // Get all products strictly belonging to targetCompId
-    const deletedSet = new Set(deletedBuiltInIds || []);
+    // 1. Get all custom main categories strictly created for targetCompId (!cm.isSub)
+    const companyCustomMains = (customProductsList || [])
+      .filter(p => p && !p.isSub && !deletedSet.has(p.id) && !deletedSet.has(p.category))
+      .filter(p => (p.companyId || 'comp_1') === targetCompId);
+
+    // 2. Collect all active products belonging to targetCompId to determine active categories
     const customIds = new Set((customProductsList || []).map(p => p.id));
     const companyBuiltIn = initialProductsData
       .filter(p => !deletedSet.has(p.id))
@@ -1985,19 +1995,20 @@ export function AppProvider({ children }) {
       if (p.category) companyCatSet.add(p.category.toLowerCase().trim());
       if (p.id) companyCatSet.add(p.id.toLowerCase().trim());
       if (p.localCategory) companyCatSet.add(p.localCategory.toLowerCase().trim());
+      if (p.parentId) companyCatSet.add(p.parentId.toLowerCase().trim());
     });
 
-    // Filter built-in categories so ONLY those present in targetCompId's products are returned
-    const resultCategories = masterBuiltInCategories.filter(c => companyCatSet.has(c.id));
+    const resultCategories = [];
+    const seenResultIds = new Set();
+    const seenResultNames = new Set();
 
-    // Append custom main categories specifically created for targetCompId
-    const seenResultIds = new Set(resultCategories.map(c => c.id));
-    const seenResultNames = new Set(resultCategories.map(c => c.nameEn.toLowerCase()));
-
-    companyCustom.forEach(cm => {
-      const catSlug = (cm.category || cm.id || '').trim();
-      const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
-      const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
+    // 3. First, add explicitly defined custom main categories (!p.isSub)
+    companyCustomMains.forEach(cm => {
+      let catSlug = (cm.category || cm.id || '').trim();
+      let titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
+      let titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
+      if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
+      if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
       const normName = titleEn.toLowerCase();
 
       if (catSlug && !seenResultIds.has(catSlug) && !seenResultNames.has(normName)) {
@@ -2012,6 +2023,40 @@ export function AppProvider({ children }) {
         });
       }
     });
+
+    // 4. Add company-specific built-in main categories (!p.isSub) from initial data
+    companyBuiltIn
+      .filter(p => !p.isSub)
+      .forEach(bm => {
+        let catSlug = (bm.category || bm.id || '').trim();
+        let titleEn = (bm.names?.en || bm.names?.gu || bm.name || catSlug).trim();
+        let titleGu = (bm.names?.gu || bm.names?.en || bm.name || catSlug).trim();
+        const normName = titleEn.toLowerCase();
+
+        if (catSlug && !seenResultIds.has(catSlug) && !seenResultNames.has(normName)) {
+          seenResultIds.add(catSlug);
+          seenResultNames.add(normName);
+          resultCategories.push({
+            id: catSlug,
+            category: catSlug,
+            nameEn: titleEn,
+            nameGu: titleGu,
+            isCustom: false
+          });
+        }
+      });
+
+    // 5. Append default built-in master categories only if active products exist and not deleted
+    masterBuiltInCategories
+      .filter(c => !deletedSet.has(c.id) && companyCatSet.has(c.id))
+      .forEach(c => {
+        const normName = c.nameEn.toLowerCase();
+        if (!seenResultIds.has(c.id) && !seenResultNames.has(normName)) {
+          seenResultIds.add(c.id);
+          seenResultNames.add(normName);
+          resultCategories.push(c);
+        }
+      });
 
     return resultCategories;
   };

@@ -106,7 +106,7 @@ export default function App() {
                   );
                 }
                 return catList.map(cat => {
-                  const labelText = currentLang === 'gu' ? cat.nameGu : cat.nameEn;
+                  const labelText = currentLang === 'gu' ? (cat.nameGu || cat.nameEn) : (cat.nameEn || cat.nameGu);
                   const catSlug = cat.category || cat.id;
                   return (
                     <li key={cat.id}>
