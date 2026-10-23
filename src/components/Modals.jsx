@@ -5662,6 +5662,26 @@ export default function Modals() {
             {prodType === 'main' ? (
               <div>
                 <div style={{
+                  background: 'rgba(13, 148, 136, 0.15)',
+                  border: '1px solid rgba(13, 148, 136, 0.4)',
+                  padding: '10px 16px',
+                  borderRadius: '12px',
+                  marginBottom: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2dd4bf' }}>
+                    🏢 Adding for Company: <strong>{activeCompany?.name || 'Active Company'}</strong>
+                  </span>
+                  <span style={{ fontSize: '0.72rem', background: '#0d9488', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                    Active Profile
+                  </span>
+                </div>
+
+                <div style={{
                   background: 'rgba(56, 189, 248, 0.12)',
                   border: '1px solid rgba(56, 189, 248, 0.3)',
                   padding: '12px 16px',
@@ -5679,8 +5699,10 @@ export default function Modals() {
                   if (!nameGu && !nameEn) return;
                   const catSlug = catCodeInput.trim() ? catCodeInput.trim().toLowerCase().replace(/\s+/g, '_') : `cat-custom-${Date.now()}`;
 
+                  const targetCompId = activeCompany?.id || activeCompanyId || 'comp_1';
                   saveProduct({
                     category: catSlug,
+                    companyId: targetCompId,
                     parentId: null,
                     isSub: false,
                     enableGlobalTrade: true,
@@ -5908,8 +5930,10 @@ export default function Modals() {
                     ? parseFloat(priceUSD) 
                     : ((localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat((parseFloat(localPrice) / 86.45).toFixed(2)) : null);
 
+                  const targetCompId = activeCompany?.id || activeCompanyId || 'comp_1';
                   saveProduct({
                     id: editingProductId || undefined,
+                    companyId: targetCompId,
                     category,
                     parentId: parentSelect || null,
                     isSub: true,

@@ -835,9 +835,11 @@ export function AppProvider({ children }) {
         }
       }
 
-      // Rule 1: Move Agro Commodities (Spices, Turmeric, Cumin, Rice, Grains & Seeds) to "agro" category ONLY for comp_1 or comp_2
+      // Rule 1: Move uncategorized Agro sub-products to "agro" ONLY for comp_1 and NEVER for Main Categories (!isSub) or comp_2
       if (
-        (compId === 'comp_1' || compId === 'comp_2') &&
+        copy.isSub !== false &&
+        compId === 'comp_1' &&
+        (!copy.parentId || copy.parentId === 'agro') &&
         (cat.includes('grain') || cat.includes('seed') || cat.includes('spice') || cat.includes('agro') ||
         enTitle.includes('grain') || enTitle.includes('seed') || enTitle.includes('turmeric') || enTitle.includes('cumin') || enTitle.includes('rice') || enTitle.includes('spice') ||
         guTitle.includes('અનાજ') || guTitle.includes('બીજ') || guTitle.includes('હળદર') || guTitle.includes('જીરું') || guTitle.includes('ચોખા') || guTitle.includes('મસાલા'))
@@ -1280,12 +1282,22 @@ export function AppProvider({ children }) {
             const currentDeleted = new Set(JSON.parse(localStorage.getItem('deleted_built_in_ids') || '[]'));
             const map = new Map();
             prev.forEach(p => {
-              if (p && p.id && !currentDeleted.has(p.id) && !currentDeleted.has(p.category) && !currentDeleted.has(p.parentId)) {
+              const isDeleted = p && p.id && (
+                currentDeleted.has(p.id) ||
+                (p.isSub !== false && p.parentId && currentDeleted.has(p.parentId)) ||
+                (p.isSub !== false && !p.isCustom && currentDeleted.has(p.category))
+              );
+              if (p && p.id && !isDeleted) {
                 map.set(p.id, p);
               }
             });
             data.customProductsList.forEach(p => {
-              if (p && p.id && !currentDeleted.has(p.id) && !currentDeleted.has(p.category) && !currentDeleted.has(p.parentId)) {
+              const isDeleted = p && p.id && (
+                currentDeleted.has(p.id) ||
+                (p.isSub !== false && p.parentId && currentDeleted.has(p.parentId)) ||
+                (p.isSub !== false && !p.isCustom && currentDeleted.has(p.category))
+              );
+              if (p && p.id && !isDeleted) {
                 const existing = map.get(p.id);
                 if (!existing) {
                   map.set(p.id, p);
@@ -1615,7 +1627,7 @@ export function AppProvider({ children }) {
       dataToSave.category = `cat-custom-${Date.now()}`;
     }
 
-    if (dataToSave.companyId === 'comp_1' || dataToSave.companyId === 'comp_2') {
+    if (dataToSave.isSub !== false && dataToSave.companyId === 'comp_1' && (!dataToSave.parentId || dataToSave.parentId === 'agro')) {
       const gu = (dataToSave.names?.gu || '').toLowerCase();
       const en = (dataToSave.names?.en || '').toLowerCase();
       if (en.includes('grain') || en.includes('seed') || gu.includes('અનાજ') || gu.includes('બીજ')) {
@@ -1973,7 +1985,7 @@ export function AppProvider({ children }) {
 
     // 1. Get all custom main categories strictly created for targetCompId (!cm.isSub)
     const companyCustomMains = (customProductsList || [])
-      .filter(p => p && !p.isSub && !deletedSet.has(p.id) && !deletedSet.has(p.category))
+      .filter(p => p && !p.isSub && !deletedSet.has(p.id))
       .filter(p => (p.companyId || 'comp_1') === targetCompId);
 
     // 2. Collect all active products belonging to targetCompId to determine active categories

@@ -98,9 +98,10 @@ export default function ProductsGrid() {
       const normTitle = (titleEn || titleGu || catSlug).toLowerCase();
 
       if (
-        catSlug === 'agro' ||
+        activeCompId === 'comp_1' && defaultFilterSet.has('agro') &&
+        (catSlug === 'agro' ||
         catSlug.includes('grain') || catSlug.includes('seed') ||
-        normTitle.includes('grains and seeds') || normTitle.includes('grains & seeds') || normTitle.includes('અનાજ')
+        normTitle.includes('grains and seeds') || normTitle.includes('grains & seeds') || normTitle.includes('અનાજ'))
       ) {
         return;
       }
