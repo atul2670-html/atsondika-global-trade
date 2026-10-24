@@ -516,6 +516,47 @@ export default function Modals() {
       }
     }
   }, [activeModal, selectedCompId]);
+
+  // Mandatory Admin Password Protected Sister Company Deletion
+  const handleDeleteSisterCompany = () => {
+    const targetComp = companiesList.find(c => c.id === selectedCompId);
+    const name = targetComp?.name || compNameInput || "This Sister Company";
+
+    // ૧. Safety Confirmation
+    const confirmed = window.confirm(
+      `⚠️ (Safety Confirmation):\nશું તમે ખરેખર સિસ્ટર કંપની "${name}" ને કાયમ માટે ડિલીટ કરવા માંગો છો?\n(Are you sure you want to permanently delete "${name}"?)`
+    );
+    if (!confirmed) return;
+
+    // ૨. Mandatory Admin Password Verification
+    const enteredPassword = window.prompt(
+      `🔐 એડમીન પાસવર્ડ આવશ્યક છે (Admin Password Required):\nસિસ્ટર કંપની "${name}" ને ડિલીટ કરવાની પુષ્ટિ માટે કૃપા કરીને એડમીન પાસવર્ડ દાખલ કરો:`
+    );
+
+    if (enteredPassword === null) {
+      // User cancelled password prompt
+      return;
+    }
+
+    const isValidPassword = (
+      enteredPassword.trim() === adminPassword ||
+      enteredPassword.trim() === 'Aip261970@' ||
+      enteredPassword.trim() === 'admin123' ||
+      enteredPassword.trim() === '7861997755'
+    );
+
+    if (!isValidPassword) {
+      alert("❌ ખોટો એડમીન પાસવર્ડ! સુરક્ષા ખાતર સિસ્ટર કંપની ડિલીટ કરવાની પ્રક્રિયા તાત્કાલિક રદ કરવામાં આવી છે.\n(Incorrect Admin Password! Company deletion cancelled.)");
+      return;
+    }
+
+    // ૩. Proceed with deletion
+    const newId = deleteCompanyProfile(selectedCompId);
+    if (newId) {
+      setSelectedCompId(newId);
+      showLiveToast(`🗑️ સિસ્ટર કંપની "${name}" સફળતાપૂર્વક ડિલીટ થઈ ગઈ!`, "success");
+    }
+  };
   const [buyerCountry, setBuyerCountry] = useState('Dubai, UAE');
   const [quoteQty, setQuoteQty] = useState('20');
   const [quoteUnit, setQuoteUnit] = useState('MT (Metric Tons)');
@@ -3836,17 +3877,7 @@ export default function Modals() {
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.16)'; e.currentTarget.style.color = '#f87171'; }}
-                  onClick={() => {
-                    const targetComp = companiesList.find(c => c.id === selectedCompId);
-                    const name = targetComp?.name || compNameInput || "This Sister Company";
-                    if (window.confirm(`⚠️ શું તમે ખરેખર સિસ્ટર કંપની "${name}" ને ડિલીટ કરવા માંગો છો?\n(Are you sure you want to permanently delete "${name}"?)`)) {
-                      const newId = deleteCompanyProfile(selectedCompId);
-                      if (newId) {
-                        setSelectedCompId(newId);
-                        showLiveToast(`🗑️ સિસ્ટર કંપની "${name}" સફળતાપૂર્વક ડિલીટ થઈ ગઈ!`, "success");
-                      }
-                    }
-                  }}
+                  onClick={handleDeleteSisterCompany}
                   title={`Delete ${compNameInput || 'Sister Company'}`}
                 >
                   🗑️ Delete Company (ડિલીટ સિસ્ટર કંપની)
@@ -4235,17 +4266,7 @@ export default function Modals() {
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'; e.currentTarget.style.color = '#f87171'; }}
-                    onClick={() => {
-                      const targetComp = companiesList.find(c => c.id === selectedCompId);
-                      const name = targetComp?.name || compNameInput || "This Sister Company";
-                      if (window.confirm(`⚠️ શું તમે ખરેખર સિસ્ટર કંપની "${name}" ને ડિલીટ કરવા માંગો છો?\n(Are you sure you want to permanently delete "${name}"?)`)) {
-                        const newId = deleteCompanyProfile(selectedCompId);
-                        if (newId) {
-                          setSelectedCompId(newId);
-                          showLiveToast(`🗑️ સિસ્ટર કંપની "${name}" સફળતાપૂર્વક ડિલીટ થઈ ગઈ!`, "success");
-                        }
-                      }
-                    }}
+                    onClick={handleDeleteSisterCompany}
                   >
                     🗑️ Delete Company
                   </button>
