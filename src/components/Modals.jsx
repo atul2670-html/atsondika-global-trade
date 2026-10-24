@@ -124,7 +124,7 @@ export default function Modals() {
     showLiveToast,
     setIsAdminLoggedIn, isAdminLoggedIn,
     adminPassword, saveAdminPassword, adminMobile, setAdminMobile,
-    companiesList, activeCompanyId, activeCompany, setActiveCompanyId, updateCompanyProfile,
+    companiesList, activeCompanyId, activeCompany, setActiveCompanyId, updateCompanyProfile, deleteCompanyProfile,
     fetchServerData, exportDatabase, importDatabase,
     editingProductId, setEditingProductId, saveProduct, getAllProducts, customProductsList,
     editingCertId, saveCertificate, certificatesList,
@@ -3794,6 +3794,70 @@ export default function Modals() {
               </button>
             </div>
 
+            {/* Active Company Action Bar with Delete Button */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '10px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '16px',
+              border: '1px solid var(--border-glass)'
+            }}>
+              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ color: 'var(--text-sub)' }}>Editing:</span>
+                <span style={{ color: '#2dd4bf', fontWeight: 900 }}>{compNameInput || companiesList.find(c => c.id === selectedCompId)?.name || 'Sister Company'}</span>
+                {selectedCompId === activeCompanyId && (
+                  <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.4)', fontWeight: 800 }}>
+                    ⚡ CURRENTLY ACTIVE
+                  </span>
+                )}
+              </div>
+
+              {companiesList.length > 1 ? (
+                <button
+                  type="button"
+                  style={{
+                    fontSize: '0.8rem',
+                    padding: '7px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'rgba(239, 68, 68, 0.16)',
+                    color: '#f87171',
+                    border: '1px solid rgba(239, 68, 68, 0.45)',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.16)'; e.currentTarget.style.color = '#f87171'; }}
+                  onClick={() => {
+                    const targetComp = companiesList.find(c => c.id === selectedCompId);
+                    const name = targetComp?.name || compNameInput || "This Sister Company";
+                    if (window.confirm(`⚠️ શું તમે ખરેખર સિસ્ટર કંપની "${name}" ને ડિલીટ કરવા માંગો છો?\n(Are you sure you want to permanently delete "${name}"?)`)) {
+                      const newId = deleteCompanyProfile(selectedCompId);
+                      if (newId) {
+                        setSelectedCompId(newId);
+                        showLiveToast(`🗑️ સિસ્ટર કંપની "${name}" સફળતાપૂર્વક ડિલીટ થઈ ગઈ!`, "success");
+                      }
+                    }
+                  }}
+                  title={`Delete ${compNameInput || 'Sister Company'}`}
+                >
+                  🗑️ Delete Company (ડિલીટ સિસ્ટર કંપની)
+                </button>
+              ) : (
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', fontStyle: 'italic' }}>
+                  🔒 Primary Company (ઓછામાં ઓછી ૧ કંપની જરૂરી છે)
+                </span>
+              )}
+            </div>
+
             <form onSubmit={(e) => {
               e.preventDefault();
               const finalStamp = compStampInput.trim() || generateDigitalRoundStampSvg(compNameInput.trim(), compApedaInput.trim() || compGstinInput.trim());
@@ -4147,9 +4211,46 @@ export default function Modals() {
                 </div>
               </div>
 
-              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '10px', fontSize: '0.95rem' }}>
-                💾 Save Company Profile & Activate
-              </button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1, minWidth: '220px', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
+                  💾 Save Company Profile & Activate
+                </button>
+                {companiesList.length > 1 && (
+                  <button
+                    type="button"
+                    style={{
+                      padding: '13px 18px',
+                      fontSize: '0.88rem',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-pill)',
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      color: '#f87171',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'; e.currentTarget.style.color = '#f87171'; }}
+                    onClick={() => {
+                      const targetComp = companiesList.find(c => c.id === selectedCompId);
+                      const name = targetComp?.name || compNameInput || "This Sister Company";
+                      if (window.confirm(`⚠️ શું તમે ખરેખર સિસ્ટર કંપની "${name}" ને ડિલીટ કરવા માંગો છો?\n(Are you sure you want to permanently delete "${name}"?)`)) {
+                        const newId = deleteCompanyProfile(selectedCompId);
+                        if (newId) {
+                          setSelectedCompId(newId);
+                          showLiveToast(`🗑️ સિસ્ટર કંપની "${name}" સફળતાપૂર્વક ડિલીટ થઈ ગઈ!`, "success");
+                        }
+                      }
+                    }}
+                  >
+                    🗑️ Delete Company
+                  </button>
+                )}
+              </div>
 
               {/* MULTI-DEVICE DATA BACKUP & SYNC FACILITY */}
               <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px dashed var(--border-glass)' }}>

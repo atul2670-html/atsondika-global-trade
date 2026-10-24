@@ -1474,6 +1474,45 @@ export function AppProvider({ children }) {
     setTimeout(() => { isSyncing.current = false; }, 5000);
   };
 
+  const deleteCompanyProfile = (companyIdToDelete) => {
+    if (!companyIdToDelete) return false;
+
+    if (!companiesList || companiesList.length <= 1) {
+      alert("⚠️ At least one company profile must remain. Cannot delete the only company.");
+      return false;
+    }
+
+    const now = Date.now();
+    isSyncing.current = true;
+    lastServerUpdate.current = now;
+    try {
+      localStorage.setItem('site_last_updated_at_v1', now.toString());
+      localStorage.setItem('site_company_profiles_admin_edited_v1', 'true');
+    } catch(e) {}
+
+    const remainingCompanies = companiesList.filter(c => c.id !== companyIdToDelete);
+    let newActiveId = activeCompanyId;
+    if (activeCompanyId === companyIdToDelete) {
+      newActiveId = remainingCompanies[0].id;
+      setActiveCompanyId(newActiveId);
+      try { localStorage.setItem('site_active_company_id_v1', newActiveId); } catch(e) {}
+    }
+
+    setCompaniesList(remainingCompanies);
+    try {
+      localStorage.setItem('site_company_profiles_v3', JSON.stringify(remainingCompanies));
+      localStorage.setItem('site_company_profiles_v2', JSON.stringify(remainingCompanies));
+      localStorage.setItem('site_company_profiles_v1', JSON.stringify(remainingCompanies));
+    } catch(e) {}
+
+    setTimeout(() => {
+      syncToServer({ companiesList: remainingCompanies, activeCompanyId: newActiveId, updatedAt: now });
+    }, 0);
+
+    setTimeout(() => { isSyncing.current = false; }, 5000);
+    return newActiveId;
+  };
+
   const saveAdminPassword = (newPassword) => {
     setAdminPassword(newPassword);
     try { localStorage.setItem('site_admin_password_v1', newPassword); } catch(e) {}
@@ -2774,7 +2813,7 @@ export function AppProvider({ children }) {
       isAdminLoggedIn, setIsAdminLoggedIn,
       adminPassword, saveAdminPassword,
       adminMobile, setAdminMobile,
-      companiesList, activeCompanyId, activeCompany, setActiveCompanyId: changeActiveCompany, updateCompanyProfile,
+      companiesList, activeCompanyId, activeCompany, setActiveCompanyId: changeActiveCompany, updateCompanyProfile, deleteCompanyProfile,
       currentCategory, setCurrentCategory,
       searchFilterQuery, setSearchFilterQuery,
       tradeMode, setTradeMode: changeTradeMode,
