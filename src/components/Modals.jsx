@@ -520,6 +520,15 @@ export default function Modals() {
   // Mandatory Admin Password Protected Sister Company Deletion
   const handleDeleteSisterCompany = () => {
     const targetComp = companiesList.find(c => c.id === selectedCompId);
+    // ૦. અતિ આવશ્યક મુખ્ય કંપની સુરક્ષા ગાર્ડ
+    const isPrimary = selectedCompId === (companiesList[0]?.id || 'comp_1') ||
+                      companiesList.length <= 1 ||
+                      (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika'));
+    if (isPrimary) {
+      alert("⚠️ અતિ આવશ્યક સુરક્ષા:\n'Atsondika Global Trade' આપણી મુખ્ય કંપની (Primary Company) છે! વેબસાઇટમાં આ મુખ્ય કંપની રહેવી અતિ આવશ્યક છે. આ કંપની ક્યારેય ડિલીટ કરી શકાતી નથી, ફક્ત તેની વિગતો એડિટ કરી શકાય છે.");
+      return;
+    }
+
     const name = targetComp?.name || compNameInput || "This Sister Company";
 
     // ૧. Safety Confirmation
@@ -3779,7 +3788,7 @@ export default function Modals() {
 
             {/* Sister Company Switcher Tabs */}
             <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)' }}>
-              {companiesList.map(comp => (
+              {companiesList.map((comp, idx) => (
                 <button
                   key={comp.id}
                   type="button"
@@ -3796,7 +3805,7 @@ export default function Modals() {
                   }}
                   onClick={() => setSelectedCompId(comp.id)}
                 >
-                  🏢 {comp.name}
+                  {idx === 0 ? '👑 ' : '🏢 '} {comp.name} {idx === 0 && <span style={{ fontSize: '0.68rem', opacity: 0.85, marginLeft: '4px' }}>(મુખ્ય)</span>}
                 </button>
               ))}
 
@@ -3835,59 +3844,85 @@ export default function Modals() {
               </button>
             </div>
 
-            {/* Active Company Action Bar with Delete Button */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '10px',
-              background: 'rgba(255, 255, 255, 0.04)',
-              padding: '10px 14px',
-              borderRadius: 'var(--radius-md)',
-              marginBottom: '16px',
-              border: '1px solid var(--border-glass)'
-            }}>
-              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span style={{ color: 'var(--text-sub)' }}>Editing:</span>
-                <span style={{ color: '#2dd4bf', fontWeight: 900 }}>{compNameInput || companiesList.find(c => c.id === selectedCompId)?.name || 'Sister Company'}</span>
-                {selectedCompId === activeCompanyId && (
-                  <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.4)', fontWeight: 800 }}>
-                    ⚡ CURRENTLY ACTIVE
-                  </span>
-                )}
-              </div>
+            {/* Active Company Action Bar with Delete Guard */}
+            {(() => {
+              const targetComp = companiesList.find(c => c.id === selectedCompId);
+              const isPrimary = selectedCompId === (companiesList[0]?.id || 'comp_1') ||
+                                companiesList.length <= 1 ||
+                                (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika'));
+              return (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '10px',
+                  background: isPrimary ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.04)',
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: '16px',
+                  border: isPrimary ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid var(--border-glass)'
+                }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>Editing:</span>
+                    <span style={{ color: isPrimary ? '#34d399' : '#2dd4bf', fontWeight: 900 }}>
+                      {isPrimary ? '👑 ' : '🏢 '} {compNameInput || targetComp?.name || 'Company'}
+                    </span>
+                    {isPrimary && (
+                      <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', fontWeight: 800 }}>
+                        મુખ્ય કંપની (Permanent Main Company)
+                      </span>
+                    )}
+                    {selectedCompId === activeCompanyId && (
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.4)', fontWeight: 800 }}>
+                        ⚡ CURRENTLY ACTIVE
+                      </span>
+                    )}
+                  </div>
 
-              {companiesList.length > 1 ? (
-                <button
-                  type="button"
-                  style={{
-                    fontSize: '0.8rem',
-                    padding: '7px 14px',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'rgba(239, 68, 68, 0.16)',
-                    color: '#f87171',
-                    border: '1px solid rgba(239, 68, 68, 0.45)',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.16)'; e.currentTarget.style.color = '#f87171'; }}
-                  onClick={handleDeleteSisterCompany}
-                  title={`Delete ${compNameInput || 'Sister Company'}`}
-                >
-                  🗑️ Delete Company (ડિલીટ સિસ્ટર કંપની)
-                </button>
-              ) : (
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', fontStyle: 'italic' }}>
-                  🔒 Primary Company (ઓછામાં ઓછી ૧ કંપની જરૂરી છે)
-                </span>
-              )}
-            </div>
+                  {isPrimary ? (
+                    <div style={{
+                      fontSize: '0.78rem',
+                      color: '#34d399',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      padding: '5px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(16, 185, 129, 0.25)'
+                    }}>
+                      <span>🛡️ આપણી મુખ્ય કંપની (Atsondika Global Trade) ક્યારેય ડિલીટ થશે નહીં (તમામ વિગતો મુક્તપણે એડિટ કરી શકાય છે)</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      style={{
+                        fontSize: '0.8rem',
+                        padding: '7px 14px',
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'rgba(239, 68, 68, 0.16)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.45)',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.16)'; e.currentTarget.style.color = '#f87171'; }}
+                      onClick={handleDeleteSisterCompany}
+                      title={`Delete ${compNameInput || 'Sister Company'}`}
+                    >
+                      🗑️ Delete Sister Company (ડિલીટ સિસ્ટર કંપની)
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
 
             <form onSubmit={(e) => {
               e.preventDefault();
@@ -4246,31 +4281,38 @@ export default function Modals() {
                 <button type="submit" className="btn-primary" style={{ flex: 1, minWidth: '220px', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
                   💾 Save Company Profile & Activate
                 </button>
-                {companiesList.length > 1 && (
-                  <button
-                    type="button"
-                    style={{
-                      padding: '13px 18px',
-                      fontSize: '0.88rem',
-                      fontWeight: 800,
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      color: '#f87171',
-                      border: '1px solid rgba(239, 68, 68, 0.4)',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'; e.currentTarget.style.color = '#f87171'; }}
-                    onClick={handleDeleteSisterCompany}
-                  >
-                    🗑️ Delete Company
-                  </button>
-                )}
+                {(() => {
+                  const targetComp = companiesList.find(c => c.id === selectedCompId);
+                  const isPrimary = selectedCompId === (companiesList[0]?.id || 'comp_1') ||
+                                    companiesList.length <= 1 ||
+                                    (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika'));
+                  if (isPrimary) return null;
+                  return (
+                    <button
+                      type="button"
+                      style={{
+                        padding: '13px 18px',
+                        fontSize: '0.88rem',
+                        fontWeight: 800,
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'; e.currentTarget.style.color = '#f87171'; }}
+                      onClick={handleDeleteSisterCompany}
+                    >
+                      🗑️ Delete Sister Company (ડિલીટ સિસ્ટર કંપની)
+                    </button>
+                  );
+                })()}
               </div>
 
               {/* MULTI-DEVICE DATA BACKUP & SYNC FACILITY */}

@@ -130,12 +130,31 @@ export function AppProvider({ children }) {
     catch(e) { return false; }
   });
 
-  // Multi-Company Profile & Switcher State (4 Companies)
+  // Helper to strictly ensure Atsondika Global Trade is always the Primary Main Company at Index 0
+  const ensurePrimaryAtsondika = (list) => {
+    if (!Array.isArray(list) || list.length === 0) return defaultCompanyProfiles;
+    const atsondikaProfile = defaultCompanyProfiles[0]; // id: "comp_1", name: "Atsondika Global Trade"
+    
+    let result = [...list];
+    const existingIdx = result.findIndex(c => c && (c.id === 'comp_1' || (c.name && c.name.toLowerCase().includes('atsondika'))));
+    
+    if (existingIdx > 0) {
+      // Bring existing Atsondika Global Trade to index 0 as Primary Company
+      const [found] = result.splice(existingIdx, 1);
+      result.unshift(found);
+    } else if (existingIdx === -1) {
+      // Atsondika Global Trade must always lead as Primary Company
+      result.unshift(atsondikaProfile);
+    }
+    return result;
+  };
+
+  // Multi-Company Profile & Switcher State (Atsondika Global Trade is Permanent Primary Company)
   const [companiesList, setCompaniesList] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem('site_company_profiles_v3') || localStorage.getItem('site_company_profiles_v2') || localStorage.getItem('site_company_profiles_v1') || 'null');
       if (Array.isArray(stored) && stored.length > 0) {
-        return stored;
+        return ensurePrimaryAtsondika(stored);
       }
     } catch(e) {}
     return defaultCompanyProfiles;
@@ -143,9 +162,10 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('site_company_profiles_v3', JSON.stringify(companiesList));
-      localStorage.setItem('site_company_profiles_v2', JSON.stringify(companiesList));
-      localStorage.setItem('site_company_profiles_v1', JSON.stringify(companiesList));
+      const ensured = ensurePrimaryAtsondika(companiesList);
+      localStorage.setItem('site_company_profiles_v3', JSON.stringify(ensured));
+      localStorage.setItem('site_company_profiles_v2', JSON.stringify(ensured));
+      localStorage.setItem('site_company_profiles_v1', JSON.stringify(ensured));
     } catch(e) {}
   }, [companiesList]);
 
@@ -1272,7 +1292,7 @@ export function AppProvider({ children }) {
         try { localStorage.setItem('site_last_updated_at_v1', lastServerUpdate.current.toString()); } catch(e) {}
 
         if (Array.isArray(data.companiesList) && data.companiesList.length > 0) {
-          setCompaniesList(data.companiesList);
+          setCompaniesList(ensurePrimaryAtsondika(data.companiesList));
         }
 
         if (Array.isArray(data.customProductsList) && data.customProductsList.length > 0) {
@@ -1477,8 +1497,24 @@ export function AppProvider({ children }) {
   const deleteCompanyProfile = (companyIdToDelete) => {
     if (!companyIdToDelete) return false;
 
+    // અતિ આવશ્યક સુરક્ષા ૧: લિસ્ટમાં જો માત્ર એક જ મુખ્ય કંપની હોય તો તેને કોઈપણ સંજોગોમાં ડિલીટ ન કરી શકાય
     if (!companiesList || companiesList.length <= 1) {
-      alert("⚠️ At least one company profile must remain. Cannot delete the only company.");
+      alert("⚠️ અતિ આવશ્યક સુરક્ષા:\nલિસ્ટમાં માત્ર એક જ મુખ્ય કંપની રહેવી અતિ આવશ્યક છે. આ કંપની ક્યારેય ડિલીટ કરી શકાશે નહીં, ફક્ત તેની વિગતો એડિટ કરી શકાય છે!");
+      return false;
+    }
+
+    // અતિ આવશ્યક સુરક્ષા ૨: આપણી મુખ્ય કંપની "Atsondika Global Trade" ક્યારેય ડિલીટ ન થાય
+    const primaryCompany = companiesList[0];
+    const targetComp = companiesList.find(c => c.id === companyIdToDelete);
+    const isTargetAtsondika = (
+      companyIdToDelete === 'comp_1' ||
+      companyIdToDelete === primaryCompany?.id ||
+      (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika')) ||
+      (primaryCompany?.name && primaryCompany.name.toLowerCase().includes('atsondika') && companyIdToDelete === primaryCompany.id)
+    );
+
+    if (isTargetAtsondika) {
+      alert("⚠️ અતિ આવશ્યક સુરક્ષા:\n'Atsondika Global Trade' આપણી કાયમી મુખ્ય કંપની (Primary Company) છે! મુખ્ય કંપનીને ક્યારેય ડિલીટ કરી શકાતી નથી. માત્ર સિસ્ટર કંપનીઓ જ ડિલીટ થઈ શકે છે. તમે મુખ્ય કંપનીની તમામ વિગતો મુક્તપણે એડિટ કરી શકો છો.");
       return false;
     }
 
@@ -2764,8 +2800,9 @@ export function AppProvider({ children }) {
   const importDatabase = (importedObj) => {
     if (!importedObj || typeof importedObj !== 'object') return;
     if (Array.isArray(importedObj.companiesList)) {
-      setCompaniesList(importedObj.companiesList);
-      try { localStorage.setItem('site_company_profiles_v3', JSON.stringify(importedObj.companiesList)); } catch(e) {}
+      const ensured = ensurePrimaryAtsondika(importedObj.companiesList);
+      setCompaniesList(ensured);
+      try { localStorage.setItem('site_company_profiles_v3', JSON.stringify(ensured)); } catch(e) {}
     }
     if (Array.isArray(importedObj.customProductsList)) {
       setCustomProductsList(sanitizeCustomProductsList(importedObj.customProductsList));
