@@ -283,15 +283,6 @@ export async function pushGlobalCloudSync(storeData) {
       }).catch(() => {});
     } catch(e) {}
 
-    // 2. Secondary Push to Serverless Endpoint (/api/store)
-    try {
-      fetch('/api/store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
-    } catch(e) {}
-
     // 3. Broadcast instantly to all local open tabs and windows
     try {
       realtimeEngine.broadcast('PRODUCT_UPDATE', payload);
@@ -307,16 +298,6 @@ export async function pullGlobalCloudSync() {
   const cloudUrl = getCloudSyncUrl();
   try {
     const response = await fetch(cloudUrl);
-    if (response.ok) {
-      const json = await response.json();
-      if (json && json.updatedAt && (json.customProductsList || json.companiesList || json.photoOverrides || json.heroBanner)) {
-        return json;
-      }
-    }
-  } catch (err) {}
-
-  try {
-    const response = await fetch('/api/store');
     if (response.ok) {
       const json = await response.json();
       if (json && json.updatedAt && (json.customProductsList || json.companiesList || json.photoOverrides || json.heroBanner)) {

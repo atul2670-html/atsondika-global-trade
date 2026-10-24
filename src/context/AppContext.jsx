@@ -1160,21 +1160,23 @@ export function AppProvider({ children }) {
         updatedAt: now
       };
 
-      // 1. Vercel Serverless Real-Time Cloud API POST
-      fetch('/api/store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
+      // 1. Local Network Server POST (only when running on local dev server where Vite /api/data middleware exists)
+      const isLocalHost = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.startsWith('192.168.') ||
+        window.location.hostname.startsWith('10.')
+      );
 
-      // 2. Local Network Server POST (if local server running)
-      fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
+      if (isLocalHost) {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      }
 
-      // 3. AUTOMATED GLOBAL CLOUD SYNC (Secondary Cloud Database Backup - Async Fire-and-Forget for 0ms Lightning Speed)
+      // 2. AUTOMATED GLOBAL CLOUD SYNC (Primary Cross-Device Cloud Database Backup - Async Fire-and-Forget for 0ms Lightning Speed)
       pushGlobalCloudSync(payload).catch(() => {});
 
       // 4. Broadcast to all open local browser windows/tabs
@@ -1195,19 +1197,15 @@ export function AppProvider({ children }) {
       // 1. Query Automated Global Firebase Cloud Database FIRST for worldwide microsecond sync!
       data = await pullGlobalCloudSync();
 
-      // 2. Fallback to Vercel Serverless Real-Time Cloud API second
-      if (!data || !data.updatedAt) {
-        try {
-          const res = await fetch('/api/store');
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.updatedAt) data = json;
-          }
-        } catch(e) {}
-      }
+      // 2. Fallback to local server endpoint if running on local development server
+      const isLocalHost = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.startsWith('192.168.') ||
+        window.location.hostname.startsWith('10.')
+      );
 
-      // 3. Fallback to local server endpoint third
-      if (!data || !data.updatedAt) {
+      if ((!data || !data.updatedAt) && isLocalHost) {
         try {
           const res = await fetch('/api/data');
           if (res.ok) data = await res.json();
