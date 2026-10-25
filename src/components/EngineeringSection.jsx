@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function EngineeringSection() {
   const { currentLang, activeCompany, setIsRfqDrawerOpen } = useApp();
+
+  const [bodorTab, setBodorTab] = useState('machine'); // 'machine' | 'plate'
+  const [jyotiTab, setJyotiTab] = useState('machine'); // 'machine' | 'plate'
+  const [activePlateModal, setActivePlateModal] = useState(null); // 'bodor' | 'jyoti' | 'ac' | null
 
   const isGu = currentLang === 'gu';
   const isHi = currentLang === 'hi';
@@ -96,7 +100,7 @@ export default function EngineeringSection() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
             gap: '30px',
             marginBottom: '40px'
           }}
@@ -108,66 +112,108 @@ export default function EngineeringSection() {
               background: 'rgba(15, 23, 42, 0.75)',
               border: '1px solid rgba(45, 212, 191, 0.25)',
               borderRadius: '20px',
-              padding: '26px',
+              padding: '24px',
               boxShadow: '0 12px 35px rgba(0, 0, 0, 0.45)',
               display: 'flex',
               flexDirection: 'column',
               transition: 'all 0.3s ease'
             }}
           >
-            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            {/* Visual Container with Interactive View Switcher */}
+            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <img
-                src="images/bodor_laser_cutting_machine.jpg"
+                src={bodorTab === 'machine' ? 'images/bodor_laser_showroom_new.jpg' : 'images/bodor_laser_cutting_machine.jpg'}
                 alt="Bodor A3T6 CNC Fiber Laser Cutting System"
-                style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }}
+                style={{
+                  width: '100%',
+                  height: '240px',
+                  objectFit: bodorTab === 'machine' ? 'cover' : 'contain',
+                  background: '#0a0f1d',
+                  display: 'block',
+                  transition: 'opacity 0.3s ease'
+                }}
                 onError={(e) => { e.target.src = 'images/logo.png'; }}
               />
+
+              {/* View Switcher Pills */}
               <div
                 style={{
                   position: 'absolute',
-                  top: '12px',
-                  left: '12px',
+                  top: '10px',
+                  left: '10px',
+                  display: 'flex',
+                  gap: '6px',
                   background: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(10px)',
-                  color: '#38bdf8',
-                  padding: '4px 10px',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  border: '1px solid rgba(56, 189, 248, 0.4)'
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
               >
-                ⚡ {isGu ? 'શીટ & પાઇપ ડ્યુઅલ કટિંગ' : 'Sheet & Tube Dual Mode'}
+                <button
+                  type="button"
+                  style={{
+                    background: bodorTab === 'machine' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '16px',
+                    padding: '3px 10px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setBodorTab('machine')}
+                >
+                  ✨ {isGu ? 'નવો મશીન લુક' : 'New Machine'}
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    background: bodorTab === 'plate' ? 'linear-gradient(135deg, #059669, #047857)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '16px',
+                    padding: '3px 10px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setBodorTab('plate')}
+                >
+                  🔍 {isGu ? 'ઓરિજિનલ નેમપ્લેટ' : 'OEM Plate'}
+                </button>
               </div>
+
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '12px',
-                  right: '12px',
-                  background: 'rgba(5, 150, 105, 0.9)',
+                  bottom: '10px',
+                  right: '10px',
+                  background: 'rgba(5, 150, 105, 0.92)',
                   color: 'white',
-                  padding: '3px 9px',
-                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  borderRadius: '10px',
                   fontSize: '0.72rem',
-                  fontWeight: 700
+                  fontWeight: 800,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
                 }}
               >
                 Model: Bodor A3T6
               </div>
             </div>
 
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '10px' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
               {isGu ? 'CNC ફાઈબર લેસર કટિંગ સિસ્ટમ (શીટ & પાઇપ)' : 'CNC Fiber Laser Sheet & Tube Cutting'}
             </h3>
 
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '18px' }}>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '16px' }}>
               {isGu
                 ? 'મેટલ શીટ પ્લેટની સાથે રાઉન્ડ, સ્ક્વેર અને રેક્ટંગ્યુલર પાઇપનું અતિશય ચોકસાઈપૂર્વક બર્ર-ફ્રી (Burr-free) હાઈ-સ્પીડ કટિંગ.'
                 : 'High-speed, zero-burr contour cutting for metal flat sheets as well as round, square, and rectangular tubes/pipes.'}
             </p>
 
             {/* Spec Highlights Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '22px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
               <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
                   {isGu ? 'મટિરિયલ્સ' : 'Materials'}
@@ -213,66 +259,108 @@ export default function EngineeringSection() {
               background: 'rgba(15, 23, 42, 0.75)',
               border: '1px solid rgba(56, 189, 248, 0.28)',
               borderRadius: '20px',
-              padding: '26px',
+              padding: '24px',
               boxShadow: '0 12px 35px rgba(0, 0, 0, 0.45)',
               display: 'flex',
               flexDirection: 'column',
               transition: 'all 0.3s ease'
             }}
           >
-            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            {/* Visual Container with Interactive View Switcher */}
+            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <img
-                src="images/jyoti_rx20_vmc_machine.jpg"
+                src={jyotiTab === 'machine' ? 'images/jyoti_vmc_showroom_new.jpg' : 'images/jyoti_rx20_vmc_machine.jpg'}
                 alt="Jyoti RX-20 C-Frame Vertical Machining Center"
-                style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }}
+                style={{
+                  width: '100%',
+                  height: '240px',
+                  objectFit: jyotiTab === 'machine' ? 'cover' : 'contain',
+                  background: '#0a0f1d',
+                  display: 'block',
+                  transition: 'opacity 0.3s ease'
+                }}
                 onError={(e) => { e.target.src = 'images/logo.png'; }}
               />
+
+              {/* View Switcher Pills */}
               <div
                 style={{
                   position: 'absolute',
-                  top: '12px',
-                  left: '12px',
+                  top: '10px',
+                  left: '10px',
+                  display: 'flex',
+                  gap: '6px',
                   background: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(10px)',
-                  color: '#facc15',
-                  padding: '4px 10px',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  border: '1px solid rgba(250, 204, 21, 0.4)'
+                  backdropFilter: 'blur(12px)',
+                  padding: '4px',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
               >
-                ⚙️ {isGu ? '૫.૫ ટન રિજિડ C-ફ્રેમ VMC' : '5,500 Kg Heavy C-Frame VMC'}
+                <button
+                  type="button"
+                  style={{
+                    background: jyotiTab === 'machine' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '16px',
+                    padding: '3px 10px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setJyotiTab('machine')}
+                >
+                  ✨ {isGu ? 'નવો મશીન લુક' : 'New Machine'}
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    background: jyotiTab === 'plate' ? 'linear-gradient(135deg, #059669, #047857)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '16px',
+                    padding: '3px 10px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setJyotiTab('plate')}
+                >
+                  🔍 {isGu ? 'ઓરિજિનલ નેમપ્લેટ' : 'OEM Plate'}
+                </button>
               </div>
+
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '12px',
-                  right: '12px',
-                  background: 'rgba(2, 132, 199, 0.9)',
+                  bottom: '10px',
+                  right: '10px',
+                  background: 'rgba(2, 132, 199, 0.92)',
                   color: 'white',
-                  padding: '3px 9px',
-                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  borderRadius: '10px',
                   fontSize: '0.72rem',
-                  fontWeight: 700
+                  fontWeight: 800,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
                 }}
               >
-                Jyoti CNC Automation RX-20
+                Jyoti CNC RX-20
               </div>
             </div>
 
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '10px' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
               {isGu ? 'હેવી-ડ્યુટી VMC પ્રિસિઝન મશીનિંગ (Jyoti RX-20)' : 'Heavy-Duty VMC Precision Machining (Jyoti RX-20)'}
             </h3>
 
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '18px' }}>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '16px' }}>
               {isGu
                 ? '25 kW સ્પિન્ડલ પાવર અને 20-ટૂલ ATC સાથે માઇક્રોન-લેવલ ચોકસાઈવાળું મિલિંગ, ડ્રિલિંગ, ટેપિંગ અને બોરિંગ કામ.'
                 : 'High-torque 25 kW spindle power with 20-tool Automatic Tool Changer (ATC) delivering micron-accurate milling, boring, and rigid tapping.'}
             </p>
 
             {/* Spec Highlights Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '22px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
               <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
                   {isGu ? 'પાવર & વજન' : 'Power & Rigidity'}
