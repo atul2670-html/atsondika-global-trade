@@ -1818,7 +1818,7 @@ export default function Modals() {
       {/* ADMIN CONTROL PANEL DASHBOARD MODAL */}
       {activeModal === 'admin_control' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '95vw', maxHeight: '90vh', overflowX: 'auto', overflowY: 'auto', borderRadius: '24px' }}>
             <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
             
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -1831,7 +1831,7 @@ export default function Modals() {
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '14px' }}>
+            <div className="admin-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
               <button
                 type="button"
                 className="btn-primary"
@@ -2039,7 +2039,8 @@ export default function Modals() {
                   background: isCodEnabled ? '#10b981' : '#ef4444',
                   color: '#ffffff',
                   whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  flexShrink: 0
                 }}>
                   {isCodEnabled ? 'ON' : 'OFF'}
                 </span>
@@ -2088,7 +2089,8 @@ export default function Modals() {
                   background: isEngineeringUnitEnabled ? '#14b8a6' : '#ef4444',
                   color: '#ffffff',
                   whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  flexShrink: 0
                 }}>
                   {isEngineeringUnitEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
                 </span>
@@ -2154,7 +2156,7 @@ export default function Modals() {
 
         return (
           <div className="modal-backdrop show">
-            <div className="glass-card modal-card" style={{ maxWidth: '650px', width: '92vw', maxHeight: '88vh', overflowY: 'auto', borderRadius: '24px' }}>
+            <div className="glass-card modal-card" style={{ maxWidth: '650px', width: '95vw', maxHeight: '88vh', overflowX: 'auto', overflowY: 'auto', borderRadius: '24px' }}>
               <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
               
               <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -2252,7 +2254,7 @@ export default function Modals() {
       {/* 1. ADMIN REGISTERED SELLERS & EXPORTERS CONTROL MODAL */}
       {activeModal === 'admin_sellers' && (
         <div className="modal-backdrop show">
-          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '92vw', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px' }}>
+          <div className="glass-card modal-card" style={{ maxWidth: '850px', width: '95vw', maxHeight: '90vh', overflowX: 'auto', overflowY: 'auto', borderRadius: '24px' }}>
             <button className="modal-close" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
             
             <div style={{ textAlign: 'center', marginBottom: '18px' }}>

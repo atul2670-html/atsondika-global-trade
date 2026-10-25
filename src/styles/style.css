@@ -1441,18 +1441,30 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
 
 /* --- MODALS --- */
 .modal-backdrop {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
   background: rgba(3, 7, 18, 0.75);
   backdrop-filter: blur(8px);
-  z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
+  z-index: 2000; display: none;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 20px;
+  box-sizing: border-box;
 }
 .modal-backdrop.show { display: flex; }
 .modal-card {
+  margin: auto;
   width: 100%; max-width: 560px;
   border-radius: var(--radius-lg); padding: 35px;
   position: relative; animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90vh; overflow-y: auto; color: var(--text-main);
+  max-height: 90vh; max-height: 90dvh;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: contain !important;
+  color: var(--text-main);
   scroll-behavior: smooth; outline: none;
+  box-sizing: border-box;
 }
 @keyframes modalPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal-close { position: absolute; top: 20px; right: 24px; background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text-sub); }
@@ -4594,11 +4606,22 @@ body.light-theme .modal-card code {
     overflow-x: hidden;
   }
 
+  .modal-backdrop {
+    padding: 10px 8px !important;
+    align-items: flex-start !important;
+  }
+
   .modal-card {
-    padding: 14px 12px !important;
-    width: 98% !important;
-    max-height: 94vh !important;
-    border-radius: 12px !important;
+    padding: 16px 12px !important;
+    width: 96% !important;
+    max-width: 96vw !important;
+    max-height: 92vh !important;
+    max-height: 92dvh !important;
+    margin: 8px auto !important;
+    border-radius: 16px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .form-row {
@@ -5449,4 +5472,98 @@ body.light-theme .engineering-cta-subtitle {
     gap: 6px !important;
   }
 }
+
+/* ==========================================================================
+   🌐 UNIVERSAL MOBILE & POPUP HORIZONTAL (RIGHT-LEFT) SCROLLING SUPPORT
+   ========================================================================== */
+.modal-backdrop {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x pan-y !important;
+}
+
+.modal-card {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: contain !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Custom Sleek Scrollbar for Horizontal/Vertical Scrolling in Popups */
+.modal-card::-webkit-scrollbar,
+.modal-backdrop::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.modal-card::-webkit-scrollbar-thumb,
+.modal-backdrop::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.45);
+  border-radius: 4px;
+}
+.modal-card::-webkit-scrollbar-track,
+.modal-backdrop::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+body.light-theme .modal-card::-webkit-scrollbar-thumb,
+body.light-theme .modal-backdrop::-webkit-scrollbar-thumb {
+  background: rgba(13, 148, 136, 0.45);
+}
+body.light-theme .modal-card::-webkit-scrollbar-track,
+body.light-theme .modal-backdrop::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive Grid for Admin Control Dashboard & Large Popups */
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .admin-dashboard-grid > button,
+  .admin-dashboard-grid > label {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    word-break: break-word !important;
+    padding: 12px 14px !important;
+  }
+}
+
+/* Full Width and Safe Flex for COD and Engineering Unit Toggle Buttons */
+.admin-cod-toggle-btn,
+.admin-engineering-toggle-btn {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.admin-cod-toggle-btn > div,
+.admin-engineering-toggle-btn > div {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.admin-cod-toggle-btn > span,
+.admin-engineering-toggle-btn > span {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
 
