@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
+import EngineeringSection from './components/EngineeringSection';
 import ProductsGrid from './components/ProductsGrid';
 import ContainerCalculator from './components/ContainerCalculator';
 import CertificatesSection from './components/CertificatesSection';
@@ -30,6 +31,7 @@ export default function App() {
       <main>
         <Hero />
         <About />
+        <EngineeringSection />
         <ProductsGrid />
         <ContainerCalculator />
         <CertificatesSection />

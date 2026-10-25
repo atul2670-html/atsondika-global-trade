@@ -540,6 +540,7 @@ export default function Navbar() {
             <ul className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
               <li><a href="#home" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>{t.nav_home}</a></li>
               <li><a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_about}</a></li>
+              <li><a href="#engineering" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_engineering || (currentLang === 'gu' ? 'એન્જિનિયરિંગ & CNC' : 'Engineering & CNC')}</a></li>
               <li><a href="#products" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_products}</a></li>
               <li><a href="#calc" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Calculator</a></li>
               <li><a href="#quality" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_quality}</a></li>
