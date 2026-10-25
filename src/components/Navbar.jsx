@@ -392,7 +392,7 @@ export default function Navbar() {
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
         }}>
           {/* LEFT GROUP: LOGIN BUTTONS */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="header-actions-left">
             {/* CUSTOMER LOGIN / PORTAL BUTTON */}
             {currentCustomer ? (
               <button
@@ -486,7 +486,7 @@ export default function Navbar() {
           </div>
 
           {/* RIGHT GROUP: 1ST INQUIRIES, 2ND CART, 3RD TRACK SHIPMENT IN LAST CORNER */}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto' }}>
+          <div className="header-actions-right">
             {/* 1. Quick Access to Customer Inquiries / Leads */}
             <button
               type="button"
@@ -533,8 +533,8 @@ export default function Navbar() {
                 onError={(e) => { e.target.src = 'images/logo.png'; }}
               />
               <div className="logo-text">
-                <h1>{activeCompany.name || 'Atsondika Global Trade'}</h1>
-                <span>{activeCompany.tagline || 'GLOBAL TRADING HOUSE & EXPORT HOUSE'}</span>
+                <h1 className="logo-title">{activeCompany.name || 'Atsondika Global Trade'}</h1>
+                <span className="logo-tagline">{activeCompany.tagline || 'GLOBAL TRADING HOUSE & EXPORT HOUSE'}</span>
               </div>
             </a>
 
@@ -549,7 +549,7 @@ export default function Navbar() {
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>
             </ul>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px' }}>
+            <div className="header-cart-menu-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', flexShrink: 0 }}>
               <button
                 type="button"
                 className="btn-primary nav-rfq-cart-btn"
@@ -572,7 +572,8 @@ export default function Navbar() {
                 title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
               >
                 <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
-                <span>{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
+                <span className="cart-desktop-label">{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
+                <span className="cart-mobile-label">{currentLang === 'gu' ? 'કાર્ટ' : 'Cart'}</span>
                 <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
                   {rfqCartItems.length}
                 </span>
