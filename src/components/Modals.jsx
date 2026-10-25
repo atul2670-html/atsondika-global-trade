@@ -143,7 +143,7 @@ export default function Modals() {
     forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
     activeIncoterm, setActiveIncoterm,
-    isCodEnabled, toggleCodEnabled
+    isCodEnabled, toggleCodEnabled, isEngineeringUnitEnabled, toggleEngineeringUnit
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -2042,6 +2042,55 @@ export default function Modals() {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                 }}>
                   {isCodEnabled ? 'ON' : 'OFF'}
+                </span>
+              </button>
+
+              {/* ENGINEERING & CNC PRECISION UNIT TOGGLE SWITCH */}
+              <button
+                type="button"
+                className={`btn-primary admin-engineering-toggle-btn ${isEngineeringUnitEnabled ? 'engineering-enabled' : 'engineering-disabled'}`}
+                style={{
+                  padding: '14px 18px',
+                  justifyContent: 'space-between',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: isEngineeringUnitEnabled ? 'linear-gradient(135deg, #0d9488, #0f766e)' : 'linear-gradient(135deg, #475569, #334155)',
+                  boxShadow: isEngineeringUnitEnabled ? '0 4px 16px rgba(13, 148, 136, 0.4)' : 'none',
+                  border: isEngineeringUnitEnabled ? '1px solid rgba(45, 212, 191, 0.5)' : '1px solid rgba(255,255,255,0.15)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  if (toggleEngineeringUnit) toggleEngineeringUnit();
+                }}
+                title={isEngineeringUnitEnabled ? "Click to Switch OFF Engineering Unit Section" : "Click to Switch ON Engineering Unit Section"}
+              >
+                <div>
+                  <div style={{ color: '#ffffff', fontWeight: 900 }}>
+                    ⚙️ એન્જિનિયરિંગ & CNC યુનિટ (Engineering Unit)
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: isEngineeringUnitEnabled ? '#ccfbf1' : '#cbd5e1', fontWeight: 600, marginTop: '2px' }}>
+                    {isEngineeringUnitEnabled
+                      ? (currentLang === 'gu' ? 'વેબસાઇટ પર ચાલુ છે (Live & Active)' : 'Active on Website')
+                      : (currentLang === 'gu' ? 'વેબસાઇટ પર બંધ છે (Hidden & Inactive)' : 'Hidden on Website')}
+                  </div>
+                </div>
+                <span style={{
+                  padding: '4px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  fontWeight: 900,
+                  background: isEngineeringUnitEnabled ? '#14b8a6' : '#ef4444',
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                }}>
+                  {isEngineeringUnitEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
                 </span>
               </button>
 

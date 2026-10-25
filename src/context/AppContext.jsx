@@ -362,6 +362,31 @@ export function AppProvider({ children }) {
     }
   };
 
+  // Engineering & CNC Precision Unit Enable/Disable Toggle
+  const [isEngineeringUnitEnabled, setIsEngineeringUnitEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_engineering_unit_enabled_v1');
+      if (stored !== null && stored !== undefined) return stored === 'true';
+    } catch(e) {}
+    return true; // Default enabled
+  });
+
+  const toggleEngineeringUnit = (forcedVal) => {
+    const nextVal = typeof forcedVal === 'boolean' ? forcedVal : !isEngineeringUnitEnabled;
+    setIsEngineeringUnitEnabled(nextVal);
+    try {
+      localStorage.setItem('site_engineering_unit_enabled_v1', nextVal ? 'true' : 'false');
+    } catch(e) {}
+    syncToServer({ isEngineeringUnitEnabled: nextVal });
+    if (showLiveToast) {
+      if (nextVal) {
+        showLiveToast(currentLang === 'gu' ? '⚙️ એન્જિનિયરિંગ & CNC યુનિટ સ્વીચ ON થયું (વેબસાઇટ પર લાઇવ).' : '⚙️ Engineering & CNC Unit Switched ON (Live on Website).', 'success');
+      } else {
+        showLiveToast(currentLang === 'gu' ? '🚫 એન્જિનિયરિંગ & CNC યુનિટ સ્વીચ OFF થયું (વેબસાઇટ પરથી છુપાયેલ).' : '🚫 Engineering & CNC Unit Switched OFF (Hidden from Website).', 'warning');
+      }
+    }
+  };
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1397,6 +1422,10 @@ export function AppProvider({ children }) {
         if (data.isCodEnabled !== undefined) {
           setIsCodEnabled(data.isCodEnabled);
           try { localStorage.setItem('site_cod_enabled_v1', data.isCodEnabled ? 'true' : 'false'); } catch(e) {}
+        }
+        if (data.isEngineeringUnitEnabled !== undefined) {
+          setIsEngineeringUnitEnabled(data.isEngineeringUnitEnabled);
+          try { localStorage.setItem('site_engineering_unit_enabled_v1', data.isEngineeringUnitEnabled ? 'true' : 'false'); } catch(e) {}
         }
         isInitialCloudLoadComplete.current = true;
       }
@@ -2885,6 +2914,7 @@ export function AppProvider({ children }) {
       exportDatabase, importDatabase,
       paymentGatewaysConfig, savePaymentGatewaysConfig,
       isCodEnabled, toggleCodEnabled, setIsCodEnabled: toggleCodEnabled,
+      isEngineeringUnitEnabled, toggleEngineeringUnit, setIsEngineeringUnitEnabled: toggleEngineeringUnit,
       syncVersion, triggerRealtimeRefresh,
       verifyAdminAccess, t
     }}>

@@ -15,7 +15,7 @@ import OrderTrackerModal from './components/OrderTrackerModal';
 import { useApp } from './context/AppContext';
 
 export default function App() {
-  const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast } = useApp();
+  const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast, isEngineeringUnitEnabled } = useApp();
 
   return (
     <>
@@ -31,7 +31,7 @@ export default function App() {
       <main>
         <Hero />
         <About />
-        <EngineeringSection />
+        {isEngineeringUnitEnabled && <EngineeringSection />}
         <ProductsGrid />
         <ContainerCalculator />
         <CertificatesSection />

@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 
 export default function AiChatDrawer() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { activeCompany, currentLang } = useApp();
+  const { activeCompany, currentLang, isEngineeringUnitEnabled } = useApp();
 
   const isGu = currentLang === 'gu';
   const companyName = activeCompany?.name || 'Atsondika Global Trade';
@@ -71,7 +71,7 @@ export default function AiChatDrawer() {
             🌾 {isGu ? 'ચોખા & મસાલા ઇન્ક્વાયરી' : 'Rice & Spices Inquiry'}
           </button>
 
-          {/* NEW DEDICATED CNC LASER & VMC TOPIC */}
+          {isEngineeringUnitEnabled && (
           <button
             type="button"
             className="btn-secondary"
@@ -85,6 +85,7 @@ export default function AiChatDrawer() {
           >
             ⚡ {isGu ? 'લેસર કટિંગ & VMC જોબ વર્ક' : 'Laser Cutting & VMC Job Work'}
           </button>
+          )}
 
           <button
             type="button"
