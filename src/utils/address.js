@@ -134,3 +134,54 @@ export function generateDigitalRoundStampSvg(companyName = "Atsondika Global Tra
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
+/**
+ * Smart, multi-tier fallback handler for product images.
+ * Retries alternative Google Drive CDN endpoints if primary times out.
+ * If image is truly unavailable, falls back to category-relevant placeholder (never shows wrong products).
+ */
+export function handleProductImageFallback(e, product) {
+  const target = e.target;
+  if (!target) return;
+  const currentSrc = target.src || '';
+
+  // 1. Google Drive multi-tier CDN mirror retry
+  const fileIdMatch = currentSrc.match(/(?:file\/d\/|id=|\/d\/|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{5,60})/i);
+  const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+  if (fileId) {
+    if (!currentSrc.includes('thumbnail')) {
+      target.src = 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w1200';
+      return;
+    }
+    if (!currentSrc.includes('/uc?')) {
+      target.src = 'https://drive.google.com/uc?export=view&id=' + fileId;
+      return;
+    }
+  }
+
+  // Prevent infinite loop if fallback already attempted
+  if (target.dataset && target.dataset.fallbackTried === 'true') {
+    return;
+  }
+  if (target.dataset) {
+    target.dataset.fallbackTried = 'true';
+  }
+
+  // 2. Category-matched fallback so a TV/Dress never shows spices
+  const cat = String(product?.category || product?.parentId || '').toLowerCase();
+  const title = String(product?.nameEn || product?.title || product?.name || (product?.names && product.names.en) || '').toLowerCase();
+
+  if (cat.includes('garment') || title.includes('dress') || title.includes('kurti') || title.includes('cloth') || title.includes('suit')) {
+    target.src = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80';
+  } else if (cat.includes('elect') || title.includes('tv') || title.includes('phone') || title.includes('router') || title.includes('s25')) {
+    target.src = 'images/hero_export_shipping.png';
+  } else if (cat.includes('machin') || cat.includes('indust') || cat.includes('eng') || title.includes('cnc') || title.includes('laser')) {
+    target.src = 'images/used_industrial_machinery.png';
+  } else if (cat.includes('packag') || title.includes('bag') || title.includes('box')) {
+    target.src = 'images/eco_packaging_bags.png';
+  } else if (cat.includes('agro') || cat.includes('spice') || title.includes('turmeric') || title.includes('cumin') || title.includes('rice')) {
+    target.src = 'images/agro_spices_grains.png';
+  } else {
+    target.src = 'images/hero_export_shipping.png';
+  }
+}

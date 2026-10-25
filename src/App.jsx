@@ -31,8 +31,8 @@ export default function App() {
       <main>
         <Hero />
         <About />
-        {isEngineeringUnitEnabled && <EngineeringSection />}
         <ProductsGrid />
+        {isEngineeringUnitEnabled && <EngineeringSection />}
         <ContainerCalculator />
         <CertificatesSection />
         <BranchOfficesSection />
@@ -91,6 +91,7 @@ export default function App() {
               <li><a href="#home">{t.nav_home}</a></li>
               <li><a href="#about">{t.nav_about}</a></li>
               <li><a href="#products">{t.nav_products}</a></li>
+              {isEngineeringUnitEnabled && <li><a href="#engineering">{t.nav_engineering || (currentLang === 'gu' ? 'એન્જિનિયરિંગ & CNC' : 'Engineering & CNC')}</a></li>}
               <li><a href="#contact">{t.nav_contact}</a></li>
             </ul>
           </div>

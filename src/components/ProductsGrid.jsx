@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { convertGoogleDriveUrl } from '../utils/address';
+import { convertGoogleDriveUrl, handleProductImageFallback } from '../utils/address';
 import { autoTranslateText } from '../utils/translator';
 
 export default function ProductsGrid() {
@@ -975,10 +975,9 @@ export default function ProductsGrid() {
                 : autoTranslateText(enSpec || langSpec || 'High Quality Premium Product', currentLang);
 
               let rawImgs = (p.images && p.images.length > 0) ? [...p.images] : [p.image || 'images/agro_spices_grains.png'];
-              if (rawImgs.length === 1) {
-                if (rawImgs[0].includes('agro')) rawImgs.push('images/hero_export_shipping.png');
-                else if (rawImgs[0].includes('industrial')) rawImgs.push('images/used_industrial_machinery.png');
-                else rawImgs.push('images/agro_spices_grains.png');
+              rawImgs = rawImgs.filter(Boolean);
+              if (rawImgs.length === 0) {
+                rawImgs = ['images/agro_spices_grains.png'];
               }
               const imgs = rawImgs.map(convertGoogleDriveUrl);
               const activeIdx = (carouselIndices[p.id] || 0) % imgs.length;
@@ -1079,8 +1078,9 @@ export default function ProductsGrid() {
                       <img
                         src={imgs[activeIdx]}
                         alt={title}
+                        referrerPolicy="no-referrer"
                         style={{ maxHeight: '175px', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
-                        onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
+                        onError={(e) => handleProductImageFallback(e, p)}
                       />
 
                       {/* Left & Right Photo Carousel Scroll Buttons for Local B2C Card */}
@@ -1423,7 +1423,8 @@ export default function ProductsGrid() {
                       src={imgs[activeIdx]}
                       alt={title}
                       className="product-img"
-                      onError={(e) => { e.target.src = 'images/agro_spices_grains.png'; }}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => handleProductImageFallback(e, p)}
                     />
                     <div className="product-img-zoom-overlay">
                       <span>🔍 {currentLang === 'gu' ? 'ઓરિજિનલ ફુલ ફોટો જુઓ' : 'Full HD Photo'}</span>
