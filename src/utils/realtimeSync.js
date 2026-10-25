@@ -329,8 +329,13 @@ export function subscribeToGlobalCloudPush(callback) {
         try {
           if (!evt || !evt.data) return;
           const parsed = JSON.parse(evt.data);
-          if (parsed && parsed.data && typeof parsed.data === 'object') {
-            callback(parsed.data);
+          if (parsed) {
+            if (parsed.path === '/' && parsed.data && typeof parsed.data === 'object') {
+              callback(parsed.data);
+            } else if (parsed.path && parsed.data !== undefined) {
+              const key = parsed.path.replace(/^\//, '');
+              callback({ [key]: parsed.data, updatedAt: Date.now() });
+            }
           }
         } catch (e) {}
       };

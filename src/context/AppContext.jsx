@@ -377,7 +377,10 @@ export function AppProvider({ children }) {
     try {
       localStorage.setItem('site_engineering_unit_enabled_v1', nextVal ? 'true' : 'false');
     } catch(e) {}
-    syncToServer({ isEngineeringUnitEnabled: nextVal });
+    try {
+      realtimeEngine.broadcast('ENGINEERING_UNIT_TOGGLE', { isEngineeringUnitEnabled: nextVal });
+    } catch(e) {}
+    syncToServer({ isEngineeringUnitEnabled: nextVal, updatedAt: Date.now() });
     if (showLiveToast) {
       if (nextVal) {
         showLiveToast(currentLang === 'gu' ? '⚙️ એન્જિનિયરિંગ & CNC યુનિટ સ્વીચ ON થયું (વેબસાઇટ પર લાઇવ).' : '⚙️ Engineering & CNC Unit Switched ON (Live on Website).', 'success');
@@ -1202,6 +1205,7 @@ export function AppProvider({ children }) {
         heroBanner: overrides.heroBanner || heroBanner,
         aboutData: overrides.aboutData || aboutData,
         activeCompanyId: overrides.activeCompanyId || activeCompanyId,
+        isEngineeringUnitEnabled: overrides.isEngineeringUnitEnabled !== undefined ? overrides.isEngineeringUnitEnabled : isEngineeringUnitEnabled,
         updatedAt: now
       };
 
@@ -1439,11 +1443,32 @@ export function AppProvider({ children }) {
   };
 
   useEffect(() => {
-    const unsubscribe = realtimeEngine.subscribe(() => {
+    const unsubscribe = realtimeEngine.subscribe((event, data) => {
+      if (data && data.isEngineeringUnitEnabled !== undefined) {
+        const nextBool = typeof data.isEngineeringUnitEnabled === 'boolean'
+          ? data.isEngineeringUnitEnabled
+          : (data.isEngineeringUnitEnabled === 'true');
+        setIsEngineeringUnitEnabled(nextBool);
+        try {
+          localStorage.setItem('site_engineering_unit_enabled_v1', nextBool ? 'true' : 'false');
+        } catch(e) {}
+      }
       fetchServerData();
       triggerRealtimeRefresh();
     });
-    return () => unsubscribe();
+
+    const handleStorageChange = (e) => {
+      if (e.key === 'site_engineering_unit_enabled_v1') {
+        setIsEngineeringUnitEnabled(e.newValue === 'true');
+        triggerRealtimeRefresh();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Real-Time Global Microsecond Push Engine (Server-Sent Event Stream + 500ms Poll Heartbeat)
@@ -1461,6 +1486,15 @@ export function AppProvider({ children }) {
           }
           if (Array.isArray(pushedData.merchantProductsList) && pushedData.merchantProductsList.length > 0) {
             setMerchantProductsList(pushedData.merchantProductsList);
+          }
+          if (pushedData.isEngineeringUnitEnabled !== undefined) {
+            const nextBool = typeof pushedData.isEngineeringUnitEnabled === 'boolean'
+              ? pushedData.isEngineeringUnitEnabled
+              : (pushedData.isEngineeringUnitEnabled === 'true');
+            setIsEngineeringUnitEnabled(nextBool);
+            try {
+              localStorage.setItem('site_engineering_unit_enabled_v1', nextBool ? 'true' : 'false');
+            } catch(e) {}
           }
           triggerRealtimeRefresh();
         }
@@ -2813,6 +2847,7 @@ export function AppProvider({ children }) {
       heroBanner,
       aboutData,
       activeCompanyId,
+      isEngineeringUnitEnabled,
       updatedAt: Date.now()
     };
     const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
@@ -2849,6 +2884,10 @@ export function AppProvider({ children }) {
     if (Array.isArray(importedObj.branchesList)) setBranchesList(importedObj.branchesList);
     if (importedObj.heroBanner) setHeroBanner(importedObj.heroBanner);
     if (importedObj.aboutData) setAboutData(importedObj.aboutData);
+    if (importedObj.isEngineeringUnitEnabled !== undefined) {
+      setIsEngineeringUnitEnabled(importedObj.isEngineeringUnitEnabled);
+      try { localStorage.setItem('site_engineering_unit_enabled_v1', importedObj.isEngineeringUnitEnabled ? 'true' : 'false'); } catch(e) {}
+    }
 
     syncToServer(importedObj);
     alert('✅ Site Database restored successfully!');
@@ -2871,6 +2910,17 @@ export function AppProvider({ children }) {
     else if (s.includes('FOB')) normalized = 'FOB (Free On Board - Loading Port)';
     setActiveIncotermState(normalized);
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__atsondikaContext = {
+        toggleEngineeringUnit,
+        setActiveModal,
+        setIsAdminLoggedIn,
+        isEngineeringUnitEnabled
+      };
+    }
+  }, [isEngineeringUnitEnabled]);
 
   return (
     <AppContext.Provider value={{
