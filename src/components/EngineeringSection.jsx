@@ -6,7 +6,6 @@ export default function EngineeringSection() {
 
   const [bodorTab, setBodorTab] = useState('machine'); // 'machine' | 'plate'
   const [jyotiTab, setJyotiTab] = useState('machine'); // 'machine' | 'plate'
-  const [activePlateModal, setActivePlateModal] = useState(null); // 'bodor' | 'jyoti' | 'ac' | null
 
   const isGu = currentLang === 'gu';
   const isHi = currentLang === 'hi';
@@ -26,7 +25,7 @@ export default function EngineeringSection() {
   };
 
   return (
-    <section className="section" id="engineering" style={{ position: 'relative', overflow: 'hidden' }}>
+    <section className="section engineering-section" id="engineering">
       {/* Ambient background glow accent */}
       <div
         style={{
@@ -46,36 +45,11 @@ export default function EngineeringSection() {
       <div className="section-container" style={{ position: 'relative', zIndex: 1 }}>
         {/* SECTION HEADER */}
         <div className="section-header">
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 16px',
-              borderRadius: '24px',
-              background: 'rgba(45, 212, 191, 0.12)',
-              border: '1px solid rgba(45, 212, 191, 0.35)',
-              color: 'var(--primary-teal-glow)',
-              fontSize: '0.82rem',
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '1.4px',
-              marginBottom: '14px',
-              boxShadow: '0 0 16px rgba(45, 212, 191, 0.2)'
-            }}
-          >
+          <div className="engineering-badge">
             ⚙️ {isGu ? 'ઇન-હાઉસ ઇન્ડસ્ટ્રિયલ ઇન્ફ્રાસ્ટ્રક્ચર' : isHi ? 'इन-हाउस औद्योगिक बुनियादी ढांचा' : isFr ? 'Infrastructure Industrielle Intégrée' : 'In-House Industrial Infrastructure'}
           </div>
 
-          <h2
-            className="section-title"
-            style={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #a5f3fc 50%, #2dd4bf 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5))'
-            }}
-          >
+          <h2 className="section-title engineering-title">
             {isGu
               ? 'અદ્યતન એન્જિનિયરિંગ & CNC પ્રિસિઝન જોબ વર્ક હબ'
               : isHi
@@ -85,7 +59,7 @@ export default function EngineeringSection() {
               : 'Advanced Precision Engineering & CNC Job Work Hub'}
           </h2>
 
-          <p className="section-subtitle">
+          <p className="section-subtitle engineering-subtitle">
             {isGu
               ? 'સુરત અને દક્ષિણ ગુજરાતના ઔદ્યોગિક એકમો તેમ જ ગ્લોબલ એક્સપોર્ટ માટે કટિંગથી લઈને સંપૂર્ણ તૈયાર મશીનરી પાર્ટ્સનું ઇન-હાઉસ ઉત્પાદન.'
               : isHi
@@ -97,28 +71,9 @@ export default function EngineeringSection() {
         </div>
 
         {/* 2 MAIN ADVANCED MACHINES GRID */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: '30px',
-            marginBottom: '40px'
-          }}
-        >
+        <div className="engineering-grid">
           {/* MACHINE 1: BODOR FIBER LASER CUTTER */}
-          <div
-            className="card"
-            style={{
-              background: 'rgba(15, 23, 42, 0.75)',
-              border: '1px solid rgba(45, 212, 191, 0.25)',
-              borderRadius: '20px',
-              padding: '24px',
-              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.45)',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'all 0.3s ease'
-            }}
-          >
+          <div className="card engineering-card">
             {/* Visual Container with Interactive View Switcher */}
             <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <img
@@ -202,41 +157,41 @@ export default function EngineeringSection() {
               </div>
             </div>
 
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
+            <h3 className="engineering-card-title">
               {isGu ? 'CNC ફાઈબર લેસર કટિંગ સિસ્ટમ (શીટ & પાઇપ)' : 'CNC Fiber Laser Sheet & Tube Cutting'}
             </h3>
 
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '16px' }}>
+            <p className="engineering-card-desc">
               {isGu
                 ? 'મેટલ શીટ પ્લેટની સાથે રાઉન્ડ, સ્ક્વેર અને રેક્ટંગ્યુલર પાઇપનું અતિશય ચોકસાઈપૂર્વક બર્ર-ફ્રી (Burr-free) હાઈ-સ્પીડ કટિંગ.'
                 : 'High-speed, zero-burr contour cutting for metal flat sheets as well as round, square, and rectangular tubes/pipes.'}
             </p>
 
             {/* Spec Highlights Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+            <div className="engineering-specs-grid">
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'મટિરિયલ્સ' : 'Materials'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#2dd4bf' }}>MS, SS, Al, Brass</strong>
+                <strong className="engineering-spec-value color-teal">MS, SS, Al, Brass</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'કટિંગ ક્ષમતા' : 'Capability'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#38bdf8' }}>Sheet + Pipe/Tube</strong>
+                <strong className="engineering-spec-value color-cyan">Sheet + Pipe/Tube</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'એજ ફિનિશિંગ' : 'Edge Finish'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#facc15' }}>Smooth & Ready</strong>
+                <strong className="engineering-spec-value color-gold">Smooth & Ready</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'એપ્લિકેશન' : 'Applications'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#a78bfa' }}>Panels, Base Plates</strong>
+                <strong className="engineering-spec-value color-purple">Panels, Base Plates</strong>
               </div>
             </div>
 
@@ -253,19 +208,7 @@ export default function EngineeringSection() {
           </div>
 
           {/* MACHINE 2: JYOTI RX-20 VMC MACHINING CENTER */}
-          <div
-            className="card"
-            style={{
-              background: 'rgba(15, 23, 42, 0.75)',
-              border: '1px solid rgba(56, 189, 248, 0.28)',
-              borderRadius: '20px',
-              padding: '24px',
-              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.45)',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'all 0.3s ease'
-            }}
-          >
+          <div className="card engineering-card">
             {/* Visual Container with Interactive View Switcher */}
             <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <img
@@ -349,41 +292,41 @@ export default function EngineeringSection() {
               </div>
             </div>
 
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
+            <h3 className="engineering-card-title">
               {isGu ? 'હેવી-ડ્યુટી VMC પ્રિસિઝન મશીનિંગ (Jyoti RX-20)' : 'Heavy-Duty VMC Precision Machining (Jyoti RX-20)'}
             </h3>
 
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: '1.6', marginBottom: '16px' }}>
+            <p className="engineering-card-desc">
               {isGu
                 ? '25 kW સ્પિન્ડલ પાવર અને 20-ટૂલ ATC સાથે માઇક્રોન-લેવલ ચોકસાઈવાળું મિલિંગ, ડ્રિલિંગ, ટેપિંગ અને બોરિંગ કામ.'
                 : 'High-torque 25 kW spindle power with 20-tool Automatic Tool Changer (ATC) delivering micron-accurate milling, boring, and rigid tapping.'}
             </p>
 
             {/* Spec Highlights Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+            <div className="engineering-specs-grid">
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'પાવર & વજન' : 'Power & Rigidity'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#2dd4bf' }}>25 kW | 5,500 Kg</strong>
+                <strong className="engineering-spec-value color-teal">25 kW | 5,500 Kg</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'ટૂલિંગ સિસ્ટમ' : 'Tool Magazine'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#38bdf8' }}>20-Tool Auto ATC</strong>
+                <strong className="engineering-spec-value color-cyan">20-Tool Auto ATC</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'ઇન્ડસ્ટ્રિયલ કૂલિંગ' : 'Panel Cooling'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#facc15' }}>Werner Finley AC</strong>
+                <strong className="engineering-spec-value color-gold">Werner Finley AC</strong>
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)', display: 'block' }}>
+              <div className="engineering-spec-box">
+                <span className="engineering-spec-label">
                   {isGu ? 'મુખ્ય એપ્લિકેશન' : 'Key Parts'}
                 </span>
-                <strong style={{ fontSize: '0.85rem', color: '#a78bfa' }}>Textile, Valves, Dies</strong>
+                <strong className="engineering-spec-value color-purple">Textile, Valves, Dies</strong>
               </div>
             </div>
 
@@ -408,20 +351,12 @@ export default function EngineeringSection() {
         </div>
 
         {/* 4-STEP STREAMLINED WORKFLOW BANNER */}
-        <div
-          style={{
-            background: 'rgba(15, 23, 42, 0.65)',
-            border: '1px solid var(--border-glass)',
-            borderRadius: '18px',
-            padding: '24px',
-            marginBottom: '35px'
-          }}
-        >
+        <div className="engineering-workflow-box">
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+            <h4 className="engineering-workflow-title">
               {isGu ? 'સરળ જોબ વર્ક પ્રક્રિયા (૪ સ્ટેપ્સ)' : 'Streamlined 4-Step Engineering Workflow'}
             </h4>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+            <span className="engineering-workflow-subtitle">
               {isGu ? 'ડ્રોઇંગ મોકલવાથી લઈને ફાઇનલ પાર્ટ ડિલિવરી સુધી' : 'From initial drawing submission to ready-to-fit component dispatch'}
             </span>
           </div>
@@ -433,42 +368,42 @@ export default function EngineeringSection() {
               gap: '16px'
             }}
           >
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
+            <div className="engineering-step-card">
               <div style={{ fontSize: '1.6rem', marginBottom: '8px' }}>📤</div>
-              <strong style={{ fontSize: '0.9rem', color: '#38bdf8', display: 'block', marginBottom: '4px' }}>
+              <strong className="engineering-step-title" style={{ color: '#0284c7' }}>
                 1. {isGu ? 'ડ્રોઇંગ સબમિશન' : 'Submit CAD / Drawing'}
               </strong>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', lineHeight: '1.4' }}>
+              <span className="engineering-step-desc">
                 {isGu ? 'AutoCAD DWG, DXF, STEP, PDF અથવા સેમ્પલ' : 'Share 2D/3D technical drawings or physical samples'}
               </span>
             </div>
 
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
+            <div className="engineering-step-card">
               <div style={{ fontSize: '1.6rem', marginBottom: '8px' }}>⚡</div>
-              <strong style={{ fontSize: '0.9rem', color: '#2dd4bf', display: 'block', marginBottom: '4px' }}>
+              <strong className="engineering-step-title" style={{ color: '#0d9488' }}>
                 2. {isGu ? 'લેસર શીટ/પાઇપ કટિંગ' : 'Laser Profile & Tube Cut'}
               </strong>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', lineHeight: '1.4' }}>
+              <span className="engineering-step-desc">
                 {isGu ? 'હાઈ સ્પીડ ફાઇબર લેસર વડે બર્ર-ફ્રી કટિંગ' : 'Bodor A3T6 high-speed precision contour cutting'}
               </span>
             </div>
 
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
+            <div className="engineering-step-card">
               <div style={{ fontSize: '1.6rem', marginBottom: '8px' }}>⚙️</div>
-              <strong style={{ fontSize: '0.9rem', color: '#facc15', display: 'block', marginBottom: '4px' }}>
+              <strong className="engineering-step-title" style={{ color: '#b45309' }}>
                 3. {isGu ? 'VMC મશીનિંગ & થ્રેડિંગ' : 'VMC Micron Machining'}
               </strong>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', lineHeight: '1.4' }}>
+              <span className="engineering-step-desc">
                 {isGu ? 'મિલિંગ, પ્રિસિઝન ડ્રિલિંગ અને રિજિડ ટેપિંગ' : 'Jyoti RX-20 secondary drilling, tapping & milling'}
               </span>
             </div>
 
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.06)', textAlign: 'center' }}>
+            <div className="engineering-step-card">
               <div style={{ fontSize: '1.6rem', marginBottom: '8px' }}>🔍</div>
-              <strong style={{ fontSize: '0.9rem', color: '#4ade80', display: 'block', marginBottom: '4px' }}>
+              <strong className="engineering-step-title" style={{ color: '#16a34a' }}>
                 4. {isGu ? 'ક્વોલિટી ચેક & ડિલિવરી' : 'Quality Inspection'}
               </strong>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', lineHeight: '1.4' }}>
+              <span className="engineering-step-desc">
                 {isGu ? 'માઇક્રોમીટર પરિમાણ તપાસ અને સમયસર ડિસ્પેચ' : 'Micron dimensional check & on-schedule delivery'}
               </span>
             </div>
@@ -476,25 +411,12 @@ export default function EngineeringSection() {
         </div>
 
         {/* BOTTOM CALL TO ACTION STRIP */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
-            border: '1px solid rgba(45, 212, 191, 0.4)',
-            borderRadius: '16px',
-            padding: '20px 24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '16px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)'
-          }}
-        >
+        <div className="engineering-cta-strip">
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
+            <h4 className="engineering-cta-title">
               {isGu ? 'તમારી પાસે મશીનરી ડ્રોઇંગ કે જોબ વર્ક છે?' : 'Have Engineering Drawings or Custom Job Work Requirements?'}
             </h4>
-            <span style={{ fontSize: '0.85rem', color: '#a5f3fc' }}>
+            <span className="engineering-cta-subtitle">
               {isGu ? 'સુરત વર્કશોપ સાથે સીધા સંપર્ક કરી તુરંત ભાવ અને સેમ્પલિંગની વિગતો મેળવો.' : 'Connect directly with our Surat manufacturing facility for rapid turnaround quotes.'}
             </span>
           </div>

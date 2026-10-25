@@ -5065,3 +5065,273 @@ body.light-theme .modal-card .inco-input-trucking:focus { border-color: #2563eb 
 
 
 
+
+/* ==========================================================================
+   ENGINEERING & CNC PRECISION UNIT - DUAL THEME STYLES (DARK & LIGHT HIGH CONTRAST)
+   ========================================================================== */
+.engineering-section {
+  position: relative;
+  overflow: hidden;
+  padding: 80px 5%;
+}
+
+.engineering-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  color: var(--primary-teal-glow);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.2);
+}
+
+.engineering-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 50%, #2dd4bf 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+}
+
+.engineering-subtitle {
+  color: var(--text-sub);
+  font-size: 1rem;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.engineering-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.engineering-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.engineering-card-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.engineering-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.engineering-specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.engineering-spec-box {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-glass);
+}
+
+.engineering-spec-label {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.engineering-spec-value {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.engineering-spec-value.color-teal { color: #2dd4bf; }
+.engineering-spec-value.color-cyan { color: #38bdf8; }
+.engineering-spec-value.color-gold { color: #facc15; }
+.engineering-spec-value.color-purple { color: #c084fc; }
+
+.engineering-workflow-box {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid var(--border-glass);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 35px;
+}
+
+.engineering-workflow-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.engineering-workflow-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+}
+
+.engineering-step-card {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
+.engineering-step-title {
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+.engineering-step-desc {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+
+.engineering-cta-strip {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.engineering-cta-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.engineering-cta-subtitle {
+  font-size: 0.85rem;
+  color: #a5f3fc;
+}
+
+/* ==========================================================================
+   LIGHT THEME OVERRIDES (CRISP, HIGH CONTRAST, 100% READABILITY)
+   ========================================================================== */
+body.light-theme .engineering-badge {
+  background: rgba(13, 148, 136, 0.12) !important;
+  border-color: rgba(13, 148, 136, 0.4) !important;
+  color: #0f766e !important;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.15) !important;
+}
+
+body.light-theme .engineering-title {
+  color: #0f172a !important;
+  background: none !important;
+  -webkit-text-fill-color: #0f172a !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+body.light-theme .engineering-subtitle {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+body.light-theme .engineering-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-theme .engineering-card-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .engineering-card-desc {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+body.light-theme .engineering-spec-box {
+  background: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-theme .engineering-spec-label {
+  color: #64748b !important;
+  font-weight: 700 !important;
+}
+
+body.light-theme .engineering-spec-value.color-teal { color: #0d9488 !important; }
+body.light-theme .engineering-spec-value.color-cyan { color: #0284c7 !important; }
+body.light-theme .engineering-spec-value.color-gold { color: #b45309 !important; }
+body.light-theme .engineering-spec-value.color-purple { color: #7c3aed !important; }
+
+body.light-theme .engineering-workflow-box {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.light-theme .engineering-workflow-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .engineering-workflow-subtitle {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+body.light-theme .engineering-step-card {
+  background: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+}
+
+body.light-theme .engineering-step-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .engineering-step-desc {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+body.light-theme .engineering-cta-strip {
+  background: linear-gradient(135deg, #0d9488 0%, #0369a1 100%) !important;
+  box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25) !important;
+  border: none !important;
+}
+
+body.light-theme .engineering-cta-title {
+  color: #ffffff !important;
+}
+
+body.light-theme .engineering-cta-subtitle {
+  color: #e0f2fe !important;
+}
