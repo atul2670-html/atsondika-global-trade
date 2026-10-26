@@ -12,6 +12,7 @@ import AiChatDrawer from './components/AiChatDrawer';
 import Modals from './components/Modals';
 import RfqCartDrawer from './components/RfqCartDrawer';
 import OrderTrackerModal from './components/OrderTrackerModal';
+import SampleRequestModal from './components/SampleRequestModal';
 import { useApp } from './context/AppContext';
 
 export default function App() {
@@ -155,6 +156,7 @@ export default function App() {
       <Modals />
       <RfqCartDrawer />
       <OrderTrackerModal />
+      <SampleRequestModal />
 
       {/* Floating Global Microsecond Live Toast Notification */}
       {liveToast && (

@@ -11,7 +11,8 @@ export default function ProductsGrid() {
     verifyAdminAccess, setActiveModal, setEditingProductId,
     setSelectedRfqProduct, selectedRfqProducts, addRfqProduct, setQuotationProduct, isAdminLoggedIn, activeCompany, openImagePreview,
     productViewMode, setProductViewMode, addToRfqCart, convertPrice, liveRates, currentCurrency, lastUpdatedProductId, setIsRfqDrawerOpen,
-    currentMerchant, merchantsList, syncVersion, deletedBuiltInIds, setDeletedBuiltInIds, showLiveToast
+    currentMerchant, merchantsList, syncVersion, deletedBuiltInIds, setDeletedBuiltInIds, showLiveToast,
+    setIsSampleModalOpen, setActiveSampleProduct
   } = useApp();
 
   const [carouselIndices, setCarouselIndices] = useState({});
@@ -824,6 +825,31 @@ export default function ProductsGrid() {
                       </td>
                       <td style={{ padding: '12px', textAlign: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', minWidth: '150px' }}>
+                          {tradeMode !== 'local' && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{
+                                width: '100%',
+                                justifyContent: 'center',
+                                color: '#2dd4bf',
+                                borderColor: 'rgba(45, 212, 191, 0.4)',
+                                background: 'rgba(20, 184, 166, 0.1)',
+                                padding: '5px 10px',
+                                fontSize: '0.74rem',
+                                fontWeight: 800,
+                                borderRadius: '8px',
+                                whiteSpace: 'nowrap'
+                              }}
+                              onClick={() => {
+                                if (setActiveSampleProduct) setActiveSampleProduct(p);
+                                if (setIsSampleModalOpen) setIsSampleModalOpen(true);
+                              }}
+                              title="Request a Product Sample"
+                            >
+                              📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
+                            </button>
+                          )}
                           {(() => {
                             const isSelected = (selectedRfqProducts || []).some(sp => sp.id === p.id);
                             return (
@@ -1603,6 +1629,30 @@ export default function ProductsGrid() {
                         title="Request Official Quotation (RFQ)"
                       >
                         📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        style={{
+                          width: '100%',
+                          justifyContent: 'center',
+                          color: '#2dd4bf',
+                          borderColor: 'rgba(45, 212, 191, 0.45)',
+                          background: 'rgba(20, 184, 166, 0.1)',
+                          padding: '7px 12px',
+                          fontSize: '0.82rem',
+                          fontWeight: 800,
+                          whiteSpace: 'nowrap',
+                          boxShadow: '0 2px 8px rgba(20, 184, 166, 0.15)'
+                        }}
+                        onClick={() => {
+                          if (setActiveSampleProduct) setActiveSampleProduct(p);
+                          if (setIsSampleModalOpen) setIsSampleModalOpen(true);
+                        }}
+                        title={currentLang === 'gu' ? 'સેમ્પલ મંગાવો (Request B2B Sample)' : 'Request a Product Sample'}
+                      >
+                        📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો (Request Sample)' : 'Request a Sample'}
                       </button>
 
                       {/* Admin Action Controls (Only visible when Admin is logged in) */}

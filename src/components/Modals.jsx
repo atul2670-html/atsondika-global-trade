@@ -7,6 +7,7 @@ import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
 import FlagIcon from './FlagIcon';
+import SampleManagerModal from './SampleManagerModal';
 
 // INTERNATIONAL WCO (6-DIGIT) & LOCAL CUSTOMS/GST (8-DIGIT) HARMONIZED SYSTEM DICTIONARY
 const hsCodeDictionary = [
@@ -142,6 +143,7 @@ export default function Modals() {
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
+    sampleRequestsList,
     activeIncoterm, setActiveIncoterm,
     isCodEnabled, toggleCodEnabled, isEngineeringUnitEnabled, toggleEngineeringUnit
   } = useApp();
@@ -1946,6 +1948,25 @@ export default function Modals() {
                 onClick={() => setActiveModal('admin_leads')}
               >
                 👥 View Registered Customer Leads & Inquiries ({customerList?.length || 0})
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  padding: '14px 18px',
+                  justifyContent: 'flex-start',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #0d9488, #059669)',
+                  boxShadow: '0 4px 16px rgba(13, 148, 136, 0.4)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35'
+                }}
+                onClick={() => setActiveModal('admin_samples')}
+              >
+                📦 B2B Sample Requests & Courier Dispatch ({sampleRequestsList?.length || 0})
               </button>
 
               <button
@@ -5205,20 +5226,18 @@ export default function Modals() {
               </button>
             </div>
 
-            <form onSubmit={async (e) => {
+            <form onSubmit={(e) => {
               e.preventDefault();
               let finalTitles = { ...heroTitleObj };
               let finalSubtitles = { ...heroSubtitleObj };
 
-              // Auto-translate English if any string present
-              if (heroTitleObj.en) {
-                const autoT = await autoTranslateFullObject(heroTitleObj.en);
-                finalTitles = { ...autoT, ...heroTitleObj };
-              }
-              if (heroSubtitleObj.en) {
-                const autoS = await autoTranslateFullObject(heroSubtitleObj.en);
-                finalSubtitles = { ...autoS, ...heroSubtitleObj };
-              }
+              // Fill any missing language tabs with English as fallback without blocking network requests
+              const enTitle = heroTitleObj.en || '';
+              const enSub = heroSubtitleObj.en || '';
+              ['gu', 'hi', 'fr'].forEach(l => {
+                if (!finalTitles[l]) finalTitles[l] = enTitle;
+                if (!finalSubtitles[l]) finalSubtitles[l] = enSub;
+              });
 
               saveHeroBanner({
                 badge: badgeInput,
@@ -10505,6 +10524,7 @@ export default function Modals() {
           </div>
         </div>
       )}
+      <SampleManagerModal />
     </>
   );
 }

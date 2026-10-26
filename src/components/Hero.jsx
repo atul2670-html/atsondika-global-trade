@@ -172,12 +172,10 @@ export default function Hero() {
                 }
               }
 
-              // Only revert to default shipping image if no custom image was provided
-              if (!heroBanner.image || heroBanner.image === 'images/hero_export_shipping.png') {
-                const defaultSrc = 'images/hero_export_shipping.png';
-                if (!currentSrc.includes(defaultSrc)) {
-                  e.target.src = defaultSrc;
-                }
+              // Clean reliable fallback to default shipping image if any custom image fails to load
+              const defaultSrc = 'images/hero_export_shipping.png';
+              if (!currentSrc.includes(defaultSrc)) {
+                e.target.src = defaultSrc;
               }
             }}
           />

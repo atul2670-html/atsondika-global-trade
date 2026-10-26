@@ -47,7 +47,7 @@ const DEMO_ORDERS = [
 ];
 
 export default function OrderTrackerModal() {
-  const { isOrderTrackerOpen, setIsOrderTrackerOpen, t } = useApp();
+  const { isOrderTrackerOpen, setIsOrderTrackerOpen, t, sampleRequestsList } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('EXP-2026-8801');
   const [activeOrder, setActiveOrder] = useState(DEMO_ORDERS[0]);
@@ -60,17 +60,56 @@ export default function OrderTrackerModal() {
     setErrorMessage('');
     const query = searchQuery.trim().toUpperCase();
 
-    const found = DEMO_ORDERS.find(
+    // 1. Check Demo FCL/LCL Container Orders
+    let found = DEMO_ORDERS.find(
       o => o.id.toUpperCase().includes(query) ||
            o.blNumber.toUpperCase().includes(query) ||
            o.containerNo.toUpperCase().includes(query) ||
            o.client.toUpperCase().includes(query)
     );
 
+    // 2. Check B2B Air Express Sample Requests
+    if (!found && Array.isArray(sampleRequestsList)) {
+      const sampleMatch = sampleRequestsList.find(
+        s => (s.id || '').toUpperCase().includes(query) ||
+             (s.trackingNumber || '').toUpperCase().includes(query) ||
+             (s.buyerName || '').toUpperCase().includes(query) ||
+             (s.companyName || '').toUpperCase().includes(query)
+      );
+
+      if (sampleMatch) {
+        const isDispatched = sampleMatch.status === 'dispatched';
+        const isDelivered = sampleMatch.status === 'delivered';
+        const isApproved = sampleMatch.status === 'approved';
+
+        found = {
+          id: sampleMatch.id,
+          blNumber: sampleMatch.trackingNumber || `AWB-${sampleMatch.id}`,
+          containerNo: `${sampleMatch.courierName} Air Express`,
+          client: `${sampleMatch.buyerName} (${sampleMatch.companyName})`,
+          destination: `${sampleMatch.portCity}, ${sampleMatch.country}`,
+          vessel: `${sampleMatch.courierName} Air Cargo`,
+          product: `${sampleMatch.productName} [Sample: ${sampleMatch.sampleQty}]`,
+          quantity: sampleMatch.sampleQty,
+          status: isDelivered ? 'DELIVERED' : (isDispatched ? 'IN_TRANSIT' : (isApproved ? 'PACKAGING' : 'PENDING_REVIEW')),
+          progress: isDelivered ? 100 : (isDispatched ? 70 : (isApproved ? 35 : 15)),
+          eta: '3 - 5 Business Days',
+          timeline: [
+            { step: 1, title: 'Sample Request Verified', date: sampleMatch.date?.split(' ')[0] || '2026-08-10', status: 'completed', desc: 'Commercial sample request approved by export department.' },
+            { step: 2, title: 'Quality Inspection & Lab Packing', date: sampleMatch.date?.split(' ')[0] || '2026-08-11', status: (isApproved || isDispatched || isDelivered) ? 'completed' : 'active', desc: 'Moisture-controlled vacuum foil sealing & Phytosanitary/COA documentation.' },
+            { step: 3, title: `Air Courier Dispatch (${sampleMatch.courierName})`, date: sampleMatch.dispatchedDate || '2026-08-12', status: (isDispatched || isDelivered) ? 'completed' : 'pending', desc: sampleMatch.trackingNumber ? `Handed over to carrier. AWB Tracking: ${sampleMatch.trackingNumber}` : 'Scheduled for air courier pickup.' },
+            { step: 4, title: 'International Air Transit', date: sampleMatch.dispatchedDate || '2026-08-13', status: isDelivered ? 'completed' : (isDispatched ? 'active' : 'pending'), desc: `Air express flight en-route to ${sampleMatch.country}.` },
+            { step: 5, title: 'Destination Customs Clearance', date: 'Estimated +2 Days', status: isDelivered ? 'completed' : 'pending', desc: 'WCO HS 9803 Commercial Sample entry & airport clearance.' },
+            { step: 6, title: 'Final Delivery to Buyer', date: 'Estimated +3 Days', status: isDelivered ? 'completed' : 'pending', desc: `Delivery to ${sampleMatch.address}.` }
+          ]
+        };
+      }
+    }
+
     if (found) {
       setActiveOrder(found);
     } else {
-      setErrorMessage(`⚠️ No active shipment found matching "${query}". Try sample BL number: "BL-ADIDEV-99201" or "EXP-2026-8801".`);
+      setErrorMessage(`⚠️ No active shipment found matching "${query}". Try Container: "EXP-2026-8801" or Sample ID: "SMP-2026-8942".`);
     }
   };
 
@@ -105,7 +144,7 @@ export default function OrderTrackerModal() {
               className="tracker-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter Order ID (EXP-2026-8801), BL Number, or Container No..."
+              placeholder="Enter Container Order (EXP-2026-8801) or Sample ID (SMP-2026-8942)..."
             />
             <button type="submit" className="btn-primary" style={{ minWidth: '140px' }}>
               🔍 Track Live

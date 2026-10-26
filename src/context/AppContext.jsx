@@ -507,6 +507,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const unsub = realtimeEngine.subscribe((event) => {
       if (!event || !event.type) return;
+      if (event.type === 'HERO_BANNER_UPDATE' && event.payload) {
+        setHeroBanner(event.payload);
+      }
       if (event.type === 'PRODUCT_UPDATE' || event.type === 'PRICE_CHANGE' || event.type === 'NEW_PRODUCT') {
         if (event.payload && event.payload.productId) {
           setLastUpdatedProductId(event.payload.productId);
@@ -1317,6 +1320,18 @@ export function AppProvider({ children }) {
           });
         }
 
+        if (Array.isArray(data.sampleRequestsList) && data.sampleRequestsList.length > 0) {
+          setSampleRequestsList(prev => {
+            const prevStr = JSON.stringify(prev);
+            const nextStr = JSON.stringify(data.sampleRequestsList);
+            if (prevStr !== nextStr) {
+              try { localStorage.setItem('site_sample_requests_v1', nextStr); } catch(e) {}
+              return data.sampleRequestsList;
+            }
+            return prev;
+          });
+        }
+
         lastServerUpdate.current = Math.max(lastServerUpdate.current, serverTs);
         try { localStorage.setItem('site_last_updated_at_v1', lastServerUpdate.current.toString()); } catch(e) {}
 
@@ -1486,6 +1501,17 @@ export function AppProvider({ children }) {
           }
           if (Array.isArray(pushedData.merchantProductsList) && pushedData.merchantProductsList.length > 0) {
             setMerchantProductsList(pushedData.merchantProductsList);
+          }
+          if (pushedData.heroBanner && typeof pushedData.heroBanner === 'object') {
+            const cleanImg = convertGoogleDriveUrl(pushedData.heroBanner.image || 'images/hero_export_shipping.png');
+            const updatedHero = {
+              ...defaultHeroBanner,
+              ...pushedData.heroBanner,
+              image: cleanImg,
+              updatedAt: pushedTs
+            };
+            setHeroBanner(updatedHero);
+            safeLocalStorageSet('site_hero_banner_v4', updatedHero);
           }
           if (pushedData.isEngineeringUnitEnabled !== undefined) {
             const nextBool = typeof pushedData.isEngineeringUnitEnabled === 'boolean'
@@ -2067,6 +2093,9 @@ export function AppProvider({ children }) {
       };
     } catch(e) {}
     syncToServer({ heroBanner: cleanData });
+    try {
+      realtimeEngine.broadcast('HERO_BANNER_UPDATE', cleanData);
+    } catch(e) {}
     setActiveModal(null);
   };
 
@@ -2305,6 +2334,142 @@ export function AppProvider({ children }) {
       localStorage.setItem('site_deleted_inquiry_ids_v1', JSON.stringify(deletedInquiryIds));
     } catch(e) {}
   }, [deletedInquiryIds]);
+
+  const DEFAULT_SAMPLE_REQUESTS = [
+    {
+      id: 'SMP-2026-8942',
+      date: '2026-08-10 14:30',
+      productId: 'turmeric',
+      productName: 'Finger & Powder Turmeric (Curcumin 3% - 5%)',
+      hsCode: '09103030',
+      category: 'agro',
+      sampleQty: '250g Airtight Foil Pack',
+      evaluationPurpose: '🧪 Laboratory Chemical & Purity Analysis',
+      buyerName: 'Ahmed Al-Sayed',
+      companyName: 'Gulf Spices & Foodstuffs LLC',
+      email: 'ahmed.procurement@gulfspices.ae',
+      phone: '+971 50 123 4567',
+      country: 'United Arab Emirates',
+      portCity: 'Dubai / Jebel Ali Port',
+      address: 'Warehouse #14, Al Quoz Industrial Area 3, Dubai, UAE',
+      postalCode: 'PO Box 8921',
+      courierType: 'freight_collect',
+      courierName: 'DHL Express',
+      courierAccountNo: 'DHL-968472910',
+      status: 'dispatched',
+      trackingNumber: 'DHL-8839201948',
+      dispatchedDate: '2026-08-11',
+      notes: 'Commercial sample dispatched via Air Express with Phytosanitary Lab Certificate.'
+    },
+    {
+      id: 'SMP-2026-8943',
+      date: '2026-08-12 11:15',
+      productId: 'basmati',
+      productName: '1121 Premium XXL Extra Long Basmati Rice',
+      hsCode: '10063020',
+      category: 'agro',
+      sampleQty: '500g Airtight Sample Jar',
+      evaluationPurpose: '👥 Client / Retailer Quality Approval',
+      buyerName: 'David Miller',
+      companyName: 'EuroAgro Commodities GmbH',
+      email: 'd.miller@euroagro-trade.de',
+      phone: '+49 40 9876 5432',
+      country: 'Germany',
+      portCity: 'Hamburg Port',
+      address: 'Hafenstrasse 42, 20457 Hamburg, Germany',
+      postalCode: '20457',
+      courierType: 'freight_collect',
+      courierName: 'FedEx Express',
+      courierAccountNo: 'FDX-449182370',
+      status: 'approved',
+      trackingNumber: '',
+      dispatchedDate: '',
+      notes: 'Sample approved by export manager. Under packaging in humidity-controlled foil.'
+    },
+    {
+      id: 'SMP-2026-8944',
+      date: '2026-08-14 16:45',
+      productId: 'cumin',
+      productName: 'Singapore / Europe Quality Cumin Seeds (Jeera)',
+      hsCode: '09093120',
+      category: 'agro',
+      sampleQty: '250g Airtight Foil Pack',
+      evaluationPurpose: '🧪 Laboratory Chemical & Purity Analysis',
+      buyerName: 'Robert Chen',
+      companyName: 'AsiaPacific Trading Corp',
+      email: 'robert.chen@apac-traders.sg',
+      phone: '+65 6789 0123',
+      country: 'Singapore',
+      portCity: 'Singapore Port',
+      address: '12 Marina Boulevard, Tower 3, #18-01, Singapore',
+      postalCode: '018982',
+      courierType: 'prepaid',
+      courierName: 'DHL Express',
+      courierAccountNo: 'PREPAID-$35',
+      status: 'pending',
+      trackingNumber: '',
+      dispatchedDate: '',
+      notes: 'New sample request received online from Singapore buyer.'
+    }
+  ];
+
+  const [sampleRequestsList, setSampleRequestsList] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('site_sample_requests_v1') || 'null');
+      if (Array.isArray(stored) && stored.length > 0) return stored;
+    } catch(e) {}
+    if (initialStoreData && Array.isArray(initialStoreData.sampleRequestsList) && initialStoreData.sampleRequestsList.length > 0) {
+      return initialStoreData.sampleRequestsList;
+    }
+    return DEFAULT_SAMPLE_REQUESTS;
+  });
+
+  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
+  const [activeSampleProduct, setActiveSampleProduct] = useState(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('site_sample_requests_v1', JSON.stringify(sampleRequestsList));
+    } catch(e) {}
+  }, [sampleRequestsList]);
+
+  const addSampleRequest = (req) => {
+    const newReq = {
+      id: `SMP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      status: 'pending',
+      trackingNumber: '',
+      dispatchedDate: '',
+      ...req
+    };
+
+    setSampleRequestsList(prev => {
+      const nextList = [newReq, ...prev];
+      try { localStorage.setItem('site_sample_requests_v1', JSON.stringify(nextList)); } catch(e) {}
+      syncToServer({ sampleRequestsList: nextList });
+      return nextList;
+    });
+
+    return newReq;
+  };
+
+  const updateSampleRequest = (id, updates) => {
+    setSampleRequestsList(prev => {
+      const nextList = prev.map(s => s.id === id ? { ...s, ...updates } : s);
+      try { localStorage.setItem('site_sample_requests_v1', JSON.stringify(nextList)); } catch(e) {}
+      syncToServer({ sampleRequestsList: nextList });
+      return nextList;
+    });
+  };
+
+  const deleteSampleRequest = (id) => {
+    setSampleRequestsList(prev => {
+      const nextList = prev.filter(s => s.id !== id);
+      try { localStorage.setItem('site_sample_requests_v1', JSON.stringify(nextList)); } catch(e) {}
+      syncToServer({ sampleRequestsList: nextList });
+      return nextList;
+    });
+  };
 
   useEffect(() => {
     try {
@@ -2862,6 +3027,7 @@ export function AppProvider({ children }) {
       certificatesList,
       freightRoutesList,
       customerList,
+      sampleRequestsList,
       deletedInquiryIds,
       heroBanner,
       aboutData,
@@ -2898,6 +3064,10 @@ export function AppProvider({ children }) {
     if (Array.isArray(importedObj.customerList)) {
       setCustomerList(importedObj.customerList);
       try { localStorage.setItem('site_registered_customers_v1', JSON.stringify(importedObj.customerList)); } catch(e) {}
+    }
+    if (Array.isArray(importedObj.sampleRequestsList)) {
+      setSampleRequestsList(importedObj.sampleRequestsList);
+      try { localStorage.setItem('site_sample_requests_v1', JSON.stringify(importedObj.sampleRequestsList)); } catch(e) {}
     }
     if (Array.isArray(importedObj.certificatesList)) setCertificatesList(importedObj.certificatesList);
     if (Array.isArray(importedObj.branchesList)) setBranchesList(importedObj.branchesList);
@@ -2976,6 +3146,7 @@ export function AppProvider({ children }) {
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       deletedBuiltInIds, setDeletedBuiltInIds,
       customerList, currentCustomer, registerCustomer, loginCustomer, logoutCustomer, updateCustomerProfile, deleteCustomer, updateCustomerPassword,
+      sampleRequestsList, setSampleRequestsList, isSampleModalOpen, setIsSampleModalOpen, activeSampleProduct, setActiveSampleProduct, addSampleRequest, updateSampleRequest, deleteSampleRequest,
       merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantProfile, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
       adminCommissionRate, setAdminCommissionRate: saveAdminCommissionRate,
       forexRiskBuffer, saveForexRiskBuffer, setForexRiskBuffer: saveForexRiskBuffer,
