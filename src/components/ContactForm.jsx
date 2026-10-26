@@ -119,7 +119,7 @@ export default function ContactForm() {
   };
 
   const getWaUrl = () => {
-    const compName = activeCompany?.name || 'ADIDEV SMART SOLUTION';
+    const compName = activeCompany?.name || 'Atsondika Global Trade';
     let text = `Hello ${compName}, I want to inquire about export commodities.`;
     if (activeProducts.length > 0) {
       const titles = activeProducts.map(p => p.names?.en || p.names?.gu || p.name).join(', ');

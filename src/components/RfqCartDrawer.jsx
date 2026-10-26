@@ -418,7 +418,7 @@ export default function RfqCartDrawer() {
       ? `🌐 *OFFICIAL EXPORT RFQ / QUOTE REQUEST*\n`
       : `🇮🇳 *OFFICIAL INDIAN DOMESTIC SALE RFQ (B2B)*\n`;
     msg += `---------------------------------------\n`;
-    msg += `🏢 *Company / Supplier:* ${activeCompany?.name || 'ADIDEV SMART SOLUTION'}\n`;
+    msg += `🏢 *Company / Supplier:* ${activeCompany?.name || 'Atsondika Global Trade'}\n`;
     msg += `👤 *Buyer Name:* ${buyerName || 'Valued Client'}\n`;
     if (buyerGstin) msg += `🏛️ *Buyer GSTIN:* ${buyerGstin}\n`;
     if (buyerPhone) msg += `📞 *Phone:* ${buyerPhone}\n`;
@@ -1186,7 +1186,7 @@ export default function RfqCartDrawer() {
                     </h5>
                     <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: '1.6' }}>
                       <div>• <b>Bank Name:</b> ICICI Bank Ltd</div>
-                      <div>• <b>Account Name:</b> ADIDEV SMART SOLUTION / ATSONDIKA</div>
+                      <div>• <b>Account Name:</b> {activeCompany?.bankDetails?.accountName || 'Atsondika Global Trade'}</div>
                       <div>• <b>Account No:</b> 000405012345</div>
                       <div>• <b>IFSC Code:</b> ICIC0000004</div>
                       <div>• <b>Branch:</b> Ring Road, Surat, Gujarat</div>

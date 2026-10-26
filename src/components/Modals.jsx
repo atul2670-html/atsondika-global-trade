@@ -599,7 +599,7 @@ export default function Modals() {
     }
   }, [activeModal, invoiceRefSeq]);
 
-  const compInitials = (activeCompany?.name || 'ADIDEV SMART SOLUTION').split(' ').map(w => w[0]).join('').toUpperCase();
+  const compInitials = (activeCompany?.name || 'Atsondika Global Trade').split(' ').map(w => w[0]).join('').toUpperCase();
   const typeTag = documentType === 'jobwork' ? '/JW/' : (invoiceTradeMode === 'export' ? '/EXP/' : '/DOM/');
   const stableInvoiceRefNo = `${compInitials}${typeTag}${invoiceRefSeq || '878129'}`;
 
@@ -4161,7 +4161,7 @@ export default function Modals() {
                   className="form-control"
                   value={compNameInput}
                   onChange={(e) => setCompNameInput(e.target.value)}
-                  placeholder="e.g. ADIDEV SMART SOLUTION / Shree System Tec"
+                  placeholder="e.g. Shree System Tec / Adidev Agro Exports"
                   required
                 />
               </div>
@@ -8493,7 +8493,7 @@ export default function Modals() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '3px solid #0f766e', paddingBottom: '16px', marginBottom: '20px' }}>
                     <div>
                       <h1 style={{ margin: 0, fontSize: '1.6rem', color: '#0f766e', fontWeight: 900 }}>
-                        {activeCompany?.name || 'ADIDEV SMART SOLUTION'}
+                        {activeCompany?.name || 'Atsondika Global Trade'}
                       </h1>
                       <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569', fontWeight: 700 }}>
                         {activeCompany?.tagline || 'Government of India Certified Global Exporter & Domestic Supplier'}
@@ -8745,7 +8745,7 @@ export default function Modals() {
                   {/* Authorized Signatory Stamp Box */}
                   <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '16px', borderTop: '1px dashed #cbd5e1' }}>
                     <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                      <div>Verified Official Documentation • {activeCompany?.name || 'ADIDEV SMART SOLUTION'}</div>
+                      <div>Verified Official Documentation • {activeCompany?.name || 'Atsondika Global Trade'}</div>
                       <div>{activeCompany?.address || 'Surat, Gujarat, India'}</div>
                     </div>
                     <div style={{ textAlign: 'center', border: '2px dashed #0f766e', padding: '12px 24px', borderRadius: '8px', position: 'relative', minWidth: '210px', background: '#f0fdf4' }}>
@@ -8770,7 +8770,7 @@ export default function Modals() {
                           }}
                         />
                       )}
-                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f766e' }}>{activeCompany?.name || 'ADIDEV SMART SOLUTION'}</div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f766e' }}>{activeCompany?.name || 'Atsondika Global Trade'}</div>
                       <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '2px', fontWeight: 700 }}>Authorized Signatory & Digital Seal</div>
                     </div>
                   </div>
