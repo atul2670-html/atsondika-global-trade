@@ -3944,7 +3944,7 @@ export default function Modals() {
                       borderRadius: '8px',
                       border: '1px solid rgba(16, 185, 129, 0.25)'
                     }}>
-                      <span>🛡️ આપણી મુખ્ય કંપની (Atsondika Global Trade) ક્યારેય ડિલીટ થશે નહીં (તમામ વિગતો મુક્તપણે એડિટ કરી શકાય છે)</span>
+                      <span>🛡️ આપણી મુખ્ય કંપની ({compNameInput || targetComp?.name || "મુખ્ય કંપની"}) ક્યારેય ડિલીટ થશે નહીં (તમામ વિગતો મુક્તપણે એડિટ કરી શકાય છે)</span>
                     </div>
                   ) : (
                     <button

@@ -1408,6 +1408,61 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
+/* --- DIRECT TO TOP FLOATING BUTTON (NEAR WHATSAPP) --- */
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 104px;
+  right: 34px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+  border: 2px solid rgba(45, 212, 191, 0.55);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45), 0 0 14px rgba(45, 212, 191, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1490;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 1px;
+  padding: 0;
+  outline: none;
+}
+.scroll-to-top-btn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 28px rgba(13, 148, 136, 0.65), 0 0 22px rgba(45, 212, 191, 0.6);
+  border-color: #5eead4;
+}
+.scroll-to-top-btn:active {
+  transform: scale(0.94);
+}
+.scroll-to-top-label {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  line-height: 1;
+  text-transform: uppercase;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+@media (max-width: 640px) {
+  .floating-widget-btn {
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+  .scroll-to-top-btn {
+    bottom: 86px !important;
+    right: 24px !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
 /* --- FLOATING AI CHAT & WHATSAPP WIDGET --- */
 .floating-widget-btn {
   position: fixed; bottom: 30px; right: 30px;
@@ -1425,7 +1480,7 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
 @keyframes pulseGlow { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.7); opacity: 0; } }
 
 .ai-chat-drawer {
-  position: fixed; bottom: 105px; right: 30px;
+  position: fixed; bottom: 172px; right: 30px;
   width: 360px;
   background: var(--bg-card);
   backdrop-filter: blur(24px);

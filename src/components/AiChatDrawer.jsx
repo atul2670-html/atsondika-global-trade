@@ -10,12 +10,50 @@ export default function AiChatDrawer() {
   const phone = activeCompany?.phone || '+91 78619 97755';
   const cleanPhone = phone.replace(/[^0-9]/g, '');
 
+    const scrollToTop = () => {
+    try {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
+  };
+
   const openWhatsApp = (msg) => {
     window.open(`https://wa.me/${cleanPhone || '917861997755'}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   return (
     <>
+            {/* DIRECT TO TOP FLOATING BUTTON (Placed right near/above WhatsApp Logo) */}
+      <button
+        type="button"
+        className="scroll-to-top-btn"
+        onClick={scrollToTop}
+        title={isGu ? "ડાઈરેક્ટ ટોપ પર જાઓ (Direct to Top)" : "Direct to Top"}
+        aria-label="Direct to Top"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
+        >
+          <polyline points="18 15 12 9 6 15" />
+        </svg>
+        <span className="scroll-to-top-label">
+          {isGu ? 'ટોપ' : 'TOP'}
+        </span>
+      </button>
+
       <button
         type="button"
         className="floating-widget-btn"

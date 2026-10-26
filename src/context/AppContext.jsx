@@ -1518,6 +1518,27 @@ export function AppProvider({ children }) {
   // Active Company Helper
   const activeCompany = companiesList.find(c => c.id === activeCompanyId) || companiesList[0];
 
+  // Dynamic Document Title & Meta Tags:
+  // Reflects whichever company is currently active or edited main company
+  useEffect(() => {
+    const mainComp = (Array.isArray(companiesList) && companiesList[0]) || defaultCompanyProfiles[0];
+    const compToShow = activeCompany || mainComp;
+    const compName = compToShow?.name || mainComp?.name || 'Atsondika Global Trade';
+    const dynamicTitle = `${compName} | Premium Global Exporter | Surat, Gujarat`;
+
+    if (typeof document !== 'undefined') {
+      if (document.title !== dynamicTitle) {
+        document.title = dynamicTitle;
+      }
+      const appleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+      if (appleMeta) appleMeta.setAttribute('content', compName);
+      const ogTitleMeta = document.querySelector('meta[property="og:title"]');
+      if (ogTitleMeta) ogTitleMeta.setAttribute('content', dynamicTitle);
+      const ogSiteMeta = document.querySelector('meta[property="og:site_name"]');
+      if (ogSiteMeta) ogSiteMeta.setAttribute('content', compName);
+    }
+  }, [companiesList, activeCompanyId, activeCompany]);
+
   const changeActiveCompany = (id) => {
     setActiveCompanyId(id);
     try { localStorage.setItem('site_active_company_id_v1', id); } catch(e) {}
@@ -1569,15 +1590,13 @@ export function AppProvider({ children }) {
     // અતિ આવશ્યક સુરક્ષા ૨: આપણી મુખ્ય કંપની "Atsondika Global Trade" ક્યારેય ડિલીટ ન થાય
     const primaryCompany = companiesList[0];
     const targetComp = companiesList.find(c => c.id === companyIdToDelete);
-    const isTargetAtsondika = (
+    const isTargetPrimary = (
       companyIdToDelete === 'comp_1' ||
-      companyIdToDelete === primaryCompany?.id ||
-      (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika')) ||
-      (primaryCompany?.name && primaryCompany.name.toLowerCase().includes('atsondika') && companyIdToDelete === primaryCompany.id)
+      companyIdToDelete === primaryCompany?.id
     );
 
-    if (isTargetAtsondika) {
-      alert("⚠️ અતિ આવશ્યક સુરક્ષા:\n'Atsondika Global Trade' આપણી કાયમી મુખ્ય કંપની (Primary Company) છે! મુખ્ય કંપનીને ક્યારેય ડિલીટ કરી શકાતી નથી. માત્ર સિસ્ટર કંપનીઓ જ ડિલીટ થઈ શકે છે. તમે મુખ્ય કંપનીની તમામ વિગતો મુક્તપણે એડિટ કરી શકો છો.");
+    if (isTargetPrimary) {
+      alert(`⚠️ અતિ આવશ્યક સુરક્ષા:\n'${primaryCompany?.name || 'મુખ્ય કંપની'}' આપણી કાયમી મુખ્ય કંપની (Primary Company) છે! મુખ્ય કંપનીને ક્યારેય ડિલીટ કરી શકાતી નથી. માત્ર સિસ્ટર કંપનીઓ જ ડિલીટ થઈ શકે છે. તમે મુખ્ય કંપનીની તમામ વિગતો મુક્તપણે એડિટ કરી શકો છો.`);
       return false;
     }
 
