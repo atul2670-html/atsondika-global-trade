@@ -1568,8 +1568,8 @@ export default function ProductsGrid() {
                       </button>
                     )}
 
-                    {/* PRODUCT CARD FOOTER ACTION BUTTONS (DIRECT B2B BULK DEAL & PROFORMA QUOTE) */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                    {/* PRODUCT CARD FOOTER ACTION BUTTONS (2-LINE GRID: 2 BUTTONS ON ROW 1, 1 HALF-LENGTH BUTTON ON ROW 2) */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: 'auto', paddingTop: '10px' }}>
 
                       {(() => {
                         const isSelected = (selectedRfqProducts || []).some(sp => sp.id === p.id);
@@ -1581,9 +1581,13 @@ export default function ProductsGrid() {
                             style={{
                               width: '100%',
                               justifyContent: 'center',
-                              fontSize: '0.82rem',
-                              padding: '8px 12px',
+                              fontSize: '0.74rem',
+                              fontWeight: 800,
+                              padding: '7px 4px',
                               whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              lineHeight: '1.2',
                               background: isSelected ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined
                             }}
                             onClick={() => {
@@ -1591,11 +1595,13 @@ export default function ProductsGrid() {
                               else if (addRfqProduct) addRfqProduct(p);
                               if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
                             }}
-                            title="Export Quote Cart (RFQ)"
-                          >
-                            {isSelected
+                            title={isSelected
                               ? (currentLang === 'gu' ? `✔ એક્સપોર્ટ કોટ કાર્ટ (${selectedRfqProducts.length})` : `✔ Export Quote Cart (${selectedRfqProducts.length})`)
                               : (currentLang === 'gu' ? '🛒 એક્સપોર્ટ કોટ કાર્ટ (RFQ)' : '🛒 Export Quote Cart (RFQ)')}
+                          >
+                            {isSelected
+                              ? (currentLang === 'gu' ? `✔ કાર્ટ (${selectedRfqProducts.length})` : `✔ Cart (${selectedRfqProducts.length})`)
+                              : (currentLang === 'gu' ? '🛒 કોટ કાર્ટ (RFQ)' : '🛒 Quote Cart (RFQ)')}
                           </button>
                         );
                       })()}
@@ -1608,10 +1614,13 @@ export default function ProductsGrid() {
                           justifyContent: 'center',
                           color: '#38bdf8',
                           borderColor: 'rgba(56, 189, 248, 0.4)',
-                          padding: '7px 12px',
-                          fontSize: '0.82rem',
+                          padding: '7px 4px',
+                          fontSize: '0.74rem',
                           fontWeight: 800,
-                          whiteSpace: 'nowrap'
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          lineHeight: '1.2'
                         }}
                         onClick={() => {
                           if (addRfqProduct) addRfqProduct(p);
@@ -1626,9 +1635,9 @@ export default function ProductsGrid() {
                             }, 400);
                           }
                         }}
-                        title="Request Official Quotation (RFQ)"
+                        title={currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
                       >
-                        📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
+                        📄 {currentLang === 'gu' ? 'ઓફિશિયલ RFQ' : 'Official RFQ'}
                       </button>
 
                       <button
@@ -1640,10 +1649,13 @@ export default function ProductsGrid() {
                           color: '#2dd4bf',
                           borderColor: 'rgba(45, 212, 191, 0.45)',
                           background: 'rgba(20, 184, 166, 0.1)',
-                          padding: '7px 12px',
-                          fontSize: '0.82rem',
+                          padding: '7px 4px',
+                          fontSize: '0.74rem',
                           fontWeight: 800,
                           whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          lineHeight: '1.2',
                           boxShadow: '0 2px 8px rgba(20, 184, 166, 0.15)'
                         }}
                         onClick={() => {
@@ -1652,12 +1664,12 @@ export default function ProductsGrid() {
                         }}
                         title={currentLang === 'gu' ? 'સેમ્પલ મંગાવો (Request B2B Sample)' : 'Request a Product Sample'}
                       >
-                        📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો (Request Sample)' : 'Request a Sample'}
+                        📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
                       </button>
 
-                      {/* Admin Action Controls (Only visible when Admin is logged in) */}
+                      {/* Admin Action Controls (Spanning full width when Admin is logged in) */}
                       {isAdminLoggedIn && (
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '2px' }}>
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px', paddingTop: '6px', borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
                           <button
                             type="button"
                             className="btn-secondary"
