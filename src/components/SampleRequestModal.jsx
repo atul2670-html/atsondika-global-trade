@@ -291,11 +291,12 @@ export default function SampleRequestModal() {
               {/* Digital Round Stamp & Signatory */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '20px' }}>
                 <div style={{ textAlign: 'center' }}>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: generateDigitalRoundStampSvg(activeCompany?.name || 'ATSONDIKA GLOBAL TRADE') }}
-                    style={{ width: '100px', height: '100px', margin: '0 auto' }}
+                  <img
+                    src={activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name || 'ATSONDIKA GLOBAL TRADE', activeCompany?.apedaReg || activeCompany?.gstin || 'REGISTERED EXPORTER')}
+                    alt="Official Export Seal"
+                    style={{ width: '105px', height: '105px', objectFit: 'contain', margin: '0 auto', display: 'block' }}
                   />
-                  <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 800 }}>
+                  <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 800, marginTop: '4px' }}>
                     OFFICIAL EXPORT SEAL
                   </div>
                 </div>
