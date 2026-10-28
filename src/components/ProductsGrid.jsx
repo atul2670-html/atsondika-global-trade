@@ -788,7 +788,7 @@ export default function ProductsGrid() {
                   <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'પ્રોડક્ટ નામ' : 'Product Image & Title'}</th>
                   <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કેટેગરી / વિભાગ' : 'Category'}</th>
                   <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કિંમત (Price)' : 'Price / MRP'}</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'HS Code & સ્પેસિફિકેશન' : 'HS Code & Specs'}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{tradeMode === 'local' ? (currentLang === 'gu' ? 'ડિટેઇલ & સ્પેસિફિકેશન' : 'Details & Specs') : (currentLang === 'gu' ? 'HS Code & સ્પેસિફિકેશન' : 'HS Code & Specs')}</th>
                   <th style={{ padding: '12px', textAlign: 'center' }}>{currentLang === 'gu' ? 'એક્શન' : 'Action'}</th>
                 </tr>
               </thead>
@@ -800,6 +800,10 @@ export default function ProductsGrid() {
                     ? langTitle
                     : autoTranslateText(enTitle || langTitle, currentLang);
                   const formattedPrice = getProductDisplayPrice(p);
+
+                  const basePriceInr = p.localPrice ? parseFloat(p.localPrice) : (p.priceInr ? parseFloat(p.priceInr) : (p.priceUSD ? parseFloat(p.priceUSD) * (liveRates?.INR || 86.45) : 499 + ((idx + 1) * 160)));
+                  const mrpInr = p.mrpInr ? parseFloat(p.mrpInr) : Math.round(basePriceInr * 1.32);
+                  const rawDisc = mrpInr > basePriceInr ? Math.max(0, ((mrpInr - basePriceInr) / mrpInr) * 100) : 0;
 
                   return (
                     <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -814,14 +818,32 @@ export default function ProductsGrid() {
                       <td style={{ padding: '12px' }}>
                         <div style={{ fontWeight: 900, color: '#4ade80', fontSize: '1rem' }}>{formattedPrice}</div>
                         {tradeMode === 'local' && (
-                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', textDecoration: 'line-through' }}>
-                            M.R.P: {convertPrice ? convertPrice(mrpInr) : '₹' + mrpInr}
+                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', textDecoration: 'line-through', marginTop: '2px' }}>
+                            M.R.P: {convertPrice ? convertPrice(mrpInr, 'INR') : ('₹' + Math.round(mrpInr).toLocaleString('en-IN'))}
+                          </div>
+                        )}
+                        {tradeMode === 'local' && rawDisc > 0 && (
+                          <div style={{ fontSize: '0.72rem', color: '#f87171', fontWeight: 800, marginTop: '2px' }}>
+                            ({Math.round(rawDisc)}% OFF)
                           </div>
                         )}
                       </td>
                       <td style={{ padding: '12px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                        <div>HS Code: <b style={{ color: '#38bdf8' }}>{p.hsCode || '090931'}</b></div>
-                        <div style={{ opacity: 0.85, fontSize: '0.75rem', marginTop: '2px' }}>{p.specifications?.en || 'High Export Quality'}</div>
+                        {tradeMode !== 'local' ? (
+                          <div>HS Code: <b style={{ color: '#38bdf8' }}>{p.hsCode || '090931'}</b></div>
+                        ) : (
+                          <div style={{ color: '#a7f3d0', fontWeight: 600 }}>
+                            {p.unit ? `Unit: 1 ${p.unit}` : 'Retail Pack'}
+                            {p.localStock ? ` • Stock: ${p.localStock}` : ''}
+                          </div>
+                        )}
+                        <div style={{ opacity: 0.85, fontSize: '0.75rem', marginTop: '2px' }}>
+                          {(typeof p.specifications === 'object' && p.specifications?.[currentLang]) ||
+                           (typeof p.spec === 'object' && p.spec?.[currentLang]) ||
+                           (typeof p.specifications === 'string' && p.specifications) ||
+                           (typeof p.spec === 'string' && p.spec) ||
+                           (p.specifications?.en || (currentLang === 'gu' ? 'ઉચ્ચ ગુણવત્તા' : 'High Quality'))}
+                        </div>
                       </td>
                       <td style={{ padding: '12px', textAlign: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', minWidth: '150px' }}>
@@ -856,7 +878,7 @@ export default function ProductsGrid() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if (addToRfqCart) addToRfqCart(p, 1, tradeMode === 'local' ? 'pcs' : 'MT');
+                                  if (addToRfqCart) addToRfqCart(p, 1, tradeMode === 'local' ? (p.unit || 'pcs') : (p.unit || 'MT'), tradeMode === 'local' ? 'LOCAL' : 'EXPORT');
                                   else if (addRfqProduct) addRfqProduct(p);
                                   if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
                                 }}
@@ -864,9 +886,9 @@ export default function ProductsGrid() {
                                   width: '100%',
                                   background: isSelected
                                     ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                    : (tradeMode === 'local' ? 'linear-gradient(135deg, #ff9900, #e67e22)' : 'linear-gradient(135deg, #14b8a6, #0d9488)'),
-                                  color: (isSelected || tradeMode !== 'local') ? '#fff' : '#000',
-                                  border: 'none',
+                                    : (tradeMode === 'local' ? '#ffd814' : 'linear-gradient(135deg, #14b8a6, #0d9488)'),
+                                  color: (isSelected || tradeMode !== 'local') ? '#fff' : '#0F1111',
+                                  border: tradeMode === 'local' ? '1px solid #fcd200' : 'none',
                                   padding: '7px 12px',
                                   borderRadius: '8px',
                                   fontWeight: 800,
@@ -874,10 +896,10 @@ export default function ProductsGrid() {
                                   cursor: 'pointer',
                                   whiteSpace: 'nowrap'
                                 }}
-                                title="Export Quote Cart (RFQ)"
+                                title={tradeMode === 'local' ? 'Add to Cart' : 'Export Quote Cart (RFQ)'}
                               >
                                 {isSelected
-                                  ? (currentLang === 'gu' ? `✔ એક્સપોર્ટ કોટ કાર્ટ (${selectedRfqProducts.length})` : `✔ Export Quote Cart (${selectedRfqProducts.length})`)
+                                  ? (currentLang === 'gu' ? `✔ કાર્ટમાં છે (${selectedRfqProducts.length})` : `✔ In Cart (${selectedRfqProducts.length})`)
                                   : (tradeMode === 'local'
                                       ? (currentLang === 'gu' ? '🛒 કાર્ટમાં ઉમેરો' : '🛒 Add to Cart')
                                       : (currentLang === 'gu' ? '🛒 એક્સપોર્ટ કોટ કાર્ટ (RFQ)' : '🛒 Export Quote Cart (RFQ)'))}
@@ -885,38 +907,65 @@ export default function ProductsGrid() {
                             );
                           })()}
 
-                          <button
-                            type="button"
-                            className="btn-secondary"
-                            style={{
-                              width: '100%',
-                              justifyContent: 'center',
-                              color: '#38bdf8',
-                              borderColor: 'rgba(56, 189, 248, 0.4)',
-                              background: 'rgba(15, 23, 42, 0.8)',
-                              padding: '6px 10px',
-                              fontSize: '0.76rem',
-                              fontWeight: 800,
-                              borderRadius: '8px',
-                              whiteSpace: 'nowrap'
-                            }}
-                            onClick={() => {
-                              if (addRfqProduct) addRfqProduct(p);
-                              else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
+                          {tradeMode === 'local' ? (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{
+                                width: '100%',
+                                justifyContent: 'center',
+                                color: '#ffd814',
+                                borderColor: 'rgba(255, 216, 20, 0.4)',
+                                background: 'rgba(255, 216, 20, 0.1)',
+                                padding: '6px 10px',
+                                fontSize: '0.76rem',
+                                fontWeight: 800,
+                                borderRadius: '8px',
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => {
+                                if (addToRfqCart) addToRfqCart(p, 1, (p.unit || 'pcs'), 'LOCAL');
+                                if (setIsRfqDrawerOpen) setIsRfqDrawerOpen(true);
+                              }}
+                              title="Instant Checkout / Buy Now"
+                            >
+                              ⚡ {currentLang === 'gu' ? 'અત્યારે ખરીદો' : 'Buy Now'}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{
+                                width: '100%',
+                                justifyContent: 'center',
+                                color: '#38bdf8',
+                                borderColor: 'rgba(56, 189, 248, 0.4)',
+                                background: 'rgba(15, 23, 42, 0.8)',
+                                padding: '6px 10px',
+                                fontSize: '0.76rem',
+                                fontWeight: 800,
+                                borderRadius: '8px',
+                                whiteSpace: 'nowrap'
+                              }}
+                              onClick={() => {
+                                if (addRfqProduct) addRfqProduct(p);
+                                else if (setSelectedRfqProduct) setSelectedRfqProduct(p);
 
-                              const contactEl = document.querySelector('#contact');
-                              if (contactEl) {
-                                contactEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                setTimeout(() => {
-                                  const inputEl = document.querySelector('#buyer-name-input');
-                                  if (inputEl) inputEl.focus();
-                                }, 400);
-                              }
-                            }}
-                            title="Request Official Quotation (RFQ)"
-                          >
-                            📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
-                          </button>
+                                const contactEl = document.querySelector('#contact');
+                                if (contactEl) {
+                                  contactEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                  setTimeout(() => {
+                                    const inputEl = document.querySelector('#buyer-name-input');
+                                    if (inputEl) inputEl.focus();
+                                  }, 400);
+                                }
+                              }}
+                              title="Request Official Quotation (RFQ)"
+                            >
+                              📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

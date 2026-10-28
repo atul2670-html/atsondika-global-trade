@@ -133,6 +133,76 @@ export default function SampleManagerModal() {
     }
   };
 
+  const handlePrintSampleInvoice = () => {
+    const sheet = document.getElementById('printableSampleManagerInvoice');
+    if (!sheet) {
+      window.print();
+      return;
+    }
+
+    const docTitle = `COMMERCIAL SAMPLE PROFORMA INVOICE - ${activeCompany?.name || 'Atsondika Global Trade'}`;
+    const printWin = window.open('', '_blank', 'width=900,height=800');
+
+    if (printWin) {
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${docTitle}</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            @page { size: A4 portrait; margin: 8mm; }
+            * { box-sizing: border-box; }
+            html, body {
+              background: #ffffff !important;
+              color: #111827 !important;
+              margin: 0;
+              padding: 12px;
+              font-family: serif;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            #printableSampleManagerInvoice {
+              width: 100% !important;
+              max-width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              border: none !important;
+            }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 14px; page-break-inside: avoid; }
+            th { background-color: #f3f4f6 !important; color: #111827 !important; padding: 6px; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact; border-top: 1px solid #111827; border-bottom: 1px solid #111827; }
+            td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; }
+            img { max-width: 100%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @media print {
+              body { padding: 0; }
+              #printableSampleManagerInvoice { padding: 0 !important; }
+            }
+          </style>
+        </head>
+        <body>
+          ${sheet.outerHTML}
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 300);
+            };
+          </script>
+        </body>
+        </html>
+      `);
+      printWin.document.close();
+    } else {
+      document.body.classList.add('printing-sample-invoice');
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove('printing-sample-invoice');
+      }, 1000);
+    }
+  };
+
   return (
     <div className="modal-backdrop show" style={{ zIndex: 10000 }} onClick={() => setActiveModal(null)}>
       <div
@@ -161,6 +231,7 @@ export default function SampleManagerModal() {
         {/* CUSTOMS INVOICE PREVIEW MODAL */}
         {invoicePreviewSample && (
           <div
+            className="sample-invoice-modal-backdrop"
             style={{
               position: 'fixed',
               top: 0,
@@ -191,14 +262,15 @@ export default function SampleManagerModal() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #e5e7eb', paddingBottom: '12px', marginBottom: '16px', fontFamily: 'sans-serif' }}>
+              {/* Top Controls */}
+              <div className="sample-invoice-top-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #e5e7eb', paddingBottom: '12px', marginBottom: '16px', fontFamily: 'sans-serif' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase' }}>
                   WCO HS 9803 • International Commercial Sample Declaration
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     type="button"
-                    onClick={() => window.print()}
+                    onClick={handlePrintSampleInvoice}
                     style={{ background: '#0284c7', color: 'white', border: 'none', padding: '6px 14px', borderRadius: '6px', fontWeight: 800, cursor: 'pointer', fontSize: '0.82rem' }}
                   >
                     🖨️ Print / Save PDF
@@ -213,100 +285,103 @@ export default function SampleManagerModal() {
                 </div>
               </div>
 
-              <div style={{ textAlign: 'center', borderBottom: '1px solid #111827', paddingBottom: '10px', marginBottom: '14px' }}>
-                <h2 style={{ margin: '0 0 4px 0', fontSize: '1.4rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#000000' }}>
-                  {activeCompany?.name || 'Atsondika Global Trade'}
-                </h2>
-                <div style={{ fontSize: '0.82rem', color: '#4b5563', lineHeight: '1.4' }}>
-                  {activeCompany?.tagline || 'GLOBAL TRADING HOUSE & EXPORT HOUSE'}<br />
-                  {activeCompany?.address || 'Surat, Gujarat, India - 395006'} | Phone: {activeCompany?.phone || '+91 78619 97755'}<br />
-                  Email: {activeCompany?.email || 'info@atsondikaglobaltrade.com'} | GSTIN: {activeCompany?.gstin || '24AAACA0000A1Z5'}
-                </div>
-                <div style={{ marginTop: '8px', display: 'inline-block', background: '#000000', color: '#ffffff', padding: '3px 14px', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>
-                  COMMERCIAL SAMPLE PROFORMA INVOICE
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.82rem', marginBottom: '14px' }}>
-                <div style={{ border: '1px solid #d1d5db', padding: '10px', borderRadius: '6px' }}>
-                  <strong style={{ display: 'block', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '4px', textTransform: 'uppercase', color: '#374151' }}>
-                    Shipper / Exporter:
-                  </strong>
-                  <strong>{activeCompany?.name || 'Atsondika Global Trade'}</strong><br />
-                  {activeCompany?.address || 'Surat, Gujarat, India'}<br />
-                  Origin: <b>INDIA</b>
-                </div>
-
-                <div style={{ border: '1px solid #d1d5db', padding: '10px', borderRadius: '6px' }}>
-                  <strong style={{ display: 'block', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '4px', textTransform: 'uppercase', color: '#374151' }}>
-                    Consignee / Importer:
-                  </strong>
-                  <strong>{invoicePreviewSample.buyerName}</strong> ({invoicePreviewSample.companyName})<br />
-                  {invoicePreviewSample.address}<br />
-                  {invoicePreviewSample.portCity}, <b>{invoicePreviewSample.country}</b><br />
-                  Phone: {invoicePreviewSample.phone} | Email: {invoicePreviewSample.email}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', background: '#f9fafb', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', marginBottom: '14px' }}>
-                <div><b>Sample Invoice:</b> {invoicePreviewSample.id}</div>
-                <div><b>Date:</b> {invoicePreviewSample.date}</div>
-                <div><b>AWB / Tracking:</b> {invoicePreviewSample.trackingNumber || 'PENDING DISPATCH'}</div>
-                <div><b>Courier:</b> {invoicePreviewSample.courierName}</div>
-              </div>
-
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '14px' }}>
-                <thead>
-                  <tr style={{ background: '#f3f4f6', borderTop: '1px solid #111827', borderBottom: '1px solid #111827' }}>
-                    <th style={{ padding: '6px', textAlign: 'left' }}>Item #</th>
-                    <th style={{ padding: '6px', textAlign: 'left' }}>Description of Goods</th>
-                    <th style={{ padding: '6px', textAlign: 'center' }}>HS Tariff Code</th>
-                    <th style={{ padding: '6px', textAlign: 'center' }}>Sample Qty</th>
-                    <th style={{ padding: '6px', textAlign: 'right' }}>Declared Value (USD)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '8px 6px' }}>1</td>
-                    <td style={{ padding: '8px 6px' }}>
-                      <b>{invoicePreviewSample.productName}</b><br />
-                      <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>
-                        Purpose: {invoicePreviewSample.evaluationPurpose}
-                      </span>
-                    </td>
-                    <td style={{ padding: '8px 6px', textAlign: 'center' }}>{invoicePreviewSample.hsCode}</td>
-                    <td style={{ padding: '8px 6px', textAlign: 'center' }}>{invoicePreviewSample.sampleQty}</td>
-                    <td style={{ padding: '8px 6px', textAlign: 'right' }}>$10.00</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div style={{ border: '1px dashed #9ca3af', padding: '10px 12px', fontSize: '0.78rem', background: '#fffbeb', color: '#92400e', marginBottom: '16px', lineHeight: '1.4' }}>
-                <strong>⚠️ LEGAL CUSTOMS DECLARATION:</strong><br />
-                "WE HEREBY DECLARE THAT THE CONTENTS OF THIS SHIPMENT ARE FREE COMMERCIAL SAMPLES OF NO COMMERCIAL VALUE, SENT SOLELY FOR LABORATORY TESTING, INSPECTION AND EVALUATION PURPOSES. VALUE DECLARED HEREIN ($10.00 USD) IS STRICTLY FOR CUSTOMS CLEARANCE PURPOSES ONLY PER WCO HS 9803 REGULATIONS."
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '20px' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <img
-                    src={activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name || 'ATSONDIKA GLOBAL TRADE', activeCompany?.apedaReg || activeCompany?.gstin || 'REGISTERED EXPORTER')}
-                    alt="Official Export Seal"
-                    style={{ width: '105px', height: '105px', objectFit: 'contain', margin: '0 auto', display: 'block' }}
-                  />
-                  <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 800, marginTop: '4px' }}>
-                    OFFICIAL EXPORT SEAL
+              {/* Printable Invoice Sheet */}
+              <div id="printableSampleManagerInvoice">
+                <div style={{ textAlign: 'center', borderBottom: '1px solid #111827', paddingBottom: '10px', marginBottom: '14px' }}>
+                  <h2 style={{ margin: '0 0 4px 0', fontSize: '1.4rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#000000' }}>
+                    {activeCompany?.name || 'Atsondika Global Trade'}
+                  </h2>
+                  <div style={{ fontSize: '0.82rem', color: '#4b5563', lineHeight: '1.4' }}>
+                    {activeCompany?.tagline || 'GLOBAL TRADING HOUSE & EXPORT HOUSE'}<br />
+                    {activeCompany?.address || 'Surat, Gujarat, India - 395006'} | Phone: {activeCompany?.phone || '+91 78619 97755'}<br />
+                    Email: {activeCompany?.email || 'info@atsondikaglobaltrade.com'} | GSTIN: {activeCompany?.gstin || '24AAACA0000A1Z5'}
+                  </div>
+                  <div style={{ marginTop: '8px', display: 'inline-block', background: '#000000', color: '#ffffff', padding: '3px 14px', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>
+                    COMMERCIAL SAMPLE PROFORMA INVOICE
                   </div>
                 </div>
 
-                <div style={{ textAlign: 'right', fontSize: '0.82rem' }}>
-                  <div style={{ fontWeight: 800, color: '#111827', textTransform: 'uppercase' }}>
-                    For {activeCompany?.name || 'Atsondika Global Trade'}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.82rem', marginBottom: '14px' }}>
+                  <div style={{ border: '1px solid #d1d5db', padding: '10px', borderRadius: '6px' }}>
+                    <strong style={{ display: 'block', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '4px', textTransform: 'uppercase', color: '#374151' }}>
+                      Shipper / Exporter:
+                    </strong>
+                    <strong>{activeCompany?.name || 'Atsondika Global Trade'}</strong><br />
+                    {activeCompany?.address || 'Surat, Gujarat, India'}<br />
+                    Origin: <b>INDIA</b>
                   </div>
-                  <div style={{ margin: '14px 0 4px 0', fontSize: '1.1rem', fontFamily: 'cursive', color: '#1e3a8a' }}>
-                    Authorized Signatory
+
+                  <div style={{ border: '1px solid #d1d5db', padding: '10px', borderRadius: '6px' }}>
+                    <strong style={{ display: 'block', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '4px', textTransform: 'uppercase', color: '#374151' }}>
+                      Consignee / Importer:
+                    </strong>
+                    <strong>{invoicePreviewSample.buyerName}</strong> ({invoicePreviewSample.companyName})<br />
+                    {invoicePreviewSample.address}<br />
+                    {invoicePreviewSample.portCity}, <b>{invoicePreviewSample.country}</b><br />
+                    Phone: {invoicePreviewSample.phone} | Email: {invoicePreviewSample.email}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', borderTop: '1px solid #9ca3af', paddingTop: '4px' }}>
-                    Export Director / Documentation Officer
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', background: '#f9fafb', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', marginBottom: '14px' }}>
+                  <div><b>Sample Invoice:</b> {invoicePreviewSample.id}</div>
+                  <div><b>Date:</b> {invoicePreviewSample.date}</div>
+                  <div><b>AWB / Tracking:</b> {invoicePreviewSample.trackingNumber || 'PENDING DISPATCH'}</div>
+                  <div><b>Courier:</b> {invoicePreviewSample.courierName}</div>
+                </div>
+
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '14px' }}>
+                  <thead>
+                    <tr style={{ background: '#f3f4f6', borderTop: '1px solid #111827', borderBottom: '1px solid #111827' }}>
+                      <th style={{ padding: '6px', textAlign: 'left' }}>Item #</th>
+                      <th style={{ padding: '6px', textAlign: 'left' }}>Description of Goods</th>
+                      <th style={{ padding: '6px', textAlign: 'center' }}>HS Tariff Code</th>
+                      <th style={{ padding: '6px', textAlign: 'center' }}>Sample Qty</th>
+                      <th style={{ padding: '6px', textAlign: 'right' }}>Declared Value (USD)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '8px 6px' }}>1</td>
+                      <td style={{ padding: '8px 6px' }}>
+                        <b>{invoicePreviewSample.productName}</b><br />
+                        <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                          Purpose: {invoicePreviewSample.evaluationPurpose}
+                        </span>
+                      </td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>{invoicePreviewSample.hsCode}</td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>{invoicePreviewSample.sampleQty}</td>
+                      <td style={{ padding: '8px 6px', textAlign: 'right' }}>$10.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div style={{ border: '1px dashed #9ca3af', padding: '10px 12px', fontSize: '0.78rem', background: '#fffbeb', color: '#92400e', marginBottom: '16px', lineHeight: '1.4' }}>
+                  <strong>⚠️ LEGAL CUSTOMS DECLARATION:</strong><br />
+                  "WE HEREBY DECLARE THAT THE CONTENTS OF THIS SHIPMENT ARE FREE COMMERCIAL SAMPLES OF NO COMMERCIAL VALUE, SENT SOLELY FOR LABORATORY TESTING, INSPECTION AND EVALUATION PURPOSES. VALUE DECLARED HEREIN ($10.00 USD) IS STRICTLY FOR CUSTOMS CLEARANCE PURPOSES ONLY PER WCO HS 9803 REGULATIONS."
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '20px' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <img
+                      src={activeCompany?.stamp || generateDigitalRoundStampSvg(activeCompany?.name || 'ATSONDIKA GLOBAL TRADE', activeCompany?.apedaReg || activeCompany?.gstin || 'REGISTERED EXPORTER')}
+                      alt="Official Export Seal"
+                      style={{ width: '105px', height: '105px', objectFit: 'contain', margin: '0 auto', display: 'block' }}
+                    />
+                    <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 800, marginTop: '4px' }}>
+                      OFFICIAL EXPORT SEAL
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right', fontSize: '0.82rem' }}>
+                    <div style={{ fontWeight: 800, color: '#111827', textTransform: 'uppercase' }}>
+                      For {activeCompany?.name || 'Atsondika Global Trade'}
+                    </div>
+                    <div style={{ margin: '14px 0 4px 0', fontSize: '1.1rem', fontFamily: 'cursive', color: '#1e3a8a' }}>
+                      Authorized Signatory
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#6b7280', borderTop: '1px solid #9ca3af', paddingTop: '4px' }}>
+                      Export Director / Documentation Officer
+                    </div>
                   </div>
                 </div>
               </div>

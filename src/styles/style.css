@@ -1653,16 +1653,44 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
   }
 
   header, footer, nav, .navbar, .footer, .footer-section,
-  .modal-backdrop, .modal-card, .modal-close, .form-row, .form-group, button, .btn-primary, .btn-secondary,
-  .floating-action-btn, .rfq-drawer-overlay, .rfq-drawer-content, .top-bar {
+  .modal-backdrop:not(.sample-invoice-modal-backdrop), .modal-close, .form-row, .form-group, button, .btn-primary, .btn-secondary,
+  .floating-action-btn, .rfq-drawer-overlay, .rfq-drawer-content, .top-bar, .sample-invoice-top-controls {
     display: none !important;
   }
 
-  #printableProformaSheet, #printableProformaSheet * {
+  .modal-backdrop.sample-invoice-modal-backdrop {
+    display: block !important;
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body.printing-sample-invoice .modal-backdrop,
+  body.printing-sample-invoice .modal-card {
+    display: block !important;
+    position: static !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  #printableProformaSheet, #printableProformaSheet *,
+  #printableSampleCustomsInvoice, #printableSampleCustomsInvoice *,
+  #printableSampleManagerInvoice, #printableSampleManagerInvoice * {
     visibility: visible !important;
   }
 
-  #printableProformaSheet {
+  #printableProformaSheet,
+  #printableSampleCustomsInvoice,
+  #printableSampleManagerInvoice {
     display: block !important;
     position: absolute !important;
     left: 0 !important;
@@ -1679,6 +1707,8 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
     font-size: 11pt !important;
     page-break-inside: avoid !important;
     z-index: 99999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   #printableProformaSheet table {
@@ -4397,12 +4427,15 @@ footer {
 
   /* Hide background elements, navigation, hero, product grid, footers and modal overlays */
   header, footer, nav, .navbar, .hero-section, .products-grid, .section,
-  .modal-backdrop, .modal-close, button, .btn-primary, .btn-secondary {
+  .modal-backdrop:not(.sample-invoice-modal-backdrop), .modal-close, button, .btn-primary, .btn-secondary,
+  .sample-invoice-top-controls {
     display: none !important;
   }
 
   /* Force printable sheet to fill 1 A4 page cleanly */
-  #printableProformaSheet {
+  #printableProformaSheet,
+  #printableSampleCustomsInvoice,
+  #printableSampleManagerInvoice {
     display: block !important;
     position: absolute !important;
     left: 0 !important;
@@ -4417,7 +4450,9 @@ footer {
     page-break-inside: avoid !important;
   }
 
-  #printableProformaSheet * {
+  #printableProformaSheet *,
+  #printableSampleCustomsInvoice *,
+  #printableSampleManagerInvoice * {
     visibility: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -5635,25 +5670,12 @@ body.light-theme .modal-backdrop::-webkit-scrollbar-track {
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  div[style*="font-family: serif"],
-  div[style*="fontFamily: serif"],
-  div[style*="font-family: serif"] *,
-  div[style*="fontFamily: serif"] * {
+  #printableProformaSheet, #printableProformaSheet *,
+  #printableSampleCustomsInvoice, #printableSampleCustomsInvoice *,
+  #printableSampleManagerInvoice, #printableSampleManagerInvoice * {
     visibility: visible !important;
-  }
-  div[style*="font-family: serif"],
-  div[style*="fontFamily: serif"] {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 10px !important;
-    background: #ffffff !important;
-    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
