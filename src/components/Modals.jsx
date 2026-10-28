@@ -7770,16 +7770,58 @@ export default function Modals() {
         const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Commodity';
         const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || prodNameEn;
         const cat = (p.category || '').toLowerCase();
-        const hs = p.hsCode || '09103030';
-        const isAgroSpice = cat.includes('agro') || cat.includes('spice') || p.id.includes('turmeric') || p.id.includes('cumin') || p.id.includes('pepper') || p.id.includes('chilli');
-        const isRice = cat.includes('rice') || cat.includes('grain') || p.id.includes('basmati');
-        const isEngineering = cat.includes('eng') || cat.includes('cnc') || cat.includes('machin') || cat.includes('industrial');
-        const isTextile = cat.includes('text') || cat.includes('garment') || cat.includes('fabric');
-        const isDairy = cat.includes('dairy') || cat.includes('milk');
+        const pId = (p.id || '').toLowerCase();
+        const hs = p.hsCode || p.localHsn || '847130';
+
+        const pNameFull = ((prodNameEn || '') + ' ' + (prodNameGu || '') + ' ' + (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || ''))).toLowerCase();
+
+        // 1. Electronic & Electrical Detection (Automation, PLC, VFD, Electrical Panels, Electronics, Sensors, Cables)
+        const isElectricalElectronic = 
+          cat.includes('elect') || cat.includes('auto') ||
+          pId.includes('elect') || pId.includes('auto') || pId.includes('vfd') || pId.includes('plc') || pId.includes('panel') ||
+          pNameFull.includes('automation') || pNameFull.includes('controller') || pNameFull.includes('electronic') || 
+          pNameFull.includes('electrical') || pNameFull.includes('plc') || pNameFull.includes('vfd') || 
+          pNameFull.includes('inverter') || pNameFull.includes('sensor') || pNameFull.includes('switchgear') || 
+          pNameFull.includes('panel') || pNameFull.includes('circuit') || pNameFull.includes('pcb') || 
+          pNameFull.includes('transformer') || pNameFull.includes('relay') || pNameFull.includes('cable') || 
+          pNameFull.includes('wire') || pNameFull.includes('motor') || pNameFull.includes('power supply') ||
+          pNameFull.includes('ઈલેક્ટ્રોનિક') || pNameFull.includes('ઈલેક્ટ્રીકલ') || pNameFull.includes('ઓટોમેશન') ||
+          pNameFull.includes('કંટ્રોલર') || pNameFull.includes('પેનલ') || pNameFull.includes('મોટર');
+
+        // 2. Agro & Spices
+        const isAgroSpice = !isElectricalElectronic && (cat.includes('agro') || cat.includes('spice') || pId.includes('turmeric') || pId.includes('cumin') || pId.includes('pepper') || pId.includes('chilli'));
+        
+        // 3. Rice & Grains
+        const isRice = !isElectricalElectronic && (cat.includes('rice') || cat.includes('grain') || pId.includes('basmati'));
+        
+        // 4. Packaging
+        const isPackaging = !isElectricalElectronic && (cat.includes('pack') || pId.includes('pack') || pId.includes('bag') || pNameFull.includes('jute') || pNameFull.includes('packaging'));
+
+        // 5. Textile & Garments
+        const isTextile = !isElectricalElectronic && (cat.includes('text') || cat.includes('garment') || cat.includes('fabric') || pNameFull.includes('cotton') || pNameFull.includes('saree'));
+
+        // 6. Dairy
+        const isDairy = !isElectricalElectronic && (cat.includes('dairy') || cat.includes('milk'));
+
+        // 7. Mechanical Engineering & Fasteners (CNC, lathe, bolts, nuts, metal components)
+        const isEngineering = !isElectricalElectronic && (cat.includes('eng') || cat.includes('cnc') || cat.includes('machin') || cat.includes('industrial') || pId.includes('fastener'));
 
         // Parameter list generator
         let testParams = [];
-        if (isAgroSpice) {
+        if (isElectricalElectronic) {
+          testParams = [
+            { param: 'Rated Supply Voltage (ઓપરેટિંગ વોલ્ટેજ)', standard: '230V AC (1-Ph) / 415V AC (3-Ph) ± 10%', result: '415V AC (Stable / Nominal)', method: 'Digital True-RMS Power Analyzer (IEC 60038)' },
+            { param: 'Rated Operating Frequency (આવર્તન / ફ્રિક્વન્સી)', standard: '50 Hz / 60 Hz ± 5% (Pure Waveform)', result: '50.0 Hz (Complies)', method: 'Frequency Spectrum Counter (IEC 60255)' },
+            { param: 'Insulation Resistance (ઇન્સ્યુલેશન રેઝિસ્ટન્સ - IR)', standard: 'Min 100 MΩ @ 500V DC / 1000V DC', result: '> 550 MΩ (High Isolation)', method: 'Calibrated Megohmmeter (IEC 60204-1 / IS 10118)' },
+            { param: 'Dielectric Withstand / Hi-Pot (વીજળીક સહનશક્તિ)', standard: '2.0 kV AC for 60 sec (Zero Breakdown)', result: '2.5 kV AC Passed (Leakage < 0.8 mA)', method: 'High Voltage Breakdown Rig (IEC 60947-1)' },
+            { param: 'Enclosure Ingress Protection (IP પ્રોટેક્શન ગ્રેડ)', standard: 'IP65 / IP66 (Dust-Tight & Water-Jet Proof)', result: 'IP65 Certified (Sealed Enclosure)', method: 'Dust & Water Ingress Chamber (IEC 60529)' },
+            { param: 'Electromagnetic Immunity (EMC / EMI નોઇઝ સપ્રેસન)', standard: 'EN 61000-6-2 (Industrial Immunity) & EN 61000-6-4', result: 'PASSED (High Transient Immunity)', method: 'EMC Anechoic Chamber (CISPR 11 / EN 55011)' },
+            { param: 'Total Harmonic Distortion (THD પાવર ક્વોલિટી)', standard: 'Max THD < 3.0% at Rated Full Load', result: '1.85% THD (Ultra-Low Distortion)', method: 'Fast Fourier Transform (FFT) Analyzer (IEC 61000-3-2)' },
+            { param: 'Full Load Operating Temperature (ઓપરેટિંગ તાપમાન)', standard: 'Ambient -10°C to +55°C (Temp Rise < 40°C)', result: '+31.5°C Thermal Rise (Pass)', method: 'FLIR Calibrated Thermography & RTD' },
+            { param: 'Short Circuit Withstand Capacity (શોર્ટ સર્કિટ રક્ષણ)', standard: '10 kA to 35 kA for 1 second', result: '25 kA / 1 sec (Fully Withstands)', method: 'High Current Testing Rig (IEC 61439-1)' },
+            { param: 'RoHS 2.0 & CE Environmental Safety Directive', standard: '100% Lead-Free & CE Low Voltage Directive (LVD)', result: 'COMPLIES (RoHS Certified / Lead-Free)', method: 'X-ray Fluorescence Spectrometry (IEC 62321)' }
+          ];
+        } else if (isAgroSpice) {
           testParams = [
             { param: 'Physical Appearance & Form', standard: 'Homogeneous Fine Powder / Whole', result: 'Complies', method: 'Visual / Organoleptic' },
             { param: 'Active Purity / Curcuminoids', standard: 'Min 3.0% - 5.0% w/w', result: '3.85% (Certified)', method: 'HPLC / ASTA 18.0' },
@@ -7810,6 +7852,17 @@ export default function Modals() {
             { param: 'Material Hardness (HRC)', standard: '45 - 52 HRC', result: '48.5 HRC', method: 'Rockwell Hardness Tester' },
             { param: 'Tensile Yield Strength', standard: 'Min 520 MPa', result: '585 MPa', method: 'Universal Tensile Testing (UTM)' },
             { param: 'Non-Destructive Testing (NDT)', standard: '100% Defect-Free Surface', result: 'Zero Cracks / Porosity', method: 'Dye Penetrant Inspection (DPI)' }
+          ];
+        } else if (isPackaging) {
+          testParams = [
+            { param: 'Fabric / Material Composition', standard: '100% Eco-Friendly Jute / Virgin PP', result: '100% Complies (Certified)', method: 'Textile Fiber Identification' },
+            { param: 'Fabric Weight / Grammage (GSM)', standard: '300 GSM ± 5% / 10 oz/sq.yd', result: '305 GSM (Heavy Duty)', method: 'GSM Circular Cutter (ASTM D3776)' },
+            { param: 'Tensile Breaking Strength (Warp)', standard: 'Min 1200 N / 50 mm strip', result: '1350 N (High Tensile)', method: 'Strip Tensile Test (IS 1969)' },
+            { param: 'Tensile Breaking Strength (Weft)', standard: 'Min 950 N / 50 mm strip', result: '1080 N', method: 'Strip Tensile Test (IS 1969)' },
+            { param: 'Seam & Stitching Strength', standard: 'Min 450 N (Double Lock Stitch)', result: '520 N (Reinforced)', method: 'Seam Strength Tester' },
+            { param: 'Moisture Regain / Content', standard: 'Max 14.0% w/w', result: '12.5% w/w', method: 'Oven Drying Method (IS 1964)' },
+            { param: 'Safe Working Load (SWL)', standard: 'Rated for 25kg / 50kg / 1000kg', result: 'Tested at 5:1 Safety Factor', method: 'Cyclic Top-Lift Load Test' },
+            { param: 'Food Grade & Hydrocarbon-Free', standard: 'Zero Mineral Oil / Hydrocarbon residue', result: 'COMPLIES (Food Grade Oil Used)', method: 'GC-FID Hydrocarbon Analysis' }
           ];
         } else if (isTextile) {
           testParams = [
@@ -7924,7 +7977,7 @@ export default function Modals() {
                       📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
                     </p>
                     <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
-                      GSTIN: {gstin} | Export License / APEDA: {apedaReg}
+                      GSTIN: {gstin} | {isElectricalElectronic ? 'Export License / IEC & CE Reg:' : (isEngineering ? 'Export License / EEPC & ISO Reg:' : (isPackaging ? 'Export License / ISO Reg:' : 'Export License / APEDA:'))} {apedaReg}
                     </p>
                   </div>
 
@@ -7997,37 +8050,105 @@ export default function Modals() {
                   </table>
                 </div>
 
-                {/* Storage & Shelf Life Notes */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', background: '#f0fdfa', padding: '14px 18px', borderRadius: '8px', border: '1px solid #99f6e4', fontSize: '0.8rem', marginBottom: '22px' }}>
+                {/* Storage & Shelf Life / Operating Environment Notes */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', background: isElectricalElectronic ? '#f0fdf4' : '#f0fdfa', padding: '14px 18px', borderRadius: '8px', border: `1px solid ${isElectricalElectronic ? '#86efac' : '#99f6e4'}`, fontSize: '0.8rem', marginBottom: '22px' }}>
                   <div>
-                    <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🌿 STORAGE & PRESERVATION INSTRUCTIONS:</strong>
-                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                      Store in a cool, dry, well-ventilated area away from direct sunlight, moisture, and pungent odors. Recommended storage temperature below 25°C with relative humidity below 60%.
-                    </div>
+                    {isElectricalElectronic ? (
+                      <>
+                        <strong style={{ color: '#047857', display: 'block', marginBottom: '4px' }}>⚡ OPERATING ENVIRONMENT & INSTALLATION GUIDELINES:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Operate in clean, indoor industrial environment. Ambient operating temperature: -10°C to +55°C; Relative humidity &lt; 90% (non-condensing). Solid low-impedance copper earth grounding (&lt; 2.0 Ω) and surge suppression (SPD) required.
+                        </div>
+                      </>
+                    ) : isEngineering ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>⚙️ STORAGE, HANDLING & CORROSION PREVENTION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Store in dry indoor warehouse wrapped in VCI anti-corrosion barrier film. Keep away from water splashing, corrosive acid mists, and extreme thermal cycling. Coated with export grade rust-preventive oil.
+                        </div>
+                      </>
+                    ) : isPackaging ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>📦 STORAGE & MOISTURE PROTECTION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Store indoors on elevated wooden/plastic pallets in dry, well-ventilated warehouse. Keep away from direct dampness, open flame, and rodent-prone areas. Maintain relative humidity below 65%.
+                        </div>
+                      </>
+                    ) : isTextile ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🧶 STORAGE & FABRIC CARE INSTRUCTIONS:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Store in clean, dust-free dry warehouse. Keep cartons or rolls wrapped and elevated on pallets. Avoid exposure to damp moisture, mildew, or direct sunlight to prevent discoloration.
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🌿 STORAGE & PRESERVATION INSTRUCTIONS:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Store in a cool, dry, well-ventilated area away from direct sunlight, moisture, and pungent odors. Recommended storage temperature below 25°C with relative humidity below 60%.
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div>
-                    <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ QUALITY DECLARATION:</strong>
-                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                      Certified 100% free from unauthorized pesticides, artificial colors, and synthetic adulterants. Fit for human consumption / export under international trade compliance.
-                    </div>
+                    {isElectricalElectronic ? (
+                      <>
+                        <strong style={{ color: '#047857', display: 'block', marginBottom: '4px' }}>🛡️ ELECTRICAL SAFETY & QUALITY DECLARATION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Certified 100% compliant with IEC 60204-1, CE Low Voltage Directive (LVD) &amp; RoHS 2.0. 100% pre-tested with 72-hour full-load burn-in cycle. Zero manufacturing defects. Safe for international industrial deployment.
+                        </div>
+                      </>
+                    ) : isEngineering ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ METALLURGICAL & PRECISION DECLARATION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Certified 100% manufactured from genuine mill-certified alloys (EN 10204 3.1). Free from cracks, internal voids, or dimensional defects. Conforms to ISO 2768 international precision standards.
+                        </div>
+                      </>
+                    ) : isPackaging ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ PACKAGING COMPLIANCE DECLARATION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Certified manufactured from 100% eco-friendly, virgin food-grade raw materials. Zero harmful mineral oil hydrocarbons (MOSH/MOAH) and heavy metals. Conforms to ISO 22000 &amp; FDA export packaging norms.
+                        </div>
+                      </>
+                    ) : isTextile ? (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ TEXTILE QUALITY & SAFETY DECLARATION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Certified 100% free from banned azo dyes, formaldehyde, and harmful amines. OEKO-TEX Standard 100 compliant. Pre-shrunk and color-fast for international export.
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ QUALITY DECLARATION:</strong>
+                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                          Certified 100% free from unauthorized pesticides, artificial colors, and synthetic adulterants. Fit for human consumption / export under international trade compliance.
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* Stamp & Authorized Signature */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '2px solid #e2e8f0' }}>
                   <div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', border: '1px dashed #0f766e', background: 'rgba(15, 118, 110, 0.05)', color: '#0f766e', fontSize: '0.78rem', fontWeight: 800 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', border: `1px dashed ${isElectricalElectronic ? '#059669' : '#0f766e'}`, background: isElectricalElectronic ? 'rgba(5, 150, 105, 0.08)' : 'rgba(15, 118, 110, 0.05)', color: isElectricalElectronic ? '#047857' : '#0f766e', fontSize: '0.78rem', fontWeight: 800 }}>
                       🏵️ OFFICIALLY VERIFIED & AUDITED QUALITY CONTROL SEAL
                     </div>
                     <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
-                      Third-Party PSI Inspection allowed by SGS / Bureau Veritas prior to loading.
+                      {isElectricalElectronic
+                        ? 'Pre-Dispatch Routine & Type Testing completed as per IEC/CE standards. Third-Party PSI (TUV / SGS / BV) allowed.'
+                        : 'Third-Party PSI Inspection allowed by SGS / Bureau Veritas prior to loading.'}
                     </div>
                   </div>
 
                   <div style={{ textAlign: 'center', minWidth: '180px' }}>
                     <div style={{ borderBottom: '1px solid #475569', width: '160px', margin: '0 auto 6px auto' }}></div>
                     <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>Authorized Quality Signatory</strong>
-                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>Chief QC Officer | {compName}</span>
+                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                      {isElectricalElectronic ? 'Lead QA/QC Automation & Electrical Engineer' : 'Chief QC Officer'} | {compName}
+                    </span>
                   </div>
                 </div>
 
