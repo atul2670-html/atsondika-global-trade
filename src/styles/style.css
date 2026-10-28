@@ -1654,7 +1654,7 @@ body.light-theme div[style*="justify-content: center"] .tab-btn.active {
 
   header, footer, nav, .navbar, .footer, .footer-section,
   .modal-backdrop:not(.sample-invoice-modal-backdrop), .modal-close, .form-row, .form-group, button, .btn-primary, .btn-secondary,
-  .floating-action-btn, .rfq-drawer-overlay, .rfq-drawer-content, .top-bar, .sample-invoice-top-controls {
+  .floating-action-btn, .rfq-drawer-overlay, .rfq-drawer-content, .top-bar, .sample-invoice-top-controls, .sample-invoice-bottom-controls {
     display: none !important;
   }
 
@@ -4428,7 +4428,7 @@ footer {
   /* Hide background elements, navigation, hero, product grid, footers and modal overlays */
   header, footer, nav, .navbar, .hero-section, .products-grid, .section,
   .modal-backdrop:not(.sample-invoice-modal-backdrop), .modal-close, button, .btn-primary, .btn-secondary,
-  .sample-invoice-top-controls {
+  .sample-invoice-top-controls, .sample-invoice-bottom-controls {
     display: none !important;
   }
 
