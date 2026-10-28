@@ -6,7 +6,7 @@ import FlagIcon from './FlagIcon';
 
 export default function Navbar() {
   const {
-    isEngineeringUnitEnabled,
+    isEngineeringUnitEnabled, isTradeSecurityEnabled, isOemPackagingEnabled,
     currentLang, setCurrentLang, t,
     isAdminLoggedIn, setIsAdminLoggedIn, setActiveModal,
     activeCompany, companiesList, activeCompanyId, setActiveCompanyId,
@@ -543,8 +543,10 @@ export default function Navbar() {
               <li><a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_about}</a></li>
               <li><a href="#products" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_products}</a></li>
               {isEngineeringUnitEnabled && (<li><a href="#engineering" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_engineering || (currentLang === 'gu' ? 'એન્જિનિયરિંગ & CNC' : 'Engineering & CNC')}</a></li>)}
+              {isOemPackagingEnabled && (<li><a href="#oem-packaging" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{currentLang === 'gu' ? 'કસ્ટમ પેકિંગ' : 'Packaging'}</a></li>)}
               <li><a href="#calc" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Calculator</a></li>
               <li><a href="#quality" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_quality}</a></li>
+              {isTradeSecurityEnabled && (<li><a href="#trade-security" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{currentLang === 'gu' ? 'ટ્રેડ સિક્યુરિટી' : 'Security'}</a></li>)}
               <li><a href="#branches" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_branches}</a></li>
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>
             </ul>

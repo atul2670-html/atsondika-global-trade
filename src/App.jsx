@@ -7,6 +7,8 @@ import ProductsGrid from './components/ProductsGrid';
 import ContainerCalculator from './components/ContainerCalculator';
 import CertificatesSection from './components/CertificatesSection';
 import BranchOfficesSection from './components/BranchOfficesSection';
+import TradeSecuritySection from './components/TradeSecuritySection';
+import OemPackagingSection from './components/OemPackagingSection';
 import ContactForm from './components/ContactForm';
 import AiChatDrawer from './components/AiChatDrawer';
 import Modals from './components/Modals';
@@ -16,7 +18,7 @@ import SampleRequestModal from './components/SampleRequestModal';
 import { useApp } from './context/AppContext';
 
 export default function App() {
-  const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast, isEngineeringUnitEnabled } = useApp();
+  const { t, activeCompany, getMainCategoryList, setCurrentCategory, currentLang, liveToast, isEngineeringUnitEnabled, isTradeSecurityEnabled, isOemPackagingEnabled } = useApp();
 
   return (
     <>
@@ -33,9 +35,11 @@ export default function App() {
         <Hero />
         <About />
         <ProductsGrid />
+        {isOemPackagingEnabled && <OemPackagingSection />}
         {isEngineeringUnitEnabled && <EngineeringSection />}
         <ContainerCalculator />
         <CertificatesSection />
+        {isTradeSecurityEnabled && <TradeSecuritySection />}
         <BranchOfficesSection />
 
         <ContactForm />

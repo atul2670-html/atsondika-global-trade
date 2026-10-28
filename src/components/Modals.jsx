@@ -145,7 +145,9 @@ export default function Modals() {
     paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
     sampleRequestsList,
     activeIncoterm, setActiveIncoterm,
-    isCodEnabled, toggleCodEnabled, isEngineeringUnitEnabled, toggleEngineeringUnit
+    isCodEnabled, toggleCodEnabled, isEngineeringUnitEnabled, toggleEngineeringUnit,
+    isTradeSecurityEnabled, toggleTradeSecurity, isOemPackagingEnabled, toggleOemPackaging,
+    selectedCoaProduct, setSelectedCoaProduct, setActiveSampleProduct, setIsSampleModalOpen
   } = useApp();
 
   // Admin Seller & Product Approval Control Modal State
@@ -476,6 +478,7 @@ export default function Modals() {
   const [buyerEmailInput, setBuyerEmailInput] = useState('');
   const [includeBankDetailsInInvoice, setIncludeBankDetailsInInvoice] = useState(true);
   const [includeStampInInvoice, setIncludeStampInInvoice] = useState(true);
+  const [exportPaymentMethod, setExportPaymentMethod] = useState('lc_sight');
   const [invoiceTradeMode, setInvoiceTradeMode] = useState('export'); // 'export' | 'interstate' | 'intrastate'
   const [documentType, setDocumentType] = useState('proforma'); // 'proforma' | 'tax_invoice' | 'jobwork'
   const [invoiceRefNo, setInvoiceRefNo] = useState('AGT/EXP/878129');
@@ -2114,6 +2117,106 @@ export default function Modals() {
                   flexShrink: 0
                 }}>
                   {isEngineeringUnitEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
+                </span>
+              </button>
+
+              {/* 100% SAFE GLOBAL TRADE & PAYMENT SECURITY TOGGLE SWITCH */}
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  padding: '14px 18px',
+                  justifyContent: 'space-between',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: isTradeSecurityEnabled ? 'linear-gradient(135deg, #0d9488, #059669)' : 'linear-gradient(135deg, #475569, #334155)',
+                  boxShadow: isTradeSecurityEnabled ? '0 4px 16px rgba(13, 148, 136, 0.4)' : 'none',
+                  border: isTradeSecurityEnabled ? '1px solid rgba(45, 212, 191, 0.5)' : '1px solid rgba(255,255,255,0.15)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  if (toggleTradeSecurity) toggleTradeSecurity();
+                }}
+                title={isTradeSecurityEnabled ? "Click to Switch OFF Trade Security Section" : "Click to Switch ON Trade Security Section"}
+              >
+                <div>
+                  <div style={{ color: '#ffffff', fontWeight: 900 }}>
+                    🛡️ ૧૦૦% ટ્રેડ સિક્યુરિટી & પેમેન્ટ સુરક્ષા (Trade Security)
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: isTradeSecurityEnabled ? '#ccfbf1' : '#cbd5e1', fontWeight: 600, marginTop: '2px' }}>
+                    {isTradeSecurityEnabled
+                      ? (currentLang === 'gu' ? 'વેબસાઇટ પર ચાલુ છે (Live & Active)' : 'Active on Website')
+                      : (currentLang === 'gu' ? 'વેબસાઇટ પર બંધ છે (Hidden & Inactive)' : 'Hidden on Website')}
+                  </div>
+                </div>
+                <span style={{
+                  padding: '4px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  fontWeight: 900,
+                  background: isTradeSecurityEnabled ? '#14b8a6' : '#ef4444',
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  flexShrink: 0
+                }}>
+                  {isTradeSecurityEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
+                </span>
+              </button>
+
+              {/* PRIVATE LABEL & OEM PACKAGING TOGGLE SWITCH */}
+              <button
+                type="button"
+                className="btn-primary"
+                style={{
+                  padding: '14px 18px',
+                  justifyContent: 'space-between',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  background: isOemPackagingEnabled ? 'linear-gradient(135deg, #eab308, #ca8a04)' : 'linear-gradient(135deg, #475569, #334155)',
+                  boxShadow: isOemPackagingEnabled ? '0 4px 16px rgba(234, 179, 8, 0.4)' : 'none',
+                  border: isOemPackagingEnabled ? '1px solid rgba(250, 204, 21, 0.5)' : '1px solid rgba(255,255,255,0.15)',
+                  whiteSpace: 'normal',
+                  textAlign: 'left',
+                  lineHeight: '1.35',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  if (toggleOemPackaging) toggleOemPackaging();
+                }}
+                title={isOemPackagingEnabled ? "Click to Switch OFF OEM Packaging Section" : "Click to Switch ON OEM Packaging Section"}
+              >
+                <div>
+                  <div style={{ color: isOemPackagingEnabled ? '#000000' : '#ffffff', fontWeight: 900 }}>
+                    📦 પ્રાઇવેટ લેબલિંગ & OEM પેકિંગ (Private Label & OEM)
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: isOemPackagingEnabled ? '#713f12' : '#cbd5e1', fontWeight: 700, marginTop: '2px' }}>
+                    {isOemPackagingEnabled
+                      ? (currentLang === 'gu' ? 'વેબસાઇટ પર ચાલુ છે (Live & Active)' : 'Active on Website')
+                      : (currentLang === 'gu' ? 'વેબસાઇટ પર બંધ છે (Hidden & Inactive)' : 'Hidden on Website')}
+                  </div>
+                </div>
+                <span style={{
+                  padding: '4px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  fontWeight: 900,
+                  background: isOemPackagingEnabled ? '#0f172a' : '#ef4444',
+                  color: isOemPackagingEnabled ? '#facc15' : '#ffffff',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  flexShrink: 0
+                }}>
+                  {isOemPackagingEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
                 </span>
               </button>
 
@@ -7661,6 +7764,279 @@ export default function Modals() {
         </div>
       )}
 
+      {/* PRODUCT TECHNICAL SPEC SHEET & CERTIFICATE OF ANALYSIS (COA) MODAL */}
+      {activeModal === 'product_coa' && selectedCoaProduct && (() => {
+        const p = selectedCoaProduct;
+        const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Commodity';
+        const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || prodNameEn;
+        const cat = (p.category || '').toLowerCase();
+        const hs = p.hsCode || '09103030';
+        const isAgroSpice = cat.includes('agro') || cat.includes('spice') || p.id.includes('turmeric') || p.id.includes('cumin') || p.id.includes('pepper') || p.id.includes('chilli');
+        const isRice = cat.includes('rice') || cat.includes('grain') || p.id.includes('basmati');
+        const isEngineering = cat.includes('eng') || cat.includes('cnc') || cat.includes('machin') || cat.includes('industrial');
+        const isTextile = cat.includes('text') || cat.includes('garment') || cat.includes('fabric');
+        const isDairy = cat.includes('dairy') || cat.includes('milk');
+
+        // Parameter list generator
+        let testParams = [];
+        if (isAgroSpice) {
+          testParams = [
+            { param: 'Physical Appearance & Form', standard: 'Homogeneous Fine Powder / Whole', result: 'Complies', method: 'Visual / Organoleptic' },
+            { param: 'Active Purity / Curcuminoids', standard: 'Min 3.0% - 5.0% w/w', result: '3.85% (Certified)', method: 'HPLC / ASTA 18.0' },
+            { param: 'Moisture Content', standard: 'Max 10.0% w/w', result: '7.8% (Dry Basis)', method: 'Vacuum Oven (AOAC 925.10)' },
+            { param: 'Total Ash Content', standard: 'Max 7.0% w/w', result: '5.2% w/w', method: 'Muffle Furnace @ 550°C' },
+            { param: 'Acid Insoluble Ash', standard: 'Max 1.0% w/w', result: '0.42% w/w', method: 'Gravimetric (IS 1797)' },
+            { param: 'Volatile Oil Content', standard: 'Min 2.5% - 3.5% v/w', result: '3.1% v/w', method: 'Steam Distillation (Clevenger)' },
+            { param: 'Granulation / Fineness', standard: 'Min 95% pass through 80 Mesh', result: '98.5% Pass', method: 'Sieve Analysis' },
+            { param: 'Extraneous Foreign Matter', standard: 'Max 0.5% w/w', result: 'NIL (Sortex Cleaned)', method: 'Manual Inspection' },
+            { param: 'Aflatoxin (B1+B2+G1+G2)', standard: 'Max 10.0 ppb (EU Regulation)', result: '< 2.0 ppb (Complies)', method: 'LC-MS/MS' },
+            { param: 'Salmonella & E. Coli', standard: 'Absent in 25 grams', result: 'NEGATIVE (Safe)', method: 'Microbiological Culture' }
+          ];
+        } else if (isRice) {
+          testParams = [
+            { param: 'Average Grain Length (AGL)', standard: 'Min 8.35 mm (Pre-cooked)', result: '8.42 mm (Extra Long)', method: 'Digital Vernier Caliper' },
+            { param: 'Moisture Content', standard: 'Max 12.0% w/w', result: '11.2% w/w', method: 'Air Oven Method' },
+            { param: 'Broken / Damaged Grains', standard: 'Max 1.0% w/w', result: '0.4% w/w', method: 'Electronic Length Grader' },
+            { param: 'Foreign Matter & Paddy Grains', standard: 'Max 0.1% / NIL', result: 'NIL (100% Sortexed)', method: 'Gravity Table Inspection' },
+            { param: 'Purity & Varietal Authenticity', standard: 'Min 95.0% Basmati DNA', result: '98.0% Pure Varietal', method: 'Polymerase Chain Reaction (PCR)' },
+            { param: 'Elongation Ratio (Post Cooking)', standard: 'Min 2.0x to 2.5x length', result: '2.25x Elongation', method: 'Standard Boiling Test' },
+            { param: 'Chalky Grains', standard: 'Max 2.0% w/w', result: '0.8% w/w', method: 'Translucent Light Board' }
+          ];
+        } else if (isEngineering) {
+          testParams = [
+            { param: 'Material Chemical Composition', standard: 'AISI SS 304 / 316 / High-Tensile', result: 'Complies (Spectro Certified)', method: 'Optical Emission Spectrometry' },
+            { param: 'Dimensional Tolerance', standard: '± 0.005 mm (Grade Precision)', result: '± 0.003 mm (Pass)', method: 'CMM 3D Coordinate Probe' },
+            { param: 'Surface Roughness (Ra)', standard: 'Ra 0.4 µm - 0.8 µm', result: 'Ra 0.48 µm (Mirror Finish)', method: 'Mitutoyo Surface Profilometer' },
+            { param: 'Material Hardness (HRC)', standard: '45 - 52 HRC', result: '48.5 HRC', method: 'Rockwell Hardness Tester' },
+            { param: 'Tensile Yield Strength', standard: 'Min 520 MPa', result: '585 MPa', method: 'Universal Tensile Testing (UTM)' },
+            { param: 'Non-Destructive Testing (NDT)', standard: '100% Defect-Free Surface', result: 'Zero Cracks / Porosity', method: 'Dye Penetrant Inspection (DPI)' }
+          ];
+        } else if (isTextile) {
+          testParams = [
+            { param: 'Fiber Composition', standard: '100% Premium Combed Cotton', result: '100% Cotton (Certified)', method: 'Microscopic & Chemical Analysis' },
+            { param: 'Fabric Weight (GSM)', standard: '200 GSM ± 3%', result: '202 GSM', method: 'GSM Circular Cutter (ASTM D3776)' },
+            { param: 'Color Fastness to Washing', standard: 'Min Grade 4 (ISO 105-C06)', result: 'Grade 4 - 5 (Excellent)', method: 'Launder-Ometer Washing Cycle' },
+            { param: 'Dimensional Stability (Shrinkage)', standard: 'Max ± 2.0% Length & Width', result: '- 1.2% (Pass)', method: 'AATCC 135 Washing Test' },
+            { param: 'Tear & Tensile Strength', standard: 'Min 28 N (Warp & Weft)', result: '34 N / 32 N', method: 'Elmendorf Tear Tester' }
+          ];
+        } else if (isDairy) {
+          testParams = [
+            { param: 'Milk Protein (in MSNF)', standard: 'Min 34.0% w/w', result: '34.8% w/w', method: 'Kjeldahl Nitrogen Method' },
+            { param: 'Milk Fat Content', standard: 'Max 1.25% w/w', result: '0.85% w/w', method: 'Gerber Method' },
+            { param: 'Moisture Content', standard: 'Max 4.0% w/w', result: '3.4% w/w', method: 'Karl Fischer Titration' },
+            { param: 'Titratable Acidity', standard: 'Max 0.15% (as Lactic Acid)', result: '0.12% w/w', method: 'NaOH Titration' },
+            { param: 'Solubility Index', standard: 'Max 1.0 ml', result: '0.2 ml (Instant Dissolve)', method: 'ADPI Centrifuge Method' },
+            { param: 'Total Plate Count (TPC)', standard: 'Max 10,000 CFU / g', result: '< 1,500 CFU / g', method: 'Standard Plate Count (SPC)' }
+          ];
+        } else {
+          testParams = [
+            { param: 'Appearance / Form', standard: 'Uniform Premium Grade Standard', result: 'Complies 100%', method: 'Visual Inspection' },
+            { param: 'Moisture / Dry Matter', standard: 'Conforms to Export Standard', result: 'Within Certified Limits', method: 'Laboratory Standard' },
+            { param: 'Purity / Grade Index', standard: 'Grade-1 Export Quality', result: '99.2% Certified', method: 'Standard Analytical Method' },
+            { param: 'Contaminant Screening', standard: 'Zero Hazardous Residue', result: 'PASSED (Non-Detect)', method: 'Chromatography Screening' }
+          ];
+        }
+
+        const compName = activeCompany?.name || 'Atsondika Global Trade';
+        const apedaReg = activeCompany?.apedaReg || 'APEDA/REG/SURAT/2026/8942';
+        const gstin = activeCompany?.gstin || '24AAACA0000A1Z5';
+
+        return (
+          <div className="modal-backdrop show" style={{ zIndex: 9999 }}>
+            <div className="glass-card modal-card" style={{ maxWidth: '960px', width: '95%', maxHeight: '92vh', overflowY: 'auto', background: '#090d16', border: '1px solid rgba(45, 212, 191, 0.4)' }}>
+              <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+
+              {/* Action Toolbar */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    🧪 {currentLang === 'gu' ? 'લેબ એનાલિસિસ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ' : 'Certificate of Analysis (COA) & Technical Spec Sheet'}
+                  </h3>
+                  <span style={{ fontSize: '0.8rem', color: '#2dd4bf', fontWeight: 700 }}>
+                    Official Quality & Compliance Specification Document
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)', fontSize: '0.82rem', padding: '7px 16px', fontWeight: 800 }}
+                    onClick={() => {
+                      const printContent = document.getElementById('printableCoaSheet');
+                      if (printContent) {
+                        const win = window.open('', '', 'width=900,height=800');
+                        win.document.write(`
+                          <html>
+                          <head>
+                            <title>Certificate of Analysis - ${prodNameEn}</title>
+                            <style>
+                              body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; background: #fff; }
+                              table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 12px; }
+                              th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+                              th { background-color: #0f766e; color: #fff; }
+                              .header { border-bottom: 2px solid #0f766e; padding-bottom: 12px; margin-bottom: 16px; }
+                            </style>
+                          </head>
+                          <body>
+                            ${printContent.innerHTML}
+                            <script>
+                              window.onload = function() { window.print(); window.close(); };
+                            </script>
+                          </body>
+                          </html>
+                        `);
+                        win.document.close();
+                      }
+                    }}
+                  >
+                    🖨️ Print / Save PDF
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ background: 'linear-gradient(135deg, #0d9488, #0f766e)', fontSize: '0.82rem', padding: '7px 16px', fontWeight: 800 }}
+                    onClick={() => {
+                      if (setActiveSampleProduct) setActiveSampleProduct(p);
+                      if (setIsSampleModalOpen) setIsSampleModalOpen(true);
+                      setActiveModal(null);
+                    }}
+                  >
+                    📦 Request Sample with this COA
+                  </button>
+                </div>
+              </div>
+
+              {/* Printable White Sheet */}
+              <div id="printableCoaSheet" style={{ background: '#ffffff', color: '#0f172a', padding: '32px', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid #0f766e', paddingBottom: '16px', marginBottom: '18px' }}>
+                  <div>
+                    <h1 style={{ margin: 0, fontSize: '1.5rem', color: '#0f766e', fontWeight: 900, letterSpacing: '-0.3px' }}>
+                      {compName}
+                    </h1>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: '#475569', fontWeight: 700 }}>
+                      GOVERNMENT OF INDIA RECOGNIZED EXPORT HOUSE
+                    </p>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                      📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
+                    </p>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
+                      GSTIN: {gstin} | Export License / APEDA: {apedaReg}
+                    </p>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'inline-block', background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '4px 12px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800 }}>
+                      ✔ LAB VERIFIED & CERTIFIED
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '6px' }}>
+                      Report No: <strong style={{ color: '#0f172a' }}>COA-AGT-{p.id.toUpperCase().slice(0, 6)}-2026</strong>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                      Date of Analysis: <strong>{new Date().toLocaleDateString('en-GB')}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Document Banner */}
+                <div style={{ background: '#0f766e', color: '#ffffff', textAlign: 'center', padding: '8px', borderRadius: '6px', fontWeight: 900, fontSize: '0.92rem', letterSpacing: '0.5px', marginBottom: '18px' }}>
+                  CERTIFICATE OF ANALYSIS (COA) & TECHNICAL SPECIFICATION SHEET
+                </div>
+
+                {/* Product Particulars Box */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', background: '#f8fafc', padding: '14px 18px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', fontSize: '0.84rem' }}>
+                  <div>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>COMMODITY / PRODUCT NAME:</span>
+                    <strong style={{ color: '#0f766e', fontSize: '0.95rem' }}>{prodNameEn}</strong>
+                    {prodNameGu && prodNameGu !== prodNameEn && <span style={{ display: 'block', color: '#475569', fontSize: '0.8rem' }}>({prodNameGu})</span>}
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>WCO HS CODE:</span>
+                    <strong style={{ fontFamily: 'monospace', color: '#0369a1', fontSize: '0.95rem' }}>{hs}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>COUNTRY OF ORIGIN:</span>
+                    <strong>INDIA (Port of Loading: Mundra / Nhava Sheva)</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>EXPORT PACKING / MOQ:</span>
+                    <span>{p.packaging || '25kg / 50kg Bags'} | MOQ: {p.moq || '1 x 20ft FCL Container'}</span>
+                  </div>
+                </div>
+
+                {/* Lab Test Results Table */}
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f766e', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📊 LABORATORY CHEMICAL & PHYSICAL QUALITY PARAMETERS:
+                </h4>
+
+                <div style={{ overflowX: 'auto', marginBottom: '22px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#0f766e', color: '#ffffff' }}>
+                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Sr.</th>
+                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Test Parameter (ગુણવત્તા પેરામીટર)</th>
+                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Official Standard Limit</th>
+                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Observed Lab Result</th>
+                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Test Method Standard</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {testParams.map((item, idx) => (
+                        <tr key={idx} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#64748b', fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>{item.param}</td>
+                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#475569' }}>{item.standard}</td>
+                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', fontWeight: 800, color: '#059669' }}>✔ {item.result}</td>
+                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.78rem' }}>{item.method}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Storage & Shelf Life Notes */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', background: '#f0fdfa', padding: '14px 18px', borderRadius: '8px', border: '1px solid #99f6e4', fontSize: '0.8rem', marginBottom: '22px' }}>
+                  <div>
+                    <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🌿 STORAGE & PRESERVATION INSTRUCTIONS:</strong>
+                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                      Store in a cool, dry, well-ventilated area away from direct sunlight, moisture, and pungent odors. Recommended storage temperature below 25°C with relative humidity below 60%.
+                    </div>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ QUALITY DECLARATION:</strong>
+                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                      Certified 100% free from unauthorized pesticides, artificial colors, and synthetic adulterants. Fit for human consumption / export under international trade compliance.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stamp & Authorized Signature */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '2px solid #e2e8f0' }}>
+                  <div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', border: '1px dashed #0f766e', background: 'rgba(15, 118, 110, 0.05)', color: '#0f766e', fontSize: '0.78rem', fontWeight: 800 }}>
+                      🏵️ OFFICIALLY VERIFIED & AUDITED QUALITY CONTROL SEAL
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
+                      Third-Party PSI Inspection allowed by SGS / Bureau Veritas prior to loading.
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'center', minWidth: '180px' }}>
+                    <div style={{ borderBottom: '1px solid #475569', width: '160px', margin: '0 auto 6px auto' }}></div>
+                    <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>Authorized Quality Signatory</strong>
+                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>Chief QC Officer | {compName}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* INSTANT EXPORT PROFORMA INVOICE / QUOTATION GENERATOR MODAL */}
       {activeModal === 'quotation' && (
         <div className="modal-backdrop show">
@@ -7775,6 +8151,12 @@ export default function Modals() {
                     msg += `📦 *Goods / Line Items:*\n${itemsListStr}\n`;
                     msg += `-----------------------------------\n`;
                     msg += `💰 *Grand Total:* ${quoteCurrency} ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
+                    if (invoiceTradeMode === 'export') {
+                      const payText = exportPaymentMethod === 'lc_sight' ? '100% Irrevocable L/C at Sight' :
+                        exportPaymentMethod === 'advance_bl' ? '30% Advance T/T + 70% vs B/L' :
+                        exportPaymentMethod === 'advance_100' ? '100% Advance Wire Transfer' : 'D/P at Sight / CAD';
+                      msg += `💳 *Payment:* ${payText}\n`;
+                    }
                     if (includeBankDetailsInInvoice && activeCompany?.bankDetails?.bankName) {
                       msg += `🏦 *Bank:* ${activeCompany.bankDetails.bankName} (A/C: ${activeCompany.bankDetails.accountNumber || ''})\n`;
                     }
@@ -8484,6 +8866,31 @@ export default function Modals() {
                   />
                   🏦 Print Wire Transfer & Bank Details (બેંક વિગત છાપવી)
                 </label>
+
+                {invoiceTradeMode === 'export' && (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(56, 189, 248, 0.15)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', fontSize: '0.82rem', fontWeight: 800 }}>
+                    <span>💳 Payment Terms:</span>
+                    <select
+                      value={exportPaymentMethod}
+                      onChange={(e) => setExportPaymentMethod(e.target.value)}
+                      style={{
+                        background: '#0f172a',
+                        color: '#38bdf8',
+                        border: '1px solid rgba(56, 189, 248, 0.5)',
+                        borderRadius: '6px',
+                        padding: '4px 8px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="lc_sight">100% Irrevocable L/C at Sight (Confirmed Bank)</option>
+                      <option value="advance_bl">30% Advance T/T + 70% against B/L Copy</option>
+                      <option value="advance_100">100% Advance Wire Transfer (T/T)</option>
+                      <option value="dp_sight">Documents Against Payment (D/P at Sight / CAD)</option>
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -8619,15 +9026,22 @@ export default function Modals() {
                       </div>
                       {invoiceTradeMode === 'export' ? (
                         <>
-                          <div>• Payment Method: Irrevocable L/C at Sight or 30% Advance + 70% against BL Copy</div>
-                          <div>• Inspection: SGS / Bureau Veritas Certified Quality & Quantity Inspection</div>
-                          <div>• Country of Origin: INDIA</div>
+                          <div>• <strong>Payment Method:</strong> {
+                            exportPaymentMethod === 'lc_sight' ? '100% Irrevocable Confirmed L/C at Sight (Issued by Prime Global Bank)' :
+                            exportPaymentMethod === 'advance_bl' ? '30% Advance T/T Deposit + 70% Balance against Scanned B/L & Shipping Documents' :
+                            exportPaymentMethod === 'advance_100' ? '100% Advance Wire Transfer (T/T)' :
+                            exportPaymentMethod === 'dp_sight' ? 'Documents Against Payment (D/P at Sight / CAD via Authorized Bank)' :
+                            'Irrevocable L/C at Sight or 30% Advance + 70% against BL Copy'
+                          }</div>
+                          <div>• <strong>Pre-Shipment Inspection:</strong> SGS / Bureau Veritas Certified Quality & Quantity Inspection (at loading port)</div>
+                          <div>• <strong>Documents Release:</strong> B/L, Commercial Invoice, Packing List, COO & Phytosanitary within 3 days post sail</div>
+                          <div>• <strong>Country of Origin:</strong> INDIA</div>
                         </>
                       ) : (
                         <>
-                          <div>• Payment Terms: Net 30 Days / Approved Credit Term</div>
-                          <div>• Jobwork Declaration: Goods sent for processing / commercial sale</div>
-                          <div>• State Jurisdiction: Subject to Surat, Gujarat Jurisdiction</div>
+                          <div>• <strong>Payment Terms:</strong> Net 30 Days / Approved Credit Term</div>
+                          <div>• <strong>Jobwork Declaration:</strong> Goods sent for processing / commercial sale</div>
+                          <div>• <strong>State Jurisdiction:</strong> Subject to Surat, Gujarat Jurisdiction</div>
                         </>
                       )}
 
@@ -8635,24 +9049,31 @@ export default function Modals() {
                         const b = (activeCompany?.bankDetails && (activeCompany.bankDetails.bankName || activeCompany.bankDetails.accountNumber))
                           ? activeCompany.bankDetails
                           : {
-                              bankName: "Axis Bank Ltd",
-                              accountName: activeCompany?.name || "SHREE SYSTEM TEC",
-                              accountNumber: "921020033445566",
-                              swiftCode: "AXISINBBXXX",
-                              ifscCode: "UTIB0000123",
-                              branch: "Textile Market Branch, Surat, Gujarat, India"
+                              bankName: "HDFC Bank Ltd",
+                              accountName: activeCompany?.name || "Atsondika Global Trade",
+                              accountNumber: "50200088997755",
+                              swiftCode: "HDFCINBBXXX",
+                              ifscCode: "HDFC0000240",
+                              branch: "Ring Road Branch, Surat, Gujarat, India"
                             };
+
+                        const isInternational = invoiceTradeMode === 'export';
+
                         return (
                           <div style={{ background: '#f0f9ff', padding: '10px 12px', borderRadius: '6px', border: '1px solid #bae6fd', marginTop: '10px', fontSize: '0.78rem', textAlign: 'left' }}>
                             <div style={{ fontWeight: 800, color: '#0369a1', marginBottom: '4px', fontSize: '0.8rem' }}>
-                              🏦 WIRE TRANSFER / BANKING DETAILS:
+                              🏦 {isInternational ? 'INTERNATIONAL WIRE TRANSFER & BANK ROUTING:' : 'DOMESTIC NEFT / RTGS & BANKING DETAILS:'}
                             </div>
                             <div style={{ display: 'grid', gap: '2px', color: '#1e293b' }}>
                               {b.bankName && <div><strong>Bank Name:</strong> {b.bankName}</div>}
                               {b.accountName && <div><strong>Beneficiary / Account:</strong> {b.accountName}</div>}
                               {b.accountNumber && <div><strong>Account / IBAN No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0369a1' }}>{b.accountNumber}</span></div>}
                               {b.swiftCode && <div><strong>SWIFT / BIC Code:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0f766e' }}>{b.swiftCode}</span></div>}
-                              {b.ifscCode && <div><strong>IFSC Code:</strong> {b.ifscCode}</div>}
+                              {isInternational ? (
+                                <div><strong>Correspondent Bank (USD Routing):</strong> <span style={{ fontFamily: 'monospace', color: '#0369a1' }}>JPMorgan Chase Bank N.A., New York (SWIFT: CHASUS33)</span></div>
+                              ) : (
+                                b.ifscCode && <div><strong>IFSC Code:</strong> <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0f766e' }}>{b.ifscCode}</span></div>
+                              )}
                               {b.branch && <div><strong>Bank Branch:</strong> {b.branch}</div>}
                             </div>
                           </div>

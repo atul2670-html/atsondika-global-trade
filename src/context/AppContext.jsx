@@ -390,6 +390,65 @@ export function AppProvider({ children }) {
     }
   };
 
+  // 100% Safe Global Trade & Security Assurance Section Enable/Disable Toggle
+  const [isTradeSecurityEnabled, setIsTradeSecurityEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_trade_security_enabled_v1');
+      if (stored !== null && stored !== undefined) return stored === 'true';
+    } catch(e) {}
+    return true; // Default enabled
+  });
+
+  const toggleTradeSecurity = (forcedVal) => {
+    const nextVal = typeof forcedVal === 'boolean' ? forcedVal : !isTradeSecurityEnabled;
+    setIsTradeSecurityEnabled(nextVal);
+    try {
+      localStorage.setItem('site_trade_security_enabled_v1', nextVal ? 'true' : 'false');
+    } catch(e) {}
+    try {
+      realtimeEngine.broadcast('TRADE_SECURITY_TOGGLE', { isTradeSecurityEnabled: nextVal });
+    } catch(e) {}
+    syncToServer({ isTradeSecurityEnabled: nextVal, updatedAt: Date.now() });
+    if (showLiveToast) {
+      if (nextVal) {
+        showLiveToast(currentLang === 'gu' ? '🛡️ ટ્રેડ સિક્યુરિટી સેક્શન સ્વીચ ON થયું (વેબસાઇટ પર લાઇવ).' : '🛡️ Trade Security Section Switched ON (Live on Website).', 'success');
+      } else {
+        showLiveToast(currentLang === 'gu' ? '🚫 ટ્રેડ સિક્યુરિટી સેક્શન સ્વીચ OFF થયું (વેબસાઇટ પરથી છુપાયેલ).' : '🚫 Trade Security Section Switched OFF (Hidden from Website).', 'warning');
+      }
+    }
+  };
+
+  // Private Label & OEM Packaging Solutions Enable/Disable Toggle
+  const [isOemPackagingEnabled, setIsOemPackagingEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem('site_oem_packaging_enabled_v1');
+      if (stored !== null && stored !== undefined) return stored === 'true';
+    } catch(e) {}
+    return true; // Default enabled
+  });
+
+  const toggleOemPackaging = (forcedVal) => {
+    const nextVal = typeof forcedVal === 'boolean' ? forcedVal : !isOemPackagingEnabled;
+    setIsOemPackagingEnabled(nextVal);
+    try {
+      localStorage.setItem('site_oem_packaging_enabled_v1', nextVal ? 'true' : 'false');
+    } catch(e) {}
+    try {
+      realtimeEngine.broadcast('OEM_PACKAGING_TOGGLE', { isOemPackagingEnabled: nextVal });
+    } catch(e) {}
+    syncToServer({ isOemPackagingEnabled: nextVal, updatedAt: Date.now() });
+    if (showLiveToast) {
+      if (nextVal) {
+        showLiveToast(currentLang === 'gu' ? '📦 પ્રાઇવેટ લેબલિંગ & OEM પેકિંગ સેક્શન સ્વીચ ON થયું (વેબસાઇટ પર લાઇવ).' : '📦 Private Label & OEM Packaging Switched ON (Live on Website).', 'success');
+      } else {
+        showLiveToast(currentLang === 'gu' ? '🚫 પ્રાઇવેટ લેબલિંગ & OEM પેકિંગ સેક્શન સ્વીચ OFF થયું (વેબસાઇટ પરથી છુપાયેલ).' : '🚫 Private Label & OEM Packaging Switched OFF (Hidden from Website).', 'warning');
+      }
+    }
+  };
+
+  // Product Spec Sheet & Lab Certificate of Analysis (COA) View Modal State
+  const [selectedCoaProduct, setSelectedCoaProduct] = useState(null);
+
   // Real-Time Currency Conversion & Ticker State
   const [currentCurrency, setCurrentCurrency] = useState(() => {
     try { return JSON.parse(localStorage.getItem('site_active_currency_v1') || 'null') || DEFAULT_CURRENCIES[0]; }
@@ -1209,6 +1268,8 @@ export function AppProvider({ children }) {
         aboutData: overrides.aboutData || aboutData,
         activeCompanyId: overrides.activeCompanyId || activeCompanyId,
         isEngineeringUnitEnabled: overrides.isEngineeringUnitEnabled !== undefined ? overrides.isEngineeringUnitEnabled : isEngineeringUnitEnabled,
+        isTradeSecurityEnabled: overrides.isTradeSecurityEnabled !== undefined ? overrides.isTradeSecurityEnabled : isTradeSecurityEnabled,
+        isOemPackagingEnabled: overrides.isOemPackagingEnabled !== undefined ? overrides.isOemPackagingEnabled : isOemPackagingEnabled,
         updatedAt: now
       };
 
@@ -3033,6 +3094,8 @@ export function AppProvider({ children }) {
       aboutData,
       activeCompanyId,
       isEngineeringUnitEnabled,
+      isTradeSecurityEnabled,
+      isOemPackagingEnabled,
       updatedAt: Date.now()
     };
     const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
@@ -3076,6 +3139,14 @@ export function AppProvider({ children }) {
     if (importedObj.isEngineeringUnitEnabled !== undefined) {
       setIsEngineeringUnitEnabled(importedObj.isEngineeringUnitEnabled);
       try { localStorage.setItem('site_engineering_unit_enabled_v1', importedObj.isEngineeringUnitEnabled ? 'true' : 'false'); } catch(e) {}
+    }
+    if (importedObj.isTradeSecurityEnabled !== undefined) {
+      setIsTradeSecurityEnabled(importedObj.isTradeSecurityEnabled);
+      try { localStorage.setItem('site_trade_security_enabled_v1', importedObj.isTradeSecurityEnabled ? 'true' : 'false'); } catch(e) {}
+    }
+    if (importedObj.isOemPackagingEnabled !== undefined) {
+      setIsOemPackagingEnabled(importedObj.isOemPackagingEnabled);
+      try { localStorage.setItem('site_oem_packaging_enabled_v1', importedObj.isOemPackagingEnabled ? 'true' : 'false'); } catch(e) {}
     }
 
     syncToServer(importedObj);
@@ -3155,6 +3226,9 @@ export function AppProvider({ children }) {
       paymentGatewaysConfig, savePaymentGatewaysConfig,
       isCodEnabled, toggleCodEnabled, setIsCodEnabled: toggleCodEnabled,
       isEngineeringUnitEnabled, toggleEngineeringUnit, setIsEngineeringUnitEnabled: toggleEngineeringUnit,
+      isTradeSecurityEnabled, toggleTradeSecurity, setIsTradeSecurityEnabled: toggleTradeSecurity,
+      isOemPackagingEnabled, toggleOemPackaging, setIsOemPackagingEnabled: toggleOemPackaging,
+      selectedCoaProduct, setSelectedCoaProduct,
       syncVersion, triggerRealtimeRefresh,
       verifyAdminAccess, t
     }}>
