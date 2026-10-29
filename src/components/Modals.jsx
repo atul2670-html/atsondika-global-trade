@@ -8289,7 +8289,7 @@ export default function Modals() {
                 <div style={{ background: '#f8fafc', borderLeft: '4px solid #0f766e', borderRight: '1px solid #e2e8f0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '10px 14px', borderRadius: '6px', marginBottom: '18px', fontSize: '0.78rem', color: '#334155' }}>
                   <strong style={{ color: '#0f766e' }}>ℹ️ Specification & Quality Verification Clause:</strong>{' '}
                   {(coaData.categoryKey === 'oem_certified' || p.isOemCertified || p.customTestParams?.some(t => t.param?.includes('OEM')))
-                    ? 'Supplied goods conform strictly to original OEM factory technical specifications and international compliance standards. Original manufacturer batch test certificates and regulatory dossiers are maintained on record and available upon request.'
+                    ? 'Supplied goods conform strictly to original OEM factory technical specifications and international compliance standards. Original manufacturer batch test certificates and regulatory dossiers are maintained on record and available from the OEM upon request.'
                     : 'All test parameters and quality benchmarks have been verified as per international export standards. Laboratory inspection dossier and pre-shipment certificates are maintained on record.'}
                 </div>
 

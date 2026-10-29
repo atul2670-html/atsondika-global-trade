@@ -467,7 +467,7 @@ export const getOemStandardPreset = (productOrHs) => {
     storageTitle: '⚡ OPERATING ENVIRONMENT & STORAGE GUIDELINES:',
     storageText: 'Store in an ESD-safe, dry indoor climate-controlled environment. Operating Temperature: -10°C to +55°C; Relative Humidity: 10% to 90% (non-condensing). Keep in original factory sealed export packaging with all protective moisture barriers intact.',
     qualityTitle: '🛡️ OEM QUALITY & TECHNICAL CONFORMITY DECLARATION:',
-    qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications and factory test standards. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on file and available upon request.',
+    qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications and factory test standards. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on file and available from the OEM upon request.',
     testParams: [
       {
         param: 'OEM Technical Standards & Quality Compliance (ઉત્પાદક ગુણવત્તા સ્ટાન્ડર્ડ)',
