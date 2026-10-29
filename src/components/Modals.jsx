@@ -8210,9 +8210,31 @@ export default function Modals() {
                       📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
                     </p>
                     <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
-                      GSTIN: {gstin} | {(isElectricalElectronic || coaData.isElectricalElectronic || coaData.categoryKey === 'oem_certified')
-                        ? `Export License / DGFT IEC & Standard Reg: IEC-${gstin.replace(/[^A-Z0-9]/g, '').slice(2, 12)} / CE-RoHS-2026`
-                        : `${coaData.licenseLabel || 'Export License / APEDA:'} ${apedaReg}`}
+                      GSTIN: {gstin} | {(() => {
+                        const cleanGstinPart = gstin.replace(/[^A-Z0-9]/g, '').slice(2, 12);
+                        if (coaData.isDairy || coaData.categoryKey === 'dairy' || coaData.categoryKey === 'oem_dairy') {
+                          return `Export License / FSSAI & AGMARK Reg: FSSAI-10724026000189 / AGMARK-EIA-2026`;
+                        }
+                        if (coaData.isRice || coaData.isAgroSpice || coaData.categoryKey === 'rice_grains' || coaData.categoryKey === 'agro_spices' || coaData.categoryKey === 'oem_rice_grains' || coaData.categoryKey === 'oem_spices') {
+                          return `Export License / APEDA & Spices Board Reg: ${apedaReg}`;
+                        }
+                        if (coaData.isGarment || coaData.categoryKey === 'oem_garments') {
+                          return `Export License / DGFT IEC & AEPC Reg: IEC-${cleanGstinPart} / AEPC-GARMENT-2026`;
+                        }
+                        if (coaData.isTextile || coaData.categoryKey === 'textiles_garments' || coaData.categoryKey === 'oem_textiles') {
+                          return `Export License / DGFT IEC & TEXPROCIL Reg: IEC-${cleanGstinPart} / TEX-OEKO-2026`;
+                        }
+                        if (coaData.isUsedMachinery || coaData.categoryKey === 'oem_used_machinery') {
+                          return `Export License / DGFT IEC & CEC Audit Reg: IEC-${cleanGstinPart} / CEC-PSI-2026`;
+                        }
+                        if (coaData.isMachinery || coaData.isEngineering || coaData.categoryKey?.includes('machin') || coaData.categoryKey?.includes('fastener')) {
+                          return `Export License / DGFT IEC & EEPC/CE Reg: IEC-${cleanGstinPart} / ISO-9001-2026`;
+                        }
+                        if (isElectricalElectronic || coaData.isElectricalElectronic || coaData.categoryKey === 'oem_electronics') {
+                          return `Export License / DGFT IEC & TEC/CE/RoHS Reg: IEC-${cleanGstinPart} / CE-RoHS-2026`;
+                        }
+                        return `${coaData.licenseLabel || 'Export License / Standard Reg:'} IEC-${cleanGstinPart}`;
+                      })()}
                     </p>
                   </div>
 

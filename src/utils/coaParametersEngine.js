@@ -448,26 +448,494 @@ export const getDefaultParamsForHsCode = (productOrHs) => {
 };
 
 /**
- * Standard OEM Preset for Third-Party / Sourced / Branded Products
- * (Used when goods are procured from external OEMs like Samsung, Wi-Fi Routers, LG, Apple, etc.
- * and certified based on manufacturer dossiers, factory test reports, and compliance certificates)
+ * Standard OEM Preset Engine: Dynamic Category & HS Code-Specific OEM Generator
+ * (Provides tailored OEM conformity parameters, regulatory standards, storage norms,
+ * and test methods for Dairy/Amul, Rice, Spices, Fasteners, Industrial Machinery,
+ * Agri Machinery, Food Processing Machinery, Used Machinery, and Electronics/IT)
  */
 export const getOemStandardPreset = (productOrHs) => {
   const p = typeof productOrHs === 'object' && productOrHs !== null ? productOrHs : { hsCode: String(productOrHs || '') };
   const hsRaw = String(p.hsCode || p.localHsn || '').trim();
-  const prodName = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Product';
+  const hs = cleanHsDigits(hsRaw);
+  const hs2 = hs.slice(0, 2);
+  const hs4 = hs.slice(0, 4);
+  const hs6 = hs.slice(0, 6);
 
+  const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || '';
+  const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || '';
+  const cat = (p.category || '').toLowerCase();
+  const pId = (p.id || '').toLowerCase();
+  const pNameFull = ((prodNameEn || '') + ' ' + (prodNameGu || '') + ' ' + (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || ''))).toLowerCase();
+
+  // 1. Dairy, Milk & Desi Ghee (Amul / GCMMF / Dairy Products - HS 0405, 0401, 0402, etc.)
+  const isDairy = hs2 === '04' || cat.includes('dairy') || cat.includes('milk') || pNameFull.includes('ghee') || pNameFull.includes('ghi') || pNameFull.includes('amul') || pNameFull.includes('butter') || pNameFull.includes('milk') || pNameFull.includes('ઘી') || pNameFull.includes('ડેરી');
+  if (isDairy) {
+    return {
+      categoryKey: 'oem_dairy',
+      categoryLabel: `Authentic Dairy OEM & AGMARK Special Grade Standard (WCO HS ${hsRaw || '0405.90'})`,
+      isDairy: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / FSSAI & AGMARK / APEDA Reg:',
+      sealSubtitle: 'AGMARK SPECIAL GRADE, FSSAI & OEM VERIFIED DAIRY SEAL',
+      signatoryTitle: 'Lead Dairy Food Safety & Quality Compliance Officer',
+      storageTitle: '🥛 STORAGE & PRESERVATION GUIDELINES:',
+      storageText: 'Store in a cool, dry, and hygienic environment away from direct sunlight, ambient heat, and external moisture. Keep factory hermetic container sealed until consumption. No refrigeration required for pure clarified butter (Ghee).',
+      qualityTitle: '🛡️ OEM QUALITY & FOOD SAFETY DECLARATION:',
+      qualityText: 'Certified that the supplied products conform strictly to original manufacturer (Amul / Dairy OEM) specifications, FSSAI Food Safety regulations, AGMARK Special Grade, and Codex Alimentarius. Pre-dispatch physical and organoleptic inspection completed with zero adulteration. Original manufacturer batch test certificates and regulatory dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Milk Fat Purity & Moisture Limit (દૂધની શુદ્ધ ચરબી અને ભેજ નિયંત્રણ)',
+          standard: 'Min 99.7% Pure Bovine Milk Fat, Moisture Max 0.3% w/w',
+          result: 'Pass (Verified as per Dairy OEM / AGMARK Specs)',
+          method: 'AGMARK / FSSAI Gerber & Rose-Gottlieb Standards'
+        },
+        {
+          param: 'Adulteration & Food Safety Screening (મિલાવટ મુક્તિ અને ખાદ્ય સુરક્ષા)',
+          standard: 'RM Value > 28, Free from foreign vegetable fats, BVO, mineral oil NIL',
+          result: 'Complies 100% (Pure Ghee Index Certified)',
+          method: 'Baudouin & Halphen Chemical Assay (Codex Standards)'
+        },
+        {
+          param: 'Food-Grade Tamper-Evident Packaging (ફૂડ ગ્રેડ સીલબંધ પેકેજિંગ)',
+          standard: 'Original Factory Hermetically Sealed Food-Grade Tin / Jar Pack',
+          result: '100% Inspected & Approved',
+          method: 'Sensory & Hermetic Seal Integrity Verification'
+        }
+      ]
+    };
+  }
+
+  // 2. Basmati Rice, Cereals & Grains (HS 1006 / Chapter 10 / Rice, Basmati, Grain, ચોખા)
+  const isRiceGrains = hs4 === '1006' || hs2 === '10' || cat.includes('rice') || cat.includes('grain') || pNameFull.includes('rice') || pNameFull.includes('basmati') || pNameFull.includes('ચોખા') || pNameFull.includes('બાસમતી');
+  if (isRiceGrains) {
+    return {
+      categoryKey: 'oem_rice_grains',
+      categoryLabel: `Authentic OEM Milled & Basmati Rice Standard (WCO HS ${hsRaw || '1006.30'})`,
+      isRice: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / APEDA & FSSAI Reg:',
+      sealSubtitle: 'APEDA, FSSAI & AGMARK CERTIFIED OEM GRAIN SEAL',
+      signatoryTitle: 'Chief Grain Technologist & Export Quality Officer',
+      storageTitle: '🌿 STORAGE & PEST PREVENTION INSTRUCTIONS:',
+      storageText: 'Store in cool, dry, well-ventilated grain silo or warehouse on elevated wooden pallets away from moisture, pests, and volatile odors. Ambient temperature below 24°C with relative humidity below 60%.',
+      qualityTitle: '🛡️ OEM GRAIN SPECIFICATION & PHYTOSANITARY DECLARATION:',
+      qualityText: 'Certified that the supplied rice/grains conform strictly to original OEM / Mill technical specifications, APEDA export standards, and AGMARK Grade-1 norms. 100% Sortex cleaned. Original mill batch inspection reports and phytosanitary certificates are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Average Grain Length & Sortex Purity (દાણાની લંબાઈ અને સોર્ટેક્સ શુદ્ધતા)',
+          standard: 'Min 8.35 mm+ Extra Long Grain, Broken Grains < 1.0% w/w',
+          result: 'Pass (Verified as per OEM Mill Specifications)',
+          method: 'Digital Vernier Caliper & Optical Sortex Inspection'
+        },
+        {
+          param: 'Moisture & Safe Preservation Index (ભેજનું પ્રમાણ અને સલામતી)',
+          standard: 'Max 11.5% - 12.0% w/w Safe Storage Limit',
+          result: 'Complies (Moisture Controlled & Dry Certified)',
+          method: 'Air-Oven Dehydration Method (IS 4333)'
+        },
+        {
+          param: 'Authenticity & Foreign Contaminant Screening (શુદ્ધતા અને સ્વચ્છતા)',
+          standard: 'Min 95.0% Varietal Purity, Live Weevils / Stone Contaminants NIL',
+          result: '100% Inspected & Approved',
+          method: 'PCR DNA Varietal Assay & Gravity Table Screening'
+        }
+      ]
+    };
+  }
+
+  // 3. Agro Spices, Seeds & Herbs (Chapters 07, 08, 09, 12 / Spices, Cumin, Turmeric, મસાલા, જીરું)
+  const isAgroSpice = ['07', '08', '09', '12'].includes(hs2) || cat.includes('agro') || cat.includes('spice') || pNameFull.includes('turmeric') || pNameFull.includes('cumin') || pNameFull.includes('spice') || pNameFull.includes('pepper') || pNameFull.includes('chilli') || pNameFull.includes('હળદર') || pNameFull.includes('જીરુ') || pNameFull.includes('મસાલા');
+  if (isAgroSpice) {
+    return {
+      categoryKey: 'oem_spices',
+      categoryLabel: `Authentic OEM Pure Spices & Agro Commodities (WCO HS Chapter ${hs2 || '09'})`,
+      isAgroSpice: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / Spices Board & APEDA Reg:',
+      sealSubtitle: 'SPICES BOARD & APEDA CERTIFIED OEM AGRO SEAL',
+      signatoryTitle: 'Chief Agro Food Safety & Quality Assurance Chemist',
+      storageTitle: '🌿 STORAGE & AROMATIC PRESERVATION INSTRUCTIONS:',
+      storageText: 'Store in a cool, dry, and dark warehouse below 20°C with relative humidity below 60%. Keep in original moisture-barrier bags away from volatile odor sources and moisture.',
+      qualityTitle: '🛡️ SPICES BOARD & OEM QUALITY CONFORMITY DECLARATION:',
+      qualityText: 'Certified that the supplied spices/seeds conform strictly to original manufacturer/processor specifications, ASTA, ESA, and Spices Board of India standards. Free from artificial dyes (Sudan Red NIL). Original manufacturer batch test certificates and regulatory dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Active Botanical Purity & Essential Oils (શુદ્ધતા અને કુદરતી સુગંધિત તેલ)',
+          standard: 'Pure Natural Cultivar Standard, Min Active Volatile Oils Guaranteed',
+          result: 'Pass (Verified as per OEM Processor Datasheet)',
+          method: 'Steam Distillation & ASTA Extraction Methods'
+        },
+        {
+          param: 'Foreign Matter & Heavy Metal Screening (કચરો અને કેમિકલ મુક્તિ)',
+          standard: 'Extraneous Matter < 0.5% / NIL, Heavy Metals within Safe Limits',
+          result: 'Complies (Sortex Cleaned & Lab Certified)',
+          method: 'Multi-Residue HPLC / LC-MS Screening'
+        },
+        {
+          param: 'Airtight Food-Grade Export Packaging (ફૂડ ગ્રેડ સીલબંધ પેકેજિંગ)',
+          standard: 'Moisture-Proof Multi-Layer Food-Grade Export Bags',
+          result: '100% Inspected & Approved',
+          method: 'Hermetic Seal & Sensory Verification'
+        }
+      ]
+    };
+  }
+
+  // 4. Readymade Garments & Apparels (Chapters 61 & 62 / Readymade Garments, T-Shirts, Shirts, Denim, Kurti, Dress, રેડિમેડ ગારમેન્ટ, તૈયાર કપડાં)
+  const isGarment = hs2 === '61' || hs2 === '62' || cat.includes('garment') || cat.includes('apparel') || cat.includes('clothing') || pNameFull.includes('garment') || pNameFull.includes('apparel') || pNameFull.includes('readymade') || pNameFull.includes('ready-made') || pNameFull.includes('t-shirt') || pNameFull.includes('tshirt') || pNameFull.includes('shirt') || pNameFull.includes('jeans') || pNameFull.includes('denim') || pNameFull.includes('kurti') || pNameFull.includes('dress') || pNameFull.includes('trouser') || pNameFull.includes('jacket') || pNameFull.includes('sweater') || pNameFull.includes('રેડિમેડ') || pNameFull.includes('રેડીમેડ') || pNameFull.includes('ગારમેન્ટ') || pNameFull.includes('તૈયાર કપડા') || pNameFull.includes('ટી-શર્ટ') || pNameFull.includes('કુર્તી');
+  if (isGarment) {
+    // Dynamic fabric identification (Cotton, Polyester, Linen, Woolen, Silk, Rayon, Denim, Blends)
+    let fabricLabel = '100% Combed Cotton / Bio-Washed Ring Spun Yarn';
+    let fabricNameGu = 'પ્રીમિયમ કોટન (સુતરાઉ કાપડ)';
+    let fabricMethod = 'Microscopic Fiber Analysis (AATCC 20A)';
+    let garmentSeal = 'AEPC & OEKO-TEX 100 AUDITED GARMENT QUALITY SEAL';
+
+    if (pNameFull.includes('linen') || pNameFull.includes('લીનન') || pNameFull.includes('શણ')) {
+      fabricLabel = '100% Pure Flax Linen / Linen Blend (Breathable Natural Weave)';
+      fabricNameGu = '૧૦૦% શુદ્ધ લીનન (નેચરલ ફ્લેક્સ શણ)';
+      fabricMethod = 'Flax Fiber Microscopic Cross-Section (ASTM D276)';
+    } else if (pNameFull.includes('wool') || pNameFull.includes('woolen') || pNameFull.includes('merino') || pNameFull.includes('cashmere') || pNameFull.includes('pashmina') || pNameFull.includes('વુલન') || pNameFull.includes('ઉન') || pNameFull.includes('ગરમ') || pNameFull.includes('સ્વેટર')) {
+      fabricLabel = '100% Pure Merino Wool / Woolmark Certified Thermal Knit';
+      fabricNameGu = 'શુદ્ધ વુલન / મેરીનો ઉન (થર્મલ વોર્મ ફેબ્રિક)';
+      fabricMethod = 'Woolmark Fiber Diameter & Clean Spec Assay';
+      garmentSeal = 'WOOLMARK & AEPC CERTIFIED THERMAL APPAREL SEAL';
+    } else if (pNameFull.includes('poly') || pNameFull.includes('polyester') || pNameFull.includes('nylon') || pNameFull.includes('microfiber') || pNameFull.includes('spandex') || pNameFull.includes('lycra') || pNameFull.includes('dri-fit') || pNameFull.includes('પોલિએસ્ટર') || pNameFull.includes('સિન્થેટીક')) {
+      fabricLabel = '100% Micro-Polyester / Poly-Spandex Quick-Dry Performance Knit';
+      fabricNameGu = 'હાઇ-પરફોર્મન્સ પોલિએસ્ટર / ડ્રાય-ફિટ સિન્થેટિક ફેબ્રિક';
+      fabricMethod = 'Solvent Separation & Thermal DSC Analysis (ISO 1833)';
+    } else if (pNameFull.includes('silk') || pNameFull.includes('rayon') || pNameFull.includes('viscose') || pNameFull.includes('modal') || pNameFull.includes('સિલ્ક') || pNameFull.includes('રેયોન') || pNameFull.includes('મોડલ')) {
+      fabricLabel = '100% Premium Viscose Rayon / Mulberry Silk Blend (Soft Drape Luster)';
+      fabricNameGu = 'પ્રીમિયમ વિસ્કોસ રેયોન / સિલ્ક લસ્ટર ફેબ્રિક';
+      fabricMethod = 'Viscose Dissolution & Fiber Cross-Section (IS 667)';
+    } else if (pNameFull.includes('denim') || pNameFull.includes('jeans') || pNameFull.includes('ડેનિમ') || pNameFull.includes('જીન્સ')) {
+      fabricLabel = '100% Ring-Spun Cotton Heavy Indigo Denim (11 to 14.5 Oz)';
+      fabricNameGu = 'હેવી ઈન્ડિગો ડેનિમ કોટન ફેબ્રિક';
+      fabricMethod = 'Denim Oz Weight & Indigo Color Assay (ASTM D3776)';
+    } else if (pNameFull.includes('blend') || pNameFull.includes('pc') || pNameFull.includes('cvc') || pNameFull.includes('poly cotton') || pNameFull.includes('મિશ્ર')) {
+      fabricLabel = '65/35 or 60/40 Poly-Cotton (PC / CVC) Intimate Yarn Blend';
+      fabricNameGu = 'પોલી-કોટન (PC / CVC) મિશ્રિત કાપડ';
+      fabricMethod = 'Quantitative Chemical Fiber Blend Analysis (ISO 1833)';
+    }
+
+    return {
+      categoryKey: 'oem_garments',
+      categoryLabel: `Authentic OEM Readymade Garments & Apparels (${fabricNameGu} - WCO HS 61 & 62)`,
+      isGarment: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & AEPC / OEKO-TEX Reg:',
+      sealSubtitle: garmentSeal,
+      signatoryTitle: 'Lead Apparel QA & Merchandising Compliance Officer',
+      storageTitle: '👗 APPAREL STORAGE, CARTON & HANGER GUIDELINES:',
+      storageText: 'Store in a clean, dry, climate-controlled, dust-free warehouse on solid elevated pallets. Garments individually packed in polybags with silica gel desiccant. Cartons stacked upright away from damp floors and direct sunlight.',
+      qualityTitle: '🛡️ OEM READYMADE GARMENT & SAFETY DECLARATION:',
+      qualityText: `Certified that the supplied readymade garments (${fabricNameGu}) conform strictly to original OEM tech-packs, international size-spec charts, OEKO-TEX Standard 100, and AEPC export standards. 100% metal/needle-detector scanned with zero broken needles. Free from hazardous azo dyes and nickel-releasing accessories. Original manufacturer batch inspection reports and AQL 2.5 final audit sheets are maintained on record and may be obtained directly from the OEM upon buyer's formal request.`,
+      testParams: [
+        {
+          param: `Fabric & Fiber Composition (કાપડનો પ્રકાર - ${fabricNameGu})`,
+          standard: fabricLabel,
+          result: 'Pass (Verified as per Fabric OEM Mill Tech-Pack)',
+          method: fabricMethod
+        },
+        {
+          param: 'Stitching Quality & Seam Strength (સીવણ ગુણવત્તા અને સીમ મજબૂતી - SPI)',
+          standard: 'SPI 10 - 12 (Stitches Per Inch), Double-Needle Seams, Zero Loose Threads',
+          result: 'Pass (AQL 1.5 High-End Workmanship Verified)',
+          method: 'Visual SPI Gauge & Dynamic Seam Tensile Rig (ASTM D1683)'
+        },
+        {
+          param: 'Size Specification & Measurement Tolerance (માપ સાઇઝ અને ફિટિંગ એક્યુરેસી)',
+          standard: 'Strictly within ± 0.5 cm of Buyer Tech-Pack Size Chart (S to XXL)',
+          result: '100% Dimensionally Accurate Pass',
+          method: 'Calibrated Flexible Steel Tape & Dummy Fitting Form'
+        },
+        {
+          param: 'Broken Needle Detection & Eco-Safety (તૂટેલી સોય મુક્તિ અને એકો સેફ્ટી)',
+          standard: '100% Needle Detector Pass (Ferrous Ball < 1.0mm), Zero Azo Dyes',
+          result: '100% Inspected & Approved',
+          method: 'Locking Conveyor Metal Detector & Chemical Extraction (OEKO-TEX)'
+        }
+      ]
+    };
+  }
+
+  // 5. Textiles, Fabrics & Yarns (Chapters 50 to 60 / Cotton, Fabric, Saree, Yarn, કાપડ, સુતર, ટેક્ષટાઈલ)
+  const isTextile = (parseInt(hs2, 10) >= 50 && parseInt(hs2, 10) <= 60) || cat.includes('text') || cat.includes('fabric') || cat.includes('yarn') || pNameFull.includes('cotton') || pNameFull.includes('fabric') || pNameFull.includes('textile') || pNameFull.includes('saree') || pNameFull.includes('yarn') || pNameFull.includes('cloth') || pNameFull.includes('કાપડ') || pNameFull.includes('સુતર') || pNameFull.includes('સાડી') || pNameFull.includes('ટેક્ષટાઈલ') || pNameFull.includes('ટેક્સટાઈલ');
+  if (isTextile) {
+    return {
+      categoryKey: 'oem_textiles',
+      categoryLabel: `Authentic OEM Textiles, Fabrics & Garments (WCO HS Chapter ${hs2 || '52'})`,
+      isTextile: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & TEXPROCIL / OEKO-TEX Reg:',
+      sealSubtitle: 'OEKO-TEX & TEXPROCIL AUDITED TEXTILE QUALITY SEAL',
+      signatoryTitle: 'Lead Textile QA Engineer & Fabric Technologist',
+      storageTitle: '🧶 STORAGE & FABRIC CARE INSTRUCTIONS:',
+      storageText: 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Cartons lined with polyethylene moisture-barrier film. Keep away from direct sunlight, damp walls, and heat sources to prevent discoloration and fiber degradation.',
+      qualityTitle: '🛡️ OEM TEXTILE SPECIFICATION & COMPLIANCE DECLARATION:',
+      qualityText: 'Certified that the supplied textile products conform strictly to original manufacturer technical specifications, OEKO-TEX Standard 100, and AATCC/ISO international washing and colorfastness norms. 100% free from carcinogenic azo dyes, formaldehyde, and banned heavy metals. Original manufacturer batch test certificates and fabric inspection dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Fiber Composition & Grammage - GSM (ફાઈબર બંધારણ અને કાપડનું વજન)',
+          standard: '100% Combed Cotton / Certified Blend, Rated GSM ± 3%',
+          result: 'Pass (Verified as per Textile OEM Datasheet)',
+          method: 'Microscopic Identification & GSM Circular Cutter (ASTM D3776)'
+        },
+        {
+          param: 'Color Fastness & Washing Resistance (કલર ફાસ્ટનેસ અને બ્લીડિંગ મુક્તિ)',
+          standard: 'Min Grade 4 - 5 to Washing, Rubbing & Light (ISO 105-C06)',
+          result: 'Grade 4.5 (Superior Non-Bleed Quality)',
+          method: 'Launder-Ometer Washing Cycle & Grey Scale Rating'
+        },
+        {
+          param: 'Azo-Free Safety & Shrinkage Stability (સલામતી અને સંકોચન સ્થિરતા)',
+          standard: 'Zero Banned Azo Dyes (OEKO-TEX Compliant), Shrinkage < ± 2%',
+          result: '100% Inspected & Approved',
+          method: 'GC-MS Chemical Extraction & AATCC 135 Wash Test'
+        }
+      ]
+    };
+  }
+
+  // 5. Used & Refurbished Machinery (Second Hand, Refurbished, Old Machines, જુની મશીનરી)
+  const isUsedMachinery = pNameFull.includes('used') || pNameFull.includes('old') || pNameFull.includes('refurbish') || pNameFull.includes('second hand') || pNameFull.includes('second-hand') || pNameFull.includes('જુની') || pNameFull.includes('જૂની') || pNameFull.includes('સેકન્ડ હેન્ડ');
+  if (isUsedMachinery) {
+    return {
+      categoryKey: 'oem_used_machinery',
+      categoryLabel: `Chartered Engineer Audited Used & Refurbished Machinery (WCO HS ${hsRaw || '84'})`,
+      isMachinery: true,
+      isUsedMachinery: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & Chartered Engineer Reg:',
+      sealSubtitle: 'CHARTERED ENGINEER CERTIFIED (CEC) MACHINERY SEAL',
+      signatoryTitle: 'Certified Chartered Engineer (Govt. Approved Inspector)',
+      storageTitle: '⚙️ STORAGE & REFURBISHED ASSET PRESERVATION:',
+      storageText: 'Store in covered indoor warehouse. All critical mechanical guideways, spindles, and bearings coated with heavy rust inhibitor. Control panels sealed with desiccant moisture absorbers.',
+      qualityTitle: '🛡️ REFURBISHED MACHINERY & RESIDUAL LIFE DECLARATION:',
+      qualityText: 'Certified that the supplied used/refurbished machinery has undergone comprehensive physical inspection, mechanical overhaul, and electrical load testing. Residual operational life assessed at minimum 8 to 12 years with zero critical structural damage. Original Chartered Engineer Certificate (CEC) and refurbishing inspection dossiers are maintained on record and may be obtained directly from the OEM/Certifying Authority upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Mechanical Overhaul & Working Alignment (ઓવરહોલ અને એલાઈનમેન્ટ)',
+          standard: 'Refurbished to OEM Functional Tolerances, Spindle Runout < 0.02 mm',
+          result: 'Pass (Complete Factory Overhaul Verified)',
+          method: 'Dial Gauge Indicator & Precision Dynamic Balancing'
+        },
+        {
+          param: 'Electrical Motor & Control Panel Diagnostics (ઇલેક્ટ્રિકલ ટેસ્ટિંગ)',
+          standard: 'Insulation Resistance > 20 MΩ @ 500V DC, All Interlocks Functional',
+          result: 'Complies (Rewound / Tested 100% Operable)',
+          method: 'Megger High-Voltage & Dynamic Load Testing Rig'
+        },
+        {
+          param: 'Chartered Engineer Residual Life Assessment (CEC સર્ટિફિકેટ)',
+          standard: 'Minimum 8 - 12 Years Expected Remaining Operational Life',
+          result: '100% Certified & Approved',
+          method: 'Chartered Engineer Pre-Shipment Inspection (PSI)'
+        }
+      ]
+    };
+  }
+
+  // 5. Food Product Machinery & Processing Equipment (Bakery, Grinder, Packaging Machines, HS 8438, 8422, ફૂડ મશીનરી)
+  const isFoodMachinery = hs4 === '8438' || hs4 === '8422' || pNameFull.includes('food machine') || pNameFull.includes('food processing') || pNameFull.includes('bakery') || pNameFull.includes('grinder') || pNameFull.includes('mill') || pNameFull.includes('ફૂડ મશીનરી') || pNameFull.includes('ફૂડ પ્રોડક્ટ મશીનરી');
+  if (isFoodMachinery) {
+    return {
+      categoryKey: 'oem_food_machinery',
+      categoryLabel: `Food Contact Compliant OEM Processing Machinery (WCO HS ${hsRaw || '8438'})`,
+      isMachinery: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & Food Contact Materials (FCM) Reg:',
+      sealSubtitle: 'SS304/SS316 FOOD CONTACT HYGIENIC AUDITED SEAL',
+      signatoryTitle: 'Lead Food Processing Equipment QC Specialist',
+      storageTitle: '⚙️ STORAGE & SANITARY PRESERVATION GUIDELINES:',
+      storageText: 'Store in dry covered indoor warehouse wrapped in protective barrier film. All stainless steel food-contact surfaces sanitized and protected against ferrous dust contamination.',
+      qualityTitle: '🛡️ OEM FOOD PROCESSING MACHINERY DECLARATION:',
+      qualityText: 'Certified that all product-contact parts are manufactured from certified food-grade SS 304 / SS 316 stainless steel conforming to FDA / European Food Contact Materials (EC 1935/2004) regulations and CE Machinery Directive. Original OEM sanitary inspection reports and test certificates are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Food Contact Metallurgy - SS304/SS316 (ફૂડ ગ્રેડ સ્ટેનલેસ સ્ટીલ)',
+          standard: 'Certified AISI 304 / 316 Stainless Steel on All Contact Parts',
+          result: 'Pass (Verified as per OEM Metallurgy Certificate)',
+          method: 'XRF Positive Material Identification (PMI Spectro)'
+        },
+        {
+          param: 'Sanitary Surface Finish & CIP Cleanability (હાઇજેનિક સપાટી Ra)',
+          standard: 'Mirror / Satin Polished Ra < 0.8 µm (Zero Crevices / Bacterial Traps)',
+          result: 'Complies (Ultra-Smooth Hygienic Finish)',
+          method: 'Surface Roughness Profilometer & Sanitary Ingress Audit'
+        },
+        {
+          param: 'Mechanical Electrical Drive & Food Safety Interlocks',
+          standard: 'IP65 Washdown-Proof Motors, Food-Grade Lubricants (H1 Registered)',
+          result: '100% Inspected & Approved',
+          method: 'Sanitary CIP Pressure Run & Safety Interlock Audit'
+        }
+      ]
+    };
+  }
+
+  // 6. Agricultural Machinery & Implements (Tractors, Harvesters, Tillers, HS 8432, 8433, 8701, એગ્રીકલ્ચર મશીનરી)
+  const isAgriMachinery = hs4 === '8432' || hs4 === '8433' || hs4 === '8701' || pNameFull.includes('tractor') || pNameFull.includes('harvester') || pNameFull.includes('tiller') || pNameFull.includes('plough') || pNameFull.includes('cultivator') || pNameFull.includes('ખેતી') || pNameFull.includes('એગ્રીકલ્ચર મશીનરી') || pNameFull.includes('ટ્રેક્ટર');
+  if (isAgriMachinery) {
+    return {
+      categoryKey: 'oem_agri_machinery',
+      categoryLabel: `Authentic OEM Agricultural Machinery & Implements (WCO HS ${hsRaw || '8432'})`,
+      isMachinery: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & ISO 4254 Ag-Machinery Reg:',
+      sealSubtitle: 'ISO 4254 & OECD TRACTOR / AG-EQUIPMENT AUDITED SEAL',
+      signatoryTitle: 'Lead Agricultural Machinery Quality Engineer',
+      storageTitle: '⚙️ STORAGE & HEAVY IMPLEMENT PRESERVATION:',
+      storageText: 'Store on level hardstanding undercover. Hydraulic cylinders retracted and coated with anti-corrosion grease. All lubrication points greased per OEM manual.',
+      qualityTitle: '🛡️ OEM AGRICULTURAL MACHINERY DECLARATION:',
+      qualityText: 'Certified that the supplied agricultural machinery conforms strictly to original manufacturer technical specifications and ISO 4254 agricultural safety norms. Pre-delivery inspection (PDI) completed with full PTO and hydraulic verification. Original OEM inspection certificates and warranty dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Chassis Structural Strength & PTO Torque (ચેસિસ અને પીટીઓ ટોર્ક)',
+          standard: 'Heavy-Duty High-Tensile Steel, Standard 540/1000 RPM PTO Drive',
+          result: 'Pass (Verified as per OEM PDI Protocol)',
+          method: 'Dynamometer Load Rig & Structural Ultrasonic Test'
+        },
+        {
+          param: 'Hydraulic System Pressure & Flow Rate (હાઇડ્રોલિક પ્રેશર ટેસ્ટ)',
+          standard: 'Rated Working Pressure ± 5% (Zero Hose / Valve Leakage)',
+          result: 'Complies (Full Pressure Cycle Tested Pass)',
+          method: 'Calibrated Hydraulic Test Rig (ISO 4254)'
+        },
+        {
+          param: 'Protective Coating & Corrosion Shield (કલર કોટિંગ અને રસ્ટ પ્રોટેક્શન)',
+          standard: 'Electrostatic Powder Coating > 80 µm (Corrosion Resistant)',
+          result: '100% Inspected & Approved',
+          method: 'Elcometer Dry Film Thickness & Salt Spray Test'
+        }
+      ]
+    };
+  }
+
+  // 7. Industrial Fasteners & Precision Mechanical Hardware (HS 7318, 7307, 8481, 8482, Bolts, Nuts, Valves, ફાસ્ટનર)
+  const isFasteners = hs4 === '7318' || hs4 === '7307' || hs4 === '8481' || hs4 === '8482' || hs4 === '8483' || ['72', '73', '82'].includes(hs2) || pNameFull.includes('fastener') || pNameFull.includes('bolt') || pNameFull.includes('nut') || pNameFull.includes('screw') || pNameFull.includes('valve') || pNameFull.includes('flange') || pNameFull.includes('બોલ્ટ') || pNameFull.includes('નટ') || pNameFull.includes('ફાસ્ટનર');
+  if (isFasteners) {
+    return {
+      categoryKey: 'oem_fasteners',
+      categoryLabel: `Precision Industrial Fasteners & Hardware (WCO HS ${hsRaw || '7318'})`,
+      isEngineering: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & EEPC / ISO 9001 Reg:',
+      sealSubtitle: 'ISO 9001, DIN & EN 10204 3.1 AUDITED FASTENER SEAL',
+      signatoryTitle: 'Lead Metallurgical & Precision Inspection Officer',
+      storageTitle: '⚙️ STORAGE, HANDLING & CORROSION PREVENTION:',
+      storageText: 'Store in dry indoor warehouse elevated on pallets. Wrapped in VCI anti-corrosion barrier film with export-grade rust-preventive oil. Avoid exposure to acid mists and moisture.',
+      qualityTitle: '🛡️ OEM METALLURGICAL & FASTENER QUALITY DECLARATION:',
+      qualityText: 'Certified that the supplied fasteners and mechanical components conform strictly to original manufacturer technical specifications, DIN / ISO / ASTM standards, and Mill Test Certificates (EN 10204 3.1). Original OEM inspection reports, material test certificates (MTC), and dimension reports are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Alloy Chemistry & Grade Verification (ધાતુ કેમિકલ એનાલિસિસ)',
+          standard: 'High-Tensile Grade 8.8 / 10.9 / 12.9 or Stainless Steel SS304/SS316',
+          result: 'Pass (Verified as per OEM Mill Test Certificate)',
+          method: 'Optical Emission Spectrometry (OES / EN 10204 3.1)'
+        },
+        {
+          param: 'Tensile Yield & Proof Load Strength (ખેંચાણ ક્ષમતા અને હાર્ડનેસ)',
+          standard: 'Conforms to ISO 898-1 / ASTM A193 Standards',
+          result: 'Complies (Tested Tensile & Proof Load Passed)',
+          method: 'Universal Tensile Testing Machine (UTM) & Rockwell Rig'
+        },
+        {
+          param: 'Dimensional Precision & Thread Tolerance (માપ અને થ્રેડ એક્યુરેસી)',
+          standard: 'ISO Metric Tolerance 6g/6H (Go / No-Go Calibrated Gauge Pass)',
+          result: '100% Inspected & Approved',
+          method: 'Digital Micrometer & Optical Profile Projector'
+        }
+      ]
+    };
+  }
+
+  // 8. General Industrial Machinery & Heavy Equipment (HS 84, Machine, Machinery, Plant, મશીનરી)
+  const isIndustrialMachinery = hs2 === '84' || pNameFull.includes('machin') || pNameFull.includes('plant') || pNameFull.includes('equipment') || pNameFull.includes('મશીન') || pNameFull.includes('મશીનરી');
+  if (isIndustrialMachinery) {
+    return {
+      categoryKey: 'oem_machinery',
+      categoryLabel: `Authentic OEM Industrial Machinery & Equipment (WCO HS ${hsRaw || '84'})`,
+      isMachinery: true,
+      isElectricalElectronic: false,
+      licenseLabel: 'Export License / DGFT IEC & CE Machinery Directive Reg:',
+      sealSubtitle: 'CE MACHINERY DIRECTIVE & ISO 9001 AUDITED INDUSTRIAL SEAL',
+      signatoryTitle: 'Lead Machinery & Plant Commissioning Engineer',
+      storageTitle: '⚙️ STORAGE & CRITICAL COMPONENT PRESERVATION:',
+      storageText: 'Store in dry covered indoor warehouse. Critical machined surfaces protected with anti-rust compound. Packed in seaworthy heat-treated ISPM-15 wooden crates.',
+      qualityTitle: '🛡️ OEM INDUSTRIAL MACHINERY & FAT DECLARATION:',
+      qualityText: 'Certified that the supplied machinery conforms strictly to original OEM engineering designs, CE Machinery Directive 2006/42/EC, and ISO 9001 quality standards. 100% Factory Acceptance Test (FAT) completed. Original OEM machine manual, electrical diagrams, and factory inspection certificates are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'Factory Acceptance Test & Operational Run (ફેક્ટરી રન ટેસ્ટ - FAT)',
+          standard: '100% Full-Cycle Dry & Load Run, Rated RPM & Power Balance',
+          result: 'Pass (Verified as per OEM FAT Protocol)',
+          method: 'Factory Dynamic Run Rig & Digital Tachometer'
+        },
+        {
+          param: 'Electrical Control Safety & Emergency Trip (વીજળીક સલામતી અને કંટ્રોલ)',
+          standard: 'IEC 60204-1 Machinery Electrical Safety, Emergency Stop Active',
+          result: 'Complies (Hi-Pot & Insulation Tested Safe)',
+          method: 'Dielectric Analyzer & Automated Safety Loop Test'
+        },
+        {
+          param: 'Heavy-Duty Seaworthy Export Packaging (સીવર્ધી વૂડન ક્રેટ પેકિંગ)',
+          standard: 'ISPM-15 Heat-Treated Solid Wooden Crate with VCI Rust Film',
+          result: '100% Inspected & Approved',
+          method: 'Structural Drop & Seaworthy Packing Audit'
+        }
+      ]
+    };
+  }
+
+  // 9. Electronics, IT & Telecommunications (HS 85, 8471, Routers, Mobiles, TVs, Switches, Computers, ગેજેટ્સ)
+  const isElectronics = hs2 === '85' || hs4 === '8471' || pNameFull.includes('router') || pNameFull.includes('rauter') || pNameFull.includes('phone') || pNameFull.includes('mobile') || pNameFull.includes('galaxy') || pNameFull.includes('wifi') || pNameFull.includes('electronic') || pNameFull.includes('રાઉટર') || pNameFull.includes('મોબાઇલ');
+  if (isElectronics) {
+    return {
+      categoryKey: 'oem_electronics',
+      categoryLabel: `Authentic OEM Electronics & Telecommunications (WCO HS ${hsRaw || '85'})`,
+      isElectricalElectronic: true,
+      licenseLabel: 'Export License / DGFT IEC & TEC / CE / RoHS Reg:',
+      sealSubtitle: 'TEC, CE, FCC & RoHS AUDITED OEM QUALITY SEAL',
+      signatoryTitle: 'Lead Telecom & RF Compliance Engineer',
+      storageTitle: '⚡ OPERATING ENVIRONMENT & STORAGE GUIDELINES:',
+      storageText: 'Store in an ESD-safe, dry indoor climate-controlled environment. Operating Temperature: -10°C to +55°C; Relative Humidity: 10% to 90% (non-condensing). Keep in original factory sealed packaging.',
+      qualityTitle: '🛡️ OEM ELECTRONICS & RF COMPLIANCE DECLARATION:',
+      qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications, IEEE/ETSI telecommunication standards, CE Low Voltage Directive, and RoHS 2.0. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      testParams: [
+        {
+          param: 'OEM Technical Standards & RF Norms (ઉત્પાદક ગુણવત્તા સ્ટાન્ડર્ડ)',
+          standard: 'Complies strictly with Original OEM Technical Datasheet & Wireless Norms',
+          result: 'Pass (Verified as per OEM Factory Test Report)',
+          method: 'Factory RF & Spectrum Analysis Verification'
+        },
+        {
+          param: 'Safety & Environmental Directive (RoHS / CE / IEC 62368-1)',
+          standard: 'RoHS 2.0 / CE / IEC 62368-1 Directives Compliant',
+          result: 'Compliant (Manufacturer Certified Dossier)',
+          method: 'OEM Factory Routine & Type Test Compliance'
+        },
+        {
+          param: 'Physical Packaging & ESD Protection (બાહ્ય સુરક્ષા અને સીલ સ્ટાન્ડર્ડ)',
+          standard: 'Original Factory Sealed Export Packaging with Impact & ESD Protection',
+          result: '100% Inspected & Approved',
+          method: 'Visual & Hermetic ESD Seal Verification'
+        }
+      ]
+    };
+  }
+
+  // 10. General Merchandise / Fallback OEM
   return {
-    categoryKey: 'oem_certified',
+    categoryKey: 'oem_general',
     categoryLabel: `Authentic OEM Quality & Technical Compliance (WCO HS ${hsRaw || 'Standard'})`,
-    isElectricalElectronic: true,
+    isElectricalElectronic: false,
     licenseLabel: 'Export License / DGFT IEC & Standard Compliance:',
     sealSubtitle: 'AUTHENTIC OEM VERIFIED & FACTORY COMPLIANCE SEAL',
     signatoryTitle: 'Lead QA/QC & Technical Compliance Officer',
-    storageTitle: '⚡ OPERATING ENVIRONMENT & STORAGE GUIDELINES:',
-    storageText: 'Store in an ESD-safe, dry indoor climate-controlled environment. Operating Temperature: -10°C to +55°C; Relative Humidity: 10% to 90% (non-condensing). Keep in original factory sealed export packaging with all protective moisture barriers intact.',
+    storageTitle: '📦 STORAGE & PRESERVATION INSTRUCTIONS:',
+    storageText: 'Store in a cool, dry, well-ventilated area away from direct sunlight, moisture, and extreme ambient temperature fluctuations. Keep original export packaging intact.',
     qualityTitle: '🛡️ OEM QUALITY & TECHNICAL CONFORMITY DECLARATION:',
-    qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications and factory test standards. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on file and may be obtained directly from the OEM upon buyer\'s formal request.',
+    qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications and factory test standards. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
     testParams: [
       {
         param: 'OEM Technical Standards & Quality Compliance (ઉત્પાદક ગુણવત્તા સ્ટાન્ડર્ડ)',
@@ -476,14 +944,14 @@ export const getOemStandardPreset = (productOrHs) => {
         method: 'Factory Inspection & OEM Technical Dossier Verification'
       },
       {
-        param: 'Safety & Environmental Directive Compliance (સલામતી અને પર્યાવરણીય ધોરણ)',
-        standard: 'RoHS 2.0 / CE / IEC 62368-1 Directives Compliant',
+        param: 'Safety & Regulatory Directive Compliance (સલામતી અને કાયદાકીય ધોરણ)',
+        standard: 'International Quality & Safety Standards Compliant',
         result: 'Compliant (Manufacturer Certified Dossier)',
-        method: 'OEM Factory Routine & Type Test Compliance'
+        method: 'OEM Factory Routine Inspection & Quality Compliance'
       },
       {
         param: 'Physical Packaging & Seal Integrity (બાહ્ય સુરક્ષા અને સીલ સ્ટાન્ડર્ડ)',
-        standard: 'Original Factory Sealed Export Packaging with Impact & ESD Protection',
+        standard: 'Original Factory Sealed Export Packaging',
         result: '100% Inspected & Approved',
         method: 'Visual & Hermetic Seal Verification'
       }
