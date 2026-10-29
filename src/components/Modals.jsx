@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import { superFastCompressImage, DEFAULT_CURRENCIES } from '../utils/realtimeSync';
-import { getCoaDataByHsCode, getDefaultParamsForHsCode } from '../utils/coaParametersEngine';
+import { getCoaDataByHsCode, getDefaultParamsForHsCode, getOemStandardPreset } from '../utils/coaParametersEngine';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
@@ -7813,6 +7813,11 @@ export default function Modals() {
                     <span style={{ fontSize: '0.74rem', background: 'rgba(45, 212, 191, 0.15)', color: '#2dd4bf', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
                       🏷️ HS: {hs}
                     </span>
+                    {(coaData.isOemCertified || coaData.categoryKey === 'oem_certified') && (
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(99, 102, 241, 0.25)', color: '#a5b4fc', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        🏷️ {currentLang === 'gu' ? 'OEM સર્ટિફાઇડ ગુણવત્તા' : 'OEM Certified Quality'}
+                      </span>
+                    )}
                     {coaData.hasCustomOverrides && (
                       <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
                         ✨ {currentLang === 'gu' ? 'એડમિન કસ્ટમાઇઝ્ડ' : 'Custom Admin Specs'}
@@ -7950,6 +7955,38 @@ export default function Modals() {
                         title={currentLang === 'gu' ? 'આ પ્રોડક્ટના HS CODE મુજબના ઓરિજિનલ પેરામીટર્સ રિસેટ કરો' : 'Reset to standard parameters for this HS Code'}
                       >
                         🔄 {currentLang === 'gu' ? 'HS CODE મુજબ ડિફોલ્ટ રિસેટ કરો' : 'Reset to HS Code Defaults'}
+                      </button>
+
+                      <button
+                        type="button"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.35))',
+                          color: '#c7d2fe',
+                          border: '1px solid #818cf8',
+                          padding: '5px 13px',
+                          borderRadius: '6px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 8px rgba(99, 102, 241, 0.25)'
+                        }}
+                        onClick={() => {
+                          const oemDefs = getOemStandardPreset(p);
+                          setCoaEditParams(JSON.parse(JSON.stringify(oemDefs.testParams)));
+                          setCoaEditStorage(oemDefs.storageText);
+                          setCoaEditQualityDecl(oemDefs.qualityText);
+                          if (showLiveToast) {
+                            showLiveToast(
+                              currentLang === 'gu'
+                                ? '🏷️ OEM ટેસ્ટ સ્ટાન્ડર્ડ્સ સફળતાપૂર્વક લોડ થયા!'
+                                : '🏷️ OEM standard compliance parameters loaded!',
+                              'info'
+                            );
+                          }
+                        }}
+                        title={currentLang === 'gu' ? 'બહારથી ખરીદેલી બ્રાન્ડેડ / OEM પ્રોડક્ટ્સ (Samsung, Routers વગેરે) માટેના સ્ટાન્ડર્ડ પેરામીટર્સ' : 'Load Standard OEM Certification Parameters for Sourced/Branded Goods'}
+                      >
+                        🏷️ {currentLang === 'gu' ? 'OEM / બ્રાન્ડેડ પ્રોડક્ટ પ્રીસેટ' : 'OEM / Brand Preset'}
                       </button>
 
                       <button
@@ -8128,11 +8165,13 @@ export default function Modals() {
                           alert(currentLang === 'gu' ? 'ઓછામાં ઓછો એક ટેસ્ટ પેરામીટર હોવો જરૂરી છે!' : 'At least one test parameter is required!');
                           return;
                         }
+                        const isOemSelection = coaEditParams.some(item => (item.param && item.param.includes('OEM')) || (item.result && item.result.includes('OEM')));
                         const updatedProduct = {
                           ...p,
                           customTestParams: cleaned,
                           customStorage: coaEditStorage.trim(),
-                          customQualityDecl: coaEditQualityDecl.trim()
+                          customQualityDecl: coaEditQualityDecl.trim(),
+                          isOemCertified: isOemSelection
                         };
                         saveProduct(updatedProduct);
                         setSelectedCoaProduct(updatedProduct);
@@ -8171,7 +8210,9 @@ export default function Modals() {
                       📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
                     </p>
                     <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
-                      GSTIN: {gstin} | {coaData.licenseLabel || (isElectricalElectronic ? 'Export License / IEC & CE Reg:' : 'Export License / APEDA:')} {apedaReg}
+                      GSTIN: {gstin} | {(isElectricalElectronic || coaData.isElectricalElectronic || coaData.categoryKey === 'oem_certified')
+                        ? `Export License / DGFT IEC & Standard Reg: IEC-${gstin.replace(/[^A-Z0-9]/g, '').slice(2, 12)} / CE-RoHS-2026`
+                        : `${coaData.licenseLabel || 'Export License / APEDA:'} ${apedaReg}`}
                     </p>
                   </div>
 
@@ -8242,6 +8283,14 @@ export default function Modals() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Official Quality & Specification Compliance Notice */}
+                <div style={{ background: '#f8fafc', borderLeft: '4px solid #0f766e', borderRight: '1px solid #e2e8f0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '10px 14px', borderRadius: '6px', marginBottom: '18px', fontSize: '0.78rem', color: '#334155' }}>
+                  <strong style={{ color: '#0f766e' }}>ℹ️ Specification & Quality Verification Clause:</strong>{' '}
+                  {(coaData.categoryKey === 'oem_certified' || p.isOemCertified || p.customTestParams?.some(t => t.param?.includes('OEM')))
+                    ? 'Supplied goods conform strictly to original OEM factory technical specifications and international compliance standards. Original manufacturer batch test certificates and regulatory dossiers are maintained on record and available upon request.'
+                    : 'All test parameters and quality benchmarks have been verified as per international export standards. Laboratory inspection dossier and pre-shipment certificates are maintained on record.'}
                 </div>
 
                 {/* Storage & Operating Environment Notes */}

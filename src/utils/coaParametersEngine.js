@@ -448,12 +448,58 @@ export const getDefaultParamsForHsCode = (productOrHs) => {
 };
 
 /**
+ * Standard OEM Preset for Third-Party / Sourced / Branded Products
+ * (Used when goods are procured from external OEMs like Samsung, Wi-Fi Routers, LG, Apple, etc.
+ * and certified based on manufacturer dossiers, factory test reports, and compliance certificates)
+ */
+export const getOemStandardPreset = (productOrHs) => {
+  const p = typeof productOrHs === 'object' && productOrHs !== null ? productOrHs : { hsCode: String(productOrHs || '') };
+  const hsRaw = String(p.hsCode || p.localHsn || '').trim();
+  const prodName = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Product';
+
+  return {
+    categoryKey: 'oem_certified',
+    categoryLabel: `Authentic OEM Quality & Technical Compliance (WCO HS ${hsRaw || 'Standard'})`,
+    isElectricalElectronic: true,
+    licenseLabel: 'Export License / DGFT IEC & Standard Compliance:',
+    sealSubtitle: 'AUTHENTIC OEM VERIFIED & FACTORY COMPLIANCE SEAL',
+    signatoryTitle: 'Lead QA/QC & Technical Compliance Officer',
+    storageTitle: '⚡ OPERATING ENVIRONMENT & STORAGE GUIDELINES:',
+    storageText: 'Store in an ESD-safe, dry indoor climate-controlled environment. Operating Temperature: -10°C to +55°C; Relative Humidity: 10% to 90% (non-condensing). Keep in original factory sealed export packaging with all protective moisture barriers intact.',
+    qualityTitle: '🛡️ OEM QUALITY & TECHNICAL CONFORMITY DECLARATION:',
+    qualityText: 'Certified that the supplied products conform strictly to original OEM technical specifications and factory test standards. Pre-dispatch inspection completed with zero manufacturing defects. Original OEM Test Certificates and compliance data sheets are maintained on file and available upon request.',
+    testParams: [
+      {
+        param: 'OEM Technical Standards & Quality Compliance (ઉત્પાદક ગુણવત્તા સ્ટાન્ડર્ડ)',
+        standard: 'Complies strictly with Original OEM Technical Datasheet & Specifications',
+        result: 'Pass (Verified as per OEM Factory Test Report)',
+        method: 'Factory Inspection & OEM Technical Dossier Verification'
+      },
+      {
+        param: 'Safety & Environmental Directive Compliance (સલામતી અને પર્યાવરણીય ધોરણ)',
+        standard: 'RoHS 2.0 / CE / IEC 62368-1 Directives Compliant',
+        result: 'Compliant (Manufacturer Certified Dossier)',
+        method: 'OEM Factory Routine & Type Test Compliance'
+      },
+      {
+        param: 'Physical Packaging & Seal Integrity (બાહ્ય સુરક્ષા અને સીલ સ્ટાન્ડર્ડ)',
+        standard: 'Original Factory Sealed Export Packaging with Impact & ESD Protection',
+        result: '100% Inspected & Approved',
+        method: 'Visual & Hermetic Seal Verification'
+      }
+    ]
+  };
+};
+
+/**
  * Main function: Returns active COA parameters for a product.
+ * If product is explicitly OEM certified, uses OEM standard preset as default.
  * If product has custom parameters saved by Admin (customTestParams), those take priority.
  * Otherwise, dynamically generates parameters strictly according to the product's HS Code.
  */
 export const getCoaDataByHsCode = (product) => {
-  const defaults = getDefaultParamsForHsCode(product);
+  const isOem = Boolean(product?.isOemCertified || product?.oemCertified || product?.complianceMode === 'oem');
+  const defaults = isOem ? getOemStandardPreset(product) : getDefaultParamsForHsCode(product);
   if (!product) return defaults;
 
   const hasCustomParams = Array.isArray(product.customTestParams) && product.customTestParams.length > 0;
@@ -466,6 +512,7 @@ export const getCoaDataByHsCode = (product) => {
     testParams: activeParams,
     storageText: activeStorage,
     qualityText: activeQualityDecl,
-    hasCustomOverrides: hasCustomParams
+    hasCustomOverrides: hasCustomParams,
+    isOemCertified: isOem
   };
 };
