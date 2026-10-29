@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import { superFastCompressImage, DEFAULT_CURRENCIES } from '../utils/realtimeSync';
+import { getCoaDataByHsCode, getDefaultParamsForHsCode } from '../utils/coaParametersEngine';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
@@ -46,6 +47,12 @@ const hsCodeDictionary = [
   { code: '850211', localHsn: '85021100', name: 'Diesel Generator Sets (ડીઝલ જનરેટર 50-500 KVA)', cat: 'Machinery' },
   { code: '847989', localHsn: '84798999', name: 'Used Industrial Plant & Machinery (વપરાયેલી મશીનરી)', cat: 'Used Machinery' },
   { code: '843780', localHsn: '84378010', name: 'Grain Milling & Sorting Machinery (અનાજ ગ્રેડિંગ મશીન)', cat: 'Machinery' },
+  { code: '851762', localHsn: '85176290', name: 'Wi-Fi Routers, Modems & High-Speed Networking Gear (વાઇ-ફાઇ રાઉટર)', cat: 'Electronics' },
+  { code: '851713', localHsn: '85171300', name: 'Smartphones & 5G Cellular Handsets (સ્માર્ટફોન / મોબાઇલ ફોન)', cat: 'Electronics' },
+  { code: '852872', localHsn: '85287217', name: 'Smart LED Televisions & 4K Ultra HD Displays (સ્માર્ટ ટીવી 55")', cat: 'Electronics' },
+  { code: '847130', localHsn: '84713010', name: 'Laptops, Notebooks & Portable Computers (લેપટોપ / કમ્પ્યુટર)', cat: 'Electronics' },
+  { code: '850440', localHsn: '85044090', name: 'Static Power Inverters, UPS & SMPS Converters (ઇન્વર્ટર / પાવર સપ્લાય)', cat: 'Electronics' },
+  { code: '853710', localHsn: '85371000', name: 'Electrical Automation & Switchgear Control Panels (કંટ્રોલ પેનલ / VFD / PLC)', cat: 'Electronics' },
   { code: '854143', localHsn: '85414300', name: 'Solar Photovoltaic Modules / Panels (સોલર પેનલ)', cat: 'Machinery' },
   { code: '520100', localHsn: '52010010', name: 'Raw Cotton Bales (કાચું રૂ)', cat: 'Textiles' },
   { code: '520811', localHsn: '52081110', name: 'Woven Cotton Fabrics & Grey Cloth (સુતરાઉ કાપડ)', cat: 'Textiles' },
@@ -149,6 +156,12 @@ export default function Modals() {
     isTradeSecurityEnabled, toggleTradeSecurity, isOemPackagingEnabled, toggleOemPackaging,
     selectedCoaProduct, setSelectedCoaProduct, setActiveSampleProduct, setIsSampleModalOpen
   } = useApp();
+
+  // Certificate of Analysis (COA) Admin Edit State
+  const [isEditingCoaParams, setIsEditingCoaParams] = useState(false);
+  const [coaEditParams, setCoaEditParams] = useState([]);
+  const [coaEditStorage, setCoaEditStorage] = useState('');
+  const [coaEditQualityDecl, setCoaEditQualityDecl] = useState('');
 
   // Admin Seller & Product Approval Control Modal State
   const [adminSellerSearch, setAdminSellerSearch] = useState('');
@@ -7769,126 +7782,14 @@ export default function Modals() {
         const p = selectedCoaProduct;
         const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Commodity';
         const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || prodNameEn;
-        const cat = (p.category || '').toLowerCase();
-        const pId = (p.id || '').toLowerCase();
         const hs = p.hsCode || p.localHsn || '847130';
 
-        const pNameFull = ((prodNameEn || '') + ' ' + (prodNameGu || '') + ' ' + (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || ''))).toLowerCase();
-
-        // 1. Electronic & Electrical Detection (Automation, PLC, VFD, Electrical Panels, Electronics, Sensors, Cables)
-        const isElectricalElectronic = 
-          cat.includes('elect') || cat.includes('auto') ||
-          pId.includes('elect') || pId.includes('auto') || pId.includes('vfd') || pId.includes('plc') || pId.includes('panel') ||
-          pNameFull.includes('automation') || pNameFull.includes('controller') || pNameFull.includes('electronic') || 
-          pNameFull.includes('electrical') || pNameFull.includes('plc') || pNameFull.includes('vfd') || 
-          pNameFull.includes('inverter') || pNameFull.includes('sensor') || pNameFull.includes('switchgear') || 
-          pNameFull.includes('panel') || pNameFull.includes('circuit') || pNameFull.includes('pcb') || 
-          pNameFull.includes('transformer') || pNameFull.includes('relay') || pNameFull.includes('cable') || 
-          pNameFull.includes('wire') || pNameFull.includes('motor') || pNameFull.includes('power supply') ||
-          pNameFull.includes('ઈલેક્ટ્રોનિક') || pNameFull.includes('ઈલેક્ટ્રીકલ') || pNameFull.includes('ઓટોમેશન') ||
-          pNameFull.includes('કંટ્રોલર') || pNameFull.includes('પેનલ') || pNameFull.includes('મોટર');
-
-        // 2. Agro & Spices
-        const isAgroSpice = !isElectricalElectronic && (cat.includes('agro') || cat.includes('spice') || pId.includes('turmeric') || pId.includes('cumin') || pId.includes('pepper') || pId.includes('chilli'));
-        
-        // 3. Rice & Grains
-        const isRice = !isElectricalElectronic && (cat.includes('rice') || cat.includes('grain') || pId.includes('basmati'));
-        
-        // 4. Packaging
-        const isPackaging = !isElectricalElectronic && (cat.includes('pack') || pId.includes('pack') || pId.includes('bag') || pNameFull.includes('jute') || pNameFull.includes('packaging'));
-
-        // 5. Textile & Garments
-        const isTextile = !isElectricalElectronic && (cat.includes('text') || cat.includes('garment') || cat.includes('fabric') || pNameFull.includes('cotton') || pNameFull.includes('saree'));
-
-        // 6. Dairy
-        const isDairy = !isElectricalElectronic && (cat.includes('dairy') || cat.includes('milk'));
-
-        // 7. Mechanical Engineering & Fasteners (CNC, lathe, bolts, nuts, metal components)
-        const isEngineering = !isElectricalElectronic && (cat.includes('eng') || cat.includes('cnc') || cat.includes('machin') || cat.includes('industrial') || pId.includes('fastener'));
-
-        // Parameter list generator
-        let testParams = [];
-        if (isElectricalElectronic) {
-          testParams = [
-            { param: 'Rated Supply Voltage (ઓપરેટિંગ વોલ્ટેજ)', standard: '230V AC (1-Ph) / 415V AC (3-Ph) ± 10%', result: '415V AC (Stable / Nominal)', method: 'Digital True-RMS Power Analyzer (IEC 60038)' },
-            { param: 'Rated Operating Frequency (આવર્તન / ફ્રિક્વન્સી)', standard: '50 Hz / 60 Hz ± 5% (Pure Waveform)', result: '50.0 Hz (Complies)', method: 'Frequency Spectrum Counter (IEC 60255)' },
-            { param: 'Insulation Resistance (ઇન્સ્યુલેશન રેઝિસ્ટન્સ - IR)', standard: 'Min 100 MΩ @ 500V DC / 1000V DC', result: '> 550 MΩ (High Isolation)', method: 'Calibrated Megohmmeter (IEC 60204-1 / IS 10118)' },
-            { param: 'Dielectric Withstand / Hi-Pot (વીજળીક સહનશક્તિ)', standard: '2.0 kV AC for 60 sec (Zero Breakdown)', result: '2.5 kV AC Passed (Leakage < 0.8 mA)', method: 'High Voltage Breakdown Rig (IEC 60947-1)' },
-            { param: 'Enclosure Ingress Protection (IP પ્રોટેક્શન ગ્રેડ)', standard: 'IP65 / IP66 (Dust-Tight & Water-Jet Proof)', result: 'IP65 Certified (Sealed Enclosure)', method: 'Dust & Water Ingress Chamber (IEC 60529)' },
-            { param: 'Electromagnetic Immunity (EMC / EMI નોઇઝ સપ્રેસન)', standard: 'EN 61000-6-2 (Industrial Immunity) & EN 61000-6-4', result: 'PASSED (High Transient Immunity)', method: 'EMC Anechoic Chamber (CISPR 11 / EN 55011)' },
-            { param: 'Total Harmonic Distortion (THD પાવર ક્વોલિટી)', standard: 'Max THD < 3.0% at Rated Full Load', result: '1.85% THD (Ultra-Low Distortion)', method: 'Fast Fourier Transform (FFT) Analyzer (IEC 61000-3-2)' },
-            { param: 'Full Load Operating Temperature (ઓપરેટિંગ તાપમાન)', standard: 'Ambient -10°C to +55°C (Temp Rise < 40°C)', result: '+31.5°C Thermal Rise (Pass)', method: 'FLIR Calibrated Thermography & RTD' },
-            { param: 'Short Circuit Withstand Capacity (શોર્ટ સર્કિટ રક્ષણ)', standard: '10 kA to 35 kA for 1 second', result: '25 kA / 1 sec (Fully Withstands)', method: 'High Current Testing Rig (IEC 61439-1)' },
-            { param: 'RoHS 2.0 & CE Environmental Safety Directive', standard: '100% Lead-Free & CE Low Voltage Directive (LVD)', result: 'COMPLIES (RoHS Certified / Lead-Free)', method: 'X-ray Fluorescence Spectrometry (IEC 62321)' }
-          ];
-        } else if (isAgroSpice) {
-          testParams = [
-            { param: 'Physical Appearance & Form', standard: 'Homogeneous Fine Powder / Whole', result: 'Complies', method: 'Visual / Organoleptic' },
-            { param: 'Active Purity / Curcuminoids', standard: 'Min 3.0% - 5.0% w/w', result: '3.85% (Certified)', method: 'HPLC / ASTA 18.0' },
-            { param: 'Moisture Content', standard: 'Max 10.0% w/w', result: '7.8% (Dry Basis)', method: 'Vacuum Oven (AOAC 925.10)' },
-            { param: 'Total Ash Content', standard: 'Max 7.0% w/w', result: '5.2% w/w', method: 'Muffle Furnace @ 550°C' },
-            { param: 'Acid Insoluble Ash', standard: 'Max 1.0% w/w', result: '0.42% w/w', method: 'Gravimetric (IS 1797)' },
-            { param: 'Volatile Oil Content', standard: 'Min 2.5% - 3.5% v/w', result: '3.1% v/w', method: 'Steam Distillation (Clevenger)' },
-            { param: 'Granulation / Fineness', standard: 'Min 95% pass through 80 Mesh', result: '98.5% Pass', method: 'Sieve Analysis' },
-            { param: 'Extraneous Foreign Matter', standard: 'Max 0.5% w/w', result: 'NIL (Sortex Cleaned)', method: 'Manual Inspection' },
-            { param: 'Aflatoxin (B1+B2+G1+G2)', standard: 'Max 10.0 ppb (EU Regulation)', result: '< 2.0 ppb (Complies)', method: 'LC-MS/MS' },
-            { param: 'Salmonella & E. Coli', standard: 'Absent in 25 grams', result: 'NEGATIVE (Safe)', method: 'Microbiological Culture' }
-          ];
-        } else if (isRice) {
-          testParams = [
-            { param: 'Average Grain Length (AGL)', standard: 'Min 8.35 mm (Pre-cooked)', result: '8.42 mm (Extra Long)', method: 'Digital Vernier Caliper' },
-            { param: 'Moisture Content', standard: 'Max 12.0% w/w', result: '11.2% w/w', method: 'Air Oven Method' },
-            { param: 'Broken / Damaged Grains', standard: 'Max 1.0% w/w', result: '0.4% w/w', method: 'Electronic Length Grader' },
-            { param: 'Foreign Matter & Paddy Grains', standard: 'Max 0.1% / NIL', result: 'NIL (100% Sortexed)', method: 'Gravity Table Inspection' },
-            { param: 'Purity & Varietal Authenticity', standard: 'Min 95.0% Basmati DNA', result: '98.0% Pure Varietal', method: 'Polymerase Chain Reaction (PCR)' },
-            { param: 'Elongation Ratio (Post Cooking)', standard: 'Min 2.0x to 2.5x length', result: '2.25x Elongation', method: 'Standard Boiling Test' },
-            { param: 'Chalky Grains', standard: 'Max 2.0% w/w', result: '0.8% w/w', method: 'Translucent Light Board' }
-          ];
-        } else if (isEngineering) {
-          testParams = [
-            { param: 'Material Chemical Composition', standard: 'AISI SS 304 / 316 / High-Tensile', result: 'Complies (Spectro Certified)', method: 'Optical Emission Spectrometry' },
-            { param: 'Dimensional Tolerance', standard: '± 0.005 mm (Grade Precision)', result: '± 0.003 mm (Pass)', method: 'CMM 3D Coordinate Probe' },
-            { param: 'Surface Roughness (Ra)', standard: 'Ra 0.4 µm - 0.8 µm', result: 'Ra 0.48 µm (Mirror Finish)', method: 'Mitutoyo Surface Profilometer' },
-            { param: 'Material Hardness (HRC)', standard: '45 - 52 HRC', result: '48.5 HRC', method: 'Rockwell Hardness Tester' },
-            { param: 'Tensile Yield Strength', standard: 'Min 520 MPa', result: '585 MPa', method: 'Universal Tensile Testing (UTM)' },
-            { param: 'Non-Destructive Testing (NDT)', standard: '100% Defect-Free Surface', result: 'Zero Cracks / Porosity', method: 'Dye Penetrant Inspection (DPI)' }
-          ];
-        } else if (isPackaging) {
-          testParams = [
-            { param: 'Fabric / Material Composition', standard: '100% Eco-Friendly Jute / Virgin PP', result: '100% Complies (Certified)', method: 'Textile Fiber Identification' },
-            { param: 'Fabric Weight / Grammage (GSM)', standard: '300 GSM ± 5% / 10 oz/sq.yd', result: '305 GSM (Heavy Duty)', method: 'GSM Circular Cutter (ASTM D3776)' },
-            { param: 'Tensile Breaking Strength (Warp)', standard: 'Min 1200 N / 50 mm strip', result: '1350 N (High Tensile)', method: 'Strip Tensile Test (IS 1969)' },
-            { param: 'Tensile Breaking Strength (Weft)', standard: 'Min 950 N / 50 mm strip', result: '1080 N', method: 'Strip Tensile Test (IS 1969)' },
-            { param: 'Seam & Stitching Strength', standard: 'Min 450 N (Double Lock Stitch)', result: '520 N (Reinforced)', method: 'Seam Strength Tester' },
-            { param: 'Moisture Regain / Content', standard: 'Max 14.0% w/w', result: '12.5% w/w', method: 'Oven Drying Method (IS 1964)' },
-            { param: 'Safe Working Load (SWL)', standard: 'Rated for 25kg / 50kg / 1000kg', result: 'Tested at 5:1 Safety Factor', method: 'Cyclic Top-Lift Load Test' },
-            { param: 'Food Grade & Hydrocarbon-Free', standard: 'Zero Mineral Oil / Hydrocarbon residue', result: 'COMPLIES (Food Grade Oil Used)', method: 'GC-FID Hydrocarbon Analysis' }
-          ];
-        } else if (isTextile) {
-          testParams = [
-            { param: 'Fiber Composition', standard: '100% Premium Combed Cotton', result: '100% Cotton (Certified)', method: 'Microscopic & Chemical Analysis' },
-            { param: 'Fabric Weight (GSM)', standard: '200 GSM ± 3%', result: '202 GSM', method: 'GSM Circular Cutter (ASTM D3776)' },
-            { param: 'Color Fastness to Washing', standard: 'Min Grade 4 (ISO 105-C06)', result: 'Grade 4 - 5 (Excellent)', method: 'Launder-Ometer Washing Cycle' },
-            { param: 'Dimensional Stability (Shrinkage)', standard: 'Max ± 2.0% Length & Width', result: '- 1.2% (Pass)', method: 'AATCC 135 Washing Test' },
-            { param: 'Tear & Tensile Strength', standard: 'Min 28 N (Warp & Weft)', result: '34 N / 32 N', method: 'Elmendorf Tear Tester' }
-          ];
-        } else if (isDairy) {
-          testParams = [
-            { param: 'Milk Protein (in MSNF)', standard: 'Min 34.0% w/w', result: '34.8% w/w', method: 'Kjeldahl Nitrogen Method' },
-            { param: 'Milk Fat Content', standard: 'Max 1.25% w/w', result: '0.85% w/w', method: 'Gerber Method' },
-            { param: 'Moisture Content', standard: 'Max 4.0% w/w', result: '3.4% w/w', method: 'Karl Fischer Titration' },
-            { param: 'Titratable Acidity', standard: 'Max 0.15% (as Lactic Acid)', result: '0.12% w/w', method: 'NaOH Titration' },
-            { param: 'Solubility Index', standard: 'Max 1.0 ml', result: '0.2 ml (Instant Dissolve)', method: 'ADPI Centrifuge Method' },
-            { param: 'Total Plate Count (TPC)', standard: 'Max 10,000 CFU / g', result: '< 1,500 CFU / g', method: 'Standard Plate Count (SPC)' }
-          ];
-        } else {
-          testParams = [
-            { param: 'Appearance / Form', standard: 'Uniform Premium Grade Standard', result: 'Complies 100%', method: 'Visual Inspection' },
-            { param: 'Moisture / Dry Matter', standard: 'Conforms to Export Standard', result: 'Within Certified Limits', method: 'Laboratory Standard' },
-            { param: 'Purity / Grade Index', standard: 'Grade-1 Export Quality', result: '99.2% Certified', method: 'Standard Analytical Method' },
-            { param: 'Contaminant Screening', standard: 'Zero Hazardous Residue', result: 'PASSED (Non-Detect)', method: 'Chromatography Screening' }
-          ];
-        }
+        // Retrieve dynamic parameters and regulatory info by WCO HS CODE & product context
+        const coaData = getCoaDataByHsCode(p);
+        const activeTestParams = (isEditingCoaParams && coaEditParams && coaEditParams.length > 0) ? coaEditParams : coaData.testParams;
+        const activeStorageText = (isEditingCoaParams && coaEditStorage !== '') ? coaEditStorage : coaData.storageText;
+        const activeQualityText = (isEditingCoaParams && coaEditQualityDecl !== '') ? coaEditQualityDecl : coaData.qualityText;
+        const isElectricalElectronic = coaData.isElectricalElectronic;
 
         const compName = activeCompany?.name || 'Atsondika Global Trade';
         const apedaReg = activeCompany?.apedaReg || 'APEDA/REG/SURAT/2026/8942';
@@ -7896,8 +7797,8 @@ export default function Modals() {
 
         return (
           <div className="modal-backdrop show" style={{ zIndex: 9999 }}>
-            <div className="glass-card modal-card" style={{ maxWidth: '960px', width: '95%', maxHeight: '92vh', overflowY: 'auto', background: '#090d16', border: '1px solid rgba(45, 212, 191, 0.4)' }}>
-              <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <div className="glass-card modal-card" style={{ maxWidth: '1000px', width: '96%', maxHeight: '94vh', overflowY: 'auto', background: '#090d16', border: '1px solid rgba(45, 212, 191, 0.4)' }}>
+              <button className="modal-close" onClick={() => { setIsEditingCoaParams(false); setActiveModal(null); }}>&times;</button>
 
               {/* Action Toolbar */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
@@ -7905,12 +7806,55 @@ export default function Modals() {
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     🧪 {currentLang === 'gu' ? 'લેબ એનાલિસિસ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ' : 'Certificate of Analysis (COA) & Technical Spec Sheet'}
                   </h3>
-                  <span style={{ fontSize: '0.8rem', color: '#2dd4bf', fontWeight: 700 }}>
-                    Official Quality & Compliance Specification Document
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#2dd4bf', fontWeight: 700 }}>
+                      Official Quality & Compliance Specification Document
+                    </span>
+                    <span style={{ fontSize: '0.74rem', background: 'rgba(45, 212, 191, 0.15)', color: '#2dd4bf', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                      🏷️ HS: {hs}
+                    </span>
+                    {coaData.hasCustomOverrides && (
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        ✨ {currentLang === 'gu' ? 'એડમિન કસ્ટમાઇઝ્ડ' : 'Custom Admin Specs'}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  {isAdminLoggedIn && (
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{
+                        background: isEditingCoaParams ? '#ef4444' : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        color: '#ffffff',
+                        fontSize: '0.82rem',
+                        padding: '7px 16px',
+                        fontWeight: 800,
+                        border: 'none',
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        boxShadow: '0 2px 10px rgba(245, 158, 11, 0.35)'
+                      }}
+                      onClick={() => {
+                        if (!isEditingCoaParams) {
+                          setCoaEditParams(JSON.parse(JSON.stringify(coaData.testParams)));
+                          setCoaEditStorage(coaData.storageText);
+                          setCoaEditQualityDecl(coaData.qualityText);
+                          setIsEditingCoaParams(true);
+                        } else {
+                          setIsEditingCoaParams(false);
+                        }
+                      }}
+                      title={currentLang === 'gu' ? 'એડમિન તરીકે ટેસ્ટ પેરામીટર્સ બદલો' : 'Edit Test Parameters as Admin'}
+                    >
+                      {isEditingCoaParams
+                        ? '❌ ' + (currentLang === 'gu' ? 'એડિટર બંધ કરો' : 'Close Editor')
+                        : '✏️ ' + (currentLang === 'gu' ? 'પેરામીટર્સ એડિટ કરો' : 'Edit Parameters')}
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     className="btn-primary"
@@ -7953,6 +7897,7 @@ export default function Modals() {
                     onClick={() => {
                       if (setActiveSampleProduct) setActiveSampleProduct(p);
                       if (setIsSampleModalOpen) setIsSampleModalOpen(true);
+                      setIsEditingCoaParams(false);
                       setActiveModal(null);
                     }}
                   >
@@ -7960,6 +7905,255 @@ export default function Modals() {
                   </button>
                 </div>
               </div>
+
+              {/* ADMIN EDIT CONTROL PANEL (Visible when isEditingCoaParams is true) */}
+              {isAdminLoggedIn && isEditingCoaParams && (
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))',
+                  border: '2px solid #f59e0b',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '22px',
+                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', paddingBottom: '10px' }}>
+                    <div>
+                      <h4 style={{ margin: 0, color: '#fbbf24', fontSize: '1.05rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        👑 {currentLang === 'gu' ? 'એડમિન કંટ્રોલ: COA ટેસ્ટ પેરામીટર્સ લાઈવ એડિટર' : 'Admin Control: Live COA Test Parameters Editor'}
+                      </h4>
+                      <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: '#cbd5e1' }}>
+                        {currentLang === 'gu'
+                          ? `પ્રોડક્ટ: "${prodNameEn}" | HS CODE: ${hs} (${coaData.categoryLabel})`
+                          : `Product: "${prodNameEn}" | HS CODE: ${hs} (${coaData.categoryLabel})`}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(56, 189, 248, 0.2)',
+                          color: '#38bdf8',
+                          border: '1px solid #38bdf8',
+                          padding: '5px 12px',
+                          borderRadius: '6px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          const defs = getDefaultParamsForHsCode(p);
+                          setCoaEditParams(JSON.parse(JSON.stringify(defs.testParams)));
+                          setCoaEditStorage(defs.storageText);
+                          setCoaEditQualityDecl(defs.qualityText);
+                        }}
+                        title={currentLang === 'gu' ? 'આ પ્રોડક્ટના HS CODE મુજબના ઓરિજિનલ પેરામીટર્સ રિસેટ કરો' : 'Reset to standard parameters for this HS Code'}
+                      >
+                        🔄 {currentLang === 'gu' ? 'HS CODE મુજબ ડિફોલ્ટ રિસેટ કરો' : 'Reset to HS Code Defaults'}
+                      </button>
+
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(74, 222, 128, 0.2)',
+                          color: '#4ade80',
+                          border: '1px solid #4ade80',
+                          padding: '5px 12px',
+                          borderRadius: '6px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          setCoaEditParams([
+                            ...coaEditParams,
+                            { param: '', standard: '', result: '', method: '' }
+                          ]);
+                        }}
+                      >
+                        ➕ {currentLang === 'gu' ? 'નવો પેરામીટર ઉમેરો' : 'Add Parameter Row'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Editable Test Parameters Table */}
+                  <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', color: '#e2e8f0' }}>
+                      <thead>
+                        <tr style={{ background: 'rgba(245, 158, 11, 0.2)', borderBottom: '1px solid rgba(245, 158, 11, 0.4)' }}>
+                          <th style={{ padding: '8px 6px', textAlign: 'center', width: '36px' }}>Sr.</th>
+                          <th style={{ padding: '8px', textAlign: 'left', minWidth: '180px' }}>Test Parameter (ગુણવત્તા પેરામીટર)</th>
+                          <th style={{ padding: '8px', textAlign: 'left', minWidth: '180px' }}>Official Standard Limit</th>
+                          <th style={{ padding: '8px', textAlign: 'left', minWidth: '160px' }}>Observed Result</th>
+                          <th style={{ padding: '8px', textAlign: 'left', minWidth: '160px' }}>Test Method Standard</th>
+                          <th style={{ padding: '8px', textAlign: 'center', width: '40px' }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {coaEditParams.map((row, idx) => (
+                          <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                            <td style={{ padding: '6px', textAlign: 'center', fontWeight: 800, color: '#fbbf24' }}>{idx + 1}</td>
+                            <td style={{ padding: '6px' }}>
+                              <input
+                                type="text"
+                                style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
+                                value={row.param || ''}
+                                placeholder="Parameter name..."
+                                onChange={(e) => {
+                                  const updated = [...coaEditParams];
+                                  updated[idx].param = e.target.value;
+                                  setCoaEditParams(updated);
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: '6px' }}>
+                              <input
+                                type="text"
+                                style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
+                                value={row.standard || ''}
+                                placeholder="Standard limit..."
+                                onChange={(e) => {
+                                  const updated = [...coaEditParams];
+                                  updated[idx].standard = e.target.value;
+                                  setCoaEditParams(updated);
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: '6px' }}>
+                              <input
+                                type="text"
+                                style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#4ade80', fontWeight: 700, fontSize: '0.8rem' }}
+                                value={row.result || ''}
+                                placeholder="Observed result..."
+                                onChange={(e) => {
+                                  const updated = [...coaEditParams];
+                                  updated[idx].result = e.target.value;
+                                  setCoaEditParams(updated);
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: '6px' }}>
+                              <input
+                                type="text"
+                                style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#94a3b8', fontSize: '0.8rem' }}
+                                value={row.method || ''}
+                                placeholder="Test method..."
+                                onChange={(e) => {
+                                  const updated = [...coaEditParams];
+                                  updated[idx].method = e.target.value;
+                                  setCoaEditParams(updated);
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: '6px', textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.78rem' }}
+                                onClick={() => {
+                                  const updated = coaEditParams.filter((_, i) => i !== idx);
+                                  setCoaEditParams(updated);
+                                }}
+                                title="Delete row"
+                              >
+                                🗑️
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Storage Instructions & Quality Declaration Customizer */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
+                        📦 Storage & Operating Guidelines (સ્ટોરેજ સૂચનાઓ):
+                      </label>
+                      <textarea
+                        style={{ width: '100%', minHeight: '65px', padding: '8px', borderRadius: '6px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
+                        value={coaEditStorage}
+                        onChange={(e) => setCoaEditStorage(e.target.value)}
+                        placeholder="Custom storage & operating environment instructions..."
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
+                        🛡️ Safety & Quality Declaration (ક્વોલિટી ડિક્લેરેશન):
+                      </label>
+                      <textarea
+                        style={{ width: '100%', minHeight: '65px', padding: '8px', borderRadius: '6px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
+                        value={coaEditQualityDecl}
+                        onChange={(e) => setCoaEditQualityDecl(e.target.value)}
+                        placeholder="Custom quality and compliance safety declaration..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Save and Cancel Buttons */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <button
+                      type="button"
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: '#cbd5e1',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        padding: '8px 18px',
+                        borderRadius: '8px',
+                        fontSize: '0.84rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => setIsEditingCoaParams(false)}
+                    >
+                      ❌ {currentLang === 'gu' ? 'કેન્સલ' : 'Cancel'}
+                    </button>
+
+                    <button
+                      type="button"
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '8px 24px',
+                        borderRadius: '8px',
+                        fontSize: '0.88rem',
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
+                      }}
+                      onClick={() => {
+                        const cleaned = coaEditParams.filter(item => item && item.param && item.param.trim());
+                        if (cleaned.length === 0) {
+                          alert(currentLang === 'gu' ? 'ઓછામાં ઓછો એક ટેસ્ટ પેરામીટર હોવો જરૂરી છે!' : 'At least one test parameter is required!');
+                          return;
+                        }
+                        const updatedProduct = {
+                          ...p,
+                          customTestParams: cleaned,
+                          customStorage: coaEditStorage.trim(),
+                          customQualityDecl: coaEditQualityDecl.trim()
+                        };
+                        saveProduct(updatedProduct);
+                        setSelectedCoaProduct(updatedProduct);
+                        setIsEditingCoaParams(false);
+                        if (showLiveToast) {
+                          showLiveToast(
+                            currentLang === 'gu'
+                              ? '✅ આ પ્રોડક્ટના COA પેરામીટર્સ સફળતાપૂર્વક અપડેટ અને સેવ થયા!'
+                              : '✅ COA parameters updated and saved successfully!',
+                            'success'
+                          );
+                        } else {
+                          alert('✅ COA parameters updated and saved successfully!');
+                        }
+                      }}
+                    >
+                      💾 {currentLang === 'gu' ? 'સેવ કરો અને COA અપડેટ કરો' : 'Save & Update COA'}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Printable White Sheet */}
               <div id="printableCoaSheet" style={{ background: '#ffffff', color: '#0f172a', padding: '32px', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -7977,7 +8171,7 @@ export default function Modals() {
                       📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
                     </p>
                     <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
-                      GSTIN: {gstin} | {isElectricalElectronic ? 'Export License / IEC & CE Reg:' : (isEngineering ? 'Export License / EEPC & ISO Reg:' : (isPackaging ? 'Export License / ISO Reg:' : 'Export License / APEDA:'))} {apedaReg}
+                      GSTIN: {gstin} | {coaData.licenseLabel || (isElectricalElectronic ? 'Export License / IEC & CE Reg:' : 'Export License / APEDA:')} {apedaReg}
                     </p>
                   </div>
 
@@ -8016,7 +8210,7 @@ export default function Modals() {
                   </div>
                   <div>
                     <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>EXPORT PACKING / MOQ:</span>
-                    <span>{p.packaging || '25kg / 50kg Bags'} | MOQ: {p.moq || '1 x 20ft FCL Container'}</span>
+                    <span>{p.packaging || 'Standard Export Packaging'} | MOQ: {p.moq || '1 Container (20ft FCL)'}</span>
                   </div>
                 </div>
 
@@ -8037,7 +8231,7 @@ export default function Modals() {
                       </tr>
                     </thead>
                     <tbody>
-                      {testParams.map((item, idx) => (
+                      {activeTestParams.map((item, idx) => (
                         <tr key={idx} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                           <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#64748b', fontWeight: 700 }}>{idx + 1}</td>
                           <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>{item.param}</td>
@@ -8050,83 +8244,23 @@ export default function Modals() {
                   </table>
                 </div>
 
-                {/* Storage & Shelf Life / Operating Environment Notes */}
+                {/* Storage & Operating Environment Notes */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', background: isElectricalElectronic ? '#f0fdf4' : '#f0fdfa', padding: '14px 18px', borderRadius: '8px', border: `1px solid ${isElectricalElectronic ? '#86efac' : '#99f6e4'}`, fontSize: '0.8rem', marginBottom: '22px' }}>
                   <div>
-                    {isElectricalElectronic ? (
-                      <>
-                        <strong style={{ color: '#047857', display: 'block', marginBottom: '4px' }}>⚡ OPERATING ENVIRONMENT & INSTALLATION GUIDELINES:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Operate in clean, indoor industrial environment. Ambient operating temperature: -10°C to +55°C; Relative humidity &lt; 90% (non-condensing). Solid low-impedance copper earth grounding (&lt; 2.0 Ω) and surge suppression (SPD) required.
-                        </div>
-                      </>
-                    ) : isEngineering ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>⚙️ STORAGE, HANDLING & CORROSION PREVENTION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Store in dry indoor warehouse wrapped in VCI anti-corrosion barrier film. Keep away from water splashing, corrosive acid mists, and extreme thermal cycling. Coated with export grade rust-preventive oil.
-                        </div>
-                      </>
-                    ) : isPackaging ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>📦 STORAGE & MOISTURE PROTECTION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Store indoors on elevated wooden/plastic pallets in dry, well-ventilated warehouse. Keep away from direct dampness, open flame, and rodent-prone areas. Maintain relative humidity below 65%.
-                        </div>
-                      </>
-                    ) : isTextile ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🧶 STORAGE & FABRIC CARE INSTRUCTIONS:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Store in clean, dust-free dry warehouse. Keep cartons or rolls wrapped and elevated on pallets. Avoid exposure to damp moisture, mildew, or direct sunlight to prevent discoloration.
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🌿 STORAGE & PRESERVATION INSTRUCTIONS:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Store in a cool, dry, well-ventilated area away from direct sunlight, moisture, and pungent odors. Recommended storage temperature below 25°C with relative humidity below 60%.
-                        </div>
-                      </>
-                    )}
+                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '4px' }}>
+                      {coaData.storageTitle}
+                    </strong>
+                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                      {activeStorageText}
+                    </div>
                   </div>
                   <div>
-                    {isElectricalElectronic ? (
-                      <>
-                        <strong style={{ color: '#047857', display: 'block', marginBottom: '4px' }}>🛡️ ELECTRICAL SAFETY & QUALITY DECLARATION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Certified 100% compliant with IEC 60204-1, CE Low Voltage Directive (LVD) &amp; RoHS 2.0. 100% pre-tested with 72-hour full-load burn-in cycle. Zero manufacturing defects. Safe for international industrial deployment.
-                        </div>
-                      </>
-                    ) : isEngineering ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ METALLURGICAL & PRECISION DECLARATION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Certified 100% manufactured from genuine mill-certified alloys (EN 10204 3.1). Free from cracks, internal voids, or dimensional defects. Conforms to ISO 2768 international precision standards.
-                        </div>
-                      </>
-                    ) : isPackaging ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ PACKAGING COMPLIANCE DECLARATION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Certified manufactured from 100% eco-friendly, virgin food-grade raw materials. Zero harmful mineral oil hydrocarbons (MOSH/MOAH) and heavy metals. Conforms to ISO 22000 &amp; FDA export packaging norms.
-                        </div>
-                      </>
-                    ) : isTextile ? (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ TEXTILE QUALITY & SAFETY DECLARATION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Certified 100% free from banned azo dyes, formaldehyde, and harmful amines. OEKO-TEX Standard 100 compliant. Pre-shrunk and color-fast for international export.
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <strong style={{ color: '#0f766e', display: 'block', marginBottom: '4px' }}>🛡️ QUALITY DECLARATION:</strong>
-                        <div style={{ color: '#334155', lineHeight: '1.5' }}>
-                          Certified 100% free from unauthorized pesticides, artificial colors, and synthetic adulterants. Fit for human consumption / export under international trade compliance.
-                        </div>
-                      </>
-                    )}
+                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '4px' }}>
+                      {coaData.qualityTitle}
+                    </strong>
+                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                      {activeQualityText}
+                    </div>
                   </div>
                 </div>
 
@@ -8134,11 +8268,11 @@ export default function Modals() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '2px solid #e2e8f0' }}>
                   <div>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', border: `1px dashed ${isElectricalElectronic ? '#059669' : '#0f766e'}`, background: isElectricalElectronic ? 'rgba(5, 150, 105, 0.08)' : 'rgba(15, 118, 110, 0.05)', color: isElectricalElectronic ? '#047857' : '#0f766e', fontSize: '0.78rem', fontWeight: 800 }}>
-                      🏵️ OFFICIALLY VERIFIED & AUDITED QUALITY CONTROL SEAL
+                      🏵️ {coaData.sealSubtitle || 'OFFICIALLY VERIFIED & AUDITED QUALITY CONTROL SEAL'}
                     </div>
                     <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
                       {isElectricalElectronic
-                        ? 'Pre-Dispatch Routine & Type Testing completed as per IEC/CE standards. Third-Party PSI (TUV / SGS / BV) allowed.'
+                        ? 'Pre-Dispatch Routine & Type Testing completed as per IEC/CE/RoHS standards. Third-Party PSI (TUV / SGS / BV) allowed.'
                         : 'Third-Party PSI Inspection allowed by SGS / Bureau Veritas prior to loading.'}
                     </div>
                   </div>
@@ -8147,7 +8281,7 @@ export default function Modals() {
                     <div style={{ borderBottom: '1px solid #475569', width: '160px', margin: '0 auto 6px auto' }}></div>
                     <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>Authorized Quality Signatory</strong>
                     <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
-                      {isElectricalElectronic ? 'Lead QA/QC Automation & Electrical Engineer' : 'Chief QC Officer'} | {compName}
+                      {coaData.signatoryTitle || (isElectricalElectronic ? 'Lead QA/QC Automation & Electrical Engineer' : 'Chief QC Officer')} | {compName}
                     </span>
                   </div>
                 </div>

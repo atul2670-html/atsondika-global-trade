@@ -1855,6 +1855,9 @@ export function AppProvider({ children }) {
       merchantName: productData.merchantName || (currentMerchant ? currentMerchant.businessName : (targetExisting ? targetExisting.merchantName : undefined)),
       merchantPhone: productData.merchantPhone || (currentMerchant ? currentMerchant.phone : (targetExisting ? targetExisting.merchantPhone : undefined)),
       merchantEmail: productData.merchantEmail || (currentMerchant ? currentMerchant.email : (targetExisting ? targetExisting.merchantEmail : undefined)),
+      customTestParams: productData.customTestParams !== undefined ? productData.customTestParams : (targetExisting ? targetExisting.customTestParams : undefined),
+      customStorage: productData.customStorage !== undefined ? productData.customStorage : (targetExisting ? targetExisting.customStorage : undefined),
+      customQualityDecl: productData.customQualityDecl !== undefined ? productData.customQualityDecl : (targetExisting ? targetExisting.customQualityDecl : undefined),
       updatedAt: Date.now()
     };
     
