@@ -49,10 +49,8 @@ export default function Navbar() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
 
@@ -157,12 +155,12 @@ export default function Navbar() {
 
           <div className="top-info" style={{ gap: '10px', alignItems: 'center' }}>
             {/* ATTACHED UNIFIED LANGUAGE CONTROL CAPSULE */}
-            <div className="lang-box-grouped" ref={langRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(45, 212, 191, 0.45)', borderRadius: '20px', padding: '2px 4px', boxShadow: '0 0 12px rgba(45, 212, 191, 0.25)' }}>
+            <div className="lang-box-grouped" ref={langRef} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(45, 212, 191, 0.45)', borderRadius: '20px', padding: '2px 4px', boxShadow: '0 0 12px rgba(45, 212, 191, 0.25)', zIndex: langMenuOpen ? 999999 : 50 }}>
               {/* 1. Main Language Dropdown Switcher */}
               <button
                 type="button"
                 className="lang-btn"
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLangMenuOpen(prev => !prev); }}
                 style={{ padding: '3px 8px', fontSize: '0.75rem', background: 'transparent', border: 'none', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
                 title="Select Display Language"
               >
@@ -220,7 +218,7 @@ export default function Navbar() {
 
               {/* 3. Dropdown Menu containing Language Options AND Top 1-Click Auto-Translate Action */}
               {langMenuOpen && (
-                <div className="lang-menu show" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', zIndex: 1200, minWidth: '220px', padding: '6px', background: '#0b0f19', border: '1px solid rgba(45, 212, 191, 0.4)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
+                <div className="lang-menu show" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 999999, minWidth: '220px', padding: '6px', background: '#0b0f19', border: '1px solid rgba(45, 212, 191, 0.4)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
                   {/* Featured 1-Click Action Inside Dropdown */}
                   <button
                     type="button"

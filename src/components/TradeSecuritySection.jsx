@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import EmbassyConnectDesk from './EmbassyConnectDesk';
 
 export default function TradeSecuritySection() {
   const { currentLang, activeCompany, setIsRfqDrawerOpen, setActiveModal, isAdminLoggedIn, toggleTradeSecurity } = useApp();
@@ -243,6 +244,11 @@ export default function TradeSecuritySection() {
             </div>
           </div>
 
+        </div>
+
+        {/* FEATURE: EMBASSY COMMERCIAL COUNSELLOR & DIPLOMATIC VERIFICATION HUB */}
+        <div id="embassy-connect" style={{ marginBottom: '35px' }}>
+          <EmbassyConnectDesk />
         </div>
 
         {/* Action Bar / Trust Banner */}

@@ -326,7 +326,7 @@ a { text-decoration: none; color: inherit; }
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible !important;
   box-sizing: border-box;
   position: relative;
   z-index: 5000 !important;
@@ -347,7 +347,7 @@ body.light-theme .top-bar {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .top-ticker-wrapper {
@@ -4691,9 +4691,13 @@ body.light-theme .modal-card code {
     width: 100% !important;
   }
 
-  .top-bar, .top-bar-content, .header, .sub-header-container, main, footer {
+  .header, .sub-header-container, main, footer {
     max-width: 100% !important;
     overflow-x: hidden;
+  }
+
+  .top-bar, .top-bar-content {
+    overflow: visible !important;
   }
 
   .modal-backdrop {
