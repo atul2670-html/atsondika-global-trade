@@ -1362,21 +1362,27 @@ body.light-theme .calc-card span[style*="color: var(--accent-gold)"] {
 }
 
 /* Fluctuation Breakdown Box inside Light Mode */
-body.light-theme div[style*="background: rgba(0,0,0,0.25)"],
-body.light-theme div[style*="background: rgba(15, 23, 42, 0.7)"] {
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.25)"],
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.3)"],
+body.light-theme .calc-card div[style*="background: rgba(15, 23, 42, 0.7)"],
+body.light-theme .forex-breakdown-box {
   background: #f1f5f9 !important;
   border: 1px solid #cbd5e1 !important;
   color: #0f172a !important;
 }
 
-body.light-theme div[style*="background: rgba(0,0,0,0.25)"] span,
-body.light-theme div[style*="background: rgba(15, 23, 42, 0.7)"] span {
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.25)"] span,
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.3)"] span,
+body.light-theme .calc-card div[style*="background: rgba(15, 23, 42, 0.7)"] span,
+body.light-theme .forex-breakdown-box span {
   color: #334155 !important;
   font-weight: 700 !important;
 }
 
-body.light-theme div[style*="background: rgba(0,0,0,0.25)"] strong,
-body.light-theme div[style*="background: rgba(15, 23, 42, 0.7)"] strong {
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.25)"] strong,
+body.light-theme .calc-card div[style*="background: rgba(0,0,0,0.3)"] strong,
+body.light-theme .calc-card div[style*="background: rgba(15, 23, 42, 0.7)"] strong,
+body.light-theme .forex-breakdown-box strong {
   color: #0f172a !important;
   font-weight: 900 !important;
 }
@@ -4598,6 +4604,117 @@ body.light-theme .modal-card code {
   font-weight: 800 !important;
 }
 
+/* ========================================================
+   LIGHT THEME MODAL ENHANCEMENTS: COA EDITOR, COURIER CARDS & ADMIN BADGES
+   ======================================================== */
+
+/* 1. COA Admin Live Editor inside Modal - High Contrast Dark Panel */
+body.light-theme .modal-card .coa-admin-editor-panel {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-title,
+body.light-theme .modal-card .coa-admin-editor-panel h4 {
+  color: #fbbf24 !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-subtitle,
+body.light-theme .modal-card .coa-admin-editor-panel p {
+  color: #cbd5e1 !important;
+  font-weight: 600 !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-label,
+body.light-theme .modal-card .coa-admin-editor-panel label {
+  color: #fbbf24 !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-table th {
+  color: #fef08a !important;
+  font-weight: 900 !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-input {
+  background: #090d16 !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+}
+
+body.light-theme .modal-card .coa-admin-editor-panel .coa-admin-editor-cancel-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 2. Admin Toggle Switch Badges */
+body.light-theme .modal-card .admin-toggle-switch-badge.admin-badge-gold-on {
+  background: #0f172a !important;
+  color: #facc15 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(250, 204, 21, 0.4) !important;
+}
+
+body.light-theme .modal-card .admin-toggle-switch-badge.admin-badge-off {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+/* 3. Sample Request Modal - International Courier Cards */
+.sample-courier-title {
+  color: #ffffff;
+}
+
+.sample-courier-desc {
+  color: #94a3b8;
+}
+
+body.light-theme .modal-card .sample-courier-card {
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+
+body.light-theme .modal-card .sample-courier-card.selected-freight {
+  background: #f0f9ff !important;
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 1px #0284c7 !important;
+}
+
+body.light-theme .modal-card .sample-courier-card.selected-prepaid {
+  background: #fffbeb !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 1px #d97706 !important;
+}
+
+body.light-theme .modal-card .sample-courier-card.selected-sponsored {
+  background: #ecfdf5 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 1px #059669 !important;
+}
+
+body.light-theme .modal-card .sample-courier-card .sample-courier-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .modal-card .sample-courier-card .sample-courier-desc {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+body.light-theme .modal-card .sample-courier-details-box {
+  background: #f0f9ff !important;
+  border: 1.5px solid #bae6fd !important;
+}
+
+body.light-theme .modal-card .sample-courier-details-box label,
+body.light-theme .modal-card .sample-courier-details-label {
+  color: #0369a1 !important;
+  font-weight: 800 !important;
+}
+
 /* --- MULTI-VIEW MODE TOOLBAR (GRID, LIST, COMPARE) --- */
 .view-mode-btn {
   background: transparent;
@@ -5464,6 +5581,166 @@ body.light-theme .engineering-cta-title {
 
 body.light-theme .engineering-cta-subtitle {
   color: #e0f2fe !important;
+}
+
+/* ========================================================
+   LIGHT THEME ENHANCEMENTS: OEM PACKAGING & EMBASSY CONNECT DESK
+   ======================================================== */
+
+/* OEM Packaging Section */
+body.light-theme .oem-workflow-box {
+  background: #ffffff !important;
+  border: 1px solid rgba(234, 179, 8, 0.45) !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.light-theme .oem-workflow-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .oem-workflow-subtitle {
+  color: #854d0e !important;
+  font-weight: 700 !important;
+}
+
+body.light-theme .oem-step-card {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.light-theme .oem-step-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .oem-step-desc {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+body.light-theme .oem-solution-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-theme .oem-solution-card h3 {
+  color: #0f172a !important;
+}
+
+body.light-theme .oem-solution-card p {
+  color: #334155 !important;
+}
+
+body.light-theme .oem-solution-badge.color-gold {
+  color: #b45309 !important;
+  border-top: 1px dashed #cbd5e1 !important;
+}
+body.light-theme .oem-solution-badge.color-teal {
+  color: #0d9488 !important;
+  border-top: 1px dashed #cbd5e1 !important;
+}
+body.light-theme .oem-solution-badge.color-cyan {
+  color: #0284c7 !important;
+  border-top: 1px dashed #cbd5e1 !important;
+}
+body.light-theme .oem-solution-badge.color-purple {
+  color: #7c3aed !important;
+  border-top: 1px dashed #cbd5e1 !important;
+}
+
+body.light-theme .oem-action-banner {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%) !important;
+  border: 1.5px solid #fde047 !important;
+  box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15) !important;
+}
+
+body.light-theme .oem-banner-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .oem-banner-subtitle {
+  color: #854d0e !important;
+  font-weight: 700 !important;
+}
+
+/* Embassy Connect Desk Section */
+body.light-theme .embassy-card {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.light-theme .embassy-card-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .embassy-mission-details-box {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .embassy-mission-name {
+  color: #0f172a !important;
+}
+
+body.light-theme .embassy-mission-details-box .embassy-detail-label {
+  color: #475569 !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .embassy-mission-details-box .embassy-detail-val {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+body.light-theme .embassy-form-label {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .embassy-form-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-theme .embassy-gov-hub-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .embassy-gov-portal-card {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-theme .embassy-gov-portal-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .embassy-gov-portal-desc {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+/* Trade Security Action Banner */
+body.light-theme .trade-action-banner {
+  background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%) !important;
+  border: 1.5px solid #5eead4 !important;
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12) !important;
+}
+
+body.light-theme .trade-banner-title {
+  color: #0f172a !important;
+}
+
+body.light-theme .trade-banner-subtitle {
+  color: #0f766e !important;
+  font-weight: 700 !important;
 }
 
 /* ==========================================================================

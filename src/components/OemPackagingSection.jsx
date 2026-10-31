@@ -96,7 +96,7 @@ export default function OemPackagingSection() {
         }}>
 
           {/* Solution 1: Retail Consumer Packs */}
-          <div className="glass-card" style={{
+          <div className="glass-card oem-solution-card" style={{
             padding: '26px 22px',
             borderRadius: '16px',
             border: '1px solid rgba(234, 179, 8, 0.25)',
@@ -126,13 +126,13 @@ export default function OemPackagingSection() {
                 ? 'સ્ટેન્ડ-અપ ઝિપર પાઉચ, ૩-સાઇડ સીલ ફોઇલ, નાઇટ્રોજન ફ્લશિંગ અને વેક્યુમ સીલિંગ. મસાલા, હળદર, જીરું અને રાઈસ માટે લાંબી સેલ્ફ-લાઇફ અને સુગંધ જાળવી રાખતી પેકિંગ પદ્ધતિ.'
                 : 'Stand-up Zipper Pouches, Quad-seal Gusset Bags, Nitrogen-Flushed Aluminum Foils & Vacuum-sealed packs (100g, 250g, 500g, 1kg, 2kg, 5kg) engineered for extended retail shelf-life.'}
             </p>
-            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#facc15', fontWeight: 700 }}>
+            <div className="oem-solution-badge color-gold" style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#facc15', fontWeight: 700 }}>
               ✔ {isGu ? 'સુપરમાર્કેટ-રેડી શેલ્ફ પેક્સ' : 'Supermarket Shelf-Ready'}
             </div>
           </div>
 
           {/* Solution 2: Bulk Export Commercial Packing */}
-          <div className="glass-card" style={{
+          <div className="glass-card oem-solution-card" style={{
             padding: '26px 22px',
             borderRadius: '16px',
             border: '1px solid rgba(20, 184, 166, 0.25)',
@@ -162,13 +162,13 @@ export default function OemPackagingSection() {
                 ? '૨૫ કિગ્રા અને ૫૦ કિગ્રા HDPE / PP વુવન બેગ્સ (અંદર પોલીથીન લાઇનર સાથે), મલ્ટી-વોલ ક્રાફ્ટ પેપર બેગ્સ, પરંપરાગત જ્યુટ બેગ્સ અને ૧૦૦૦ કિગ્રા FIBC જમ્બો બેગ્સ.'
                 : 'Heavy-duty 25kg & 50kg HDPE/PP woven bags with food-grade LDPE inner liners, Multi-wall Kraft paper sacks, natural Jute bags, and 1000kg FIBC Jumbo bags for large-scale milling.'}
             </p>
-            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 700 }}>
+            <div className="oem-solution-badge color-teal" style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#2dd4bf', fontWeight: 700 }}>
               ✔ {isGu ? 'હાઇ-ડેન્સિટી મોઇશ્ચર પ્રોટેક્શન' : 'High-Density Moisture Barrier'}
             </div>
           </div>
 
           {/* Solution 3: Custom Brand Artwork & Barcode */}
-          <div className="glass-card" style={{
+          <div className="glass-card oem-solution-card" style={{
             padding: '26px 22px',
             borderRadius: '16px',
             border: '1px solid rgba(56, 189, 248, 0.25)',
@@ -198,13 +198,13 @@ export default function OemPackagingSection() {
                 ? 'બાયરના પોતાના બ્રાન્ડ લોગો સાથે હાઇ-ડેફિનેશન રોટોગ્રેવ્યૂર / ફ્લેક્સો પ્રિન્ટિંગ, EAN-13 / UPC બારકોડ, ન્યુટ્રીશનલ ફેક્ટ્સ પેનલ અને US FDA / EU નિયમો મુજબ મલ્ટી-લેંગ્વેજ લેબલિંગ.'
                 : 'Full-bleed Rotogravure & Flexographic multi-color printing with Buyer’s Brand Logo, EAN-13/UPC barcodes, multilingual nutritional tables, batch numbers, and US FDA/EU compliant labeling.'}
             </p>
-            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#38bdf8', fontWeight: 700 }}>
+            <div className="oem-solution-badge color-cyan" style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#38bdf8', fontWeight: 700 }}>
               ✔ {isGu ? 'US FDA & EU કમ્પ્લાયન્ટ લેબલિંગ' : 'FDA & EU Compliant Printing'}
             </div>
           </div>
 
           {/* Solution 4: Palletization & Transit Protection */}
-          <div className="glass-card" style={{
+          <div className="glass-card oem-solution-card" style={{
             padding: '26px 22px',
             borderRadius: '16px',
             border: '1px solid rgba(168, 85, 247, 0.25)',
@@ -234,7 +234,7 @@ export default function OemPackagingSection() {
                 ? 'ISPM-15 હીટ-ટ્રીટેડ વુડન / પ્લાસ્ટિક પેલેટ્સ, હેવી-ડ્યુટી કોર્નર ગાર્ડ્સ, સ્ટ્રેચ શ્રિંક રેપિંગ અને કન્ટેનરમાં ભેજ નિયંત્રણ માટે સિલિકા-જેલ ડેસીકન્ટ બેગ્સ સાથે સુરક્ષિત ટ્રાન્સપોર્ટ.'
                 : 'ISPM-15 certified heat-treated wooden/plastic Euro pallets, heavy-duty edge corner boards, machine stretch wrapping, and container desiccant dry-bags to eliminate sea moisture and sweating.'}
             </p>
-            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#c084fc', fontWeight: 700 }}>
+            <div className="oem-solution-badge color-purple" style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', fontSize: '0.78rem', color: '#c084fc', fontWeight: 700 }}>
               ✔ {isGu ? 'દરિયાઈ પરિવહન સામે ૧૦૦% રક્ષણ' : 'Zero Moisture Ocean Transit Shield'}
             </div>
           </div>
@@ -242,7 +242,7 @@ export default function OemPackagingSection() {
         </div>
 
         {/* 5-STEP CUSTOMER COORDINATION WORKFLOW */}
-        <div className="glass-card" style={{
+        <div className="glass-card oem-workflow-box" style={{
           padding: '28px 24px',
           borderRadius: '18px',
           border: '1px solid rgba(234, 179, 8, 0.3)',
@@ -263,10 +263,10 @@ export default function OemPackagingSection() {
             }}>
               🤝 {isGu ? 'સરળ કસ્ટમર કોઓર્ડિનેશન' : 'Seamless Customer Coordination'}
             </span>
-            <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
+            <h3 className="oem-workflow-title" style={{ fontSize: '1.45rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
               {isGu ? 'Private Label પેકેજિંગમાં કસ્ટમર સાથે ૫-તબક્કાનું કોઓર્ડિનેશન' : '5-Step Customer Coordination Workflow for Private Labeling'}
             </h3>
-            <p style={{ fontSize: '0.85rem', color: '#fef08a', maxWidth: '680px', margin: '0 auto', lineHeight: '1.5' }}>
+            <p className="oem-workflow-subtitle" style={{ fontSize: '0.85rem', color: '#fef08a', maxWidth: '680px', margin: '0 auto', lineHeight: '1.5' }}>
               {isGu
                 ? 'તમારી બ્રાન્ડ ડિઝાઇનથી લઈને ફાઇનલ કન્ટેનર ડિસ્પેચ સુધી - પારદર્શક અને ઝંઝટ-મુક્ત પ્રક્રિયા.'
                 : 'From initial artwork dielines to pre-shipment sign-off and container dispatch - completely transparent and structured.'}
@@ -280,7 +280,7 @@ export default function OemPackagingSection() {
           }}>
             
             {/* Step 1 */}
-            <div style={{
+            <div className="oem-step-card" style={{
               background: 'rgba(15, 23, 42, 0.7)',
               border: '1px solid rgba(234, 179, 8, 0.25)',
               borderRadius: '14px',
@@ -301,10 +301,10 @@ export default function OemPackagingSection() {
                 fontSize: '0.85rem',
                 marginBottom: '12px'
               }}>1</div>
-              <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+              <h4 className="oem-step-title" style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
                 {isGu ? 'જરૂરિયાત & ડાયલાઇન' : 'Requirement & Dieline'}
               </h4>
-              <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
+              <p className="oem-step-desc" style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
                 {isGu
                   ? 'પેકિંગ સાઇઝ (100g, 500g, 1kg, 25kg) અને મટિરિયલ નક્કી કરી અમે તમને ચોક્કસ સાઇઝનું 2D Dieline (PDF/AI) મોકલીએ છીએ.'
                   : 'We confirm packaging size, barrier material, and supply exact 2D Dieline templates (PDF/AI) for your design placement.'}
@@ -312,7 +312,7 @@ export default function OemPackagingSection() {
             </div>
 
             {/* Step 2 */}
-            <div style={{
+            <div className="oem-step-card" style={{
               background: 'rgba(15, 23, 42, 0.7)',
               border: '1px solid rgba(56, 189, 248, 0.25)',
               borderRadius: '14px',
@@ -333,10 +333,10 @@ export default function OemPackagingSection() {
                 fontSize: '0.85rem',
                 marginBottom: '12px'
               }}>2</div>
-              <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+              <h4 className="oem-step-title" style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
                 {isGu ? '3D ડિજિટલ મોકઅપ' : '3D Digital Proofing'}
               </h4>
-              <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
+              <p className="oem-step-desc" style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
                 {isGu
                   ? 'તમારી બ્રાન્ડ આર્ટવર્ક સાથે 3D મોકઅપ તૈયાર થાય છે. કલર પેલેટ (Pantone/CMYK), બારકોડ અને ન્યુટ્રીશનલ ટેબલની પ્રૂફિંગ મંજૂરી.'
                   : 'We render photorealistic 3D digital mockups to verify Pantone/CMYK colors, barcode readability, and regulatory nutritional text.'}
@@ -344,7 +344,7 @@ export default function OemPackagingSection() {
             </div>
 
             {/* Step 3 */}
-            <div style={{
+            <div className="oem-step-card" style={{
               background: 'rgba(15, 23, 42, 0.7)',
               border: '1px solid rgba(168, 85, 247, 0.25)',
               borderRadius: '14px',
@@ -365,10 +365,10 @@ export default function OemPackagingSection() {
                 fontSize: '0.85rem',
                 marginBottom: '12px'
               }}>3</div>
-              <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+              <h4 className="oem-step-title" style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
                 {isGu ? 'ફિઝિકલ સેમ્પલ સાઇન-ઓફ' : 'Physical Proofing'}
               </h4>
-              <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
+              <p className="oem-step-desc" style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
                 {isGu
                   ? 'માસ પ્રોડક્શન પહેલાં પ્રિન્ટેડ સેમ્પલ DHL/FedEx કુરિયર દ્વારા મોકલાય છે. મટિરિયલ ક્વોલિટી જોઈને તમે ફાઇનલ સાઇન-ઓફ આપો છો.'
                   : 'Pre-production physical samples are dispatched via DHL/FedEx courier for your tactile touch, seal-strength, and print approval.'}
@@ -376,7 +376,7 @@ export default function OemPackagingSection() {
             </div>
 
             {/* Step 4 */}
-            <div style={{
+            <div className="oem-step-card" style={{
               background: 'rgba(15, 23, 42, 0.7)',
               border: '1px solid rgba(45, 212, 191, 0.25)',
               borderRadius: '14px',
@@ -397,10 +397,10 @@ export default function OemPackagingSection() {
                 fontSize: '0.85rem',
                 marginBottom: '12px'
               }}>4</div>
-              <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+              <h4 className="oem-step-title" style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
                 {isGu ? 'માસ પ્રોડક્શન & ઓડિટ' : 'Production & Audit'}
               </h4>
-              <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
+              <p className="oem-step-desc" style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
                 {isGu
                   ? 'હાઇ-સ્પીડ રોટોગ્રેવ્યૂર પ્રિન્ટિંગ, ઓટો-ફિલિંગ અને મેટલ ડિટેક્શન સાથે પેકિંગ. પ્રોડક્શન દરમિયાન વિડીયો અપડેટ્સ અપાય છે.'
                   : 'Mass flexo/gravure printing, automated pouching, metal detection, and pre-loading inspection with live factory video feeds.'}
@@ -408,7 +408,7 @@ export default function OemPackagingSection() {
             </div>
 
             {/* Step 5 */}
-            <div style={{
+            <div className="oem-step-card" style={{
               background: 'rgba(15, 23, 42, 0.7)',
               border: '1px solid rgba(34, 197, 94, 0.25)',
               borderRadius: '14px',
@@ -429,10 +429,10 @@ export default function OemPackagingSection() {
                 fontSize: '0.85rem',
                 marginBottom: '12px'
               }}>5</div>
-              <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+              <h4 className="oem-step-title" style={{ fontSize: '0.96rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
                 {isGu ? 'પેલેટાઇઝેશન & રવાનગી' : 'Palletized Dispatch'}
               </h4>
-              <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
+              <p className="oem-step-desc" style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0, flex: 1 }}>
                 {isGu
                   ? 'ISPM-15 હીટ-ટ્રીટેડ પેલેટ્સ, સ્ટ્રેચ શ્રિંક રેપિંગ અને કન્ટેનર લોડિંગના ફોટા સાથે દરિયાઈ ભેજ સામે રક્ષણ સાથે પોર્ટ રવાનગી.'
                   : 'ISPM-15 heat-treated pallets, corner guards, machine stretch wrapping, and high-security bolt seal photos before port dispatch.'}
@@ -443,7 +443,7 @@ export default function OemPackagingSection() {
         </div>
 
         {/* Action Banner */}
-        <div className="glass-card" style={{
+        <div className="glass-card oem-action-banner" style={{
           background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(30, 41, 59, 0.6) 100%)',
           borderRadius: '16px',
           border: '1px solid rgba(234, 179, 8, 0.35)',
@@ -455,10 +455,10 @@ export default function OemPackagingSection() {
           gap: '18px'
         }}>
           <div>
-            <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
+            <h4 className="oem-banner-title" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
               {isGu ? '✨ શું તમે તમારા પોતાના બ્રાન્ડ નેમથી કસ્ટમ પેકિંગ કરાવવા માંગો છો?' : '✨ Need custom private labeling & packaging for your brand?'}
             </h4>
-            <p style={{ fontSize: '0.85rem', color: '#fef08a', margin: '4px 0 0 0' }}>
+            <p className="oem-banner-subtitle" style={{ fontSize: '0.85rem', color: '#fef08a', margin: '4px 0 0 0' }}>
               {isGu ? 'અમારા OEM પેકેજિંગ સ્પેશિયાલિસ્ટ પાસેથી સેમ્પલ મોકઅપ અને કસ્ટમ ક્વોટેશન મેળવો.' : 'Request customized packaging mockups, die-lines, and OEM contract pricing directly from our packaging team.'}
             </p>
           </div>

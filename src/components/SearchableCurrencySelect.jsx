@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DEFAULT_CURRENCIES } from '../utils/realtimeSync.js';
+import FlagIcon from './FlagIcon';
 
 export default function SearchableCurrencySelect({ label, value, onChange, currenciesList, currencyDict, align = 'left' }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +69,7 @@ export default function SearchableCurrencySelect({ label, value, onChange, curre
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          <span style={{ fontSize: '1.1rem' }}>{activeObj.flag}</span>
+          <FlagIcon code={activeObj.code} width={22} height={15} style={{ borderRadius: '2px', boxShadow: '0 1px 3px rgba(0,0,0,0.4)', marginRight: 0 }} />
           <strong style={{ letterSpacing: '0.5px', color: '#facc15' }}>{activeObj.code} ({activeObj.symbol})</strong>
         </span>
         <span style={{ fontSize: '0.75rem', opacity: 0.8, marginLeft: '6px' }}>
@@ -179,7 +180,7 @@ export default function SearchableCurrencySelect({ label, value, onChange, curre
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '1.1rem' }}>{item.flag}</span>
+                      <FlagIcon code={item.code} width={20} height={14} style={{ borderRadius: '2px', boxShadow: '0 1px 3px rgba(0,0,0,0.4)', marginRight: 0 }} />
                       <strong style={{ color: '#facc15' }}>{item.code} ({item.symbol})</strong>
                       <span style={{ opacity: 0.8, fontSize: '0.78rem' }}>- {item.name}</span>
                     </span>

@@ -252,7 +252,7 @@ export default function TradeSecuritySection() {
         </div>
 
         {/* Action Bar / Trust Banner */}
-        <div className="glass-card" style={{
+        <div className="glass-card trade-action-banner" style={{
           background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.2) 0%, rgba(30, 41, 59, 0.6) 100%)',
           borderRadius: '16px',
           border: '1px solid rgba(45, 212, 191, 0.35)',
@@ -264,10 +264,10 @@ export default function TradeSecuritySection() {
           gap: '18px'
         }}>
           <div>
-            <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
+            <h4 className="trade-banner-title" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
               {isGu ? '🔒 શું તમે મોટો કન્ટેનર ઓર્ડર અથવા કન્ફર્મ્ડ L/C થી આયાત કરવા માંગો છો?' : '🔒 Looking to import bulk containers under Confirmed Bank L/C?'}
             </h4>
-            <p style={{ fontSize: '0.85rem', color: '#a5f3fc', margin: '4px 0 0 0' }}>
+            <p className="trade-banner-subtitle" style={{ fontSize: '0.85rem', color: '#a5f3fc', margin: '4px 0 0 0' }}>
               {isGu ? 'અમારા ઇન્ટરનેશનલ ટ્રેડ એક્સપર્ટ સાથે સુરક્ષિત ટ્રેડ ટર્મ્સ અને બેંકિંગ ડ્રાફ્ટ મેળવો.' : 'Speak directly with our Trade Desk for custom banking terms, draft LC verbiage, and swift contract signing.'}
             </p>
           </div>

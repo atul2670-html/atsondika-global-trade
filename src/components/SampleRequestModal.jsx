@@ -519,6 +519,7 @@ export default function SampleRequestModal() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 230px), 1fr))', gap: '10px', marginBottom: '14px' }}>
                   {/* Mode 1: Freight Collect */}
                   <label
+                    className={`sample-courier-card ${formData.courierType === 'freight_collect' ? 'selected-freight' : ''}`}
                     style={{
                       background: formData.courierType === 'freight_collect' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255,255,255,0.02)',
                       border: formData.courierType === 'freight_collect' ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.1)',
@@ -538,11 +539,11 @@ export default function SampleRequestModal() {
                         checked={formData.courierType === 'freight_collect'}
                         onChange={() => setFormData({ ...formData, courierType: 'freight_collect' })}
                       />
-                      <strong style={{ fontSize: '0.84rem', color: '#ffffff' }}>
+                      <strong className="sample-courier-title" style={{ fontSize: '0.84rem' }}>
                         🚚 Freight Collect (0% Exporter Cost)
                       </strong>
                     </div>
-                    <span style={{ fontSize: '0.74rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    <span className="sample-courier-desc" style={{ fontSize: '0.74rem', lineHeight: '1.4' }}>
                       {currentLang === 'gu'
                         ? 'પ્રોડક્ટ સેમ્પલ ૧૦૦% ફ્રી! કુરિયર ચાર્જ તમારા DHL/FedEx એકાઉન્ટમાંથી બિલ થશે.'
                         : 'Free sample product. Shipping charged directly to your DHL / FedEx / Aramex account.'}
@@ -551,6 +552,7 @@ export default function SampleRequestModal() {
 
                   {/* Mode 2: Prepaid International Courier */}
                   <label
+                    className={`sample-courier-card ${formData.courierType === 'prepaid' ? 'selected-prepaid' : ''}`}
                     style={{
                       background: formData.courierType === 'prepaid' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255,255,255,0.02)',
                       border: formData.courierType === 'prepaid' ? '2px solid #f59e0b' : '1px solid rgba(255,255,255,0.1)',
@@ -570,11 +572,11 @@ export default function SampleRequestModal() {
                         checked={formData.courierType === 'prepaid'}
                         onChange={() => setFormData({ ...formData, courierType: 'prepaid' })}
                       />
-                      <strong style={{ fontSize: '0.84rem', color: '#ffffff' }}>
+                      <strong className="sample-courier-title" style={{ fontSize: '0.84rem' }}>
                         💳 Prepaid Flat Rate ($35 / ₹2,900)
                       </strong>
                     </div>
-                    <span style={{ fontSize: '0.74rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    <span className="sample-courier-desc" style={{ fontSize: '0.74rem', lineHeight: '1.4' }}>
                       {currentLang === 'gu'
                         ? 'જો કુરિયર એકાઉન્ટ ન હોય, તો નોમિનલ શિપિંગ ફી ઓનલાઇન ચૂકવો (કન્ટેનર ઓર્ડરમાં બાદ મળશે).'
                         : 'Nominal flat courier fee. 100% refundable against your first container order!'}
@@ -583,6 +585,7 @@ export default function SampleRequestModal() {
 
                   {/* Mode 3: Sponsored Evaluation */}
                   <label
+                    className={`sample-courier-card ${formData.courierType === 'sponsored' ? 'selected-sponsored' : ''}`}
                     style={{
                       background: formData.courierType === 'sponsored' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.02)',
                       border: formData.courierType === 'sponsored' ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.1)',
@@ -602,11 +605,11 @@ export default function SampleRequestModal() {
                         checked={formData.courierType === 'sponsored'}
                         onChange={() => setFormData({ ...formData, courierType: 'sponsored' })}
                       />
-                      <strong style={{ fontSize: '0.84rem', color: '#ffffff' }}>
+                      <strong className="sample-courier-title" style={{ fontSize: '0.84rem' }}>
                         ⭐ Free Trial (Exporter Approval)
                       </strong>
                     </div>
-                    <span style={{ fontSize: '0.74rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    <span className="sample-courier-desc" style={{ fontSize: '0.74rem', lineHeight: '1.4' }}>
                       {currentLang === 'gu'
                         ? 'મોટી આંતરરાષ્ટ્રીય કંપનીઓ અને નિયમિત ખરીદદારો માટે એડમિન એપ્રૂવલથી ફ્રી શિપિંગ.'
                         : 'Subject to management approval for verified high-volume corporate buyers.'}
@@ -616,9 +619,9 @@ export default function SampleRequestModal() {
 
                 {/* Freight Collect Carrier details */}
                 {formData.courierType === 'freight_collect' && (
-                  <div style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '12px', padding: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                  <div className="sample-courier-details-box" style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '12px', padding: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, marginBottom: '4px' }}>
+                      <label className="sample-courier-details-label" style={{ display: 'block', fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, marginBottom: '4px' }}>
                         Carrier Partner *
                       </label>
                       <select
@@ -633,7 +636,7 @@ export default function SampleRequestModal() {
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, marginBottom: '4px' }}>
+                      <label className="sample-courier-details-label" style={{ display: 'block', fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, marginBottom: '4px' }}>
                         Buyer Courier Account No. (9-Digit) *
                       </label>
                       <input

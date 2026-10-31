@@ -2218,17 +2218,20 @@ export default function Modals() {
                       : (currentLang === 'gu' ? 'વેબસાઇટ પર બંધ છે (Hidden & Inactive)' : 'Hidden on Website')}
                   </div>
                 </div>
-                <span style={{
-                  padding: '4px 14px',
-                  borderRadius: '20px',
-                  fontSize: '0.78rem',
-                  fontWeight: 900,
-                  background: isOemPackagingEnabled ? '#0f172a' : '#ef4444',
-                  color: isOemPackagingEnabled ? '#facc15' : '#ffffff',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                  flexShrink: 0
-                }}>
+                <span
+                  className={`admin-toggle-switch-badge ${isOemPackagingEnabled ? 'admin-badge-gold-on' : 'admin-badge-off'}`}
+                  style={{
+                    padding: '4px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.78rem',
+                    fontWeight: 900,
+                    background: isOemPackagingEnabled ? '#0f172a' : '#ef4444',
+                    color: isOemPackagingEnabled ? '#facc15' : '#ffffff',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    flexShrink: 0
+                  }}
+                >
                   {isOemPackagingEnabled ? 'SWITCH ON' : 'SWITCH OFF'}
                 </span>
               </button>
@@ -7913,20 +7916,23 @@ export default function Modals() {
 
               {/* ADMIN EDIT CONTROL PANEL (Visible when isEditingCoaParams is true) */}
               {isAdminLoggedIn && isEditingCoaParams && (
-                <div style={{
-                  background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))',
-                  border: '2px solid #f59e0b',
-                  borderRadius: '12px',
-                  padding: '20px',
-                  marginBottom: '22px',
-                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)'
-                }}>
+                <div
+                  className="coa-admin-editor-panel"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))',
+                    border: '2px solid #f59e0b',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    marginBottom: '22px',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)'
+                  }}
+                >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', paddingBottom: '10px' }}>
                     <div>
-                      <h4 style={{ margin: 0, color: '#fbbf24', fontSize: '1.05rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 className="coa-admin-editor-title" style={{ margin: 0, color: '#fbbf24', fontSize: '1.05rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         👑 {currentLang === 'gu' ? 'એડમિન કંટ્રોલ: COA ટેસ્ટ પેરામીટર્સ લાઈવ એડિટર' : 'Admin Control: Live COA Test Parameters Editor'}
                       </h4>
-                      <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: '#cbd5e1' }}>
+                      <p className="coa-admin-editor-subtitle" style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: '#cbd5e1' }}>
                         {currentLang === 'gu'
                           ? `પ્રોડક્ટ: "${prodNameEn}" | HS CODE: ${hs} (${coaData.categoryLabel})`
                           : `Product: "${prodNameEn}" | HS CODE: ${hs} (${coaData.categoryLabel})`}
@@ -8015,7 +8021,7 @@ export default function Modals() {
 
                   {/* Editable Test Parameters Table */}
                   <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', color: '#e2e8f0' }}>
+                    <table className="coa-admin-editor-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', color: '#e2e8f0' }}>
                       <thead>
                         <tr style={{ background: 'rgba(245, 158, 11, 0.2)', borderBottom: '1px solid rgba(245, 158, 11, 0.4)' }}>
                           <th style={{ padding: '8px 6px', textAlign: 'center', width: '36px' }}>Sr.</th>
@@ -8033,6 +8039,7 @@ export default function Modals() {
                             <td style={{ padding: '6px' }}>
                               <input
                                 type="text"
+                                className="coa-admin-editor-input"
                                 style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
                                 value={row.param || ''}
                                 placeholder="Parameter name..."
@@ -8046,6 +8053,7 @@ export default function Modals() {
                             <td style={{ padding: '6px' }}>
                               <input
                                 type="text"
+                                className="coa-admin-editor-input"
                                 style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
                                 value={row.standard || ''}
                                 placeholder="Standard limit..."
@@ -8059,6 +8067,7 @@ export default function Modals() {
                             <td style={{ padding: '6px' }}>
                               <input
                                 type="text"
+                                className="coa-admin-editor-input"
                                 style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#4ade80', fontWeight: 700, fontSize: '0.8rem' }}
                                 value={row.result || ''}
                                 placeholder="Observed result..."
@@ -8072,6 +8081,7 @@ export default function Modals() {
                             <td style={{ padding: '6px' }}>
                               <input
                                 type="text"
+                                className="coa-admin-editor-input"
                                 style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', background: '#0f172a', border: '1px solid #334155', color: '#94a3b8', fontSize: '0.8rem' }}
                                 value={row.method || ''}
                                 placeholder="Test method..."
@@ -8104,10 +8114,11 @@ export default function Modals() {
                   {/* Storage Instructions & Quality Declaration Customizer */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
+                      <label className="coa-admin-editor-label" style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
                         📦 Storage & Operating Guidelines (સ્ટોરેજ સૂચનાઓ):
                       </label>
                       <textarea
+                        className="coa-admin-editor-input"
                         style={{ width: '100%', minHeight: '65px', padding: '8px', borderRadius: '6px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
                         value={coaEditStorage}
                         onChange={(e) => setCoaEditStorage(e.target.value)}
@@ -8115,10 +8126,11 @@ export default function Modals() {
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
+                      <label className="coa-admin-editor-label" style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', marginBottom: '4px' }}>
                         🛡️ Safety & Quality Declaration (ક્વોલિટી ડિક્લેરેશન):
                       </label>
                       <textarea
+                        className="coa-admin-editor-input"
                         style={{ width: '100%', minHeight: '65px', padding: '8px', borderRadius: '6px', background: '#0f172a', border: '1px solid #334155', color: '#ffffff', fontSize: '0.8rem' }}
                         value={coaEditQualityDecl}
                         onChange={(e) => setCoaEditQualityDecl(e.target.value)}
@@ -8131,6 +8143,7 @@ export default function Modals() {
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                     <button
                       type="button"
+                      className="coa-admin-editor-cancel-btn"
                       style={{
                         background: 'rgba(255, 255, 255, 0.1)',
                         color: '#cbd5e1',

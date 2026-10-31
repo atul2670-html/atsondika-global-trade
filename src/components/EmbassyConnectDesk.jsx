@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_WORLD_EMBASSIES } from '../data/globalEmbassiesData';
+import FlagIcon from './FlagIcon';
 
 export const INQUIRY_CATEGORIES = [
   {
@@ -280,7 +281,7 @@ Registered Trade Office: Surat, Gujarat, India
       }}>
 
         {/* LEFT COLUMN: FEATURE 1 (Custom Searchable Embassy Dropdown & 1-Click Card) */}
-        <div style={{
+        <div className="embassy-card embassy-directory-card" style={{
           background: 'rgba(15, 23, 42, 0.7)',
           border: '1px solid rgba(45, 212, 191, 0.25)',
           borderRadius: '16px',
@@ -296,7 +297,7 @@ Registered Trade Office: Surat, Gujarat, India
               <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2dd4bf', textTransform: 'uppercase' }}>
                 {isGu ? 'ફીચર ૧: વૈશ્વિક દૂતાવાસ ડિરેક્ટરી' : 'Feature 1: Global Mission Directory'}
               </span>
-              <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
+              <h4 className="embassy-card-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
                 📍 {isGu ? 'લક્ષ્ય દેશ પસંદ કરો (Select Target Destination) *' : 'Select Target Destination *'}
               </h4>
             </div>
@@ -335,7 +336,7 @@ Registered Trade Office: Surat, Gujarat, India
               }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                <span style={{ fontSize: '1.35rem' }}>{selectedMission.flag}</span>
+                <FlagIcon code={selectedMission.iso} width={26} height={18} style={{ borderRadius: '3px', boxShadow: '0 2px 6px rgba(0,0,0,0.5)', marginRight: 0 }} />
                 <strong style={{ letterSpacing: '0.5px', color: '#facc15', fontSize: '0.9rem' }}>
                   {selectedMission.iso} {isGu ? selectedMission.countryGu : selectedMission.countryEn}
                 </strong>
@@ -460,7 +461,7 @@ Registered Trade Office: Surat, Gujarat, India
                           }}
                         >
                           <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '1.25rem' }}>{item.flag}</span>
+                            <FlagIcon code={item.iso} width={22} height={15} style={{ borderRadius: '2px', boxShadow: '0 1px 4px rgba(0,0,0,0.4)', marginRight: 0 }} />
                             <strong style={{ color: '#facc15', fontSize: '0.82rem' }}>{item.iso}</strong>
                             <span style={{ fontWeight: 600 }}>{isGu ? item.countryGu : item.countryEn}</span>
                             <span style={{ opacity: 0.7, fontSize: '0.75rem', color: '#94a3b8' }}>- {item.city}</span>
@@ -482,7 +483,7 @@ Registered Trade Office: Surat, Gujarat, India
           </div>
 
           {/* Active Mission Details Card */}
-          <div style={{
+          <div className="embassy-mission-details-box" style={{
             background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
             border: '1px solid rgba(56, 189, 248, 0.25)',
             borderRadius: '14px',
@@ -494,10 +495,10 @@ Registered Trade Office: Surat, Gujarat, India
             
             {/* Header: Flag, Country & Live Time */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '2.2rem' }}>{selectedMission.flag}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <FlagIcon code={selectedMission.iso} width={42} height={28} style={{ borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)', marginRight: 0 }} />
                 <div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>
+                  <div className="embassy-mission-name" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>
                     {isGu ? selectedMission.countryGu : selectedMission.countryEn}
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#38bdf8' }}>
@@ -535,17 +536,17 @@ Registered Trade Office: Surat, Gujarat, India
             {/* Mission Details List */}
             <div style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <div>
-                <strong style={{ color: '#94a3b8' }}>Mission:</strong>{' '}
-                <span style={{ color: '#f1f5f9', fontWeight: 700 }}>{selectedMission.mission}</span>
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Mission:</strong>{' '}
+                <span className="embassy-detail-val" style={{ color: '#f1f5f9', fontWeight: 700 }}>{selectedMission.mission}</span>
               </div>
 
               <div>
-                <strong style={{ color: '#94a3b8' }}>Commercial Head:</strong>{' '}
-                <span style={{ color: '#f1f5f9' }}>{selectedMission.designation}</span>
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Commercial Head:</strong>{' '}
+                <span className="embassy-detail-val" style={{ color: '#f1f5f9' }}>{selectedMission.designation}</span>
               </div>
 
               <div>
-                <strong style={{ color: '#94a3b8' }}>Official MEA Email:</strong>{' '}
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Official MEA Email:</strong>{' '}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginTop: '3px' }}>
                   <code style={{
                     background: 'rgba(15, 23, 42, 0.9)',
@@ -578,17 +579,17 @@ Registered Trade Office: Surat, Gujarat, India
               </div>
 
               <div>
-                <strong style={{ color: '#94a3b8' }}>Phone:</strong>{' '}
-                <span style={{ color: '#f1f5f9' }}>{selectedMission.phone}</span>
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Phone:</strong>{' '}
+                <span className="embassy-detail-val" style={{ color: '#f1f5f9' }}>{selectedMission.phone}</span>
               </div>
 
               <div>
-                <strong style={{ color: '#94a3b8' }}>Address:</strong>{' '}
-                <span style={{ color: '#cbd5e1' }}>{selectedMission.address}</span>
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Address:</strong>{' '}
+                <span className="embassy-detail-val" style={{ color: '#cbd5e1' }}>{selectedMission.address}</span>
               </div>
 
               <div>
-                <strong style={{ color: '#94a3b8' }}>Official Portal:</strong>{' '}
+                <strong className="embassy-detail-label" style={{ color: '#94a3b8' }}>Official Portal:</strong>{' '}
                 <a
                   href={selectedMission.website}
                   target="_blank"
@@ -630,7 +631,7 @@ Registered Trade Office: Surat, Gujarat, India
         </div>
 
         {/* RIGHT COLUMN: FEATURE 2 (Structured Query Dispatch Form) */}
-        <div style={{
+        <div className="embassy-card embassy-dispatch-card" style={{
           background: 'rgba(15, 23, 42, 0.7)',
           border: '1px solid rgba(234, 179, 8, 0.25)',
           borderRadius: '16px',
@@ -645,7 +646,7 @@ Registered Trade Office: Surat, Gujarat, India
               <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#facc15', textTransform: 'uppercase' }}>
                 {isGu ? 'ફીચર ૨: સરકારી ઢાંચામાં પૂછપરછ' : 'Feature 2: Structured Inquiry Dispatch'}
               </span>
-              <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
+              <h4 className="embassy-card-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
                 📝 {isGu ? 'સત્તાવાર પૂછપરછ ફોર્મ (Inquiry Requisition)' : 'Formal Diplomatic Query Generator'}
               </h4>
             </div>
@@ -664,10 +665,11 @@ Registered Trade Office: Surat, Gujarat, India
 
           {/* Form Fields */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+            <label className="embassy-form-label" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
               {isGu ? 'પૂછપરછનો પ્રકાર (Inquiry Category):' : 'Inquiry Category:'}
             </label>
             <select
+              className="embassy-form-input"
               value={selectedCategory}
               onChange={(e) => handleCategoryChange(e.target.value)}
               style={{
@@ -693,11 +695,12 @@ Registered Trade Office: Surat, Gujarat, India
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+              <label className="embassy-form-label" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
                 {isGu ? 'પ્રોડક્ટનું નામ (Product):' : 'Product Name:'}
               </label>
               <input
                 type="text"
+                className="embassy-form-input"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 style={{
@@ -714,11 +717,12 @@ Registered Trade Office: Surat, Gujarat, India
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+              <label className="embassy-form-label" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
                 {isGu ? 'HS Code (6/8 Digits):' : 'HS Code:'}
               </label>
               <input
                 type="text"
+                className="embassy-form-input"
                 value={hsCode}
                 onChange={(e) => setHsCode(e.target.value)}
                 style={{
@@ -737,10 +741,11 @@ Registered Trade Office: Surat, Gujarat, India
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+            <label className="embassy-form-label" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
               {isGu ? 'પત્રની વિગત (Official Dispatch Requisition):' : 'Official Letter Content / Requisition:'}
             </label>
             <textarea
+              className="embassy-form-input"
               rows="4"
               value={customNotes}
               onChange={(e) => setCustomNotes(e.target.value)}
@@ -800,7 +805,7 @@ Registered Trade Office: Surat, Gujarat, India
             <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase' }}>
               {isGu ? 'ફીચર ૩: ભારત સરકાર સત્તાવાર પોર્ટલ્સ' : 'Feature 3: Govt Portals & Safe Harbor Hub'}
             </span>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
+            <h4 className="embassy-gov-hub-title" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: '2px 0 0 0' }}>
               🛡️ {isGu ? 'સત્તાવાર સરકારી પોર્ટલ્સ & વેરિફિકેશન લિંક્સ' : 'Official Trade Verification & Redressal Links'}
             </h4>
           </div>
@@ -816,6 +821,7 @@ Registered Trade Office: Surat, Gujarat, India
             href="https://www.indiantradeportal.in/"
             target="_blank"
             rel="noreferrer"
+            className="embassy-gov-portal-card"
             style={{
               padding: '14px',
               borderRadius: '12px',
@@ -830,8 +836,8 @@ Registered Trade Office: Surat, Gujarat, India
           >
             <div>
               <div style={{ fontSize: '1.25rem', marginBottom: '6px' }}>🇮🇳</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>Indian Trade Portal</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
+              <div className="embassy-gov-portal-title" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>Indian Trade Portal</div>
+              <div className="embassy-gov-portal-desc" style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
                 {isGu ? 'દેશ મુજબ કસ્ટમ ડ્યુટી, MFN ટેરિફ અને નિયમનકારી ધોરણો.' : 'Country-wise customs tariffs, MFN duty rates & SPS standards.'}
               </div>
             </div>
@@ -844,6 +850,7 @@ Registered Trade Office: Surat, Gujarat, India
             href="https://mea.gov.in/economic-diplomacy.htm"
             target="_blank"
             rel="noreferrer"
+            className="embassy-gov-portal-card"
             style={{
               padding: '14px',
               borderRadius: '12px',
@@ -858,8 +865,8 @@ Registered Trade Office: Surat, Gujarat, India
           >
             <div>
               <div style={{ fontSize: '1.25rem', marginBottom: '6px' }}>🤝</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>MEA Economic Diplomacy</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
+              <div className="embassy-gov-portal-title" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>MEA Economic Diplomacy</div>
+              <div className="embassy-gov-portal-desc" style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
                 {isGu ? 'વિદેશ મંત્રાલયનો 3Ts વિભાગ: ટ્રેડ, ટુરિઝમ અને ટેકનોલોજી સહાય.' : 'Ministry of External Affairs 3Ts trade & commercial missions division.'}
               </div>
             </div>
@@ -872,6 +879,7 @@ Registered Trade Office: Surat, Gujarat, India
             href="https://www.dgft.gov.in/"
             target="_blank"
             rel="noreferrer"
+            className="embassy-gov-portal-card"
             style={{
               padding: '14px',
               borderRadius: '12px',
@@ -886,8 +894,8 @@ Registered Trade Office: Surat, Gujarat, India
           >
             <div>
               <div style={{ fontSize: '1.25rem', marginBottom: '6px' }}>⚖️</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>DGFT Trade Dispute Desk</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
+              <div className="embassy-gov-portal-title" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>DGFT Trade Dispute Desk</div>
+              <div className="embassy-gov-portal-desc" style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
                 {isGu ? 'વિદેશી ખરીદદાર સામે પેમેન્ટ ડિફોલ્ટ કે વિવાદ માટે સરકારી પોર્ટલ.' : 'Official Government dispute resolution & defaulting buyer redressal.'}
               </div>
             </div>
@@ -900,6 +908,7 @@ Registered Trade Office: Surat, Gujarat, India
             href="https://www.fieo.org/"
             target="_blank"
             rel="noreferrer"
+            className="embassy-gov-portal-card"
             style={{
               padding: '14px',
               borderRadius: '12px',
@@ -914,8 +923,8 @@ Registered Trade Office: Surat, Gujarat, India
           >
             <div>
               <div style={{ fontSize: '1.25rem', marginBottom: '6px' }}>🌐</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>FIEO Apex Exporters Body</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
+              <div className="embassy-gov-portal-title" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff' }}>FIEO Apex Exporters Body</div>
+              <div className="embassy-gov-portal-desc" style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px', lineHeight: '1.4' }}>
                 {isGu ? 'ગ્લોબલ ટ્રેડ એસોસિએશન્સ, RCMC સર્ટિફિકેશન અને B2B બાયર મેળાઓ.' : 'Federation of Indian Export Organisations international buyer meets.'}
               </div>
             </div>
