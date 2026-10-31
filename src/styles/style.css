@@ -5951,6 +5951,7 @@ body.light-theme .modal-backdrop::-webkit-scrollbar-track {
 }
 
 @media print {
+  #printableCoaSheet, #printableCoaSheet *,
   #printableProformaSheet, #printableProformaSheet *,
   #printableSampleCustomsInvoice, #printableSampleCustomsInvoice *,
   #printableSampleManagerInvoice, #printableSampleManagerInvoice * {

@@ -11,6 +11,189 @@ export const cleanHsDigits = (rawHs) => {
 };
 
 /**
+ * Returns comprehensive international WCO Harmonized System (HS) Code classification details
+ */
+export const getWcoHsCodeDetails = (rawHs, prodName = '') => {
+  const hs = cleanHsDigits(rawHs);
+  const hs2 = hs.slice(0, 2);
+  const hs4 = hs.slice(0, 4);
+  const hs6 = hs.slice(0, 6);
+
+  if (hs2 === '54') {
+    return {
+      hsCode: hs || '540752',
+      chapter: '54',
+      chapterTitleEn: 'Chapter 54: Man-Made Filaments & Synthetic Textured Yarns',
+      chapterTitleGu: 'પ્રકરણ ૫૪: કૃત્રિમ ફિલામેન્ટ પોલિએસ્ટર યાર્ન અને ફેબ્રિક્સ (સાડી/જરી)',
+      heading: hs4 || '5407',
+      headingTitleEn: hs4 === '5402'
+        ? 'Heading 54.02: Synthetic Filament Yarn (Textured / FDY / POY / DTY)'
+        : 'Heading 54.07: Woven Fabrics of Synthetic Filament Yarn (Jacquard & Saree Fabrics)',
+      headingTitleGu: hs4 === '5402'
+        ? 'હેડિંગ ૫૪.૦૨: સિન્થેટિક ફિલામેન્ટ પોલિએસ્ટર યાર્ન (DTY / FDY)'
+        : 'હેડિંગ ૫૪.૦૭: સિન્થેટિક પોલિએસ્ટર ફિલામેન્ટ અને જરી વુવન ફેબ્રિક્સ (સાડી/જેક્વાર્ડ)',
+      subheading: hs6 || '5407.52',
+      subheadingTitleEn: 'Subheading 5407.52: Dyed Woven Fabrics of Textured Polyester Filaments (≥ 85%) with Metallic Jari',
+      subheadingTitleGu: 'સબ-હેડિંગ ૫૪૦૭.૫૨: ડાઇડ વુવન પોલિએસ્ટર ફિલામેન્ટ ફેબ્રિક્સ (૮૫% કે તેથી વધુ ફિલામેન્ટ) સાથે જરી',
+      governingCouncil: 'TEXPROCIL & OEKO-TEX Standard 100 (Ministry of Textiles, Govt. of India)',
+      officialStandard: '≥ 85% Textured Polyester Filament with Metallic Jari Yarn, Rated GSM ± 3% (WCO HS 5407.52)'
+    };
+  }
+
+  if (hs2 === '52') {
+    return {
+      hsCode: hs || '520522',
+      chapter: '52',
+      chapterTitleEn: 'Chapter 52: Cotton & Cotton Yarns (Combed / Carded Ring Spun)',
+      chapterTitleGu: 'પ્રકરણ ૫૨: કપાસ, ૧૦૦% શુદ્ધ કોટન સુતર અને કાપડ',
+      heading: hs4 || '5205',
+      headingTitleEn: 'Heading 52.05: Cotton Yarn (Other Than Sewing Thread), Single / Plied',
+      headingTitleGu: 'હેડિંગ ૫૨.૦૫: કોટન યાર્ન સુતર (Ne 20s to 40s કાઉન્ટ)',
+      subheading: hs6 || '5205.22',
+      subheadingTitleEn: 'Subheading 5205.22: Single Combed Cotton Yarn (Ne 20s to 40s)',
+      subheadingTitleGu: 'સબ-હેડિંગ ૫૨૦૫.૨૨: કોમ્બડ કોટન સુતર યાર્ન',
+      governingCouncil: 'TEXPROCIL & Cotton Textiles Export Promotion Council of India',
+      officialStandard: '100% Combed Natural Cotton / Bio-Washed Ring Spun Yarn (WCO HS 5205)'
+    };
+  }
+
+  if (hs2 === '61' || hs2 === '62') {
+    return {
+      hsCode: hs || (hs2 === '61' ? '610910' : '620342'),
+      chapter: hs2,
+      chapterTitleEn: hs2 === '61' ? 'Chapter 61: Articles of Apparel & Clothing Accessories, Knitted/Crocheted' : 'Chapter 62: Articles of Apparel & Clothing Accessories, Not Knitted (Woven)',
+      chapterTitleGu: hs2 === '61' ? 'પ્રકરણ ૬૧: નીટેડ રેડિમેડ ગારમેન્ટ્સ (ટી-શર્ટ, હોઝિયરી)' : 'પ્રકરણ ૬૨: વુવન રેડિમેડ ગારમેન્ટ્સ (શર્ટ, પેન્ટ, ડ્રેસિસ)',
+      heading: hs4 || (hs2 === '61' ? '6109' : '6203'),
+      headingTitleEn: hs2 === '61' ? 'Heading 61.09: T-shirts, Singlets and Other Vests, Knitted or Crocheted' : 'Heading 62.03: Men\'s or Boys\' Suits, Ensembles, Jackets, Trousers',
+      headingTitleGu: hs2 === '61' ? 'હેડિંગ ૬૧.૦૯: ટી-શર્ટ્સ અને નીટેડ ગારમેન્ટ્સ' : 'હેડિંગ ૬૨.૦૩: રેડિમેડ શર્ટ્સ, ટ્રાઉઝર્સ અને ગારમેન્ટ્સ',
+      subheading: hs6 || (hs2 === '61' ? '6109.10' : '6203.42'),
+      subheadingTitleEn: 'Export Readymade Apparel (OEKO-TEX / AEPC Quality Norms)',
+      subheadingTitleGu: 'એક્સપોર્ટ રેડિમેડ ગારમેન્ટ્સ (AEPC સ્ટાન્ડર્ડ)',
+      governingCouncil: 'AEPC (Apparel Export Promotion Council of India)',
+      officialStandard: 'Export-Grade High Quality Finished Apparel (AQL 2.5 Audit)'
+    };
+  }
+
+  if (hs2 === '10') {
+    return {
+      hsCode: hs || '100630',
+      chapter: '10',
+      chapterTitleEn: 'Chapter 10: Cereals; Basmati & Premium Milled Long Grain Rice',
+      chapterTitleGu: 'પ્રકરણ ૧૦: અનાજ (પ્રીમિયમ બાસમતી અને મિલ્ડ ચોખા)',
+      heading: hs4 || '1006',
+      headingTitleEn: 'Heading 10.06: Rice (Semi-Milled or Wholly Milled, Polished or Glazed)',
+      headingTitleGu: 'હેડિંગ ૧૦.૦૬: બાસમતી અને પરબોઇલ્ડ ચોખા',
+      subheading: hs6 || '1006.30',
+      subheadingTitleEn: 'Subheading 1006.30: Semi-Milled or Wholly Milled Rice (Sortex Cleaned)',
+      subheadingTitleGu: 'સબ-હેડિંગ ૧૦૦૬.૩૦: સોર્ટેક્સ ક્લીન બાસમતી ચોખા',
+      governingCouncil: 'APEDA & FSSAI (Ministry of Commerce & Industry)',
+      officialStandard: 'Min 8.35 mm+ Extra Long Grain, Broken Grains < 1.0% (WCO HS 1006.30)'
+    };
+  }
+
+  if (hs2 === '09') {
+    return {
+      hsCode: hs || '091030',
+      chapter: '09',
+      chapterTitleEn: 'Chapter 09: Coffee, Tea, Maté and Spices (Turmeric, Cumin, Pepper)',
+      chapterTitleGu: 'પ્રકરણ ૦૯: મસાલા અને તેજાના (હળદર, જીરું, મરી, ધાણા)',
+      heading: hs4 || '0910',
+      headingTitleEn: hs4 === '0909' ? 'Heading 09.09: Seeds of Anise, Badian, Fennel, Coriander, Cumin' : 'Heading 09.10: Ginger, Saffron, Turmeric (Curcuma), Thyme, Curry',
+      headingTitleGu: hs4 === '0909' ? 'હેડિંગ ૦૯.૦૯: જીરું, વરિયાળી અને ધાણા બીજ' : 'હેડિંગ ૦૯.૧૦: હળદર, આદુ અને તેજાના',
+      subheading: hs6 || '0910.30',
+      subheadingTitleEn: 'Export Quality Clean Spices (ASTA & ISO 959 / 5562 Standards)',
+      subheadingTitleGu: 'એક્સપોર્ટ ક્વોલિટી સોર્ટેક્સ મસાલા',
+      governingCouncil: 'Spices Board India & AGMARK / FSSAI',
+      officialStandard: 'Curcumin > 3.0% / Volatile Oil > 2.5%, Extraneous Matter < 0.5% (WCO HS 0909/0910)'
+    };
+  }
+
+  if (hs2 === '04') {
+    return {
+      hsCode: hs || '040590',
+      chapter: '04',
+      chapterTitleEn: 'Chapter 04: Dairy Produce; Pure Desi Ghee, Butter & Milk Powder',
+      chapterTitleGu: 'પ્રકરણ ૦૪: ડેરી ઉત્પાદનો (અમૂલ શુદ્ધ દેશી ઘી, બટર અને દૂધ પાવડર)',
+      heading: hs4 || '0405',
+      headingTitleEn: 'Heading 04.05: Butter and Other Fats Derived from Milk (Dairy Ghee)',
+      headingTitleGu: 'હેડિંગ ૦૪.૦૫: શુદ્ધ ડેરી ઘી અને મિલ્ક ફેટ',
+      subheading: hs6 || '0405.90',
+      subheadingTitleEn: 'Subheading 0405.90: Anhydrous Milk Fat / Pure Clarified Butter (Desi Ghee)',
+      subheadingTitleGu: 'સબ-હેડિંગ ૦૪૦૫.૯૦: પ્યોર દેશી ઘી (અમૂલ ક્વોલિટી)',
+      governingCouncil: 'FSSAI, AGMARK Special Grade & Export Inspection Agency (EIA)',
+      officialStandard: 'Min 99.7% Pure Bovine Milk Fat, Moisture Max 0.3% w/w (WCO HS 0405.90)'
+    };
+  }
+
+  if (hs2 === '73') {
+    return {
+      hsCode: hs || '731815',
+      chapter: '73',
+      chapterTitleEn: 'Chapter 73: Articles of Iron or Steel; Precision Fasteners (Bolts, Nuts, Screws)',
+      chapterTitleGu: 'પ્રકરણ ૭૩: લોખંડ-સ્ટીલ આર્ટિકલ્સ (હાઇ-ટેન્સાઇલ બોલ્ટ, નટ, સ્ક્રૂ)',
+      heading: hs4 || '7318',
+      headingTitleEn: 'Heading 73.18: Screws, Bolts, Nuts, Coach Screws, Washers of Iron or Steel',
+      headingTitleGu: 'હેડિંગ ૭૩.૧૮: હાઇ-ટેન્સાઇલ બોલ્ટ, નટ, વોશર અને સ્ક્રૂ',
+      subheading: hs6 || '7318.15',
+      subheadingTitleEn: 'Subheading 7318.15: High-Tensile Threaded Screws and Bolts',
+      subheadingTitleGu: 'સબ-હેડિંગ ૭૩૧૮.૧૫: થ્રેડેડ બોલ્ટ અને સ્ક્રૂ',
+      governingCouncil: 'EEPC India & ISO 9001 / EN 10204 3.1 Certification',
+      officialStandard: 'High-Tensile Grade 8.8 / 10.9 / 12.9 or SS304/SS316 (WCO HS 7318)'
+    };
+  }
+
+  if (hs2 === '84') {
+    return {
+      hsCode: hs || '845811',
+      chapter: '84',
+      chapterTitleEn: 'Chapter 84: Machinery, Nuclear Reactors, Boilers & Mechanical Appliances',
+      chapterTitleGu: 'પ્રકરણ ૮૪: મશીનરી, CNC લેથ, મિલિંગ મશીન, પંપ અને પ્લાન્ટ',
+      heading: hs4 || '8458',
+      headingTitleEn: hs4 === '8471' ? 'Heading 84.71: Automatic Data Processing Machines (Computers & IT)' : 'Heading 84.58: Machine Tools (Lathes) for Removing Metal',
+      headingTitleGu: hs4 === '8471' ? 'હેડિંગ ૮૪.૭૧: કોમ્પ્યુટર અને આઇટી સાધનો' : 'હેડિંગ ૮૪.૫૮: CNC લેથ અને પ્રિસિઝન ટર્નિંગ મશીન',
+      subheading: hs6 || '8458.11',
+      subheadingTitleEn: 'Industrial Machinery & Precision CNC Equipment',
+      subheadingTitleGu: 'ઔદ્યોગિક મશીનરી અને સીએનસી સાધનો',
+      governingCouncil: 'CE Machinery Directive 2006/42/EC & EEPC India',
+      officialStandard: 'Full Factory Acceptance Test (FAT) & CE Machinery Directive Compliant'
+    };
+  }
+
+  if (hs2 === '85') {
+    return {
+      hsCode: hs || '851762',
+      chapter: '85',
+      chapterTitleEn: 'Chapter 85: Electrical Machinery & Equipment; Telecom, Routers & Electronics',
+      chapterTitleGu: 'પ્રકરણ ૮૫: ઇલેક્ટ્રોનિક્સ, ટેલિકોમ, રાઉટર, સ્માર્ટફોન અને વાયર્સ',
+      heading: hs4 || '8517',
+      headingTitleEn: hs4 === '8528' ? 'Heading 85.28: Monitors and Displays, Television Reception Apparatus' : 'Heading 85.17: Telephone Sets, Smartphones, Routers & Switches',
+      headingTitleGu: hs4 === '8528' ? 'હેડિંગ ૮૫.૨૮: એલઇડી મોનિટર અને ટેલિવિઝન' : 'હેડિંગ ૮૫.૧૭: સ્માર્ટફોન, વાઇ-ફાઇ રાઉટર અને નેટવર્કિંગ',
+      subheading: hs6 || '8517.62',
+      subheadingTitleEn: 'Telecommunications & High-Speed Wireless Networking Devices',
+      subheadingTitleGu: 'હાઇ-સ્પીડ વાયરલેસ વાઇ-ફાઇ નેટવર્કિંગ સાધનો',
+      governingCouncil: 'TEC, BIS, CE RED, FCC & RoHS 2.0 Directive',
+      officialStandard: 'IEEE 802.11 Compliant, CE LVD, FCC Part 15 & RoHS 2.0 Directive'
+    };
+  }
+
+  // Fallback default
+  return {
+    hsCode: hs || 'Standard',
+    chapter: hs2 || '00',
+    chapterTitleEn: `WCO HS Chapter ${hs2 || 'Standard'} International Merchandise`,
+    chapterTitleGu: `WCO HS પ્રકરણ ${hs2 || 'માનક'} આંતરરાષ્ટ્રીય ઉત્પાદન`,
+    heading: hs4 || '0000',
+    headingTitleEn: `WCO Heading ${hs4 || 'Standard'} Export Commodity`,
+    headingTitleGu: `WCO હેડિંગ ${hs4 || 'માનક'} એક્સપોર્ટ કોમોડિટી`,
+    subheading: hs6 || hs || 'Standard',
+    subheadingTitleEn: 'Verified Export Specification Standard',
+    subheadingTitleGu: 'પ્રમાણિત એક્સપોર્ટ સ્પેસિફિકેશન',
+    governingCouncil: 'DGFT (Directorate General of Foreign Trade, Govt. of India)',
+    officialStandard: 'International Export Quality & Safety Standard Compliant'
+  };
+};
+
+/**
  * Returns default standard laboratory test parameters based on WCO HS Code and product context
  */
 export const getDefaultParamsForHsCode = (productOrHs) => {
@@ -21,11 +204,23 @@ export const getDefaultParamsForHsCode = (productOrHs) => {
   const hs4 = hs.slice(0, 4);
   const hs6 = hs.slice(0, 6);
 
-  const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || '';
+  const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || p.title || '';
   const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || '';
   const cat = (p.category || '').toLowerCase();
   const pId = (p.id || '').toLowerCase();
-  const pNameFull = ((prodNameEn || '') + ' ' + (prodNameGu || '') + ' ' + (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || ''))).toLowerCase();
+  const pDescEn = (typeof p.description === 'object' ? p.description.en : p.description) || '';
+  const pDescGu = (typeof p.description === 'object' ? p.description.gu : '') || '';
+  const pSpecStr = typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || '');
+  const pNameFull = [
+    prodNameEn,
+    prodNameGu,
+    p.title || '',
+    pDescEn,
+    pDescGu,
+    pSpecStr,
+    cat,
+    p.subCategory || ''
+  ].join(' ').toLowerCase();
 
   // 1. Telecommunications & Networking (HS 8517.62 / 8517.69 or Router, Wi-Fi, Switches, Hubs)
   const isNetworkTelecom = hs6 === '851762' || hs6 === '851769' || hs6 === '851770' ||
@@ -350,22 +545,50 @@ export const getDefaultParamsForHsCode = (productOrHs) => {
   }
 
   // 13. Textiles, Garments & Fabrics (Chapters 50 to 63)
-  const isTextile = (parseInt(hs2, 10) >= 50 && parseInt(hs2, 10) <= 63) || cat.includes('text') || cat.includes('garment') || cat.includes('fabric') || pNameFull.includes('cotton') || pNameFull.includes('saree') || pNameFull.includes('t-shirt') || pNameFull.includes('કાપડ') || pNameFull.includes('સાડી');
+  const isTextile = (parseInt(hs2, 10) >= 50 && parseInt(hs2, 10) <= 63) || cat.includes('text') || cat.includes('garment') || cat.includes('fabric') || cat.includes('yarn') || pNameFull.includes('cotton') || pNameFull.includes('saree') || pNameFull.includes('t-shirt') || pNameFull.includes('કાપડ') || pNameFull.includes('સાડી') || pNameFull.includes('સુતર') || pNameFull.includes('ટેક્ષટાઈલ') || pNameFull.includes('ટેક્સટાઈલ') || pNameFull.includes('poly') || pNameFull.includes('jari');
 
   if (isTextile) {
+    const isJariOrZari = pNameFull.includes('jari') || pNameFull.includes('zari') || pNameFull.includes('જરી') || pNameFull.includes('ઝરી') || pNameFull.includes('metallic');
+    const isPolyester = pNameFull.includes('poly') || pNameFull.includes('polyester') || pNameFull.includes('પોલિએસ્ટર') || pNameFull.includes('પોલીએસ્ટર') || pNameFull.includes('સિન્થેટીક') || pNameFull.includes('synthetic') || pNameFull.includes('filament') || hs2 === '54' || hs2 === '55';
+    const isSilk = pNameFull.includes('silk') || pNameFull.includes('સિલ્ક') || pNameFull.includes('રેશમ') || hs2 === '50';
+    const isWool = pNameFull.includes('wool') || pNameFull.includes('woolen') || pNameFull.includes('વુલન') || pNameFull.includes('ઉન') || hs2 === '51';
+    const isLinenOrJute = pNameFull.includes('linen') || pNameFull.includes('flax') || pNameFull.includes('jute') || pNameFull.includes('લીનન') || pNameFull.includes('શણ') || hs2 === '53';
+
+    let fiberStandard = '100% Premium Combed Cotton / Certified Blend';
+    let catTitle = 'Textiles, Garments & Woven Fabrics (WCO HS Section XI)';
+    let careStorage = 'Store in clean, dry, dust-free warehouse on elevated pallets. Keep cartons sealed with polyethylene moisture barrier liners. Keep away from direct sunlight to prevent photochemical discoloration.';
+
+    if (isJariOrZari && isPolyester) {
+      fiberStandard = 'Premium Polyester Filament with Metallic Jari Yarn, Rated GSM ± 3%';
+      catTitle = `Polyester Filament & Metallic Jari Jacquard Fabrics (WCO HS ${hsRaw || '540752'})`;
+      careStorage = 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Cartons lined with polyethylene moisture-barrier film. Keep away from direct sunlight, damp walls, and heat sources to prevent metallic jari tarnishing and filament degradation.';
+    } else if (isPolyester) {
+      fiberStandard = '100% Micro-Polyester / Synthetic Filament Weave, Rated GSM ± 3%';
+      catTitle = `Synthetic Filament & Polyester Fabrics (WCO HS Chapter ${hs2 || '54'})`;
+    } else if (isSilk) {
+      fiberStandard = '100% Pure Natural Mulberry Silk / Silk Blend, Rated GSM ± 3%';
+      catTitle = 'Pure Natural Silk & Silk Blend Fabrics (WCO HS Chapter 50)';
+    } else if (isWool) {
+      fiberStandard = '100% Pure Wool / Blended Worsted Yarn, Rated GSM ± 3%';
+      catTitle = 'Woolmark Certified Wool & Thermal Textiles (WCO HS Chapter 51)';
+    } else if (isLinenOrJute) {
+      fiberStandard = '100% Pure Flax Linen / Natural Jute Yarn, Rated GSM ± 3%';
+      catTitle = 'Pure Flax Linen & Natural Fiber Textiles (WCO HS Chapter 53)';
+    }
+
     return {
       categoryKey: 'textiles_garments',
-      categoryLabel: 'Textiles, Garments & Woven Fabrics (WCO HS Section XI)',
+      categoryLabel: catTitle,
       isTextile: true,
       licenseLabel: 'Export License / DGFT IEC & TEXPROCIL Reg:',
       sealSubtitle: 'OEKO-TEX & TEXPROCIL AUDITED TEXTILE SEAL',
       signatoryTitle: 'Lead Textile Chemist & Fabric QA Officer',
       storageTitle: '🧶 STORAGE & FABRIC CARE INSTRUCTIONS:',
-      storageText: 'Store in clean, dry, dust-free warehouse on elevated pallets. Keep cartons sealed with polyethylene moisture barrier liners. Keep away from direct sunlight to prevent photochemical discoloration.',
+      storageText: careStorage,
       qualityTitle: '🛡️ TEXTILE QUALITY & SAFETY DECLARATION:',
       qualityText: 'Certified 100% free from banned carcinogenic azo dyes, formaldehyde, and heavy metals. Conforms to OEKO-TEX Standard 100 and AATCC international washing and color-fastness standards.',
       testParams: [
-        { param: 'Fiber Composition (ફાઈબર / સુતર બંધારણ)', standard: '100% Premium Combed Cotton / Certified Blend', result: '100% Certified Fiber Pass', method: 'Microscopic & Chemical Solvent Analysis' },
+        { param: 'Fiber Composition (ફાઈબર / સુતર બંધારણ)', standard: fiberStandard, result: '100% Certified Fiber Pass', method: 'Microscopic & Chemical Solvent Analysis' },
         { param: 'Fabric Weight - Grammage GSM (કાપડનું વજન)', standard: 'Rated GSM ± 3% (Uniform Density)', result: 'Complies (Tight Compact Weave)', method: 'GSM Circular Cutter (ASTM D3776)' },
         { param: 'Color Fastness to Washing & Light (કલર ફાસ્ટનેસ)', standard: 'Min Grade 4 - 5 (ISO 105-C06 Standard)', result: 'Grade 4.5 (Excellent No-Bleed Quality)', method: 'Launder-Ometer Washing Cycle' },
         { param: 'Dimensional Stability / Shrinkage (સંકોચન દર)', standard: 'Max ± 2.0% Length & Width Shrinkage', result: '- 1.1% (Pre-Shrunk Sanitized Pass)', method: 'AATCC 135 Standard Washing Test' },
@@ -461,11 +684,23 @@ export const getOemStandardPreset = (productOrHs) => {
   const hs4 = hs.slice(0, 4);
   const hs6 = hs.slice(0, 6);
 
-  const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || '';
+  const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || p.title || '';
   const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || '';
   const cat = (p.category || '').toLowerCase();
   const pId = (p.id || '').toLowerCase();
-  const pNameFull = ((prodNameEn || '') + ' ' + (prodNameGu || '') + ' ' + (typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || ''))).toLowerCase();
+  const pDescEn = (typeof p.description === 'object' ? p.description.en : p.description) || '';
+  const pDescGu = (typeof p.description === 'object' ? p.description.gu : '') || '';
+  const pSpecStr = typeof p.spec === 'object' ? Object.values(p.spec).join(' ') : (p.spec || '');
+  const pNameFull = [
+    prodNameEn,
+    prodNameGu,
+    p.title || '',
+    pDescEn,
+    pDescGu,
+    pSpecStr,
+    cat,
+    p.subCategory || ''
+  ].join(' ').toLowerCase();
 
   // 1. Dairy, Milk & Desi Ghee (Amul / GCMMF / Dairy Products - HS 0405, 0401, 0402, etc.)
   const isDairy = hs2 === '04' || cat.includes('dairy') || cat.includes('milk') || pNameFull.includes('ghee') || pNameFull.includes('ghi') || pNameFull.includes('amul') || pNameFull.includes('butter') || pNameFull.includes('milk') || pNameFull.includes('ઘી') || pNameFull.includes('ડેરી');
@@ -659,26 +894,74 @@ export const getOemStandardPreset = (productOrHs) => {
   }
 
   // 5. Textiles, Fabrics & Yarns (Chapters 50 to 60 / Cotton, Fabric, Saree, Yarn, કાપડ, સુતર, ટેક્ષટાઈલ)
-  const isTextile = (parseInt(hs2, 10) >= 50 && parseInt(hs2, 10) <= 60) || cat.includes('text') || cat.includes('fabric') || cat.includes('yarn') || pNameFull.includes('cotton') || pNameFull.includes('fabric') || pNameFull.includes('textile') || pNameFull.includes('saree') || pNameFull.includes('yarn') || pNameFull.includes('cloth') || pNameFull.includes('કાપડ') || pNameFull.includes('સુતર') || pNameFull.includes('સાડી') || pNameFull.includes('ટેક્ષટાઈલ') || pNameFull.includes('ટેક્સટાઈલ');
+  const isTextile = (parseInt(hs2, 10) >= 50 && parseInt(hs2, 10) <= 60) || cat.includes('text') || cat.includes('fabric') || cat.includes('yarn') || pNameFull.includes('cotton') || pNameFull.includes('fabric') || pNameFull.includes('textile') || pNameFull.includes('saree') || pNameFull.includes('yarn') || pNameFull.includes('cloth') || pNameFull.includes('કાપડ') || pNameFull.includes('સુતર') || pNameFull.includes('સાડી') || pNameFull.includes('ટેક્ષટાઈલ') || pNameFull.includes('ટેક્સટાઈલ') || pNameFull.includes('poly') || pNameFull.includes('jari');
   if (isTextile) {
+    const isJariOrZari = pNameFull.includes('jari') || pNameFull.includes('zari') || pNameFull.includes('જરી') || pNameFull.includes('ઝરી') || pNameFull.includes('metallic');
+    const isPolyester = pNameFull.includes('poly') || pNameFull.includes('polyester') || pNameFull.includes('પોલિએસ્ટર') || pNameFull.includes('પોલીએસ્ટર') || pNameFull.includes('સિન્થેટીક') || pNameFull.includes('synthetic') || pNameFull.includes('filament') || hs2 === '54' || hs2 === '55';
+    const isSilk = pNameFull.includes('silk') || pNameFull.includes('સિલ્ક') || pNameFull.includes('રેશમ') || hs2 === '50';
+    const isWool = pNameFull.includes('wool') || pNameFull.includes('woolen') || pNameFull.includes('વુલન') || pNameFull.includes('ઉન') || hs2 === '51';
+    const isLinenOrJute = pNameFull.includes('linen') || pNameFull.includes('flax') || pNameFull.includes('jute') || pNameFull.includes('લીનન') || pNameFull.includes('શણ') || hs2 === '53';
+    const isJacquard = pNameFull.includes('jacquard') || pNameFull.includes('જાકાર્ડ');
+
+    let fiberStandard = '100% Combed Cotton / Certified Blend, Rated GSM ± 3%';
+    let fiberResult = 'Pass (Verified as per Textile OEM Datasheet)';
+    let fiberMethod = 'Microscopic Identification & GSM Circular Cutter (ASTM D3776)';
+    let catLabel = `Authentic OEM Textiles, Fabrics & Garments (WCO HS Chapter ${hs2 || '52'})`;
+    let careStorage = 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Cartons lined with polyethylene moisture-barrier film. Keep away from direct sunlight, damp walls, and heat sources to prevent discoloration and fiber degradation.';
+    let compDecl = 'Certified that the supplied textile products conform strictly to original manufacturer technical specifications, OEKO-TEX Standard 100, and AATCC/ISO international washing and colorfastness norms. 100% free from carcinogenic azo dyes, formaldehyde, and banned heavy metals. Original manufacturer batch test certificates and fabric inspection dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.';
+
+    if (isJariOrZari && isPolyester) {
+      fiberStandard = 'Premium Polyester Filament with Metallic Jari Yarn, Rated GSM ± 3%';
+      fiberResult = 'Pass (Verified as per Polyester & Metallic Jari OEM Specs)';
+      fiberMethod = 'Microscopic Identification & GSM Circular Cutter (ASTM D3776)';
+      catLabel = `Authentic OEM Polyester Filament & Metallic Jari Jacquard Fabrics (WCO HS ${hsRaw || '540752'})`;
+      careStorage = 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Cartons lined with polyethylene moisture-barrier film. Keep away from direct sunlight, damp walls, and heat sources to prevent metallic jari tarnishing and filament degradation.';
+      compDecl = 'Certified that the supplied polyester filament and metallic jari fabrics conform strictly to original OEM technical specifications, OEKO-TEX Standard 100, and AATCC/ISO international washing and colorfastness norms. 100% free from carcinogenic azo dyes and banned heavy metals. Original manufacturer batch test certificates and fabric inspection dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.';
+    } else if (isPolyester) {
+      fiberStandard = '100% Micro-Polyester / Synthetic Filament Weave, Rated GSM ± 3%';
+      fiberResult = 'Pass (Verified as per Synthetic Filament OEM Specs)';
+      fiberMethod = 'Thermal DSC Analysis & GSM Circular Cutter (ASTM D3776)';
+      catLabel = `Authentic OEM Synthetic Filament & Polyester Woven Fabrics (WCO HS Chapter ${hs2 || '54'})`;
+      careStorage = 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Keep away from excessive heat and direct sunlight.';
+      compDecl = 'Certified that the supplied polyester/synthetic fabrics conform strictly to OEKO-TEX Standard 100 and ISO textile testing protocols. 100% free from banned azo dyes and toxic substances.';
+    } else if (isSilk) {
+      fiberStandard = '100% Pure Natural Mulberry Silk / Silk Blend, Rated GSM ± 3%';
+      fiberResult = 'Pass (Grade 5A Mulberry Silk Verified)';
+      fiberMethod = 'Silk Dissolution & Fiber Cross-Section Assay (IS 667)';
+      catLabel = `Authentic OEM Pure Silk & Silk Blend Textiles (WCO HS Chapter 50)`;
+    } else if (isWool) {
+      fiberStandard = '100% Pure Wool / Blended Worsted Yarn, Rated GSM ± 3%';
+      fiberResult = 'Pass (Woolmark Tested Pure Animal Fiber)';
+      fiberMethod = 'Woolmark Fiber Diameter & Clean Spec Assay';
+      catLabel = `Authentic OEM Wool & Animal Hair Textiles (WCO HS Chapter 51)`;
+    } else if (isLinenOrJute) {
+      fiberStandard = '100% Pure Flax Linen / Natural Jute Yarn, Rated GSM ± 3%';
+      fiberResult = 'Pass (Natural Long-Staple Flax Verified)';
+      fiberMethod = 'Flax Fiber Microscopic Cross-Section (ASTM D276)';
+      catLabel = `Authentic OEM Vegetable Fiber & Linen Textiles (WCO HS Chapter 53)`;
+    } else if (isJacquard) {
+      fiberStandard = 'Premium Jacquard Weave Fabric / Certified Blend, Rated GSM ± 3%';
+      catLabel = `Authentic OEM Designer Jacquard Weave Fabrics (WCO HS ${hsRaw || '5407'})`;
+    }
+
     return {
       categoryKey: 'oem_textiles',
-      categoryLabel: `Authentic OEM Textiles, Fabrics & Garments (WCO HS Chapter ${hs2 || '52'})`,
+      categoryLabel: catLabel,
       isTextile: true,
       isElectricalElectronic: false,
       licenseLabel: 'Export License / DGFT IEC & TEXPROCIL / OEKO-TEX Reg:',
       sealSubtitle: 'OEKO-TEX & TEXPROCIL AUDITED TEXTILE QUALITY SEAL',
       signatoryTitle: 'Lead Textile QA Engineer & Fabric Technologist',
       storageTitle: '🧶 STORAGE & FABRIC CARE INSTRUCTIONS:',
-      storageText: 'Store in a clean, dry, dust-free indoor warehouse elevated on wooden pallets. Cartons lined with polyethylene moisture-barrier film. Keep away from direct sunlight, damp walls, and heat sources to prevent discoloration and fiber degradation.',
+      storageText: careStorage,
       qualityTitle: '🛡️ OEM TEXTILE SPECIFICATION & COMPLIANCE DECLARATION:',
-      qualityText: 'Certified that the supplied textile products conform strictly to original manufacturer technical specifications, OEKO-TEX Standard 100, and AATCC/ISO international washing and colorfastness norms. 100% free from carcinogenic azo dyes, formaldehyde, and banned heavy metals. Original manufacturer batch test certificates and fabric inspection dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.',
+      qualityText: compDecl,
       testParams: [
         {
           param: 'Fiber Composition & Grammage - GSM (ફાઈબર બંધારણ અને કાપડનું વજન)',
-          standard: '100% Combed Cotton / Certified Blend, Rated GSM ± 3%',
-          result: 'Pass (Verified as per Textile OEM Datasheet)',
-          method: 'Microscopic Identification & GSM Circular Cutter (ASTM D3776)'
+          standard: fiberStandard,
+          result: fiberResult,
+          method: fiberMethod
         },
         {
           param: 'Color Fastness & Washing Resistance (કલર ફાસ્ટનેસ અને બ્લીડિંગ મુક્તિ)',
@@ -971,9 +1254,52 @@ export const getCoaDataByHsCode = (product) => {
   if (!product) return defaults;
 
   const hasCustomParams = Array.isArray(product.customTestParams) && product.customTestParams.length > 0;
-  const activeParams = hasCustomParams ? product.customTestParams : defaults.testParams;
-  const activeStorage = product.customStorage || defaults.storageText;
-  const activeQualityDecl = product.customQualityDecl || defaults.qualityText;
+  let activeParams = hasCustomParams ? product.customTestParams : defaults.testParams;
+
+  // Smart guard: If the product has custom params that still contain the generic cotton default ('100% Combed Cotton')
+  // but the product defaults are NOT cotton (e.g. Polyester, Jari, Silk, Wool, etc.),
+  // automatically synchronize the first parameter so the COA reflects the product's true composition!
+  if (hasCustomParams && defaults.testParams?.[0]?.standard && !defaults.testParams[0].standard.includes('100% Combed Cotton')) {
+    activeParams = activeParams.map((param, i) => {
+      if (i === 0 && param.standard && param.standard.includes('100% Combed Cotton')) {
+        return {
+          ...param,
+          standard: defaults.testParams[0].standard,
+          result: param.result?.includes('Pass') ? defaults.testParams[0].result : param.result,
+          method: defaults.testParams[0].method || param.method
+        };
+      }
+      return param;
+    });
+  }
+
+  // WCO HS 5407 / Chapter 54 Strict Enforcement: Under no circumstance will cotton EVER appear for Chapter 54!
+  const hsRawStr = String(product.hsCode || product.localHsn || '');
+  const hsCleanStr = cleanHsDigits(hsRawStr);
+  if (hsCleanStr.startsWith('54')) {
+    activeParams = activeParams.map((param, i) => {
+      if (i === 0 && (param.standard?.includes('Cotton') || param.standard?.includes('cotton'))) {
+        return {
+          ...param,
+          standard: defaults.testParams[0]?.standard || '≥ 85% Textured Polyester Filament with Metallic Jari Yarn, Rated GSM ± 3% (WCO HS 5407.52)',
+          result: defaults.testParams[0]?.result || 'Pass (Verified as per Polyester & Metallic Jari OEM Specs)',
+          method: defaults.testParams[0]?.method || 'Microscopic Identification & GSM Circular Cutter (ASTM D3776)'
+        };
+      }
+      return param;
+    });
+  }
+
+  let activeStorage = product.customStorage || defaults.storageText;
+  let activeQualityDecl = product.customQualityDecl || defaults.qualityText;
+
+  // Synchronize storage and quality declaration if they contain old cotton text on a polyester/jari product
+  if (activeStorage && activeStorage.includes('prevent discoloration and fiber degradation') && defaults.storageText.includes('metallic jari')) {
+    activeStorage = defaults.storageText;
+  }
+  if (activeQualityDecl && activeQualityDecl.includes('supplied textile products') && defaults.qualityText.includes('polyester filament and metallic jari')) {
+    activeQualityDecl = defaults.qualityText;
+  }
 
   return {
     ...defaults,

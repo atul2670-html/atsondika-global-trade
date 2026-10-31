@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { toUSEnglishAddress, convertGoogleDriveUrl, generateDigitalRoundStampSvg } from '../utils/address';
 import { autoGenerateMultilingualNames, autoGenerateMultilingualSpec, autoTranslateText, fetchGoogleTransliteration, autoTranslateFullObject } from '../utils/translator';
 import { superFastCompressImage, DEFAULT_CURRENCIES } from '../utils/realtimeSync';
-import { getCoaDataByHsCode, getDefaultParamsForHsCode, getOemStandardPreset } from '../utils/coaParametersEngine';
+import { getCoaDataByHsCode, getDefaultParamsForHsCode, getOemStandardPreset, getWcoHsCodeDetails } from '../utils/coaParametersEngine';
 import SearchablePortInput from './SearchablePortInput';
 import SearchableUnitSelect from './SearchableUnitSelect';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
@@ -7786,6 +7786,7 @@ export default function Modals() {
         const prodNameEn = (typeof p.names === 'object' ? p.names.en : p.name) || 'Export Commodity';
         const prodNameGu = (typeof p.names === 'object' ? p.names.gu : '') || prodNameEn;
         const hs = p.hsCode || p.localHsn || '847130';
+        const hsDetails = getWcoHsCodeDetails(hs, prodNameEn);
 
         // Retrieve dynamic parameters and regulatory info by WCO HS CODE & product context
         const coaData = getCoaDataByHsCode(p);
@@ -7814,7 +7815,10 @@ export default function Modals() {
                       Official Quality & Compliance Specification Document
                     </span>
                     <span style={{ fontSize: '0.74rem', background: 'rgba(45, 212, 191, 0.15)', color: '#2dd4bf', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                      🏷️ HS: {hs}
+                      🏷️ WCO HS: {hs}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                      🌐 {currentLang === 'gu' ? hsDetails.chapterTitleGu : hsDetails.chapterTitleEn}
                     </span>
                     {(coaData.isOemCertified || coaData.categoryKey === 'oem_certified') && (
                       <span style={{ fontSize: '0.72rem', background: 'rgba(99, 102, 241, 0.25)', color: '#a5b4fc', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
@@ -7870,23 +7874,111 @@ export default function Modals() {
                     onClick={() => {
                       const printContent = document.getElementById('printableCoaSheet');
                       if (printContent) {
-                        const win = window.open('', '', 'width=900,height=800');
+                        const win = window.open('', '', 'width=950,height=900');
                         win.document.write(`
+                          <!DOCTYPE html>
                           <html>
                           <head>
-                            <title>Certificate of Analysis - ${prodNameEn}</title>
+                            <meta charset="utf-8" />
+                            <title>Certificate of Analysis - ${prodNameEn.replace(/"/g, '&quot;')}</title>
                             <style>
-                              body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; background: #fff; }
-                              table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 12px; }
-                              th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
-                              th { background-color: #0f766e; color: #fff; }
-                              .header { border-bottom: 2px solid #0f766e; padding-bottom: 12px; margin-bottom: 16px; }
+                              @page {
+                                size: A4 portrait;
+                                margin: 6mm 10mm 6mm 10mm;
+                              }
+                              * {
+                                box-sizing: border-box;
+                              }
+                              html, body {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                                color: #0f172a !important;
+                                background: #ffffff !important;
+                                font-size: 11px;
+                                line-height: 1.32;
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                              }
+                              #printableCoaSheet {
+                                padding: 2px 4px !important;
+                                margin: 0 !important;
+                                box-shadow: none !important;
+                                border-radius: 0 !important;
+                                max-width: 100% !important;
+                                width: 100% !important;
+                              }
+                              .coa-header {
+                                padding-bottom: 8px !important;
+                                margin-bottom: 8px !important;
+                                border-bottom: 2.5px solid #0f766e !important;
+                              }
+                              .coa-header h1 {
+                                font-size: 1.25rem !important;
+                                line-height: 1.15 !important;
+                              }
+                              .coa-banner {
+                                padding: 5px 8px !important;
+                                margin-bottom: 8px !important;
+                                font-size: 0.8rem !important;
+                                font-weight: 800 !important;
+                                letter-spacing: 0.3px !important;
+                              }
+                              .coa-product-box {
+                                padding: 7px 10px !important;
+                                margin-bottom: 8px !important;
+                                gap: 6px !important;
+                                font-size: 0.76rem !important;
+                              }
+                              .coa-section-title {
+                                margin: 0 0 6px 0 !important;
+                                font-size: 0.82rem !important;
+                              }
+                              .coa-table-wrap {
+                                margin-bottom: 8px !important;
+                              }
+                              table.coa-table {
+                                width: 100% !important;
+                                border-collapse: collapse !important;
+                                font-size: 0.74rem !important;
+                              }
+                              table.coa-table th, table.coa-table td {
+                                padding: 5px 8px !important;
+                                line-height: 1.25 !important;
+                              }
+                              .coa-notice-clause {
+                                padding: 6px 10px !important;
+                                margin-bottom: 8px !important;
+                                font-size: 0.72rem !important;
+                                line-height: 1.3 !important;
+                              }
+                              .coa-guidelines-box {
+                                padding: 8px 12px !important;
+                                margin-bottom: 8px !important;
+                                gap: 12px !important;
+                                font-size: 0.72rem !important;
+                                line-height: 1.3 !important;
+                                page-break-inside: avoid !important;
+                                break-inside: avoid !important;
+                              }
+                              .coa-footer {
+                                padding-top: 8px !important;
+                                page-break-inside: avoid !important;
+                                break-inside: avoid !important;
+                              }
                             </style>
                           </head>
                           <body>
-                            ${printContent.innerHTML}
+                            <div id="printableCoaSheet">
+                              ${printContent.innerHTML}
+                            </div>
                             <script>
-                              window.onload = function() { window.print(); window.close(); };
+                              window.onload = function() {
+                                setTimeout(function() {
+                                  window.print();
+                                  window.close();
+                                }, 250);
+                              };
                             </script>
                           </body>
                           </html>
@@ -7958,9 +8050,9 @@ export default function Modals() {
                           setCoaEditStorage(defs.storageText);
                           setCoaEditQualityDecl(defs.qualityText);
                         }}
-                        title={currentLang === 'gu' ? 'આ પ્રોડક્ટના HS CODE મુજબના ઓરિજિનલ પેરામીટર્સ રિસેટ કરો' : 'Reset to standard parameters for this HS Code'}
+                        title={currentLang === 'gu' ? `આ પ્રોડક્ટના WCO HS CODE (${hs}) મુજબના ઓરિજિનલ પેરામીટર્સ રિસેટ કરો` : `Reset to standard parameters for HS Code ${hs}`}
                       >
-                        🔄 {currentLang === 'gu' ? 'HS CODE મુજબ ડિફોલ્ટ રિસેટ કરો' : 'Reset to HS Code Defaults'}
+                        🔄 {currentLang === 'gu' ? `HS CODE: ${hs} મુજબ રીસેટ કરો` : `Reset to HS Code: ${hs}`}
                       </button>
 
                       <button
@@ -8208,21 +8300,21 @@ export default function Modals() {
               )}
 
               {/* Printable White Sheet */}
-              <div id="printableCoaSheet" style={{ background: '#ffffff', color: '#0f172a', padding: '32px', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              <div id="printableCoaSheet" style={{ background: '#ffffff', color: '#0f172a', padding: '24px 28px', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid #0f766e', paddingBottom: '16px', marginBottom: '18px' }}>
+                <div className="coa-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '3px solid #0f766e', paddingBottom: '12px', marginBottom: '14px' }}>
                   <div>
-                    <h1 style={{ margin: 0, fontSize: '1.5rem', color: '#0f766e', fontWeight: 900, letterSpacing: '-0.3px' }}>
+                    <h1 style={{ margin: 0, fontSize: '1.4rem', color: '#0f766e', fontWeight: 900, letterSpacing: '-0.3px' }}>
                       {compName}
                     </h1>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: '#475569', fontWeight: 700 }}>
+                    <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#475569', fontWeight: 700 }}>
                       GOVERNMENT OF INDIA RECOGNIZED EXPORT HOUSE
                     </p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
                       📍 {activeCompany?.address || 'Surat, Gujarat, India'} | 📞 {activeCompany?.phone || '+91 78619 97755'}
                     </p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.76rem', color: '#0369a1', fontWeight: 700 }}>
                       GSTIN: {gstin} | {(() => {
                         const cleanGstinPart = gstin.replace(/[^A-Z0-9]/g, '').slice(2, 12);
                         if (coaData.isDairy || coaData.categoryKey === 'dairy' || coaData.categoryKey === 'oem_dairy') {
@@ -8252,68 +8344,71 @@ export default function Modals() {
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'inline-block', background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '4px 12px', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 800 }}>
+                    <div style={{ display: 'inline-block', background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '4px 10px', borderRadius: '12px', fontSize: '0.74rem', fontWeight: 800 }}>
                       ✔ LAB VERIFIED & CERTIFIED
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '6px' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
                       Report No: <strong style={{ color: '#0f172a' }}>COA-AGT-{p.id.toUpperCase().slice(0, 6)}-2026</strong>
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
                       Date of Analysis: <strong>{new Date().toLocaleDateString('en-GB')}</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Document Banner */}
-                <div style={{ background: '#0f766e', color: '#ffffff', textAlign: 'center', padding: '8px', borderRadius: '6px', fontWeight: 900, fontSize: '0.92rem', letterSpacing: '0.5px', marginBottom: '18px' }}>
+                <div className="coa-banner" style={{ background: '#0f766e', color: '#ffffff', textAlign: 'center', padding: '7px 10px', borderRadius: '6px', fontWeight: 900, fontSize: '0.88rem', letterSpacing: '0.4px', marginBottom: '14px' }}>
                   CERTIFICATE OF ANALYSIS (COA) & TECHNICAL SPECIFICATION SHEET
                 </div>
 
                 {/* Product Particulars Box */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', background: '#f8fafc', padding: '14px 18px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', fontSize: '0.84rem' }}>
+                <div className="coa-product-box" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '10px', background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '14px', fontSize: '0.82rem' }}>
                   <div>
-                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>COMMODITY / PRODUCT NAME:</span>
-                    <strong style={{ color: '#0f766e', fontSize: '0.95rem' }}>{prodNameEn}</strong>
-                    {prodNameGu && prodNameGu !== prodNameEn && <span style={{ display: 'block', color: '#475569', fontSize: '0.8rem' }}>({prodNameGu})</span>}
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.74rem', fontWeight: 700 }}>COMMODITY / PRODUCT NAME:</span>
+                    <strong style={{ color: '#0f766e', fontSize: '0.92rem' }}>{prodNameEn}</strong>
+                    {prodNameGu && prodNameGu !== prodNameEn && <span style={{ display: 'block', color: '#475569', fontSize: '0.78rem' }}>({prodNameGu})</span>}
                   </div>
                   <div>
-                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>WCO HS CODE:</span>
-                    <strong style={{ fontFamily: 'monospace', color: '#0369a1', fontSize: '0.95rem' }}>{hs}</strong>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.74rem', fontWeight: 700 }}>WCO HS CODE & CLASSIFICATION:</span>
+                    <strong style={{ fontFamily: 'monospace', color: '#0369a1', fontSize: '0.92rem' }}>{hs}</strong>
+                    <span style={{ display: 'block', color: '#0f766e', fontSize: '0.74rem', fontWeight: 700, marginTop: '2px' }}>
+                      {hsDetails.chapterTitleEn}
+                    </span>
                   </div>
                   <div>
-                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>COUNTRY OF ORIGIN:</span>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.74rem', fontWeight: 700 }}>COUNTRY OF ORIGIN:</span>
                     <strong>INDIA (Port of Loading: Mundra / Nhava Sheva)</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', fontWeight: 700 }}>EXPORT PACKING / MOQ:</span>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.74rem', fontWeight: 700 }}>EXPORT PACKING / MOQ:</span>
                     <span>{p.packaging || 'Standard Export Packaging'} | MOQ: {p.moq || '1 Container (20ft FCL)'}</span>
                   </div>
                 </div>
 
                 {/* Lab Test Results Table */}
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f766e', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 className="coa-section-title" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f766e', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   📊 LABORATORY CHEMICAL & PHYSICAL QUALITY PARAMETERS:
                 </h4>
 
-                <div style={{ overflowX: 'auto', marginBottom: '22px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+                <div className="coa-table-wrap" style={{ overflowX: 'auto', marginBottom: '14px' }}>
+                  <table className="coa-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
                     <thead>
                       <tr style={{ background: '#0f766e', color: '#ffffff' }}>
-                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Sr.</th>
-                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Test Parameter (ગુણવત્તા પેરામીટર)</th>
-                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Official Standard Limit</th>
-                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Observed Lab Result</th>
-                        <th style={{ padding: '9px 12px', border: '1px solid #0d9488' }}>Test Method Standard</th>
+                        <th style={{ padding: '7px 10px', border: '1px solid #0d9488' }}>Sr.</th>
+                        <th style={{ padding: '7px 10px', border: '1px solid #0d9488' }}>Test Parameter (ગુણવત્તા પેરામીટર)</th>
+                        <th style={{ padding: '7px 10px', border: '1px solid #0d9488' }}>Official Standard Limit</th>
+                        <th style={{ padding: '7px 10px', border: '1px solid #0d9488' }}>Observed Lab Result</th>
+                        <th style={{ padding: '7px 10px', border: '1px solid #0d9488' }}>Test Method Standard</th>
                       </tr>
                     </thead>
                     <tbody>
                       {activeTestParams.map((item, idx) => (
                         <tr key={idx} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#64748b', fontWeight: 700 }}>{idx + 1}</td>
-                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>{item.param}</td>
-                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#475569' }}>{item.standard}</td>
-                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', fontWeight: 800, color: '#059669' }}>✔ {item.result}</td>
-                          <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.78rem' }}>{item.method}</td>
+                          <td style={{ padding: '6px 10px', border: '1px solid #e2e8f0', color: '#64748b', fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ padding: '6px 10px', border: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>{item.param}</td>
+                          <td style={{ padding: '6px 10px', border: '1px solid #e2e8f0', color: '#475569' }}>{item.standard}</td>
+                          <td style={{ padding: '6px 10px', border: '1px solid #e2e8f0', fontWeight: 800, color: '#059669' }}>✔ {item.result}</td>
+                          <td style={{ padding: '6px 10px', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.76rem' }}>{item.method}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -8321,7 +8416,7 @@ export default function Modals() {
                 </div>
 
                 {/* Official Quality & Specification Compliance Notice */}
-                <div style={{ background: '#f8fafc', borderLeft: '4px solid #0f766e', borderRight: '1px solid #e2e8f0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '10px 14px', borderRadius: '6px', marginBottom: '18px', fontSize: '0.78rem', color: '#334155' }}>
+                <div className="coa-notice-clause" style={{ background: '#f8fafc', borderLeft: '4px solid #0f766e', borderRight: '1px solid #e2e8f0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '8px 12px', borderRadius: '6px', marginBottom: '14px', fontSize: '0.76rem', color: '#334155', lineHeight: '1.4' }}>
                   <strong style={{ color: '#0f766e' }}>ℹ️ Specification & Quality Verification Clause:</strong>{' '}
                   {(coaData.categoryKey === 'oem_certified' || p.isOemCertified || p.customTestParams?.some(t => t.param?.includes('OEM')))
                     ? 'Supplied goods conform strictly to original OEM factory technical specifications and international compliance standards. Original manufacturer batch test certificates and regulatory dossiers are maintained on record and may be obtained directly from the OEM upon buyer\'s formal request.'
@@ -8329,42 +8424,42 @@ export default function Modals() {
                 </div>
 
                 {/* Storage & Operating Environment Notes */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', background: isElectricalElectronic ? '#f0fdf4' : '#f0fdfa', padding: '14px 18px', borderRadius: '8px', border: `1px solid ${isElectricalElectronic ? '#86efac' : '#99f6e4'}`, fontSize: '0.8rem', marginBottom: '22px' }}>
+                <div className="coa-guidelines-box" style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: '14px', background: isElectricalElectronic ? '#f0fdf4' : '#f0fdfa', padding: '10px 14px', borderRadius: '8px', border: `1px solid ${isElectricalElectronic ? '#86efac' : '#99f6e4'}`, fontSize: '0.76rem', marginBottom: '14px', lineHeight: '1.4' }}>
                   <div>
-                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '4px' }}>
+                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '3px' }}>
                       {coaData.storageTitle}
                     </strong>
-                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                    <div style={{ color: '#334155' }}>
                       {activeStorageText}
                     </div>
                   </div>
                   <div>
-                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '4px' }}>
+                    <strong style={{ color: isElectricalElectronic ? '#047857' : '#0f766e', display: 'block', marginBottom: '3px' }}>
                       {coaData.qualityTitle}
                     </strong>
-                    <div style={{ color: '#334155', lineHeight: '1.5' }}>
+                    <div style={{ color: '#334155' }}>
                       {activeQualityText}
                     </div>
                   </div>
                 </div>
 
                 {/* Stamp & Authorized Signature */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '2px solid #e2e8f0' }}>
+                <div className="coa-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '10px', borderTop: '2px solid #e2e8f0' }}>
                   <div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', border: `1px dashed ${isElectricalElectronic ? '#059669' : '#0f766e'}`, background: isElectricalElectronic ? 'rgba(5, 150, 105, 0.08)' : 'rgba(15, 118, 110, 0.05)', color: isElectricalElectronic ? '#047857' : '#0f766e', fontSize: '0.78rem', fontWeight: 800 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '6px', border: `1px dashed ${isElectricalElectronic ? '#059669' : '#0f766e'}`, background: isElectricalElectronic ? 'rgba(5, 150, 105, 0.08)' : 'rgba(15, 118, 110, 0.05)', color: isElectricalElectronic ? '#047857' : '#0f766e', fontSize: '0.74rem', fontWeight: 800 }}>
                       🏵️ {coaData.sealSubtitle || 'OFFICIALLY VERIFIED & AUDITED QUALITY CONTROL SEAL'}
                     </div>
-                    <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '3px' }}>
                       {isElectricalElectronic
                         ? 'Pre-Dispatch Routine & Type Testing completed as per IEC/CE/RoHS standards. Third-Party PSI (TUV / SGS / BV) allowed.'
                         : 'Third-Party PSI Inspection allowed by SGS / Bureau Veritas prior to loading.'}
                     </div>
                   </div>
 
-                  <div style={{ textAlign: 'center', minWidth: '180px' }}>
-                    <div style={{ borderBottom: '1px solid #475569', width: '160px', margin: '0 auto 6px auto' }}></div>
-                    <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>Authorized Quality Signatory</strong>
-                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                  <div style={{ textAlign: 'center', minWidth: '170px' }}>
+                    <div style={{ borderBottom: '1px solid #475569', width: '150px', margin: '0 auto 5px auto' }}></div>
+                    <strong style={{ fontSize: '0.8rem', color: '#0f172a', display: 'block' }}>Authorized Quality Signatory</strong>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       {coaData.signatoryTitle || (isElectricalElectronic ? 'Lead QA/QC Automation & Electrical Engineer' : 'Chief QC Officer')} | {compName}
                     </span>
                   </div>
