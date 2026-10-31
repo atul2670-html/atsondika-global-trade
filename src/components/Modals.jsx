@@ -1056,6 +1056,7 @@ export default function Modals() {
   // Trade Scope Selection State (Global Export vs Local B2C Retail)
   const [enableGlobalTrade, setEnableGlobalTrade] = useState(true);
   const [enableLocalTrade, setEnableLocalTrade] = useState(true);
+  const [enableCoa, setEnableCoa] = useState(true);
 
   // Live HS Code & Local HSN Code Search State
   const [hsSearchQuery, setHsSearchQuery] = useState('');
@@ -1281,6 +1282,7 @@ export default function Modals() {
 
           setEnableGlobalTrade(target.enableGlobalTrade !== false);
           setEnableLocalTrade(target.enableLocalTrade !== false);
+          setEnableCoa(target.enableCoa !== false);
 
           let imgs = [];
           if (target.images && target.images.length > 0) {
@@ -1297,6 +1299,7 @@ export default function Modals() {
       setParentSelect(firstParentCat);
       setEnableGlobalTrade(true);
       setEnableLocalTrade(true);
+      setEnableCoa(true);
       setNameGu('');
       setNameEn('');
       setCatCodeInput('');
@@ -6292,6 +6295,7 @@ export default function Modals() {
                     isSub: true,
                     enableGlobalTrade,
                     enableLocalTrade,
+                    enableCoa,
                     hsCode: hsCode.trim(),
                     localHsn: localHsn ? localHsn.trim() : `${hsCode.trim()}10`,
                     image: imgList[0],
@@ -6438,8 +6442,8 @@ export default function Modals() {
                       </div>
                     </div>
 
-                    {/* Global Trade Enable Checkbox Option */}
-                    <div style={{ marginBottom: '10px' }}>
+                    {/* Global Trade & Spec/COA Enable Checkbox Options */}
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
                       <label style={{
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -6459,6 +6463,28 @@ export default function Modals() {
                         />
                         <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableGlobalTrade ? '#2dd4bf' : '#94a3b8' }}>
                           🌐 Enable for Global Export Trade (આંતરરાષ્ટ્રીય ગ્લોબલ ટ્રેડમાં લાઈવ બતાવો)
+                        </span>
+                      </label>
+
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        background: enableCoa ? 'rgba(167, 139, 250, 0.18)' : 'rgba(255, 255, 255, 0.05)',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid ' + (enableCoa ? '#a78bfa' : 'rgba(255,255,255,0.2)'),
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={enableCoa}
+                          onChange={(e) => setEnableCoa(e.target.checked)}
+                          style={{ width: '16px', height: '16px', accentColor: '#a78bfa', cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableCoa ? '#c4b5fd' : '#94a3b8' }}>
+                          🧪 Enable "Spec & COA" (લેબ સર્ટિફિકેટ & ટેકનિકલ સ્પેક બટન લાઈવ બતાવો)
                         </span>
                       </label>
                     </div>

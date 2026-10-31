@@ -873,29 +873,31 @@ export default function ProductsGrid() {
                             >
                               📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
                             </button>
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              style={{
-                                width: '100%',
-                                justifyContent: 'center',
-                                color: '#a78bfa',
-                                borderColor: 'rgba(167, 139, 250, 0.45)',
-                                background: 'rgba(139, 92, 246, 0.1)',
-                                padding: '5px 10px',
-                                fontSize: '0.74rem',
-                                fontWeight: 800,
-                                borderRadius: '8px',
-                                whiteSpace: 'nowrap'
-                              }}
-                              onClick={() => {
-                                if (setSelectedCoaProduct) setSelectedCoaProduct(p);
-                                if (setActiveModal) setActiveModal('product_coa');
-                              }}
-                              title="View Technical Spec Sheet & Lab COA"
-                            >
-                              🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
-                            </button>
+                            {p.enableCoa !== false && (
+                              <button
+                                type="button"
+                                className="btn-secondary"
+                                style={{
+                                  width: '100%',
+                                  justifyContent: 'center',
+                                  color: '#a78bfa',
+                                  borderColor: 'rgba(167, 139, 250, 0.45)',
+                                  background: 'rgba(139, 92, 246, 0.1)',
+                                  padding: '5px 10px',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 800,
+                                  borderRadius: '8px',
+                                  whiteSpace: 'nowrap'
+                                }}
+                                onClick={() => {
+                                  if (setSelectedCoaProduct) setSelectedCoaProduct(p);
+                                  if (setActiveModal) setActiveModal('product_coa');
+                                }}
+                                title="View Technical Spec Sheet & Lab COA"
+                              >
+                                🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
+                              </button>
+                            )}
                             </>
                           )}
                           {(() => {
@@ -1727,6 +1729,7 @@ export default function ProductsGrid() {
                           padding: '7px 4px',
                           fontSize: '0.74rem',
                           fontWeight: 800,
+                          gridColumn: p.enableCoa === false ? '1 / -1' : 'auto',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -1742,32 +1745,34 @@ export default function ProductsGrid() {
                         📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
                       </button>
 
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        style={{
-                          width: '100%',
-                          justifyContent: 'center',
-                          color: '#a78bfa',
-                          borderColor: 'rgba(167, 139, 250, 0.45)',
-                          background: 'rgba(139, 92, 246, 0.1)',
-                          padding: '7px 4px',
-                          fontSize: '0.74rem',
-                          fontWeight: 800,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          lineHeight: '1.2',
-                          boxShadow: '0 2px 8px rgba(139, 92, 246, 0.15)'
-                        }}
-                        onClick={() => {
-                          if (setSelectedCoaProduct) setSelectedCoaProduct(p);
-                          if (setActiveModal) setActiveModal('product_coa');
-                        }}
-                        title={currentLang === 'gu' ? 'લેબ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ (Lab COA & Spec Sheet)' : 'View Technical Spec Sheet & Lab Analysis Report (COA)'}
-                      >
-                        🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
-                      </button>
+                      {p.enableCoa !== false && (
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          style={{
+                            width: '100%',
+                            justifyContent: 'center',
+                            color: '#a78bfa',
+                            borderColor: 'rgba(167, 139, 250, 0.45)',
+                            background: 'rgba(139, 92, 246, 0.1)',
+                            padding: '7px 4px',
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            lineHeight: '1.2',
+                            boxShadow: '0 2px 8px rgba(139, 92, 246, 0.15)'
+                          }}
+                          onClick={() => {
+                            if (setSelectedCoaProduct) setSelectedCoaProduct(p);
+                            if (setActiveModal) setActiveModal('product_coa');
+                          }}
+                          title={currentLang === 'gu' ? 'લેબ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ (Lab COA & Spec Sheet)' : 'View Technical Spec Sheet & Lab Analysis Report (COA)'}
+                        >
+                          🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
+                        </button>
+                      )}
 
                       {/* Admin Action Controls (Spanning full width when Admin is logged in) */}
                       {isAdminLoggedIn && (

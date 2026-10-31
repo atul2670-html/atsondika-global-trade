@@ -1858,6 +1858,7 @@ export function AppProvider({ children }) {
       customTestParams: productData.customTestParams !== undefined ? productData.customTestParams : (targetExisting ? targetExisting.customTestParams : undefined),
       customStorage: productData.customStorage !== undefined ? productData.customStorage : (targetExisting ? targetExisting.customStorage : undefined),
       customQualityDecl: productData.customQualityDecl !== undefined ? productData.customQualityDecl : (targetExisting ? targetExisting.customQualityDecl : undefined),
+      enableCoa: productData.enableCoa !== undefined ? productData.enableCoa : (targetExisting ? targetExisting.enableCoa : true),
       updatedAt: Date.now()
     };
     
