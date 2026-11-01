@@ -82,8 +82,46 @@ export default function Navbar() {
     else document.body.classList.remove('light-theme');
   };
 
-  const shortMap = { en: 'EN (US)', gu: 'GU (IN)', hi: 'HI (IN)', fr: 'FR (CA)' };
-  const nameMap = { en: 'English (US)', gu: 'ગુજરાતી (IN)', hi: 'હિन्दी (IN)', fr: 'Français (Canada)' };
+  const shortMap = {
+    en: 'EN (US)',
+    gu: 'GU (IN)',
+    hi: 'HI (IN)',
+    fr: 'FR (CA)',
+    es: 'ES (ES)',
+    ar: 'AR (AE)',
+    zh: 'ZH (CN)'
+  };
+  const nameMap = {
+    en: 'English (US)',
+    gu: 'ગુજરાતી (IN)',
+    hi: 'हिन्दी (IN)',
+    fr: 'Français (Canada)',
+    es: 'Español (ES)',
+    ar: 'العربية (Dubai/UAE)',
+    zh: '中文 (CN)'
+  };
+
+  const masterLanguagesList = [
+    { code: 'en', short: 'EN (US)', name: 'English (US)', native: 'English', country: 'United States (Base)', flag: 'us' },
+    { code: 'gu', short: 'GU (IN)', name: 'ગુજરાતી (IN)', native: 'ગુજરાતી', country: 'India (Gujarat)', flag: 'in' },
+    { code: 'hi', short: 'HI (IN)', name: 'हिन्दी (IN)', native: 'हिन्दी', country: 'India (National)', flag: 'in' },
+    { code: 'fr', short: 'FR (CA)', name: 'Français (Canada)', native: 'Français', country: 'Canada / France', flag: 'ca' },
+    { code: 'es', short: 'ES (ES)', name: 'Español (ES)', native: 'Español', country: 'Spain / Latin America', flag: 'es' },
+    { code: 'ar', short: 'AR (AE)', name: 'العربية (Dubai/UAE)', native: 'العربية', country: 'UAE / Middle East', flag: 'ae' },
+    { code: 'zh', short: 'ZH (CN)', name: '中文 (CN)', native: '简体中文', country: 'China / Global Trade', flag: 'cn' }
+  ];
+
+  const qLang = (langSearch || '').toLowerCase().trim();
+  const filteredLanguages = masterLanguagesList.filter(l => {
+    if (!qLang) return true;
+    return (
+      l.code.toLowerCase().includes(qLang) ||
+      l.name.toLowerCase().includes(qLang) ||
+      l.native.toLowerCase().includes(qLang) ||
+      l.country.toLowerCase().includes(qLang) ||
+      l.short.toLowerCase().includes(qLang)
+    );
+  });
 
   return (
     <>
@@ -219,21 +257,39 @@ export default function Navbar() {
 
               {/* 3. Dropdown Menu containing Language Options AND Top 1-Click Auto-Translate Action */}
               {langMenuOpen && (
-                <div className="lang-menu show" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 999999, minWidth: '220px', padding: '6px', background: '#0b0f19', border: '1px solid rgba(45, 212, 191, 0.4)', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
+                <div
+                  className="lang-menu show"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    right: 0,
+                    zIndex: 999999,
+                    width: '300px',
+                    maxWidth: 'calc(100vw - 30px)',
+                    maxHeight: '430px',
+                    padding: '10px',
+                    background: '#0b0f19',
+                    border: '1px solid rgba(45, 212, 191, 0.45)',
+                    borderRadius: '14px',
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.85)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}
+                >
                   {/* Featured 1-Click Action Inside Dropdown */}
                   <button
                     type="button"
                     style={{
                       width: '100%',
                       textAlign: 'left',
-                      padding: '8px 10px',
-                      fontSize: '0.78rem',
+                      padding: '7px 10px',
+                      fontSize: '0.76rem',
                       fontWeight: 800,
                       background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%)',
                       color: '#34d399',
                       border: '1px solid rgba(52, 211, 153, 0.4)',
                       borderRadius: '8px',
-                      marginBottom: '6px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -241,7 +297,7 @@ export default function Navbar() {
                     }}
                     onClick={async () => {
                       setLangMenuOpen(false);
-                      const confirmTr = window.confirm("⚡ 🔄 Auto-Translate ENTIRE WEBSITE (Hero, About Us, All Products, Specifications & Sections) into Gujarati (GU), Hindi (HI), and French (FR)?");
+                      const confirmTr = window.confirm("⚡ 🔄 Auto-Translate ENTIRE WEBSITE (Hero, About Us, All Products, Specifications & Sections) across 7 Master Languages (English, Gujarati, Hindi, French, Spanish, Arabic, Chinese)?");
                       if (confirmTr) {
                         setIsFullTranslating(true);
                         try {
@@ -253,7 +309,7 @@ export default function Navbar() {
                             branchesList, saveBranch,
                             liveToast
                           });
-                          alert("✅ FULL WEBSITE AUTO-TRANSLATION COMPLETE!\n\nAll Products, Hero Banner, About Us, Specifications & Sections have been auto-translated into Gujarati, Hindi, and French!");
+                          alert("✅ FULL WEBSITE AUTO-TRANSLATION COMPLETE!\n\nAll Products, Hero Banner, About Us, Specifications & Sections have been auto-translated into English, Gujarati, Hindi, French, Spanish, Arabic, and Chinese!");
                         } catch(e) {
                           alert("✅ Entire website auto-translation completed!");
                         } finally {
@@ -265,24 +321,121 @@ export default function Navbar() {
                     ⚡ 🔄 1-Click Master Auto-Translate
                   </button>
 
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-sub)', padding: '4px 6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                    Select Language:
+                  {/* Search Input Bar */}
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <input
+                      type="text"
+                      placeholder="🔍 Search language (English, Spanish, العربية...)"
+                      value={langSearch}
+                      onChange={(e) => setLangSearch(e.target.value)}
+                      autoFocus
+                      style={{
+                        width: '100%',
+                        padding: '6px 26px 6px 10px',
+                        fontSize: '0.78rem',
+                        borderRadius: '7px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(45, 212, 191, 0.35)',
+                        color: '#ffffff',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                    {langSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setLangSearch('')}
+                        style={{
+                          position: 'absolute',
+                          right: '6px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          color: '#94a3b8',
+                          cursor: 'pointer',
+                          fontSize: '0.75rem',
+                          padding: 0
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
 
-                  {['en', 'gu', 'hi', 'fr'].map((lang) => (
-                    <button
-                      key={lang}
-                      className={`lang-item ${currentLang === lang ? 'active' : ''}`}
-                      onClick={() => {
-                        setCurrentLang(lang);
-                        setLangMenuOpen(false);
-                      }}
-                      style={{ width: '100%', padding: '6px 10px', fontSize: '0.82rem', display: 'flex', alignItems: 'center' }}
-                    >
-                      <FlagIcon code={lang} />
-                      <span>{nameMap[lang]}</span>
-                    </button>
-                  ))}
+                  {/* Counter Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: '#94a3b8', padding: '0 2px', fontWeight: 700 }}>
+                    <span>SELECT LANGUAGE:</span>
+                    <span style={{ color: '#2dd4bf' }}>
+                      Showing {filteredLanguages.length} of {masterLanguagesList.length}
+                    </span>
+                  </div>
+
+                  {/* Scrollable Filtered Language List */}
+                  <div
+                    style={{
+                      overflowY: 'auto',
+                      maxHeight: '230px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      paddingRight: '2px'
+                    }}
+                  >
+                    {filteredLanguages.length > 0 ? (
+                      filteredLanguages.map((langItem) => {
+                        const isSelected = currentLang === langItem.code;
+                        return (
+                          <button
+                            key={langItem.code}
+                            type="button"
+                            className={`lang-item ${isSelected ? 'active' : ''}`}
+                            onClick={() => {
+                              setCurrentLang(langItem.code);
+                              setLangMenuOpen(false);
+                              setLangSearch('');
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '6px 8px',
+                              fontSize: '0.8rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              background: isSelected ? 'rgba(45, 212, 191, 0.18)' : 'transparent',
+                              border: isSelected ? '1px solid rgba(45, 212, 191, 0.4)' : '1px solid transparent',
+                              borderRadius: '6px',
+                              color: isSelected ? '#5eead4' : '#e2e8f0',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              transition: 'background 0.15s ease'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                              <FlagIcon code={langItem.flag} width={20} height={15} />
+                              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                                <span style={{ fontWeight: isSelected ? 800 : 600, fontSize: '0.78rem' }}>
+                                  {langItem.name}
+                                </span>
+                                <span style={{ fontSize: '0.66rem', color: '#94a3b8' }}>
+                                  {langItem.native} • {langItem.country}
+                                </span>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <span style={{ color: '#10b981', fontWeight: 900, fontSize: '0.85rem', marginLeft: '6px' }}>
+                                ✓
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem' }}>
+                        No languages matching "{langSearch}"
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
