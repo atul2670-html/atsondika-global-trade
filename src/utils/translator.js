@@ -282,10 +282,10 @@ export async function fetchGoogleTransliteration(text, lang = 'gu') {
 
 export async function autoTranslateFullObject(englishText) {
   if (!englishText || typeof englishText !== 'string' || !englishText.trim()) {
-    return { en: '', gu: '', hi: '', fr: '' };
+    return { en: '', gu: '', hi: '', fr: '', es: '', ar: '', zh: '' };
   }
   const clean = englishText.trim();
-  const obj = { en: clean, gu: clean, hi: clean, fr: clean };
+  const obj = { en: clean, gu: clean, hi: clean, fr: clean, es: clean, ar: clean, zh: clean };
 
   try {
     const langs = ['gu', 'hi', 'fr'];

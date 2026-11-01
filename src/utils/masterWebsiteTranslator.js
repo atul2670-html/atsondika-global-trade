@@ -21,7 +21,7 @@ export async function translateFullWebsiteData({
     const titleObj = { en: enTitle };
     const subObj = { en: enSub };
 
-    for (const lang of ['gu', 'hi', 'fr']) {
+    for (const lang of ['gu', 'hi', 'fr', 'es', 'ar', 'zh']) {
       titleObj[lang] = autoTranslateText(enTitle, lang);
       if (enSub) subObj[lang] = autoTranslateText(enSub, lang);
     }
@@ -45,7 +45,7 @@ export async function translateFullWebsiteData({
     const titleObj = { en: enTitle };
     const descObj = { en: enDesc };
 
-    for (const lang of ['gu', 'hi', 'fr']) {
+    for (const lang of ['gu', 'hi', 'fr', 'es', 'ar', 'zh']) {
       if (enBadge) badgeObj[lang] = autoTranslateText(enBadge, lang);
       if (enTitle) titleObj[lang] = autoTranslateText(enTitle, lang);
       if (enDesc) descObj[lang] = autoTranslateText(enDesc, lang);
@@ -71,7 +71,7 @@ export async function translateFullWebsiteData({
         const names = { en: enName };
         const specs = typeof prod.spec === 'object' ? { ...prod.spec } : { en: enSpec };
 
-        for (const lang of ['gu', 'hi', 'fr']) {
+        for (const lang of ['gu', 'hi', 'fr', 'es', 'ar', 'zh']) {
           names[lang] = autoTranslateText(enName, lang);
           if (enSpec) specs[lang] = autoTranslateText(enSpec, lang);
         }
@@ -85,6 +85,6 @@ export async function translateFullWebsiteData({
     }
   }
 
-  if (liveToast) liveToast("✅ Entire Website Auto-Translated into Gujarati, Hindi & French!", "success");
+  if (liveToast) liveToast("✅ Entire Website Auto-Translated into Gujarati, Hindi, French, Spanish, Arabic & Chinese!", "success");
   return true;
 }

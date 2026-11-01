@@ -25,6 +25,7 @@ export default function Navbar() {
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
 
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [langSearch, setLangSearch] = useState('');
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLight, setIsLight] = useState(false);

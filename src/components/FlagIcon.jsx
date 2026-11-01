@@ -28,6 +28,16 @@ export const FlagIcon = ({ code, width = 20, height = 14, style = {}, className 
     fr: 'ca', // Canadian French in website
     canada: 'ca',
     uk: 'gb',
+    es: 'es', // Spanish
+    spain: 'es',
+    spanish: 'es',
+    ar: 'ae', // Arabic (UAE / Middle East Hub)
+    uae: 'ae',
+    arabic: 'ae',
+    sa: 'sa',
+    zh: 'cn', // Chinese
+    china: 'cn',
+    chinese: 'cn',
     // Currencies
     usd: 'us',
     inr: 'in',

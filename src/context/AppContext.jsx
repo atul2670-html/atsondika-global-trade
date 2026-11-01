@@ -2322,7 +2322,8 @@ export function AppProvider({ children }) {
     return resultCategories;
   };
 
-  const t = translations[currentLang] || translations.en;
+  // Master Base Language Fallback: always overlay on English ('en')
+  const t = { ...(translations.en || {}), ...(translations[currentLang] || {}) };
 
   // Filter certificates for the currently selected active company
   const activeCompanyCertificates = certificatesList.filter(c => (c.companyId || 'comp_1') === activeCompanyId);

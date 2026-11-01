@@ -1,9 +1,9 @@
 // Real-Time Multi-Language Auto-Translation Engine
-// Automatically translates English master content into Gujarati (gu), Hindi (hi), and French (fr)
+// Automatically translates English master content into Gujarati (gu), Hindi (hi), French (fr), Spanish (es), Arabic (ar), and Chinese (zh)
 
 export async function autoTranslateText(englishText, fromLang = 'en') {
   if (!englishText || typeof englishText !== 'string' || !englishText.trim()) {
-    return { en: englishText, gu: '', hi: '', fr: '' };
+    return { en: englishText, gu: '', hi: '', fr: '', es: '', ar: '', zh: '' };
   }
 
   const cleanText = englishText.trim();
@@ -11,10 +11,21 @@ export async function autoTranslateText(englishText, fromLang = 'en') {
   const targetLangs = [
     { code: 'gu', name: 'Gujarati' },
     { code: 'hi', name: 'Hindi' },
-    { code: 'fr', name: 'French' }
+    { code: 'fr', name: 'French' },
+    { code: 'es', name: 'Spanish' },
+    { code: 'ar', name: 'Arabic' },
+    { code: 'zh', name: 'Chinese' }
   ];
 
-  const results = { en: cleanText, gu: cleanText, hi: cleanText, fr: cleanText };
+  const results = {
+    en: cleanText,
+    gu: cleanText,
+    hi: cleanText,
+    fr: cleanText,
+    es: cleanText,
+    ar: cleanText,
+    zh: cleanText
+  };
 
   // Run parallel fetch for gu, hi, fr
   const fetchPromises = targetLangs.map(async (lang) => {
