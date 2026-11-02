@@ -648,18 +648,32 @@ export function AppProvider({ children }) {
 
   // Multi-Language Hero Banner Note & Headline State
   const defaultHeroBanner = {
-    badge: "APEDA & ISO 9001:2015 REGISTERED EXPORTER",
+    badge: {
+      en: "APEDA & ISO 9001:2015 REGISTERED EXPORTER",
+      gu: "APEDA અને ISO 9001:2015 રજિસ્ટર્ડ નિકાસકાર",
+      hi: "APEDA और ISO 9001:2015 पंजीकृत निर्यातक",
+      fr: "EXPORTATEUR ENREGISTRÉ APEDA & ISO 9001:2015",
+      es: "EXPORTADOR REGISTRADO APEDA E ISO 9001:2015",
+      ar: "مصدر مسجل لدى APEDA و ISO 9001:2015",
+      zh: "APEDA 和 ISO 9001:2015 注册出口商"
+    },
     title: {
       en: "Connecting Premium Quality Agro Commodities, Dairy Products, Textile Products, Readymade Garments, Used Machinery, New Machinery, Industrial Goods & Fasteners To The World.",
       gu: "શ્રેષ્ઠ ગુણવત્તાવાળા એગ્રો કોમોડિટીઝ, ડેરી પ્રોડક્ટ્સ, ટેક્સટાઇલ, રેડીમેડ ગારમેન્ટ્સ, નવી અને વપરાયેલ મશીનરી, ઔદ્યોગિક માલ અને ફાસ્ટનર્સને વિશ્વ સાથે જોડતી અગ્રણી કંપની.",
       hi: "प्रीमियम गुणवत्ता वाले कृषि उत्पादों, डेयरी उत्पादों, कपड़ा, तैयार वस्त्रों, नई और पुरानी मशीनरी, औद्योगिक सामान और फास्टनरों को दुनिया से जोड़ना।",
-      fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde."
+      fr: "Connecter les produits agricoles, produits laitiers, textiles, vêtements, machines d'occasion et neuves, biens industriels & boulonnerie de qualité supérieure au monde.",
+      es: "Conectando al mundo productos agrícolas, lácteos, textiles, prendas confeccionadas, maquinaria nueva y usada, bienes industriales y fijaciones de primera calidad.",
+      ar: "ربط السلع الزراعية ومنتجات الألبان والمنسوجات والملابس الجاهزة والآلات الجديدة والمستعملة والسلع الصناعية والمثبتات عالية الجودة بالعالم.",
+      zh: "向全球连接优质农产品、乳制品、纺织品、成衣、二手及新机械、工业品与紧固件。"
     },
     subtitle: {
       en: "Trusted Indian Exporter specializing in Spices, Rice, Oilseeds, Fasteners, New & Used Machinery, and Eco Packaging across 40+ countries.",
       gu: "મસાલા, ચોખા, તેલીબિયાં, ફાસ્ટનર્સ, નવી અને વપરાયેલી મશીનરી, ડેરી, કાપડ અને ઇકો પેકેજિંગમાં વિશિષ્ટતા ધરાવતા ૪૦+ દેશોમાં અગ્રણી ભારતીય નિકાસકાર.",
       hi: "मसालों, चावल, तिलहन, फास्टनरों, नई और पुरानी मशीनरी, डेयरी, कपड़े और इको पैकेजिंग में विशेषज्ञता वाला प्रमुख भारतीय निर्यातक।",
-      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les machines neuves et d'occasion, les vêtements et les emballages écologiques vers 40+ pays."
+      fr: "Exportateur indien de confiance spécialisé dans les épices, le riz, les machines neuves et d'occasion, les vêtements et les emballages écologiques vers 40+ pays.",
+      es: "Exportador indio de confianza especializado en especias, arroz, semillas oleaginosas, fijaciones, maquinaria nueva y usada y embalajes ecológicos en más de 40 países.",
+      ar: "مصدر هندي موثوق متخصص في التوابل والأرز والبذور الزيتية والمثبتات والآلات الجديدة والمستعملة والتغليف البيئي لأكثر من 40 دولة.",
+      zh: "值得信赖的印度出口商，专业从事香料、大米、油料作物、紧固件、新旧机械及环保包装，出口至40多个国家。"
     },
     image: "images/hero_export_shipping.png"
   };
@@ -674,12 +688,16 @@ export function AppProvider({ children }) {
       );
       if (stored && stored.title) {
         const titleObj = typeof stored.title === 'string'
-          ? { en: stored.title, gu: defaultHeroBanner.title.gu, hi: defaultHeroBanner.title.hi, fr: defaultHeroBanner.title.fr }
+          ? { ...defaultHeroBanner.title, en: stored.title }
           : { ...defaultHeroBanner.title, ...stored.title };
 
         const subObj = typeof stored.subtitle === 'string'
-          ? { en: stored.subtitle, gu: defaultHeroBanner.subtitle.gu, hi: defaultHeroBanner.subtitle.hi, fr: defaultHeroBanner.subtitle.fr }
+          ? { ...defaultHeroBanner.subtitle, en: stored.subtitle }
           : { ...defaultHeroBanner.subtitle, ...stored.subtitle };
+
+        const badgeObj = typeof stored.badge === 'string'
+          ? (defaultHeroBanner.badge[stored.badge] ? defaultHeroBanner.badge : { ...defaultHeroBanner.badge, en: stored.badge })
+          : { ...defaultHeroBanner.badge, ...(stored.badge || {}) };
 
         return {
           ...defaultHeroBanner,
@@ -699,67 +717,100 @@ export function AppProvider({ children }) {
       en: "Leading Exporter from Surat, India",
       gu: "સુરત, ભારતથી અગ્રણી નિકાસકાર",
       hi: "सूरत, भारत से प्रमुख निर्यातक",
-      fr: "Premier Exportateur de Surat, Inde"
+      fr: "Premier Exportateur de Surat, Inde",
+      es: "Exportador Líder de Surat, India",
+      ar: "مصدّر رائد من سورات، الهند",
+      zh: "源自印度苏拉特的领军出口商"
     },
     title: {
       en: "Delivering Excellence from Indian Soil to Global Markets",
       gu: "ભારતીય ભૂમિથી વૈશ્વિક બજારો સુધી ઉત્કૃષ્ટતા પહોંચાડવી",
       hi: "भारतीय मिट्टी से वैश्विक बाजारों तक उत्कृष्टता पहुंचाना",
-      fr: "Offrir l'excellence du sol indien aux marchés mondiaux"
+      fr: "Offrir l'excellence du sol indien aux marchés mondiaux",
+      es: "Llevando Excelencia desde la Tierra India a los Mercados Globales",
+      ar: "تقديم التميز من الأراضي الهندية إلى الأسواق العالمية",
+      zh: "将印度优质资源带入全球市场"
     },
     desc: {
       en: "We are a premier export and trading house headquartered in Surat, Gujarat. Committed to uncompromised purity, strict quality protocols, and seamless logistics, we export top-tier agricultural produce, industrial supplies, new and used machinery, and sustainable packaging globally.",
       gu: "અમે સુરત, ગુજરાતમાં મુખ્ય મથક ધરાવતી એક અગ્રણી નિકાસ અને વેપાર ગૃહ છીએ. અપ્રતિમ શુદ્ધતા, કડક ગુણવત્તા ધોરણો અને સીમલેસ લોજિસ્ટિક્સ માટે કટિબદ્ધ, અમે ઉચ્ચ કક્ષાની કૃષિ પેદાશો, ઔદ્યોગિક પુરવઠો, નવી અને વપરાયેલી મશીનરી અને ટકાઉ પેકેજિંગની વૈશ્વિક સ્તરે નિકાસ કરીએ છીએ.",
       hi: "हम सूरत, गुजरात में मुख्यालय वाला एक प्रमुख निर्यात और व्यापारिक घराना हैं। शुद्धता, सख्त गुणवत्ता मानकों और निर्बाध रसद के लिए प्रतिबद्ध, हम कृषि उपज, औद्योगिक आपूर्ति, नई और पुरानी मशीनों और टिकाऊ पैकेजिंग का निर्यात करते हैं।",
-      fr: "Nous sommes une maison d'exportation et de commerce de premier plan basée à Surat, Gujarat. Engagés envers une pureté absolue, des protocoles de qualité stricts et une logistique fluide."
+      fr: "Nous sommes une maison d'exportation et de commerce de premier plan basée à Surat, Gujarat. Engagés envers une pureté absolue, des protocoles de qualité stricts et une logistique fluide.",
+      es: "Somos una destacada empresa de exportación y comercio con sede en Surat, Guyarat. Comprometidos con una pureza absoluta, estrictos protocolos de calidad y una logística fluida, exportamos productos agrícolas, suministros industriales, maquinaria y embalajes ecológicos a todo el mundo.",
+      ar: "نحن بيت تصدير وتجارة رائد مقره في سورات، غوجارات. ملتزمون بالنقاء التام وبروتوكولات الجودة الصارمة والخدمات اللوجستية السلسة لتصدير المنتجات الزراعية والتوريدات الصناعية والآلات والتغليف المستدام عالمياً.",
+      zh: "我们是总部位于古吉拉特邦苏拉特的领先出口贸易企业。坚持卓越纯度、严格质量准则及顺畅物流，面向全球出口高品质农产品、工业原料、新旧机械及可持续环保包装。"
     },
     feat1: {
       en: "Direct sourcing & APEDA certified quality",
       gu: "સીધું ઉત્પાદન અને APEDA દ્વારા પ્રમાણિત ગુણવત્તા",
       hi: "प्रत्यक्ष सोर्सिंग और APEDA प्रमाणित गुणवत्ता",
-      fr: "Approvisionnement direct & qualité certifiée APEDA"
+      fr: "Approvisionnement direct & qualité certifiée APEDA",
+      es: "Abastecimiento directo y calidad certificada por APEDA",
+      ar: "توريد مباشر وجودة معتمدة من APEDA",
+      zh: "一手直采，品质经 APEDA 官方严格认证"
     },
     feat2: {
       en: "Global logistics & express port delivery",
       gu: "ગ્લોબલ લોજિસ્ટિક્સ અને ઝડપી બંદર ડિલિવરી",
       hi: "वैश्विक रसद और एक्सप्रेस बंदरगाह डिलीवरी",
-      fr: "Logistique mondiale & livraison portuaire express"
+      fr: "Logistique mondiale & livraison portuaire express",
+      es: "Logística global y entrega portuaria exprés",
+      ar: "لوجستيات عالمية وتسليم سريع إلى الموانئ",
+      zh: "全球海运物流，港口极速通关交付"
     },
     feat3: {
       en: "Competitive container pricing & transparent terms",
       gu: "સ્પર્ધાત્મક કિંમતો અને પારદર્શક શરતો",
       hi: "प्रतिस्पर्धी मूल्य निर्धारण और पारदर्शी शर्तें",
-      fr: "Tarification compétitive des conteneurs & conditions transparentes"
+      fr: "Tarification compétitive des conteneurs & conditions transparentes",
+      es: "Precios competitivos por contenedor y condiciones transparentes",
+      ar: "أسعار حاويات تنافسية وشروط تعاقد شفافة",
+      zh: "集装箱整柜批发优势定价，条款透明合规"
     },
     statsTitle: {
       en: "Export Track Record & Capacity",
       gu: "નિકાસ કાર્યક્ષમતા અને ક્ષમતા",
       hi: "निर्यात ट्रैक रिकॉर्ड और क्षमता",
-      fr: "Bilan des Exportations & Capacité"
+      fr: "Bilan des Exportations & Capacité",
+      es: "Trayectoria y Capacidad de Exportación",
+      ar: "سجل التصدير الحافل والقدرة الاستيعابية",
+      zh: "出口历程与综合运营实力"
     },
     stat1Label: {
       en: "Years Experience",
       gu: "વર્ષનો અનુભવ",
       hi: "निर्यात अनुभव",
-      fr: "Années d'Expérience"
+      fr: "Années d'Expérience",
+      es: "Años de Experiencia",
+      ar: "سنوات الخبرة",
+      zh: "年行业经验"
     },
     stat2Label: {
       en: "Export Countries",
       gu: "નિકાસ દેશો",
       hi: "ग्लोबल रीच",
-      fr: "Pays d'Exportation"
+      fr: "Pays d'Exportation",
+      es: "Países de Exportación",
+      ar: "دول التصدير",
+      zh: "个出口目的国"
     },
     stat3Label: {
       en: "Metric Tons Exported",
       gu: "મેટ્રિક ટન નિકાસ",
       hi: "वार्षिक शिपमेंट",
-      fr: "Tonnes Métriques Exportées"
+      fr: "Tonnes Métriques Exportées",
+      es: "Toneladas Métricas Exportadas",
+      ar: "طن متري تم تصديره",
+      zh: "吨累计出口量"
     },
     stat4Label: {
       en: "Global Importers",
       gu: "ગ્લોબલ ખરીદદારો & ગ્રાહકો",
       hi: "संतुष्ट आयातक",
-      fr: "Importateurs Mondiaux"
+      fr: "Importateurs Mondiaux",
+      es: "Importadores Globales",
+      ar: "مستوردون عالميون",
+      zh: "位全球进口商"
     },
     counts: {
       exp: 12,

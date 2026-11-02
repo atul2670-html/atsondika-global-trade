@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function OemPackagingSection() {
-  const { currentLang, activeCompany, setIsRfqDrawerOpen, isAdminLoggedIn, toggleOemPackaging } = useApp();
+  const { t, currentLang, activeCompany, setIsRfqDrawerOpen, isAdminLoggedIn, toggleOemPackaging } = useApp();
   const isGu = currentLang === 'gu';
   const isHi = currentLang === 'hi';
   const isFr = currentLang === 'fr';
@@ -31,11 +31,11 @@ export default function OemPackagingSection() {
             marginBottom: '14px',
             boxShadow: '0 0 14px rgba(234, 179, 8, 0.2)'
           }}>
-            📦 {isGu ? 'કસ્ટમ બ્રાન્ડિંગ & પેકિંગ' : (isHi ? 'कस्टम ब्रांडिंग और पैकेजिंग' : (isFr ? 'Marque Blanche & Emballage OEM' : 'Private Label & OEM Packaging'))}
+            📦 {t?.oem_badge || 'Private Label & OEM Packaging'}
           </div>
 
           <h2 className="section-title" style={{ fontSize: '2.1rem', fontWeight: 900, letterSpacing: '-0.5px' }}>
-            {isGu ? 'પ્રાઇવેટ લેબલિંગ & કસ્ટમ OEM પેકિંગ સોલ્યુશન્સ' : (isHi ? 'प्राइवेट लेबलिंग और कस्टम OEM पैकेजिंग सॉल्यूशंस' : (isFr ? 'Solutions de Marque Blanche & Emballage Sur Mesure' : 'Private Label & Custom OEM Packaging Solutions'))}
+            {t?.oem_title || 'Private Label & Custom OEM Packaging Solutions'}
           </h2>
 
           <p className="section-subtitle" style={{ maxWidth: '740px', margin: '0 auto', fontSize: '0.94rem', lineHeight: '1.65', color: 'var(--text-sub)' }}>

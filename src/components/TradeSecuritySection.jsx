@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import EmbassyConnectDesk from './EmbassyConnectDesk';
 
 export default function TradeSecuritySection() {
-  const { currentLang, activeCompany, setIsRfqDrawerOpen, setActiveModal, isAdminLoggedIn, toggleTradeSecurity } = useApp();
+  const { t, currentLang, activeCompany, setIsRfqDrawerOpen, setActiveModal, isAdminLoggedIn, toggleTradeSecurity } = useApp();
   const isGu = currentLang === 'gu';
   const isHi = currentLang === 'hi';
   const isFr = currentLang === 'fr';
@@ -32,11 +32,11 @@ export default function TradeSecuritySection() {
             marginBottom: '14px',
             boxShadow: '0 0 14px rgba(45, 212, 191, 0.2)'
           }}>
-            🛡️ {isGu ? '૧૦૦% સુરક્ષિત આંતરરાષ્ટ્રીય વ્યાપાર' : (isHi ? '100% सुरक्षित अंतर्राष्ट्रीय व्यापार' : (isFr ? 'Commerce International 100% Sécurisé' : '100% Safe Global Trade Assurance'))}
+            🛡️ {t?.sec_badge || '100% Safe Global Trade Assurance'}
           </div>
 
           <h2 className="section-title" style={{ fontSize: '2.1rem', fontWeight: 900, letterSpacing: '-0.5px' }}>
-            {isGu ? 'ટ્રેડ ફાઇનાન્સ & પેમેન્ટ સુરક્ષા ગેરંટી' : (isHi ? 'ट्रेड फाइनेंस और भुगतान सुरक्षा गारंटी' : (isFr ? 'Garantie de Financement & Sécurité de Paiement' : 'Trade Finance & Payment Security Guarantee'))}
+            {t?.sec_title || 'Trade Finance & Payment Security Guarantee'}
           </h2>
 
           <p className="section-subtitle" style={{ maxWidth: '720px', margin: '0 auto', fontSize: '0.94rem', lineHeight: '1.65', color: 'var(--text-sub)' }}>

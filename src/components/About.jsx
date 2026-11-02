@@ -6,48 +6,48 @@ export default function About() {
   const { currentLang, t, aboutData, verifyAdminAccess, setActiveModal, isAdminLoggedIn } = useApp();
 
   const currentBadge = typeof aboutData?.badge === 'object'
-    ? (aboutData.badge[currentLang] || aboutData.badge['en'] || t.about_badge)
-    : (aboutData?.badge || t.about_badge);
+    ? (aboutData.badge[currentLang] || t.about_badge || aboutData.badge['en'] || '')
+    : (t.about_badge || aboutData?.badge || '');
 
   const currentTitle = typeof aboutData?.title === 'object'
-    ? (aboutData.title[currentLang] || aboutData.title['en'] || t.about_title)
-    : (aboutData?.title || t.about_title);
+    ? (aboutData.title[currentLang] || t.about_title || aboutData.title['en'] || '')
+    : (t.about_title || aboutData?.title || '');
 
   const currentDesc = typeof aboutData?.desc === 'object'
-    ? (aboutData.desc[currentLang] || aboutData.desc['en'] || t.about_desc)
-    : (aboutData?.desc || t.about_desc);
+    ? (aboutData.desc[currentLang] || t.about_desc || aboutData.desc['en'] || '')
+    : (t.about_desc || aboutData?.desc || '');
 
   const currentFeat1 = typeof aboutData?.feat1 === 'object'
-    ? (aboutData.feat1[currentLang] || aboutData.feat1['en'] || t.about_feat1)
-    : (aboutData?.feat1 || t.about_feat1);
+    ? (aboutData.feat1[currentLang] || t.about_feat1 || aboutData.feat1['en'] || '')
+    : (t.about_feat1 || aboutData?.feat1 || '');
 
   const currentFeat2 = typeof aboutData?.feat2 === 'object'
-    ? (aboutData.feat2[currentLang] || aboutData.feat2['en'] || t.about_feat2)
-    : (aboutData?.feat2 || t.about_feat2);
+    ? (aboutData.feat2[currentLang] || t.about_feat2 || aboutData.feat2['en'] || '')
+    : (t.about_feat2 || aboutData?.feat2 || '');
 
   const currentFeat3 = typeof aboutData?.feat3 === 'object'
-    ? (aboutData.feat3[currentLang] || aboutData.feat3['en'] || t.about_feat3)
-    : (aboutData?.feat3 || t.about_feat3);
+    ? (aboutData.feat3[currentLang] || t.about_feat3 || aboutData.feat3['en'] || '')
+    : (t.about_feat3 || aboutData?.feat3 || '');
 
   const currentStatsTitle = typeof aboutData?.statsTitle === 'object'
-    ? (aboutData.statsTitle[currentLang] || aboutData.statsTitle['en'] || t.stats_title)
-    : (aboutData?.statsTitle || t.stats_title);
+    ? (aboutData.statsTitle[currentLang] || t.stats_title || aboutData.statsTitle['en'] || '')
+    : (t.stats_title || aboutData?.statsTitle || '');
 
   const currentStat1Label = typeof aboutData?.stat1Label === 'object'
-    ? (aboutData.stat1Label[currentLang] || aboutData.stat1Label['en'] || t.stat_years_label)
-    : (t.stat_years_label || 'Years Experience');
+    ? (aboutData.stat1Label[currentLang] || t.stat_years_label || t.stat_exp || aboutData.stat1Label['en'] || 'Years Experience')
+    : (t.stat_years_label || t.stat_exp || aboutData?.stat1Label || 'Years Experience');
 
   const currentStat2Label = typeof aboutData?.stat2Label === 'object'
-    ? (aboutData.stat2Label[currentLang] || aboutData.stat2Label['en'] || t.stat_countries_label)
-    : (t.stat_countries_label || 'Export Countries');
+    ? (aboutData.stat2Label[currentLang] || t.stat_countries_label || t.stat_countries || aboutData.stat2Label['en'] || 'Export Countries')
+    : (t.stat_countries_label || t.stat_countries || aboutData?.stat2Label || 'Export Countries');
 
   const currentStat3Label = typeof aboutData?.stat3Label === 'object'
-    ? (aboutData.stat3Label[currentLang] || aboutData.stat3Label['en'] || t.stat_tons_label)
-    : (t.stat_tons_label || 'Metric Tons Exported');
+    ? (aboutData.stat3Label[currentLang] || t.stat_tons_label || t.stat_shipments || aboutData.stat3Label['en'] || 'Metric Tons Exported')
+    : (t.stat_tons_label || t.stat_shipments || aboutData?.stat3Label || 'Metric Tons Exported');
 
   const currentStat4Label = typeof aboutData?.stat4Label === 'object'
-    ? (aboutData.stat4Label[currentLang] || aboutData.stat4Label['en'] || t.stat_clients_label)
-    : (t.stat_clients_label || 'Global Importers');
+    ? (aboutData.stat4Label[currentLang] || t.stat_clients_label || t.stat_clients || aboutData.stat4Label['en'] || 'Global Importers')
+    : (t.stat_clients_label || t.stat_clients || aboutData?.stat4Label || 'Global Importers');
 
   const counts = aboutData?.counts || { exp: 12, countries: 45, shipments: 50000, clients: 350 };
 

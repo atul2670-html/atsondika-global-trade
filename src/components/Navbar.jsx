@@ -485,7 +485,7 @@ export default function Navbar() {
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
         }}>
           <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)', whiteSpace: 'nowrap' }}>
-            🏢 {currentLang === 'gu' ? 'સિસ્ટર ગ્રુપ કંપનીઓ (Select Sister Company):' : 'Sister Group Companies:'}
+            🏢 {t.nav_sister_companies || 'Sister Group Companies:'}
           </span>
 
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -562,7 +562,7 @@ export default function Navbar() {
                 onClick={() => setActiveModal('customer_auth')}
                 title="Customer Login / Register"
               >
-                👤 <span className="nav-btn-label">{currentLang === 'gu' ? 'કસ્ટમર લોગઈન' : 'Customer Login'}</span>
+                👤 <span className="nav-btn-label">{t.nav_customer_login || 'Customer Login'}</span>
               </button>
             )}
 
@@ -583,7 +583,7 @@ export default function Navbar() {
                 onClick={() => setActiveModal('seller_portal')}
                 title="Register as Seller / Exporter to sell your products on our platform"
               >
-                🤝 <span className="nav-btn-label">{currentLang === 'gu' ? 'વેપારી બનો' : 'Sell With Us'}</span>
+                🤝 <span className="nav-btn-label">{t.nav_sell_with_us || 'Sell With Us'}</span>
               </button>
             )}
 
@@ -646,7 +646,7 @@ export default function Navbar() {
               onClick={() => setActiveModal('admin_leads')}
               title="View All Customer Inquiries & Sales Leads"
             >
-              📥 {currentLang === 'gu' ? `ઈન્ક્વાયરી (${customerList?.length || 0})` : `Inquiries (${customerList?.length || 0})`}
+              📥 {t.nav_inquiries || 'Inquiries'} ({customerList?.length || 0})
             </button>
 
             {/* 3. Official Payment Receipts & Tax Invoice History Button */}
@@ -656,7 +656,7 @@ export default function Navbar() {
               onClick={() => setActiveModal('payment_receipts')}
               title="View Completed Order Payment Receipts & Tax Invoices"
             >
-              🧾 <span className="nav-btn-label">{currentLang === 'gu' ? 'પેમેન્ટ રીસિપ્ટ્સ' : 'Payment Receipts'}</span>
+              🧾 <span className="nav-btn-label">{t.nav_receipts || 'Payment Receipts'}</span>
             </button>
 
             {/* 3. Live Shipment Order Tracker Button (Last Corner) */}
@@ -666,7 +666,7 @@ export default function Navbar() {
               onClick={() => setIsOrderTrackerOpen(true)}
               title="Track Container Shipment Live"
             >
-              🚢 <span className="nav-btn-label">Track Shipment</span>
+              🚢 <span className="nav-btn-label">{t.nav_track_shipment || 'Track Shipment'}</span>
             </button>
           </div>
         </div>
@@ -694,11 +694,11 @@ export default function Navbar() {
               <li><a href="#home" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>{t.nav_home}</a></li>
               <li><a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_about}</a></li>
               <li><a href="#products" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_products}</a></li>
-              {isEngineeringUnitEnabled && (<li><a href="#engineering" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_engineering || (currentLang === 'gu' ? 'એન્જિનિયરિંગ & CNC' : 'Engineering & CNC')}</a></li>)}
-              {isOemPackagingEnabled && (<li><a href="#oem-packaging" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{currentLang === 'gu' ? 'કસ્ટમ પેકિંગ' : 'Packaging'}</a></li>)}
-              <li><a href="#calc" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Calculator</a></li>
+              {isEngineeringUnitEnabled && (<li><a href="#engineering" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_engineering || 'Engineering & CNC'}</a></li>)}
+              {isOemPackagingEnabled && (<li><a href="#oem-packaging" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_packaging || t.tab_eco || 'Packaging'}</a></li>)}
+              <li><a href="#calc" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_calc || 'Calculators'}</a></li>
               <li><a href="#quality" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_quality}</a></li>
-              {isTradeSecurityEnabled && (<li><a href="#trade-security" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{currentLang === 'gu' ? 'ટ્રેડ સિક્યુરિટી' : 'Security'}</a></li>)}
+              {isTradeSecurityEnabled && (<li><a href="#trade-security" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_security || 'Trade Security'}</a></li>)}
               <li><a href="#branches" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_branches}</a></li>
               <li><a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.nav_contact}</a></li>
             </ul>
@@ -726,7 +726,7 @@ export default function Navbar() {
                 title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
               >
                 <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
-                <span className="cart-desktop-label">{tradeMode === 'local' ? (currentLang === 'gu' ? 'લોકલ કાર્ટ' : 'Local Cart') : (currentLang === 'gu' ? 'ગ્લોબલ કાર્ટ (Skydo Pay)' : 'Global Cart (Skydo Pay)')}</span>
+                <span className="cart-desktop-label">{tradeMode === 'local' ? (t.nav_cart_local || 'Local Cart') : (t.nav_cart_global || 'Global Cart (Skydo Pay)')}</span>
                 <span className="cart-mobile-label">{currentLang === 'gu' ? 'કાર્ટ' : 'Cart'}</span>
                 <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
                   {rfqCartItems.length}

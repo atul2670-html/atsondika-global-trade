@@ -42,18 +42,18 @@ export default function ProductsGrid() {
     defaultTabs = [
       { filter: 'all', title: t.tab_all },
       { filter: 'agro', title: t.tab_agro },
-      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ (Dairy Products)' : '🥛 Dairy Products' },
-      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)' : '🧵 Textile Products' },
-      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : '👕 Readymade Garments' },
+      { filter: 'dairy', title: t.tab_dairy ? ('🥛 ' + t.tab_dairy) : (currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ' : '🥛 Dairy Products') },
+      { filter: 'textiles', title: t.tab_textiles ? ('🧵 ' + t.tab_textiles) : (currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ' : '🧵 Textile Products') },
+      { filter: 'garments', title: t.tab_garments ? ('👕 ' + t.tab_garments) : (currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ' : '👕 Readymade Garments') },
       { filter: 'packaging', title: t.tab_eco }
     ];
   } else {
     defaultTabs = [
       { filter: 'all', title: t.tab_all },
       { filter: 'agro', title: t.tab_agro },
-      { filter: 'dairy', title: currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ (Dairy Products)' : '🥛 Dairy Products' },
-      { filter: 'textiles', title: currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ (Surat Textiles)' : '🧵 Textile Products' },
-      { filter: 'garments', title: currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ (Garments)' : '👕 Readymade Garments' },
+      { filter: 'dairy', title: t.tab_dairy ? ('🥛 ' + t.tab_dairy) : (currentLang === 'gu' ? '🥛 ડેરી પ્રોડક્ટ્સ' : '🥛 Dairy Products') },
+      { filter: 'textiles', title: t.tab_textiles ? ('🧵 ' + t.tab_textiles) : (currentLang === 'gu' ? '🧵 ટેક્ષટાઈલ પ્રોડક્ટ્સ' : '🧵 Textile Products') },
+      { filter: 'garments', title: t.tab_garments ? ('👕 ' + t.tab_garments) : (currentLang === 'gu' ? '👕 રેડિ-મેડ ગારમેન્ટ્સ' : '👕 Readymade Garments') },
       { filter: 'used_machinery', title: t.tab_used },
       { filter: 'new_machinery', title: t.tab_new },
       { filter: 'industrial', title: t.tab_ind },
@@ -787,10 +787,10 @@ export default function ProductsGrid() {
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.06)', borderBottom: '2px solid var(--primary-teal)' }}>
                   <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'પ્રોડક્ટ નામ' : 'Product Image & Title'}</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કેટેગરી / વિભાગ' : 'Category'}</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>{currentLang === 'gu' ? 'કિંમત (Price)' : 'Price / MRP'}</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>{tradeMode === 'local' ? (currentLang === 'gu' ? 'ડિટેઇલ & સ્પેસિફિકેશન' : 'Details & Specs') : (currentLang === 'gu' ? 'HS Code & સ્પેસિફિકેશન' : 'HS Code & Specs')}</th>
-                  <th style={{ padding: '12px', textAlign: 'center' }}>{currentLang === 'gu' ? 'એક્શન' : 'Action'}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{t.col_category || (currentLang === 'gu' ? 'કેટેગરી / વિભાગ' : 'Category')}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{t.col_price || (currentLang === 'gu' ? 'કિંમત (Price)' : 'Price / MRP')}</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>{t.col_specs || (tradeMode === 'local' ? (currentLang === 'gu' ? 'ડિટેઇલ & સ્પેસિફિકેશન' : 'Details & Specs') : (currentLang === 'gu' ? 'HS Code & સ્પેસિફિકેશન' : 'HS Code & Specs'))}</th>
+                  <th style={{ padding: '12px', textAlign: 'center' }}>{t.col_action || (currentLang === 'gu' ? 'એક્શન' : 'Action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -871,7 +871,7 @@ export default function ProductsGrid() {
                               }}
                               title="Request a Product Sample"
                             >
-                              📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
+                              📦 {t.btn_request_sample || 'Request Sample'}
                             </button>
                             {p.enableCoa !== false && (
                               <button
@@ -895,7 +895,7 @@ export default function ProductsGrid() {
                                 }}
                                 title="View Technical Spec Sheet & Lab COA"
                               >
-                                🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
+                                🧪 {t.btn_spec_coa || 'Spec & COA'}
                               </button>
                             )}
                             </>
@@ -1603,15 +1603,15 @@ export default function ProductsGrid() {
                     {p.isSub && (
                       <div className="product-meta">
                         <div>
-                          <strong>{currentLang === 'gu' ? '📦 પેકેજિંગ:' : (currentLang === 'hi' ? '📦 पैकेजिंग:' : (currentLang === 'fr' ? '📦 Emballage:' : '📦 Packaging:'))}</strong>{' '}
+                          <strong>{t.meta_packaging || (currentLang === 'gu' ? '📦 પેકેજિંગ:' : (currentLang === 'hi' ? '📦 पैकेजिंग:' : (currentLang === 'fr' ? '📦 Emballage:' : '📦 Packaging:')))}</strong>{' '}
                           {autoTranslateText(p.packaging || 'Standard Export Packaging', currentLang)}
                         </div>
                         <div>
-                          <strong>{currentLang === 'gu' ? '⚡ ન્યૂનતમ ઓર્ડર (MOQ):' : (currentLang === 'hi' ? '⚡ न्यूनतम ऑर्डर (MOQ):' : (currentLang === 'fr' ? '⚡ Quantité Minimale (MOQ):' : '⚡ MOQ:'))}</strong>{' '}
+                          <strong>{t.meta_moq || (currentLang === 'gu' ? '⚡ ન્યૂનતમ ઓર્ડર (MOQ):' : (currentLang === 'hi' ? '⚡ न्यूनतम ऑर्डर (MOQ):' : (currentLang === 'fr' ? '⚡ Quantité Minimale (MOQ):' : '⚡ MOQ:')))}</strong>{' '}
                           {p.moq ? p.moq.replace(/\/ (\d+)\s*(20ft|40ft)/gi, '/ $1 x $2') : '100 Pcs (નંગ)'}
                         </div>
                         <div>
-                          <strong>{currentLang === 'gu' ? '🌐 એચ.એસ. કોડ:' : (currentLang === 'hi' ? '🌐 एचएस कोड:' : (currentLang === 'fr' ? '🌐 Code SH:' : '🌐 HS Code:'))}</strong>{' '}
+                          <strong>{t.meta_hscode || (currentLang === 'gu' ? '🌐 એચ.એસ. કોડ:' : (currentLang === 'hi' ? '🌐 एचएस कोड:' : (currentLang === 'fr' ? '🌐 Code SH:' : '🌐 HS Code:')))}</strong>{' '}
                           {p.hsCode || 'N/A'}
                         </div>
                       </div>
@@ -1676,9 +1676,7 @@ export default function ProductsGrid() {
                               ? (currentLang === 'gu' ? `✔ એક્સપોર્ટ કોટ કાર્ટ (${selectedRfqProducts.length})` : `✔ Export Quote Cart (${selectedRfqProducts.length})`)
                               : (currentLang === 'gu' ? '🛒 એક્સપોર્ટ કોટ કાર્ટ (RFQ)' : '🛒 Export Quote Cart (RFQ)')}
                           >
-                            {isSelected
-                              ? (currentLang === 'gu' ? `✔ કાર્ટ (${selectedRfqProducts.length})` : `✔ Cart (${selectedRfqProducts.length})`)
-                              : (currentLang === 'gu' ? '🛒 કોટ કાર્ટ (RFQ)' : '🛒 Quote Cart (RFQ)')}
+                            {isSelected ? ('✔ ' + (t.nav_cart_local || 'Cart') + ' (' + selectedRfqProducts.length + ')') : (t.btn_rfq_cart || '🛒 Quote Cart (RFQ)')}
                           </button>
                         );
                       })()}
@@ -1714,7 +1712,7 @@ export default function ProductsGrid() {
                         }}
                         title={currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
                       >
-                        📄 {currentLang === 'gu' ? 'ઓફિશિયલ RFQ' : 'Official RFQ'}
+                        📄 {t.btn_official_rfq || 'Official RFQ'}
                       </button>
 
                       <button
@@ -1742,7 +1740,7 @@ export default function ProductsGrid() {
                         }}
                         title={currentLang === 'gu' ? 'સેમ્પલ મંગાવો (Request B2B Sample)' : 'Request a Product Sample'}
                       >
-                        📦 {currentLang === 'gu' ? 'સેમ્પલ મંગાવો' : 'Request Sample'}
+                        📦 {t.btn_request_sample || 'Request Sample'}
                       </button>
 
                       {p.enableCoa !== false && (
@@ -1770,7 +1768,7 @@ export default function ProductsGrid() {
                           }}
                           title={currentLang === 'gu' ? 'લેબ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ (Lab COA & Spec Sheet)' : 'View Technical Spec Sheet & Lab Analysis Report (COA)'}
                         >
-                          🧪 {currentLang === 'gu' ? 'સ્પેક & COA' : 'Spec & COA'}
+                          🧪 {t.btn_spec_coa || 'Spec & COA'}
                         </button>
                       )}
 

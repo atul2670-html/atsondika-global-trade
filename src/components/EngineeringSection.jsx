@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function EngineeringSection() {
-  const { currentLang, activeCompany, setIsRfqDrawerOpen } = useApp();
+  const { t, currentLang, activeCompany, setIsRfqDrawerOpen } = useApp();
 
   const [bodorTab, setBodorTab] = useState('machine'); // 'machine' | 'plate'
   const [jyotiTab, setJyotiTab] = useState('machine'); // 'machine' | 'plate'
@@ -46,27 +46,15 @@ export default function EngineeringSection() {
         {/* SECTION HEADER */}
         <div className="section-header">
           <div className="engineering-badge">
-            ⚙️ {isGu ? 'ઇન-હાઉસ ઇન્ડસ્ટ્રિયલ ઇન્ફ્રાસ્ટ્રક્ચર' : isHi ? 'इन-हाउस औद्योगिक बुनियादी ढांचा' : isFr ? 'Infrastructure Industrielle Intégrée' : 'In-House Industrial Infrastructure'}
+            ⚙️ {t?.eng_badge || (isGu ? 'ઇન-હાઉસ ઇન્ડસ્ટ્રિયલ ઇન્ફ્રાસ્ટ્રક્ચર' : 'In-House Industrial Infrastructure')}
           </div>
 
           <h2 className="section-title engineering-title">
-            {isGu
-              ? 'અદ્યતન એન્જિનિયરિંગ & CNC પ્રિસિઝન જોબ વર્ક હબ'
-              : isHi
-              ? 'उन्नत इंजीनियरिंग और सीएनसी सटीक जॉब वर्क हब'
-              : isFr
-              ? "Pôle d'Ingénierie de Précision et d'Usinage CNC"
-              : 'Advanced Precision Engineering & CNC Job Work Hub'}
+            {t?.eng_title || (isGu ? 'અદ્યતન એન્જિનિયરિંગ & CNC પ્રિસિઝન જોબ વર્ક હબ' : 'Advanced Precision Engineering & CNC Job Work Hub')}
           </h2>
 
           <p className="section-subtitle engineering-subtitle">
-            {isGu
-              ? 'સુરત અને દક્ષિણ ગુજરાતના ઔદ્યોગિક એકમો તેમ જ ગ્લોબલ એક્સપોર્ટ માટે કટિંગથી લઈને સંપૂર્ણ તૈયાર મશીનરી પાર્ટ્સનું ઇન-હાઉસ ઉત્પાદન.'
-              : isHi
-              ? 'सूरत और दक्षिण गुजरात के उद्योगों तथा वैश्विक निर्यात के लिए कटिंग से लेकर तैयार मशीनरी पार्ट्स का इन-हाउस निर्माण।'
-              : isFr
-              ? 'De la découpe de tôles et tubes aux composants mécaniques finis de haute précision fabriqués en interne à Surat, Gujarat.'
-              : 'Turnkey in-house precision component manufacturing in Surat, Gujarat — from laser profile & tube cutting to micron-accurate VMC machining.'}
+            {t?.eng_subtitle || (isGu ? 'સુરત અને દક્ષિણ ગુજરાતના ઔદ્યોગિક એકમો તેમ જ ગ્લોબલ એક્સપોર્ટ માટે કટિંગથી લઈને સંપૂર્ણ તૈયાર મશીનરી પાર્ટ્સનું ઇન-હાઉસ ઉત્પાદન.' : 'Turnkey in-house precision component manufacturing in Surat, Gujarat — from laser profile & tube cutting to micron-accurate VMC machining.')}
           </p>
         </div>
 

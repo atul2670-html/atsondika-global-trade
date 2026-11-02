@@ -20,7 +20,10 @@ export const initialProductsData = [
       gu: "ભેજ: મહત્તમ ૧૦% | શુદ્ધતા: ૯૯% | કુદરતી પીળો રંગ | સ્ટીમ સ્ટેરિલાઇઝ્ડ",
       en: "Moisture: Max 10% | Purity: 99% | Natural Yellow Color | Steam Sterilized",
       hi: "नमी: अधिकतम 10% | शुद्धता: 99% | प्राकृतिक पीला रंग | स्टीम स्टेरिलाइज्ड",
-      fr: "Humidité: Max 10% | Pureté: 99% | Couleur Jaune Naturelle"
+      fr: "Humidité: Max 10% | Pureté: 99% | Couleur Jaune Naturelle",
+      es: "Humedad: Máx 10% | Pureza: 99% | Color Amarillo Natural | Esterilizado por Vapor",
+      ar: "الرطوبة: بحد أقصى 10% | النقاء: 99% | لون أصفر طبيعي | معقم بالبخار",
+      zh: "水分: 最高 10% | 纯度: 99% | 天然金黄色泽 | 蒸汽灭菌处理"
     },
     packaging: "25kg / 50kg PP Bags / Jute Bags",
     moq: "18 MT (1 x 20ft Container)"
@@ -42,7 +45,10 @@ export const initialProductsData = [
       gu: "સરેરાશ લંબાઈ: ૮.૩૫ mm+ | ભેજ: મહત્તમ ૧૨% | સોર્ટકેસ અને ડબલ પોલિશ્ડ",
       en: "Avg Grain Length: 8.35mm+ | Moisture: Max 12% | Sortex & Double Polished",
       hi: "औसत लंबाई: 8.35 mm+ | नमी: अधिकतम 12% | सॉर्टेक्स और डबल पॉलिश",
-      fr: "Longueur Moyenne: 8,35 mm+ | Humidité: Max 12% | Double Polissage Sortex"
+      fr: "Longueur Moyenne: 8,35 mm+ | Humidité: Max 12% | Double Polissage Sortex",
+      es: "Longitud Media de Grano: 8.35mm+ | Humedad: Máx 12% | Doble Pulido y Selección Sortex",
+      ar: "متوسط طول الحبة: 8.35 مم+ | الرطوبة: بحد أقصى 12% | فرز ليزري وتلميع مزدوج",
+      zh: "平均粒长: 8.35mm以上 | 水分: 最高 12% | 色选机精密分选与双重抛光"
     },
     packaging: "5kg, 10kg, 20kg Non-woven / BOPP Bags",
     moq: "25 MT (1 x 20ft Container)"
@@ -64,7 +70,10 @@ export const initialProductsData = [
       gu: "શુદ્ધતા: ૯૯.૫% મશીન ક્લીન અને સોર્ટકેસ ક્લીન | વોલેટાઈલ ઓઈલ: ૨.૫%+",
       en: "Purity: 99.5% Machine Cleaned & Sortex | Volatile Oil: 2.5%+",
       hi: "शुद्धता: 99.5% मशीन क्लीन और सॉर्टेक्स | वाष्पशील तेल: 2.5%+",
-      fr: "Pureté: 99,5% Machine & Sortex | Huile Volatile: 2,5%+"
+      fr: "Pureté: 99,5% Machine & Sortex | Huile Volatile: 2,5%+",
+      es: "Pureza: 99.5% Limpieza Mecánica y Sortex | Aceite Volátil: 2.5%+",
+      ar: "النقاء: 99.5% تنظيف آلي وفرز ليزري | الزيت الطيار: 2.5%+",
+      zh: "纯度: 99.5% 机械精选与色选分级 | 挥发油含量: 2.5%以上"
     },
     packaging: "25kg / 50kg Multi-wall Paper / PP Bags",
     moq: "13 MT (1 x 20ft Container)"
@@ -86,7 +95,10 @@ export const initialProductsData = [
       gu: "ચકાસાયેલ વર્કિંગ કન્ડિશન | સિમેન્સ / ફેનુક કંટ્રોલ સિસ્ટમ | યુરોપથી ઈમ્પોર્ટ",
       en: "Verified Working Condition | Siemens / Fanuc CNC Controls | Imported Quality",
       hi: "सत्यापित कार्य स्थिति | सीमेंस / फैनुक सीएनसी नियंत्रण | आयातित गुणवत्ता",
-      fr: "État de Fonctionnement Vérifié | Commandes CNC Siemens / Fanuc"
+      fr: "État de Fonctionnement Vérifié | Commandes CNC Siemens / Fanuc",
+      es: "Estado Operativo Verificado | Controles CNC Siemens / Fanuc | Calidad de Importación Europea",
+      ar: "حالة تشغيلية مؤكدة ومفحوصة | أنظمة تحكم Siemens / Fanuc | جودة أوروبية",
+      zh: "经全面测试正常运转 | 西门子(Siemens)/发那科(Fanuc)数控系统 | 进口工业级品质"
     },
     packaging: "Seaworthy Wooden Crate / Skid Packing",
     moq: "1 Unit"
@@ -108,7 +120,10 @@ export const initialProductsData = [
       gu: "ક્ષમતા: ૩ થી ૧૦ ટન/કલાક | સ્ટેનલેસ સ્ટીલ બોડી | ઉચ્ચ ઉર્જા કાર્યક્ષમતા",
       en: "Capacity: 3 to 10 Tons/Hr | Stainless Steel Contact Parts | High Energy Efficiency",
       hi: "क्षमता: 3 से 10 टन/घंटा | स्टेनलेस स्टील बॉडी | उच्च ऊर्जा दक्षता",
-      fr: "Capacité: 3 à 10 Tonnes/Heure | Pièces en Acier Inoxydable"
+      fr: "Capacité: 3 à 10 Tonnes/Heure | Pièces en Acier Inoxydable",
+      es: "Capacidad: 3 a 10 Toneladas/Hora | Componentes en Acero Inoxidable | Alta Eficiencia Energética",
+      ar: "الطاقة الإنتاجية: 3 إلى 10 أطنان/ساعة | أجزاء ستانلس ستيل | كفاءة طاقة عالية",
+      zh: "处理能力: 3至10吨/小时 | 食品级不锈钢接触件 | 高效节能设计"
     },
     packaging: "Export Standard Wooden Case",
     moq: "1 Set"
@@ -152,7 +167,10 @@ export const initialProductsData = [
       gu: "૧૦૦% બાયોડિગ્રેડેબલ | સાઈઝ: ૫૦kg લિન્ક્ડ / બી-ટ્વિલ સાઈઝ | ફૂડ ગ્રેડ વિજીટેબલ ઓઈલ ટ્રીટેડ",
       en: "100% Biodegradable | Size: 50kg Linked / B-Twill Size | Food Grade Vegetable Oil Treated",
       hi: "100% बायोडिग्रेडेबल | आकार: 50 किग्रा | खाद्य ग्रेड वनस्पति तेल उपचारित",
-      fr: "100% Biodégradable | Sacs de 50 kg Traités à l'Huile Végétale Alimentaire"
+      fr: "100% Biodégradable | Sacs de 50 kg Traités à l'Huile Végétale Alimentaire",
+      es: "Capacidad de Carga: 25kg, 50kg, 100kg | Calidad A-Twill & B-Twill | Grado Alimentario Hidrocarburo Cero (VOT)",
+      ar: "سعة الحمولة: 25 كجم، 50 كجم، 100 كجم | جودة A-Twill و B-Twill | خالية من الهيدروكربونات",
+      zh: "承重规格: 25kg, 50kg, 100kg | A-Twill 与 B-Twill 双斜纹编织 | 无烃食品级认证(VOT)"
     },
     packaging: "Bale Packing of 300 to 500 Bags",
     moq: "10,000 Bags (1 x 20ft Container)"
@@ -175,7 +193,10 @@ export const initialProductsData = [
       gu: "શુદ્ધતા: ૯૯.૮% | ભેજ: મહત્તમ ૦.૨% | દાણાદાર ટેક્સચર અને સમૃદ્ધ સુગંધ | AGMARK સ્પેશિયલ ગ્રેડ",
       en: "Purity: 99.8% | Moisture: Max 0.2% | Granular Texture & Rich Aroma | AGMARK Special Grade Certified",
       hi: "शुद्धता: 99.8% | नमी: अधिकतम 0.2% | दानेदार बनावट | एगमार्क स्पेशल ग्रेड",
-      fr: "Pureté: 99,8% | Humidité: Max 0,2% | Texture Granulaire | Certifié AGMARK"
+      fr: "Pureté: 99,8% | Humidité: Max 0,2% | Texture Granulaire | Certifié AGMARK",
+      es: "100% Puro y Natural | Grasa Láctea: Mín 99.7% | Aroma Auténtico Bilona | Sin Conservantes",
+      ar: "طبيعي ونقي 100% | دهن الحليب: 99.7% كحد أدنى | نكهة بيلونا التقليدية | بدون مواد حافظة",
+      zh: "100% 纯天然无添加 | 乳脂含量: 最低 99.7% | 传统古法浓郁乳香 | 不含任何防腐剂"
     },
     packaging: "1L / 5L Jars & 15kg Tin Containers",
     moq: "5 MT (1 x 20ft Container)"
@@ -221,7 +242,10 @@ export const initialProductsData = [
       gu: "પહોળાઈ: ૪૪\" થી ૫૮\" | વજન: ૮૦ થી ૧૮૦ GSM | વોટરજેટ વુવન | ઉચ્ચ કલર ફાસ્ટનેસ",
       en: "Width: 44\" - 58\" | Weight: 80 - 180 GSM | High Color Fastness | Waterjet Woven",
       hi: "चौड़ाई: 44\" - 58\" | वजन: 80 - 180 जीएसएम | उच्च रंग स्थिरता",
-      fr: "Largeur: 44\" - 58\" | Poids: 80 - 180 GSM | Haute Solidité des Couleurs"
+      fr: "Largeur: 44\" - 58\" | Poids: 80 - 180 GSM | Haute Solidité des Couleurs",
+      es: "Ancho: 44\" a 58\" | Tejido: Telar de Chorro de Agua / Jacquard | Colores y Diseños Personalizables",
+      ar: "العرض: 44 إلى 58 بوصة | نسج: نفاث الماء / جاكار | ثبات ممتاز للألوان",
+      zh: "门幅宽度: 44英寸至58英寸 | 织机工艺: 喷水织机 / 高精密提花 | 支持定制图案与色牢度优级"
     },
     packaging: "Roll Packing of 100m / Export Bale Packing",
     moq: "5,000 Meters / 500 Sarees"
@@ -244,7 +268,10 @@ export const initialProductsData = [
       gu: "Ne કાઉન્ટ: 20s, 30s, 40s | Uster CV%: મહત્તમ ૧૨% | CSP: 2400+ | ઓટો-કોન્ડ અને સ્પલાઇસ્ડ",
       en: "Ne Count: 20s, 30s, 40s | Uster CV%: Max 12% | CSP: 2400+ | Auto-coned & Spliced",
       hi: "Ne काउंट: 20s, 30s, 40s | उस्टर CV%: अधिकतम 12% | CSP: 2400+",
-      fr: "Compte Ne: 20s, 30s, 40s | Uster CV%: Max 12% | CSP: 2400+"
+      fr: "Compte Ne: 20s, 30s, 40s | Uster CV%: Max 12% | CSP: 2400+",
+      es: "Título: Ne 20s, 30s, 40s | Resistencia CSP: 2800+ | Bajo Nivel de Imperfecciones IPI",
+      ar: "النمرة: Ne 20s, 30s, 40s | قوة الشد CSP: 2800+ | انخفاض العيوب IPI",
+      zh: "支数规格: Ne 20s, 30s, 40s | 单纱强力 CSP: 2800+ | 超低细节毛羽与IPI杂质指数"
     },
     packaging: "50kg Carton Boxes / Paper Cones",
     moq: "10 MT (1 x 20ft Container)"
@@ -267,7 +294,10 @@ export const initialProductsData = [
       gu: "GSM: ૧૮૦ થી ૨૨૦ | ૧૦૦% કોટન પિક પિકવે | પ્રી-શ્રન્ક અને બાયો-વોશ્ડ | કલર ફાસ્ટનેસ ગ્રેડ ૪+",
       en: "GSM: 180 - 220 GSM | Fabric: 100% Cotton / Pique Knit | Pre-Shrunk & Bio-Washed | Color Fastness: Grade 4+",
       hi: "जीएसएम: 180 - 220 | 100% कॉटन | बायो-वॉश्ड | कलर फास्टनेस ग्रेड 4+",
-      fr: "GSM: 180 - 220 | 100% Coton | Bio-Lave | Solidite des Couleurs Grade 4+"
+      fr: "GSM: 180 - 220 | 100% Coton | Bio-Lave | Solidite des Couleurs Grade 4+",
+      es: "Gramaje: 180 - 220 GSM | Tejido: 100% Algodón Piqué | Pre-encogido y Bio-lavado | Solidez del Color: Grado 4+",
+      ar: "الوزن: 180 إلى 220 جم/م² | القماش: 100% قطن بيكيه | معالج ضد الانكماش | ثبات اللون: درجة 4+",
+      zh: "克重: 180 - 220 GSM | 面料: 100% 纯棉双珠地面料 | 预缩水生物酶洗 | 耐洗色牢度4级以上"
     },
     packaging: "Individual Polybag Packing / 50 Pcs Per Master Carton",
     moq: "1,000 Pcs (Assorted Sizes S to XXL)"
@@ -313,7 +343,10 @@ export const initialProductsData = [
       gu: "Premium Export Quality Category. For Mens, Womens and Childrens.",
       en: "Premium Export Quality Category. For Mens, Womens and Childrens.",
       hi: "Premium Export Quality Category.",
-      fr: "Catégorie de Qualité d'Exportation Supérieure."
+      fr: "Catégorie de Qualité d'Exportation Supérieure.",
+      es: "Categoría de Exportación Premium. Para Hombres, Mujeres y Niños.",
+      ar: "فئة تصدير فاخرة عالية الجودة. للرجال والنساء والأطفال.",
+      zh: "出口级优质成衣大类。涵盖男士、女士及儿童全套服装。"
     },
     packaging: "Export Packaging",
     moq: "1 Container / Shipment"
@@ -338,7 +371,10 @@ export const initialProductsData = [
       gu: "ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ (Premium Designer Gujarati Suits & Dresses)",
       en: "Premium Export Quality Designer Gujarati Suit & Dress",
       hi: "उच्च गुणवत्ता वाला प्रीमियम गुजराती ड्रेस",
-      fr: "Robe Gujrati de Qualité Supérieure"
+      fr: "Robe Gujrati de Qualité Supérieure",
+      es: "Traje y Vestido de Diseñador Estilo Gujarati de Calidad de Exportación",
+      ar: "تصاميم غوجاراتية وبنجابية راقية بجودة تصديرية ممتازة",
+      zh: "出口级设计师款传统印式礼服与精美刺绣套装"
     },
     packaging: "Standard Export Packaging",
     moq: "1 Unit / Container"
@@ -362,7 +398,10 @@ export const initialProductsData = [
       gu: "PLC કંટ્રોલ પિન | હાઈ સ્પીડ ડિજિટલ મોનિટરિંગ | IP65 પ્રોટેક્શન",
       en: "PLC Control Panel | High Speed Digital Monitoring | IP65 Protection Grade",
       hi: "PLC कंट्रोल | डिजिटल मॉनिटरिंग | IP65 प्रोटेक्शन",
-      fr: "Contrôle PLC | Surveillance Numérique | Protection IP65"
+      fr: "Contrôle PLC | Surveillance Numérique | Protection IP65",
+      es: "Panel de Control PLC | Monitorización Digital de Alta Velocidad | Grado de Protección IP65",
+      ar: "لوحة تحكم PLC متطورة | مراقبة رقمية عالية السرعة | درجة حماية IP65",
+      zh: "集成PLC控制柜 | 高速多通道数字化监控系统 | IP65工业防护等级"
     },
     packaging: "Heavy Duty Wooden Crate",
     moq: "1 Unit / System"
@@ -386,7 +425,10 @@ export const initialProductsData = [
       gu: "૧૦૦% ઈકો-ફ્રેન્ડલી | ફૂડ ગ્રેડ વેજીટેબલ ઓઈલ કોટેડ | હેવી ડ્યુટી કેપેસિટી",
       en: "100% Eco-Friendly | Food Grade Vegetable Oil Coated | Heavy Duty Capacity",
       hi: "100% इको-फ्रेंडली | फ़ूड ग्रेड वेजीटेबल ऑयल कोटेड",
-      fr: "100% Écologique | Huile Végétale Alimentaire"
+      fr: "100% Écologique | Huile Végétale Alimentaire",
+      es: "100% Ecológico y Biodegradable | Recubierto con Aceite Vegetal de Grado Alimentario | Gran Capacidad",
+      ar: "صديق للبيئة 100% | معالج بزيوت نباتية غذائية | قدرة تحمل فائقة للأحمال الثقيلة",
+      zh: "100% 环保生态降解 | 涂覆食品级植物基防护油 | 超高抗撕裂承重负荷"
     },
     packaging: "Bale Packing of 300 to 500 Bags",
     moq: "5,000 Bags"
@@ -540,7 +582,44 @@ export const translations = {
     fp_machinery: "Industrial CNC Machinery",
     fp_bags: "Eco Jute & Non-Woven Bags",
     footer_contact: "Export Desk",
-    footer_copy: "© Atsondika Global Trade. All Rights Reserved. APEDA & ISO 9001:2015 Registered Exporter."
+    footer_copy: "© Atsondika Global Trade. All Rights Reserved. APEDA & ISO 9001:2015 Registered Exporter.",
+    nav_engineering: "Engineering & CNC",
+    nav_packaging: "Packaging",
+    nav_security: "Trade Security",
+    nav_sister_companies: "Sister Group Companies:",
+    nav_customer_login: "Customer Login",
+    nav_sell_with_us: "Sell With Us",
+    nav_inquiries: "Inquiries",
+    nav_receipts: "Payment Receipts",
+    nav_track_shipment: "Track Shipment",
+    nav_cart_local: "Local Cart",
+    nav_cart_global: "Global Cart (Skydo Pay)",
+    tab_dairy: "Dairy Products",
+    tab_textiles: "Textile Products",
+    tab_garments: "Readymade Garments",
+    col_category: "Category",
+    col_price: "Price / MRP",
+    col_specs: "HS Code & Specs",
+    col_action: "Action",
+    meta_packaging: "📦 Packaging:",
+    meta_moq: "⚡ MOQ:",
+    meta_hscode: "🌐 HS Code:",
+    btn_rfq_cart: "Quote Cart (RFQ)",
+    btn_official_rfq: "Official RFQ",
+    btn_request_sample: "Request Sample",
+    btn_spec_coa: "Spec & COA",
+    eng_badge: "In-House Industrial Infrastructure",
+    eng_title: "Advanced Precision Engineering & CNC Job Work Hub",
+    eng_subtitle: "Turnkey in-house precision component manufacturing in Surat, Gujarat — from laser profile & tube cutting to micron-accurate VMC machining.",
+    sec_badge: "100% Safe Global Trade Assurance",
+    sec_subtitle: "Completely risk-free international export transactions with verified Letters of Credit (L/C), Third-Party SGS Quality Inspections, and Swift Bank Routing.",
+    oem_badge: "Private Label & OEM Packaging",
+    oem_title: "Private Label & Custom OEM Packaging Solutions",
+    oem_subtitle: "Turnkey Private Labeling & Contract Packaging for global supermarket chains, brand owners, and institutional distributors under your own brand identity.",
+    stat_years_label: "Years Experience",
+    stat_countries_label: "Export Countries",
+    stat_tons_label: "Metric Tons Exported",
+    stat_clients_label: "Global Importers"
   },
   gu: {
     tagline_top: "APEDA અને ISO પ્રમાણિત પ્રીમિયમ ગ્લોબલ એક્સપોર્ટર | સુરત, ગુજરાત",
@@ -634,7 +713,44 @@ export const translations = {
     fp_machinery: "ઔદ્યોગિક CNC મશીનરી",
     fp_bags: "ઇકો જૂટ અને બેગ્સ",
     footer_contact: "નિકાસ ઓફિસ",
-    footer_copy: "© Atsondika Global Trade. સર્વાધિકાર સુરક્ષિત. APEDA અને ISO 9001:2015 રજિસ્ટર્ડ એક્સપોર્ટર."
+    footer_copy: "© Atsondika Global Trade. સર્વાધિકાર સુરક્ષિત. APEDA અને ISO 9001:2015 રજિસ્ટર્ડ એક્સપોર્ટર.",
+    nav_engineering: "એન્જિનિયરિંગ & CNC",
+    nav_packaging: "કસ્ટમ પેકિંગ",
+    nav_security: "ટ્રેડ સિક્યુરિટી",
+    nav_sister_companies: "સિસ્ટર ગ્રુપ કંપનીઓ:",
+    nav_customer_login: "કસ્ટમર લોગઈન",
+    nav_sell_with_us: "વેપારી બનો",
+    nav_inquiries: "ઈન્ક્વાયરી",
+    nav_receipts: "પેમેન્ટ રીસિપ્ટ્સ",
+    nav_track_shipment: "ટ્રેક શિપમેન્ટ",
+    nav_cart_local: "લોકલ કાર્ટ",
+    nav_cart_global: "ગ્લોબલ કાર્ટ (Skydo Pay)",
+    tab_dairy: "ડેરી પ્રોડક્ટ્સ",
+    tab_textiles: "ટેક્ષટાઈલ પ્રોડક્ટ્સ",
+    tab_garments: "રેડિ-મેડ ગારમેન્ટ્સ",
+    col_category: "કેટેગરી / વિભાગ",
+    col_price: "કિંમત (Price)",
+    col_specs: "HS Code & સ્પેસિફિકેશન",
+    col_action: "એક્શન",
+    meta_packaging: "📦 પેકેજિંગ:",
+    meta_moq: "⚡ ન્યૂનતમ ઓર્ડર (MOQ):",
+    meta_hscode: "🌐 એચ.એસ. કોડ:",
+    btn_rfq_cart: "કોટ કાર્ટ (RFQ)",
+    btn_official_rfq: "ઓફિશિયલ RFQ",
+    btn_request_sample: "સેમ્પલ મંગાવો",
+    btn_spec_coa: "સ્પેક & COA",
+    eng_badge: "ઇન-હાઉસ ઇન્ડસ્ટ્રિયલ ઇન્ફ્રાસ્ટ્રક્ચર",
+    eng_title: "અદ્યતન એન્જિનિયરિંગ & CNC પ્રિસિઝન જોબ વર્ક હબ",
+    eng_subtitle: "સુરત અને દક્ષિણ ગુજરાતના ઔદ્યોગિક એકમો તેમ જ ગ્લોબલ એક્સપોર્ટ માટે કટિંગથી લઈને સંપૂર્ણ તૈયાર મશીનરી પાર્ટ્સનું ઇન-હાઉસ ઉત્પાદન.",
+    sec_badge: "૧૦૦% સુરક્ષિત આંતરરાષ્ટ્રીય વ્યાપાર",
+    sec_subtitle: "વિદેશી ખરીદદારો માટે સંપૂર્ણ જોખમ-મુક્ત આંતરરાષ્ટ્રીય વ્યવહારો. કન્ફર્મ્ડ L/C, થર્ડ-પાર્ટી SGS ક્વોલિટી ઇન્સ્પેક્શન અને પારદર્શક બેંકિંગ ચેનલો.",
+    oem_badge: "કસ્ટમ બ્રાન્ડિંગ & પેકિંગ",
+    oem_title: "પ્રાઇવેટ લેબલિંગ & કસ્ટમ OEM પેકિંગ સોલ્યુશન્સ",
+    oem_subtitle: "વિશ્વભરના સુપરમાર્કેટ્સ, બ્રાન્ડ ઓનર્સ અને હોલસેલર્સ માટે તમારા પોતાના બ્રાન્ડ નેમ, લોગો, બારકોડ અને કસ્ટમ વજનમાં પ્રીમિયમ પેકિંગ સુવિધા.",
+    stat_years_label: "વર્ષનો અનુભવ",
+    stat_countries_label: "નિકાસ દેશો",
+    stat_tons_label: "મેટ્રિક ટન નિકાસ",
+    stat_clients_label: "ગ્લોબલ ખરીદદારો & ગ્રાહકો"
   },
   hi: {
     tagline_top: "APEDA और ISO प्रमाणित प्रीमियम ग्लोबल निर्यातक | सूरत, गुजरात",
@@ -728,7 +844,44 @@ export const translations = {
     fp_machinery: "औद्योगिक सीएनसी मशीनरी",
     fp_bags: "इको जूट बैग",
     footer_contact: "निर्यात कार्यालय",
-    footer_copy: "© Atsondika Global Trade. सर्वाधिकार सुरक्षित। APEDA और ISO 9001:2015 पंजीकृत निर्यातक।"
+    footer_copy: "© Atsondika Global Trade. सर्वाधिकार सुरक्षित। APEDA और ISO 9001:2015 पंजीकृत निर्यातक।",
+    nav_engineering: "इंजीनियरिंग और सीएनसी",
+    nav_packaging: "कस्टम पैकेजिंग",
+    nav_security: "व्यापार सुरक्षा",
+    nav_sister_companies: "सिस्टर ग्रुप कंपनियां:",
+    nav_customer_login: "ग्राहक लॉगिन",
+    nav_sell_with_us: "हमारे साथ बेचें",
+    nav_inquiries: "पूछताछ",
+    nav_receipts: "भुगतान रसीदें",
+    nav_track_shipment: "शिपमेंट ट्रैक करें",
+    nav_cart_local: "लोकल कार्ट",
+    nav_cart_global: "ग्लोबल कार्ट (Skydo Pay)",
+    tab_dairy: "डेयरी उत्पाद",
+    tab_textiles: "कपड़ा उत्पाद",
+    tab_garments: "रेडीमेड वस्त्र",
+    col_category: "श्रेणी / विभाग",
+    col_price: "कीमत (Price)",
+    col_specs: "एचएस कोड और स्पेक्स",
+    col_action: "कार्रवाई",
+    meta_packaging: "📦 पैकेजिंग:",
+    meta_moq: "⚡ न्यूनतम ऑर्डर (MOQ):",
+    meta_hscode: "🌐 एचएस कोड:",
+    btn_rfq_cart: "कोटेशन कार्ट (RFQ)",
+    btn_official_rfq: "आधिकारिक RFQ",
+    btn_request_sample: "सैंपल मंगवाएं",
+    btn_spec_coa: "स्पेक और COA",
+    eng_badge: "इन-हाउस औद्योगिक बुनियादी ढांचा",
+    eng_title: "उन्नत इंजीनियरिंग और सीएनसी सटीक जॉब वर्क हब",
+    eng_subtitle: "सूरत और दक्षिण गुजरात के उद्योगों तथा वैश्विक निर्यात के लिए कटिंग से लेकर तैयार मशीनरी पार्ट्स का इन-हाउस निर्माण।",
+    sec_badge: "100% सुरक्षित अंतर्राष्ट्रीय व्यापार",
+    sec_subtitle: "विदेशी खरीदारों के लिए पूर्णतः जोखिम-मुक्त अंतर्राष्ट्रीय व्यापार। कन्फर्म L/C, थर्ड-पार्टी SGS क्वालिटी इंस्पेक्शन एवं सुरक्षित बैंकिंग।",
+    oem_badge: "कस्टम ब्रांडिंग और पैकेजिंग",
+    oem_title: "प्राइवेट लेबलिंग और कस्टम OEM पैकेजिंग सॉल्यूशंस",
+    oem_subtitle: "विश्वभर के सुपरमार्केट्स और ब्रांड मालिकों के लिए आपके अपने ब्रांड नाम, लोगो और बारकोड के साथ प्रीमियम पैकेजिंग सुविधा।",
+    stat_years_label: "निर्यात अनुभव",
+    stat_countries_label: "ग्लोबल रीच",
+    stat_tons_label: "वार्षिक शिपमेंट",
+    stat_clients_label: "संतुष्ट आयातक"
   },
   fr: {
     tagline_top: "Exportateur Mondial de Qualité Supérieure Certifié APEDA & ISO | Surat, Gujarat",
@@ -822,7 +975,44 @@ export const translations = {
     fp_machinery: "Machines CNC Industrielles",
     fp_bags: "Sacs Écologiques en Jute",
     footer_contact: "Bureau Export",
-    footer_copy: "© Atsondika Global Trade. Tous droits réservés. Exportateur APEDA & ISO 9001:2015."
+    footer_copy: "© Atsondika Global Trade. Tous droits réservés. Exportateur APEDA & ISO 9001:2015.",
+    nav_engineering: "Ingénierie & CNC",
+    nav_packaging: "Emballage",
+    nav_security: "Sécurité Commerciale",
+    nav_sister_companies: "Sociétés du Groupe:",
+    nav_customer_login: "Connexion Client",
+    nav_sell_with_us: "Vendez Avec Nous",
+    nav_inquiries: "Demandes",
+    nav_receipts: "Reçus de Paiement",
+    nav_track_shipment: "Suivi d'Expédition",
+    nav_cart_local: "Panier Local",
+    nav_cart_global: "Panier Mondial (Skydo Pay)",
+    tab_dairy: "Produits Laitiers",
+    tab_textiles: "Produits Textiles",
+    tab_garments: "Vêtements Confectionnés",
+    col_category: "Catégorie",
+    col_price: "Prix / Tarif",
+    col_specs: "Code SH & Spécifications",
+    col_action: "Action",
+    meta_packaging: "📦 Emballage:",
+    meta_moq: "⚡ Quantité Minimale (MOQ):",
+    meta_hscode: "🌐 Code SH:",
+    btn_rfq_cart: "Panier Devis (RFQ)",
+    btn_official_rfq: "RFQ Officiel",
+    btn_request_sample: "Demander un Échantillon",
+    btn_spec_coa: "Spéc & COA",
+    eng_badge: "Infrastructure Industrielle Intégrée",
+    eng_title: "Pôle d'Ingénierie de Précision et d'Usinage CNC",
+    eng_subtitle: "Fabrication de composants mécaniques finis de haute précision en interne à Surat, Gujarat.",
+    sec_badge: "Commerce International 100% Sécurisé",
+    sec_subtitle: "Transactions internationales sans risque avec Lettre de Crédit (L/C) irrévocable et inspection SGS au port de chargement.",
+    oem_badge: "Marque Blanche & Emballage OEM",
+    oem_title: "Solutions de Marque Blanche & Emballage Sur Mesure",
+    oem_subtitle: "Emballage sur mesure sous votre propre marque pour supermarchés, grossistes et distributeurs internationaux.",
+    stat_years_label: "Années d'Expérience",
+    stat_countries_label: "Pays d'Exportation",
+    stat_tons_label: "Tonnes Métriques Exportées",
+    stat_clients_label: "Importateurs Mondiaux"
   },
   es: {
     tagline_top: "Exportador Global Premium Certificado por APEDA e ISO | Surat, Guyarat",
@@ -908,7 +1098,44 @@ export const translations = {
     fp_machinery: "Maquinaria Industrial CNC",
     fp_bags: "Bolsas Ecológicas de Yute y Tejido",
     footer_contact: "Mesa de Exportación",
-    footer_copy: "© Atsondika Global Trade. Todos los derechos reservados. Exportador Registrado APEDA e ISO 9001:2015."
+    footer_copy: "© Atsondika Global Trade. Todos los derechos reservados. Exportador Registrado APEDA e ISO 9001:2015.",
+    nav_engineering: "Ingeniería y CNC",
+    nav_packaging: "Embalaje",
+    nav_security: "Seguridad Comercial",
+    nav_sister_companies: "Empresas del Grupo:",
+    nav_customer_login: "Iniciar Sesión",
+    nav_sell_with_us: "Vende con Nosotros",
+    nav_inquiries: "Consultas",
+    nav_receipts: "Recibos de Pago",
+    nav_track_shipment: "Rastrear Envío",
+    nav_cart_local: "Carrito Local",
+    nav_cart_global: "Carrito Global (Skydo Pay)",
+    tab_dairy: "Productos Lácteos",
+    tab_textiles: "Productos Textiles",
+    tab_garments: "Prendas Confeccionadas",
+    col_category: "Categoría",
+    col_price: "Precio / Tarifa",
+    col_specs: "Código SA y Especificaciones",
+    col_action: "Acción",
+    meta_packaging: "📦 Embalaje:",
+    meta_moq: "⚡ Pedido Mínimo (MOQ):",
+    meta_hscode: "🌐 Código SA:",
+    btn_rfq_cart: "Carrito Cotización (RFQ)",
+    btn_official_rfq: "RFQ Oficial",
+    btn_request_sample: "Solicitar Muestra",
+    btn_spec_coa: "Ficha y COA",
+    eng_badge: "Infraestructura Industrial Propia",
+    eng_title: "Centro Avanzado de Ingeniería de Precisión y Mecanizado CNC",
+    eng_subtitle: "Fabricación interna de componentes de alta precisión en Surat, Guyarat: desde corte láser y por tubo hasta mecanizado VMC micrométrico.",
+    sec_badge: "Garantía Comercial 100% Segura",
+    sec_subtitle: "Operaciones de exportación totalmente seguras con cartas de crédito confirmadas (L/C), inspección de calidad SGS y transferencias bancarias Swift.",
+    oem_badge: "Marca Blanca y Embalaje OEM",
+    oem_title: "Soluciones de Marca Blanca y Envasado a Medida",
+    oem_subtitle: "Envasado y embalaje integral para cadenas de supermercados, marcas y distribuidores globales con su propio diseño y código de barras.",
+    stat_years_label: "Años de Experiencia",
+    stat_countries_label: "Países de Exportación",
+    stat_tons_label: "Toneladas Métricas Exportadas",
+    stat_clients_label: "Importadores Globales"
   },
   ar: {
     tagline_top: "مصدّر عالمي رائد معتمد من APEDA و ISO | سورات، غوجارات، الهند",
@@ -994,7 +1221,44 @@ export const translations = {
     fp_machinery: "آلات CNC الصناعية",
     fp_bags: "أكياس خيش وقماش بيئية",
     footer_contact: "مكتب التصدير",
-    footer_copy: "© Atsondika Global Trade. جميع الحقوق محفوظة. مصدّر مسجل لدى APEDA و ISO 9001:2015."
+    footer_copy: "© Atsondika Global Trade. جميع الحقوق محفوظة. مصدّر مسجل لدى APEDA و ISO 9001:2015.",
+    nav_engineering: "الهندسة والتصنيع CNC",
+    nav_packaging: "التعبئة والتغليف",
+    nav_security: "أمان التجارة",
+    nav_sister_companies: "شركات المجموعة الشقيقة:",
+    nav_customer_login: "تسجيل الدخول",
+    nav_sell_with_us: "انضم كبائع",
+    nav_inquiries: "الاستفسارات",
+    nav_receipts: "إيصالات الدفع",
+    nav_track_shipment: "تتبع الشحنة",
+    nav_cart_local: "السلة المحلية",
+    nav_cart_global: "سلة التصدير العالمية (Skydo)",
+    tab_dairy: "منتجات الألبان",
+    tab_textiles: "المنسوجات والأقمشة",
+    tab_garments: "الملابس الجاهزة",
+    col_category: "الفئة",
+    col_price: "السعر",
+    col_specs: "رمز النظام المنسق والمواصفات",
+    col_action: "الإجراء",
+    meta_packaging: "📦 التغليف:",
+    meta_moq: "⚡ الحد الأدنى للطلب (MOQ):",
+    meta_hscode: "🌐 رمز النظام المنسق:",
+    btn_rfq_cart: "سلة عروض الأسعار (RFQ)",
+    btn_official_rfq: "طلب عرض سعر رسمي",
+    btn_request_sample: "طلب عينة تجارية",
+    btn_spec_coa: "المواصفات وشهادة التحليل",
+    eng_badge: "بنية تحتية صناعية متكاملة",
+    eng_title: "مركز الهندسة الدقيقة وخدمات التصنيع باستخدام الحاسب الآلي (CNC)",
+    eng_subtitle: "تصنيع مكونات صناعية عالية الدقة في سورات، غوجارات — من القطع بالليزر والأنابيب إلى التشغيل الآلي فائق الدقة بتقنية VMC.",
+    sec_badge: "ضمان تجارة دولية آمنة 100%",
+    sec_subtitle: "معاملات تصدير دولية خالية تماماً من المخاطر مع اعتمادات مستندية مؤكدة (L/C) وفحص الجودة من جهات خارجية SGS وتحويلات بنكية سريعة.",
+    oem_badge: "العلامة التجارية الخاصة والتغليف OEM",
+    oem_title: "حلول التعبئة والتغليف والتصنيع للغير (OEM)",
+    oem_subtitle: "تغليف وتعبئة مخصصة لسلاسل السوبرماركت العالمية وأصحاب العلامات التجارية والموزعين باسمك وشعارك التجاري.",
+    stat_years_label: "سنوات الخبرة",
+    stat_countries_label: "دول التصدير",
+    stat_tons_label: "طن متري تم تصديره",
+    stat_clients_label: "مستوردون عالميون"
   },
   zh: {
     tagline_top: "APEDA与ISO认证优质全球出口商 | 印度古吉拉特邦苏拉特",
@@ -1144,7 +1408,44 @@ export const defaultCompanyProfiles = [
       ifscCode: "HDFC0000240",
       branch: "Ring Road Branch, Surat, Gujarat, India",
       intermediaryBank: "CitiBank N.A. New York (SWIFT: CITIUS33)"
-    }
+    },
+    nav_engineering: "精密工程与数控加工",
+    nav_packaging: "定制包装",
+    nav_security: "贸易安全保障",
+    nav_sister_companies: "旗下姐妹公司:",
+    nav_customer_login: "客户登录",
+    nav_sell_with_us: "成为供应商",
+    nav_inquiries: "商机询盘",
+    nav_receipts: "付款收据",
+    nav_track_shipment: "货物追踪",
+    nav_cart_local: "本地购物车",
+    nav_cart_global: "全球出口购物车 (Skydo)",
+    tab_dairy: "乳制品",
+    tab_textiles: "纺织面料",
+    tab_garments: "成衣服饰",
+    col_category: "产品类别",
+    col_price: "价格 / 费率",
+    col_specs: "海关编码与技术规格",
+    col_action: "操作",
+    meta_packaging: "📦 包装规格:",
+    meta_moq: "⚡ 起订量 (MOQ):",
+    meta_hscode: "🌐 海关编码:",
+    btn_rfq_cart: "询价车 (RFQ)",
+    btn_official_rfq: "正式询价 (RFQ)",
+    btn_request_sample: "申请样品",
+    btn_spec_coa: "规格与检测报告(COA)",
+    eng_badge: "自主工业生产基地",
+    eng_title: "先进精密工程与数控(CNC)加工中心",
+    eng_subtitle: "位于印度古吉拉特邦苏拉特的交钥匙精密零部件制造基地 — 涵盖光纤激光切割、管材加工及微米级VMC立式加工。",
+    sec_badge: "100% 安全国际贸易保障",
+    sec_subtitle: "支持保兑不可撤销信用证(L/C)、第三方SGS装港质量检验及SWIFT安全外汇清算，保障全球买家零风险合作。",
+    oem_badge: "自有品牌贴牌与定制OEM包装",
+    oem_title: "全方位定制包装与OEM代工解决方案",
+    oem_subtitle: "面向全球连锁超市、品牌商及批发商，提供采用您自有品牌名称、Logo、条形码和定制规格的高端出口包装服务。",
+    stat_years_label: "年行业深耕经验",
+    stat_countries_label: "个出口目的国",
+    stat_tons_label: "吨累计出口总量",
+    stat_clients_label: "位全球优质进口商"
   },
   {
     id: "comp_2",

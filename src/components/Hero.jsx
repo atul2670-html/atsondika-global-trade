@@ -21,13 +21,17 @@ export default function Hero() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentTitle = typeof heroBanner.title === 'object'
-    ? (heroBanner.title[currentLang] || heroBanner.title['en'] || t.hero_title)
-    : (heroBanner.title || t.hero_title);
+  const currentTitle = typeof heroBanner?.title === 'object'
+    ? (heroBanner.title[currentLang] || t.hero_title || heroBanner.title['en'] || '')
+    : (t.hero_title || heroBanner?.title || '');
 
-  const currentSubtitle = typeof heroBanner.subtitle === 'object'
-    ? (heroBanner.subtitle[currentLang] || heroBanner.subtitle['en'] || t.hero_subtitle)
-    : (heroBanner.subtitle || t.hero_subtitle);
+  const currentSubtitle = typeof heroBanner?.subtitle === 'object'
+    ? (heroBanner.subtitle[currentLang] || t.hero_subtitle || heroBanner.subtitle['en'] || '')
+    : (t.hero_subtitle || heroBanner?.subtitle || '');
+
+  const currentBadge = typeof heroBanner?.badge === 'object'
+    ? (heroBanner.badge[currentLang] || t.hero_badge || heroBanner.badge['en'] || '')
+    : (t.hero_badge || heroBanner?.badge || '');
 
   return (
     <section className="hero" id="home">
@@ -35,7 +39,7 @@ export default function Hero() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
             <div className="hero-badge" style={{ marginBottom: 0 }}>
-              <span>✨</span> {heroBanner.badge}
+              <span>✨</span> {currentBadge}
             </div>
 
             {/* Admin Edit Hero Banner Note Button (Only visible to Admin) */}
