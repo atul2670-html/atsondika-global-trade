@@ -21,17 +21,38 @@ export default function Hero() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentTitle = typeof heroBanner?.title === 'object'
-    ? (heroBanner.title[currentLang] || t.hero_title || heroBanner.title['en'] || '')
-    : (t.hero_title || heroBanner?.title || '');
+    const currentTitle = (() => {
+    if (typeof heroBanner?.title === 'object') {
+      const val = heroBanner.title[currentLang];
+      const enVal = heroBanner.title.en;
+      if (val && (currentLang === 'en' || (val !== enVal && !val.includes('Connecting Premium Quality')))) {
+        return val;
+      }
+    }
+    return t.hero_title || (typeof heroBanner?.title === 'object' ? heroBanner.title.en : heroBanner?.title) || '';
+  })();
 
-  const currentSubtitle = typeof heroBanner?.subtitle === 'object'
-    ? (heroBanner.subtitle[currentLang] || t.hero_subtitle || heroBanner.subtitle['en'] || '')
-    : (t.hero_subtitle || heroBanner?.subtitle || '');
+  const currentSubtitle = (() => {
+    if (typeof heroBanner?.subtitle === 'object') {
+      const val = heroBanner.subtitle[currentLang];
+      const enVal = heroBanner.subtitle.en;
+      if (val && (currentLang === 'en' || (val !== enVal && !val.includes('Trusted Indian Exporter')))) {
+        return val;
+      }
+    }
+    return t.hero_subtitle || (typeof heroBanner?.subtitle === 'object' ? heroBanner.subtitle.en : heroBanner?.subtitle) || '';
+  })();
 
-  const currentBadge = typeof heroBanner?.badge === 'object'
-    ? (heroBanner.badge[currentLang] || t.hero_badge || heroBanner.badge['en'] || '')
-    : (t.hero_badge || heroBanner?.badge || '');
+  const currentBadge = (() => {
+    if (typeof heroBanner?.badge === 'object') {
+      const val = heroBanner.badge[currentLang];
+      const enVal = heroBanner.badge.en;
+      if (val && (currentLang === 'en' || val !== enVal)) {
+        return val;
+      }
+    }
+    return t.hero_badge || (typeof heroBanner?.badge === 'object' ? heroBanner.badge.en : heroBanner?.badge) || '';
+  })();
 
   return (
     <section className="hero" id="home">

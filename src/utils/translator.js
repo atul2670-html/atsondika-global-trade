@@ -104,7 +104,7 @@ export const MASTER_TRADE_GRAMMAR_DICTIONARY = [
 
   // Specifications & Descriptors
   {
-    en: /Hi[- ]quality premium product|High[- ]quality premium product|Hi quality premium product|High quality premium product/gi,
+    en: /Hi[- ]quality premium product|High[- ]quality premium product|Hi quality premium product|High quality premium product|ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ|ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ|ઉચ્ચ ગુણવત્તા/gi,
     gu: 'ઉચ્ચ ગુણવત્તાવાળી પ્રીમિયમ પ્રોડક્ટ',
     hi: 'उच्च गुणवत्ता वाला प्रीमियम उत्पाद',
     fr: 'Produit Premium de Haute Qualité',

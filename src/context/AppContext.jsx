@@ -691,9 +691,21 @@ export function AppProvider({ children }) {
           ? { ...defaultHeroBanner.title, en: stored.title }
           : { ...defaultHeroBanner.title, ...stored.title };
 
+        ['gu', 'hi', 'fr', 'es', 'ar', 'zh'].forEach(l => {
+          if (!titleObj[l] || titleObj[l] === titleObj.en || titleObj[l].includes('Connecting Premium Quality')) {
+            titleObj[l] = defaultHeroBanner.title[l] || titleObj[l];
+          }
+        });
+
         const subObj = typeof stored.subtitle === 'string'
           ? { ...defaultHeroBanner.subtitle, en: stored.subtitle }
           : { ...defaultHeroBanner.subtitle, ...stored.subtitle };
+
+        ['gu', 'hi', 'fr', 'es', 'ar', 'zh'].forEach(l => {
+          if (!subObj[l] || subObj[l] === subObj.en || subObj[l].includes('Trusted Indian Exporter')) {
+            subObj[l] = defaultHeroBanner.subtitle[l] || subObj[l];
+          }
+        });
 
         const badgeObj = typeof stored.badge === 'string'
           ? (defaultHeroBanner.badge[stored.badge] ? defaultHeroBanner.badge : { ...defaultHeroBanner.badge, en: stored.badge })
