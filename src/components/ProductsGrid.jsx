@@ -83,7 +83,8 @@ export default function ProductsGrid() {
 
   // Deduplicate custom main category tabs for the active company
   const customMains = [];
-  const seenCatNames = new Set();
+  const seenCatIds = new Set();
+  const seenCatTitles = new Set();
   const defaultFilterSet = new Set(defaultTabs.map(t => t.filter));
 
   customProductsList
@@ -91,10 +92,10 @@ export default function ProductsGrid() {
     .filter(p => (p.companyId || 'comp_1') === activeCompId)
     .forEach(p => {
       let catSlug = (p.category || p.id || '').trim().toLowerCase();
-      if (!catSlug || catSlug.startsWith('data:') || catSlug.startsWith('http') || defaultFilterSet.has(catSlug)) return;
+      if (!catSlug || catSlug.startsWith('data:') || catSlug.startsWith('http')) return;
 
-      let titleEn = (p.names?.en || '').trim();
-      let titleGu = (p.names?.gu || '').trim();
+      let titleEn = (p.names?.en || p.name || '').trim();
+      let titleGu = (p.names?.gu || p.name || '').trim();
       if (titleEn.startsWith('data:') || titleGu.startsWith('data:')) return;
 
       const normTitle = (titleEn || titleGu || catSlug).toLowerCase();
@@ -108,8 +109,12 @@ export default function ProductsGrid() {
         return;
       }
 
-      if (!seenCatNames.has(catSlug)) {
-        seenCatNames.add(catSlug);
+      // Overlap check with defaultTabs only applies to non-custom categories
+      if (defaultFilterSet.has(catSlug) && !p.isCustom) return;
+
+      if (!seenCatIds.has(p.id) && !seenCatTitles.has(normTitle)) {
+        seenCatIds.add(p.id);
+        seenCatTitles.add(normTitle);
         customMains.push(p);
       }
     });
@@ -118,6 +123,7 @@ export default function ProductsGrid() {
 
   const getSubProductsForCategory = (catFilter) => {
     if (!catFilter || catFilter === 'all') return [];
+    const targetMain = customMains.find(m => m.category === catFilter || m.id === catFilter);
     return allProds.filter(p => {
       if (p.isSub === false) return false;
       const titleEn = (p.names?.en || p.name || '').trim().toLowerCase();
@@ -126,6 +132,10 @@ export default function ProductsGrid() {
 
       if (tradeMode === 'local' && p.enableLocalTrade === false) return false;
       if (tradeMode !== 'local' && p.enableGlobalTrade === false) return false;
+
+      if (targetMain) {
+        if (p.parentId === targetMain.id || p.parentId === targetMain.category || (p.category && targetMain.category && p.category === targetMain.category)) return true;
+      }
       if (p.category === catFilter || p.parentId === catFilter) return true;
       const normTitle = (((p.names?.en || '') + ' ' + (p.names?.gu || '') + ' ' + (p.name || '')).toLowerCase());
       if (normTitle.includes('chocolate') || normTitle.includes('sweet') || normTitle.includes('confectionery')) {
@@ -135,9 +145,16 @@ export default function ProductsGrid() {
     });
   };
   const q = searchFilterQuery.toLowerCase().trim();
+  const currentTargetMain = customMains.find(m => m.category === currentCategory || m.id === currentCategory);
   let filtered = currentCategory === 'all'
     ? allProds.filter(p => p.isSub !== false)
-    : allProds.filter(p => p.isSub !== false && (p.category === currentCategory || p.parentId === currentCategory));
+    : allProds.filter(p => {
+        if (p.isSub === false) return false;
+        if (currentTargetMain) {
+          if (p.parentId === currentTargetMain.id || p.parentId === currentTargetMain.category || (p.category && currentTargetMain.category && p.category === currentTargetMain.category)) return true;
+        }
+        return p.category === currentCategory || p.parentId === currentCategory;
+      });
 
   // Filter products by Trade Mode scope (Global Export Trade vs Local B2C Retail Trade)
   filtered = filtered.filter(p => {
@@ -594,21 +611,23 @@ export default function ProductsGrid() {
             const isImageIcon = p.icon && (p.icon.startsWith('data:image') || p.icon.startsWith('http') || p.icon.includes('/'));
             const displayTitle = (rawTitle && rawTitle.startsWith(iconEmoji)) ? rawTitle : (isImageIcon ? rawTitle : `${iconEmoji} ${rawTitle}`);
             const title = displayTitle;
-            const subProds = getSubProductsForCategory(p.category);
-            const isHovered = hoveredTab === p.category;
+            const tabKey = p.category || p.id;
+            const isTabActive = currentCategory === tabKey || currentCategory === p.id || (p.category && currentCategory === p.category);
+            const subProds = getSubProductsForCategory(tabKey);
+            const isHovered = hoveredTab === tabKey || hoveredTab === p.id;
 
             return (
               <div
                 key={p.id}
                 style={{ position: 'relative', display: 'inline-block', zIndex: isHovered ? 500 : 1 }}
-                onMouseEnter={() => setHoveredTab(p.category)}
+                onMouseEnter={() => setHoveredTab(tabKey)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
                 <button
                   type="button"
-                  className={`tab-btn ${currentCategory === p.category ? 'active' : ''}`}
+                  className={`tab-btn ${isTabActive ? 'active' : ''}`}
                   onClick={() => {
-                    setCurrentCategory(p.category);
+                    setCurrentCategory(tabKey);
                     setSearchFilterQuery('');
                   }}
                 >
@@ -700,7 +719,7 @@ export default function ProductsGrid() {
                             key={subP.id}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setCurrentCategory(p.category);
+                              setCurrentCategory(tabKey);
                               setSearchFilterQuery(enTitle || subTitle);
                               setHoveredTab(null);
                               setTimeout(() => {

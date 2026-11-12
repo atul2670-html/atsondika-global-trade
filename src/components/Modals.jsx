@@ -1152,11 +1152,18 @@ export default function Modals() {
       ];
     }
 
+    const delSet = new Set(deletedBuiltInIds || []);
+    // Filter built-in categories FIRST so deletedBuiltInIds NEVER touches custom categories!
+    const filteredBuiltIns = mainCategories.filter(m => !delSet.has(m.id) && !delSet.has(m.category));
+
+    const result = [...filteredBuiltIns];
+    const seenIds = new Set(filteredBuiltIns.map(m => m.id));
+
     // Add custom main categories created for this active company
-    const customMains = customProductsList.filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId);
+    const customMains = (customProductsList || []).filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId && !delSet.has(p.id));
     customMains.forEach(cm => {
-      let titleEn = (cm.names?.en || cm.names?.gu || '').trim();
-      let titleGu = (cm.names?.gu || cm.names?.en || '').trim();
+      let titleEn = (cm.names?.en || cm.names?.gu || cm.name || '').trim();
+      let titleGu = (cm.names?.gu || cm.names?.en || cm.name || '').trim();
       if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
       if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
 
@@ -1166,19 +1173,20 @@ export default function Modals() {
         iconVal = getSmartCategoryIcon(catSlug, titleEn) || '🏷️';
       }
 
-      if (!mainCategories.some(m => m.category === catSlug || m.id === cm.id)) {
-        mainCategories.push({
+      if (!seenIds.has(cm.id)) {
+        seenIds.add(cm.id);
+        result.push({
           id: cm.id,
           category: catSlug,
-          nameGu: titleGu,
-          nameEn: titleEn,
-          icon: iconVal || '🏷️'
+          nameGu: titleGu || titleEn,
+          nameEn: titleEn || titleGu,
+          icon: iconVal || '🏷️',
+          isCustom: true
         });
       }
     });
 
-    const delSet = new Set(deletedBuiltInIds || []);
-    return mainCategories.filter(m => !delSet.has(m.id) && !delSet.has(m.category));
+    return result;
   };
 
   // Sync state when editing hero
@@ -6354,7 +6362,7 @@ export default function Modals() {
                           }
 
                           return (
-                            <option key={cat.id} value={cat.category}>
+                            <option key={cat.id} value={cat.category || cat.id}>
                               {safeIcon} {cleanName}
                             </option>
                           );

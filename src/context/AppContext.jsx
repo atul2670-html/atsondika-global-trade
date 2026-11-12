@@ -982,29 +982,43 @@ export function AppProvider({ children }) {
         copy.specifications = { ...copy.spec };
       }
 
-      // Rule 0b: Clean up corrupted or missing product names
-      if (enTitle.includes('chocolate')) {
-        copy.names = { en: 'Chocolates', gu: 'ચોકલેટ', hi: 'चॉकलेट', fr: 'Chocolats' };
-        if (!copy.category || copy.category === 'textiles') copy.category = 'dairy';
-      } else if (enTitle.includes('paper bag') || enTitle.includes('packaging material')) {
-        copy.category = 'packaging';
-        if (!copy.names?.hi || copy.names.hi === copy.names.en) {
-          copy.names = {
-            en: copy.names?.en || 'Paper Bag & Box Packaging Material',
-            gu: 'પેપર બેગ અને બોક્સનું પેકેજિંગ મટીરીયલ',
-            hi: 'पेपर बैग और बॉक्स पैकेजिंग सामग्री',
-            fr: 'Matériel d\'emballage sacs en papier et boîtes'
-          };
+      // Rule 0b: Clean up corrupted or missing product names ONLY for non-custom sub-products under comp_1
+      if (copy.isSub !== false && compId === 'comp_1' && !copy.isCustom) {
+        if (enTitle.includes('chocolate')) {
+          copy.names = { en: 'Chocolates', gu: 'ચોકલેટ', hi: 'चॉकलेट', fr: 'Chocolats' };
+          if (!copy.category || copy.category === 'textiles') copy.category = 'dairy';
+        } else if (enTitle.includes('paper bag') || enTitle.includes('packaging material')) {
+          copy.category = 'packaging';
+          if (!copy.names?.hi || copy.names.hi === copy.names.en) {
+            copy.names = {
+              en: copy.names?.en || 'Paper Bag & Box Packaging Material',
+              gu: 'પેપર બેગ અને બોક્સનું પેકેજિંગ મટીરીયલ',
+              hi: 'पेपर बैग और बॉक्स पैकेजिंग सामग्री',
+              fr: 'Matériel d\'emballage sacs en papier et boîtes'
+            };
+          }
+        } else if (enTitle.includes('cnc') || enTitle.includes('machine')) {
+          if (!cat.includes('machinery')) copy.category = 'new_machinery';
+          if (!copy.names?.hi || copy.names.hi === copy.names.en) {
+            copy.names = {
+              en: copy.names?.en || 'CNC Machine',
+              gu: 'સી.એન.સી. મશીન',
+              hi: 'सीएनसी मशीन',
+              fr: 'Machine CNC'
+            };
+          }
         }
-      } else if (enTitle.includes('cnc') || enTitle.includes('machine')) {
-        if (!cat.includes('machinery')) copy.category = 'new_machinery';
-        if (!copy.names?.hi || copy.names.hi === copy.names.en) {
-          copy.names = {
-            en: copy.names?.en || 'CNC Machine',
-            gu: 'સી.એન.સી. મશીન',
-            hi: 'सीएनसी मशीन',
-            fr: 'Machine CNC'
-          };
+      }
+
+      // Auto-heal custom main categories: Never allow custom main categories to have colliding built-in category slugs
+      if (!copy.isSub) {
+        const rawEn = (copy.names?.en || copy.name || '').trim();
+        if (
+          !copy.category ||
+          ['new_machinery', 'used_machinery', 'industrial', 'packaging', 'dairy', 'agro', 'textiles', 'garments'].includes(copy.category)
+        ) {
+          const autoSlug = rawEn ? rawEn.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : '';
+          copy.category = autoSlug ? `cat_${autoSlug}` : `cat_${copy.id}`;
         }
       }
 
@@ -2274,17 +2288,17 @@ export function AppProvider({ children }) {
       const seenNames = new Set(filteredMaster.map(c => c.nameEn.toLowerCase()));
 
       (customProductsList || [])
-        .filter(cm => cm && !cm.isSub && !deletedSet.has(cm.id) && !deletedSet.has(cm.category))
+        .filter(cm => cm && !cm.isSub && !deletedSet.has(cm.id))
         .forEach(cm => {
           const catSlug = (cm.category || cm.id || '').trim();
           const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
           const titleGu = (cm.names?.gu || cm.names?.en || cm.name || catSlug).trim();
           const normName = titleEn.toLowerCase();
-          if (catSlug && !seenIds.has(catSlug) && !seenNames.has(normName)) {
-            seenIds.add(catSlug);
+          if (catSlug && !seenIds.has(cm.id) && !seenNames.has(normName)) {
+            seenIds.add(cm.id);
             seenNames.add(normName);
             filteredMaster.push({
-              id: catSlug,
+              id: cm.id,
               category: catSlug,
               nameEn: titleEn,
               nameGu: titleGu,
@@ -2335,11 +2349,11 @@ export function AppProvider({ children }) {
       if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
       const normName = titleEn.toLowerCase();
 
-      if (catSlug && !seenResultIds.has(catSlug) && !seenResultNames.has(normName)) {
-        seenResultIds.add(catSlug);
+      if (catSlug && !seenResultIds.has(cm.id) && !seenResultNames.has(normName)) {
+        seenResultIds.add(cm.id);
         seenResultNames.add(normName);
         resultCategories.push({
-          id: catSlug,
+          id: cm.id,
           category: catSlug,
           nameEn: titleEn,
           nameGu: titleGu,
