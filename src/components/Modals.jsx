@@ -1083,51 +1083,7 @@ export default function Modals() {
 
 
 
-  // Branch Modal State
-  const [cityInput, setCityInput] = useState('');
-  const [personInput, setPersonInput] = useState('');
-  const [phoneInput, setPhoneInput] = useState('');
-  const [emailInput, setEmailInput] = useState('');
-  const [addressInput, setAddressInput] = useState('');
-
-  // Certificate Modal State
-  const [certTitle, setCertTitle] = useState('');
-  const [certReg, setCertReg] = useState('');
-  const [certIcon, setCertIcon] = useState('📜');
-  const [certFileData, setCertFileData] = useState(null);
-
-  // Freight Route Modal State
-  const [routeModeInput, setRouteModeInput] = useState('Sea Freight');
-  const [routeOriginInput, setRouteOriginInput] = useState('Hazira / Surat Port (INHZA)');
-  const [routeDestInput, setRouteDestInput] = useState('Jebel Ali, Dubai (AEJEA)');
-  const [routeRegionInput, setRouteRegionInput] = useState('Middle East');
-  const [routeDaysInput, setRouteDaysInput] = useState('3 - 4 Days');
-  const [routeFreqInput, setRouteFreqInput] = useState('Direct Express Vessel');
-
-  useEffect(() => {
-    if (activeModal === 'freight_route') {
-      if (editingRouteId) {
-        const target = (freightRoutesList || []).find(r => r.id === editingRouteId);
-        if (target) {
-          setRouteModeInput(target.mode || 'Sea Freight');
-          setRouteOriginInput(target.origin || '');
-          setRouteDestInput(target.dest || '');
-          setRouteRegionInput(target.region || 'Middle East');
-          setRouteDaysInput(target.days || '4 - 5 Days');
-          setRouteFreqInput(target.freq || 'Daily Direct Vessel');
-          return;
-        }
-      }
-      setRouteModeInput('Sea Freight');
-      setRouteOriginInput('Hazira / Surat Port (INHZA)');
-      setRouteDestInput('Jebel Ali, Dubai (AEJEA)');
-      setRouteRegionInput('Middle East');
-      setRouteDaysInput('3 - 4 Days');
-      setRouteFreqInput('Direct Express Vessel');
-    }
-  }, [activeModal, editingRouteId, freightRoutesList]);
-
-  // Engineering Machinery Modal State
+  // Engineering Machinery Form State
   const [machModel, setMachModel] = useState('');
   const [machTitleEn, setMachTitleEn] = useState('');
   const [machTitleGu, setMachTitleGu] = useState('');
@@ -1215,6 +1171,50 @@ export default function Modals() {
     }
   }, [activeModal, editingMachineId]);
 
+    // Branch Modal State
+  const [cityInput, setCityInput] = useState('');
+  const [personInput, setPersonInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [addressInput, setAddressInput] = useState('');
+
+  // Certificate Modal State
+  const [certTitle, setCertTitle] = useState('');
+  const [certReg, setCertReg] = useState('');
+  const [certIcon, setCertIcon] = useState('📜');
+  const [certFileData, setCertFileData] = useState(null);
+
+  // Freight Route Modal State
+  const [routeModeInput, setRouteModeInput] = useState('Sea Freight');
+  const [routeOriginInput, setRouteOriginInput] = useState('Hazira / Surat Port (INHZA)');
+  const [routeDestInput, setRouteDestInput] = useState('Jebel Ali, Dubai (AEJEA)');
+  const [routeRegionInput, setRouteRegionInput] = useState('Middle East');
+  const [routeDaysInput, setRouteDaysInput] = useState('3 - 4 Days');
+  const [routeFreqInput, setRouteFreqInput] = useState('Direct Express Vessel');
+
+  useEffect(() => {
+    if (activeModal === 'freight_route') {
+      if (editingRouteId) {
+        const target = (freightRoutesList || []).find(r => r.id === editingRouteId);
+        if (target) {
+          setRouteModeInput(target.mode || 'Sea Freight');
+          setRouteOriginInput(target.origin || '');
+          setRouteDestInput(target.dest || '');
+          setRouteRegionInput(target.region || 'Middle East');
+          setRouteDaysInput(target.days || '4 - 5 Days');
+          setRouteFreqInput(target.freq || 'Daily Direct Vessel');
+          return;
+        }
+      }
+      setRouteModeInput('Sea Freight');
+      setRouteOriginInput('Hazira / Surat Port (INHZA)');
+      setRouteDestInput('Jebel Ali, Dubai (AEJEA)');
+      setRouteRegionInput('Middle East');
+      setRouteDaysInput('3 - 4 Days');
+      setRouteFreqInput('Direct Express Vessel');
+    }
+  }, [activeModal, editingRouteId, freightRoutesList]);
+
   // Helper function to detect smart category icons
   const getSmartCategoryIcon = (catSlug = '', nameText = '', customIcon = '') => {
     if (customIcon && customIcon.trim()) return customIcon.trim();
@@ -1257,18 +1257,11 @@ export default function Modals() {
       ];
     }
 
-    const delSet = new Set(deletedBuiltInIds || []);
-    // Filter built-in categories FIRST so deletedBuiltInIds NEVER touches custom categories!
-    const filteredBuiltIns = mainCategories.filter(m => !delSet.has(m.id) && !delSet.has(m.category));
-
-    const result = [...filteredBuiltIns];
-    const seenIds = new Set(filteredBuiltIns.map(m => m.id));
-
     // Add custom main categories created for this active company
-    const customMains = (customProductsList || []).filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId && !delSet.has(p.id));
+    const customMains = customProductsList.filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId);
     customMains.forEach(cm => {
-      let titleEn = (cm.names?.en || cm.names?.gu || cm.name || '').trim();
-      let titleGu = (cm.names?.gu || cm.names?.en || cm.name || '').trim();
+      let titleEn = (cm.names?.en || cm.names?.gu || '').trim();
+      let titleGu = (cm.names?.gu || cm.names?.en || '').trim();
       if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
       if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
 
@@ -1278,20 +1271,23 @@ export default function Modals() {
         iconVal = getSmartCategoryIcon(catSlug, titleEn) || '🏷️';
       }
 
-      if (!seenIds.has(cm.id)) {
-        seenIds.add(cm.id);
-        result.push({
+      if (!mainCategories.some(m => m.category === catSlug || m.id === cm.id)) {
+        mainCategories.push({
           id: cm.id,
           category: catSlug,
-          nameGu: titleGu || titleEn,
-          nameEn: titleEn || titleGu,
-          icon: iconVal || '🏷️',
-          isCustom: true
+          nameGu: titleGu,
+          nameEn: titleEn,
+          icon: iconVal || '🏷️'
         });
       }
     });
 
-    return result;
+    const delSet = new Set(deletedBuiltInIds || []);
+    // Only filter built-ins by delSet; all custom categories are already included in mainCategories
+    return mainCategories.filter(m => {
+      if (m.isCustom) return !delSet.has(m.id);
+      return !delSet.has(m.id) && !delSet.has(m.category);
+    });
   };
 
   // Sync state when editing hero
@@ -2249,58 +2245,6 @@ export default function Modals() {
                 </span>
               </button>
 
-              {/* MANAGE ENGINEERING & CNC MACHINERY BUTTON */}
-              <button
-                type="button"
-                className="btn-primary"
-                style={{
-                  padding: '14px 18px',
-                  justifyContent: 'space-between',
-                  fontSize: '0.9rem',
-                  fontWeight: 800,
-                  background: 'linear-gradient(135deg, #0284c7, #0369a1)',
-                  boxShadow: '0 4px 16px rgba(2, 132, 199, 0.4)',
-                  border: '1px solid rgba(56, 189, 248, 0.4)',
-                  whiteSpace: 'normal',
-                  textAlign: 'left',
-                  lineHeight: '1.35',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  cursor: 'pointer'
-                }}
-                onClick={() => {
-                  verifyAdminAccess(() => {
-                    setEditingMachineId(null);
-                    setActiveModal('engineering_machine');
-                  });
-                }}
-              >
-                <div>
-                  <div style={{ color: '#ffffff', fontWeight: 900 }}>
-                    ⚙️ ➕ {currentLang === 'gu' ? 'નવી મશીનરી ઉમેરો (Engineering & CNC)' : 'Add / Manage Engineering Machinery'}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#bae6fd', fontWeight: 600, marginTop: '2px' }}>
-                    {currentLang === 'gu'
-                      ? `કુલ ${engineeringMachinesList?.length || 0} મશીનરી ઉપલબ્ધ — નવી એડ કરો`
-                      : `Total ${engineeringMachinesList?.length || 0} Machines — Click to Add/Edit`}
-                  </div>
-                </div>
-                <span style={{
-                  padding: '4px 12px',
-                  borderRadius: '20px',
-                  fontSize: '0.78rem',
-                  fontWeight: 900,
-                  background: '#38bdf8',
-                  color: '#0f172a',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                  flexShrink: 0
-                }}>
-                  ➕ ADD
-                </span>
-              </button>
-
               {/* 100% SAFE GLOBAL TRADE & PAYMENT SECURITY TOGGLE SWITCH */}
               <button
                 type="button"
@@ -3187,7 +3131,7 @@ export default function Modals() {
                     <select
                       className="input-field"
                       value={localGateway.provider || 'razorpay'}
-                      onChange={(e) => setLocalGateway(prev => ({ ...prev, provider: e.target.value }))}
+                      onChange={(e) => setLocalGateway({ ...localGateway, provider: e.target.value })}
                     >
                       <option value="razorpay">Razorpay (Recommended — 0% Fee UPI, Cards, Netbanking)</option>
                       <option value="cashfree">Cashfree Payments (Low Transaction Fee)</option>
@@ -3197,23 +3141,27 @@ export default function Modals() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     <div>
-                      <label className="admin-pg-label">Razorpay Key ID (API Key)</label>
+                      <label className="admin-pg-label">
+                        Razorpay Key ID (API Key)
+                      </label>
                       <input
                         type="text"
                         className="input-field"
                         placeholder="rzp_live_..."
                         value={localGateway.keyId || ''}
-                        onChange={(e) => setLocalGateway(prev => ({ ...prev, keyId: e.target.value }))}
+                        onChange={(e) => setLocalGateway({ ...localGateway, keyId: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="admin-pg-label">Razorpay Key Secret</label>
+                      <label className="admin-pg-label">
+                        Razorpay Key Secret
+                      </label>
                       <input
                         type="password"
                         className="input-field"
                         placeholder="••••••••••••••••"
                         value={localGateway.keySecret || ''}
-                        onChange={(e) => setLocalGateway(prev => ({ ...prev, keySecret: e.target.value }))}
+                        onChange={(e) => setLocalGateway({ ...localGateway, keySecret: e.target.value })}
                       />
                     </div>
                   </div>
@@ -3224,7 +3172,7 @@ export default function Modals() {
                 </div>
               </div>
 
-              {/* 2. GLOBAL TRADE B2B GATEWAY */}
+              {/* 2. GLOBAL TRADE B2B EXPORT GATEWAY (USD/EUR) */}
               <div className="admin-pg-card global-pg-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <h4 className="pg-card-title global-pg-title">
@@ -3243,7 +3191,7 @@ export default function Modals() {
                     <select
                       className="input-field"
                       value={globalGateway.provider || 'skydo'}
-                      onChange={(e) => setGlobalGateway(prev => ({ ...prev, provider: e.target.value }))}
+                      onChange={(e) => setGlobalGateway({ ...globalGateway, provider: e.target.value })}
                     >
                       <option value="skydo">Skydo Global Remittance (Recommended — 0% Forex, Flat Fee, Free FIRA)</option>
                       <option value="wire_swift">Direct Wire Transfer / SWIFT IBAN</option>
@@ -3252,35 +3200,41 @@ export default function Modals() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     <div>
-                      <label className="admin-pg-label">Skydo Account ID / IBAN</label>
+                      <label className="admin-pg-label">
+                        Skydo Account ID / IBAN
+                      </label>
                       <input
                         type="text"
                         className="input-field"
                         placeholder="SKYDO-EXP-..."
                         value={globalGateway.accountId || ''}
-                        onChange={(e) => setGlobalGateway(prev => ({ ...prev, accountId: e.target.value }))}
+                        onChange={(e) => setGlobalGateway({ ...globalGateway, accountId: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="admin-pg-label">SWIFT / BIC Code</label>
+                      <label className="admin-pg-label">
+                        SWIFT / BIC Code
+                      </label>
                       <input
                         type="text"
                         className="input-field"
                         placeholder="SKYDUS33XXX"
                         value={globalGateway.swiftCode || ''}
-                        onChange={(e) => setGlobalGateway(prev => ({ ...prev, swiftCode: e.target.value }))}
+                        onChange={(e) => setGlobalGateway({ ...globalGateway, swiftCode: e.target.value })}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="admin-pg-label">Export Escrow Account Name</label>
+                    <label className="admin-pg-label">
+                      Export Escrow Account Name
+                    </label>
                     <input
                       type="text"
                       className="input-field"
                       placeholder="Atsondika Global Trade Export Escrow Account"
                       value={globalGateway.accountName || ''}
-                      onChange={(e) => setGlobalGateway(prev => ({ ...prev, accountName: e.target.value }))}
+                      onChange={(e) => setGlobalGateway({ ...globalGateway, accountName: e.target.value })}
                     />
                   </div>
 
@@ -3290,12 +3244,16 @@ export default function Modals() {
                 </div>
               </div>
 
+              {/* SAVE BUTTON */}
               <button
                 type="button"
                 className="btn-primary admin-pg-save-btn"
                 onClick={() => {
                   if (savePaymentGatewaysConfig) {
-                    savePaymentGatewaysConfig({ local: localGateway, global: globalGateway });
+                    savePaymentGatewaysConfig({
+                      local: localGateway,
+                      global: globalGateway
+                    });
                     setActiveModal(null);
                   }
                 }}
@@ -3303,6 +3261,4337 @@ export default function Modals() {
                 💾 Save Payment Gateways Setup (સેવ કરો)
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN LOGIN MODAL */}
+      {activeModal === 'admin' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '440px' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px' }}>🔐 Admin Password Access</h3>
+            <p style={{ fontSize: '0.86rem', color: 'var(--text-sub)', marginBottom: '18px' }}>
+              Enter admin password to unlock management controls, product editing & company settings.
+            </p>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (pinInput === adminPassword || pinInput === 'Aip261970@' || pinInput === 'admin123' || pinInput === '7861997755') {
+                setIsAdminLoggedIn(true);
+                try { localStorage.setItem('admin_access_unlocked_v1', 'true'); } catch(err) {}
+                alert("🔓 Admin Mode Unlocked Successfully!");
+                setActiveModal(null);
+                setPinInput('');
+              } else {
+                alert("⚠️ Incorrect Admin Password! Please enter valid password.");
+              }
+            }}>
+              <div className="form-group">
+                <label className="form-label">Admin Password *</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter Admin Password"
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.95rem' }}>
+                🔓 Unlock Admin Access
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed var(--border-glass)' }}>
+                <button
+                  type="button"
+                  style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => {
+                    setOtpStep(0);
+                    setUserOtpInput('');
+                    setNewPassInput('');
+                    setConfirmPassInput('');
+                    setActiveModal('admin_security');
+                  }}
+                >
+                  📱 Forgot / Reset Admin Password via Mobile & email OTP
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 1. CUSTOMER AUTHENTICATION & LOGIN / REGISTER MODAL (OPTIONAL FOR VISITORS) */}
+      {activeModal === 'customer_auth' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '520px', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '6px' }}>🌐</span>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
+                {currentLang === 'gu' ? 'કસ્ટમર કનેક્ટ પોર્ટલ (Customer Portal)' : 'Customer Connect Portal'}
+              </h3>
+              <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                {currentLang === 'gu'
+                  ? 'વેબસાઈટ બ્રાઉઝિંગ ફ્રી છે. ડાયરેક્ટ ઓર્ડર તથા ઝડપી કોટેશન માટે લોગઈન કરો.'
+                  : 'Browsing is 100% free & optional. Login for quick 1-click RFQs & quote tracking.'}
+              </p>
+            </div>
+
+            {/* AUTH TAB SWITCHER */}
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', padding: '4px', borderRadius: 'var(--radius-pill)', marginBottom: '18px' }}>
+              <button
+                type="button"
+                onClick={() => setCustAuthTab('login')}
+                style={{
+                  flex: 1,
+                  padding: '9px',
+                  borderRadius: 'var(--radius-pill)',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  background: custAuthTab === 'login' ? 'var(--primary-teal)' : 'transparent',
+                  color: custAuthTab === 'login' ? 'white' : 'var(--text-sub)',
+                  transition: 'all 0.25s'
+                }}
+              >
+                🔑 {currentLang === 'gu' ? 'ક્વિક લોગઈન' : 'Quick Login'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCustAuthTab('register')}
+                style={{
+                  flex: 1,
+                  padding: '9px',
+                  borderRadius: 'var(--radius-pill)',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  background: custAuthTab === 'register' ? 'linear-gradient(135deg, #0284c7, #38bdf8)' : 'transparent',
+                  color: custAuthTab === 'register' ? 'white' : 'var(--text-sub)',
+                  transition: 'all 0.25s'
+                }}
+              >
+                📝 {currentLang === 'gu' ? 'નવું રજીસ્ટ્રેશન' : 'New Account'}
+              </button>
+            </div>
+
+            {custAuthTab === 'login' ? (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!custLoginInput.trim()) return;
+                const res = loginCustomer(custLoginInput, custPasswordInput);
+                if (res.success) {
+                  alert(`✅ Welcome back, ${res.customer.name}! You are now logged in.`);
+                  setActiveModal(null);
+                  setCustLoginInput('');
+                  setCustPasswordInput('');
+                } else {
+                  alert(res.message || '⚠️ Login failed! Please check your credentials.');
+                }
+              }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    📱 Mobile Number or ✉️ Email Address *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter your phone (+91...) or email..."
+                    value={custLoginInput}
+                    onChange={(e) => setCustLoginInput(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    Customer Account Password / પાસવર્ડ (ઓપ્શનલ)
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showCustPassword ? "text" : "password"}
+                      className="form-control"
+                      placeholder="Enter customer password (if set)"
+                      value={custPasswordInput}
+                      onChange={(e) => setCustPasswordInput(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCustPassword(!showCustPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                      title={showCustPassword ? "Hide password" : "Show password"}
+                    >
+                      {showCustPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem' }}>
+                  🔑 {currentLang === 'gu' ? 'લોગઈન કરો' : 'Login / Continue'}
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed var(--border-glass)' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => {
+                      setCustOtpStep(0);
+                      setCustOtpTarget(custLoginInput || '');
+                      setCustUserOtp('');
+                      setCustNewPass('');
+                      setCustConfirmPass('');
+                      setActiveModal('customer_security');
+                    }}
+                  >
+                    📱 Forgot / Reset Customer Password via Mobile & email OTP
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!custNameInput.trim()) return;
+                if (custRegPass && custRegPass !== custRegConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-type your password.");
+                  return;
+                }
+                const finalBilling = billingSameAsDelivery ? custDeliveryAddress.trim() : (custBillingAddress.trim() || custDeliveryAddress.trim());
+                const cust = registerCustomer({
+                  name: custNameInput.trim(),
+                  phone: custPhoneInput.trim(),
+                  email: custEmailInput.trim(),
+                  password: custRegPass.trim(),
+                  companyName: custCompInput.trim() || 'N/A',
+                  deliveryAddress: custDeliveryAddress.trim(),
+                  billingAddress: finalBilling,
+                  city: custCityInput.trim() || 'Surat',
+                  state: custStateInput.trim() || 'Gujarat',
+                  pincode: custZipInput.trim() || '',
+                  country: custCountryInput.trim() || 'India'
+                });
+                alert(`✅ Registration successful! Welcome ${cust.name}. Your account & delivery addresses have been saved.`);
+                setActiveModal(null);
+                setCustNameInput(''); setCustPhoneInput(''); setCustEmailInput(''); setCustCompInput('');
+                setCustRegPass(''); setCustRegConfirmPass(''); setCustDeliveryAddress(''); setCustBillingAddress(''); setCustZipInput('');
+              }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Full Name / Person Name *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Name"
+                    value={custNameInput}
+                    onChange={(e) => setCustNameInput(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Phone / WhatsApp Number *</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="0000000000"
+                      value={custPhoneInput}
+                      onChange={(e) => setCustPhoneInput(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Email Address</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      placeholder="example@domain.com"
+                      value={custEmailInput}
+                      onChange={(e) => setCustEmailInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Password / પાસવર્ડ (ઓપ્શનલ)</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="Create secret password"
+                      value={custRegPass}
+                      onChange={(e) => setCustRegPass(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Confirm Password / કન્ફર્મ</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="Confirm password"
+                      value={custRegConfirmPass}
+                      onChange={(e) => setCustRegConfirmPass(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Business / Company Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Business Name"
+                    value={custCompInput}
+                    onChange={(e) => setCustCompInput(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    🚚 Delivery / Shipping Address (ડિલિવરી એડ્રેસ) *
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    placeholder="Enter full delivery/shipping address (House/Shop/Street/Area)..."
+                    value={custDeliveryAddress}
+                    onChange={(e) => {
+                      setCustDeliveryAddress(e.target.value);
+                      if (billingSameAsDelivery) setCustBillingAddress(e.target.value);
+                    }}
+                    required
+                  />
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--text-sub)' }}>
+                    <input
+                      type="checkbox"
+                      checked={billingSameAsDelivery}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBillingSameAsDelivery(checked);
+                        if (checked) setCustBillingAddress(custDeliveryAddress);
+                      }}
+                    />
+                    <span>☑️ Billing Address is same as Delivery Address (બિલિંગ એડ્રેસ ડિલિવરી એડ્રેસ જેવું જ છે)</span>
+                  </label>
+                </div>
+
+                {!billingSameAsDelivery && (
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>
+                      🏢 Billing Address (બિલિંગ એડ્રેસ) *
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows="2"
+                      placeholder="Enter legal billing address for invoices..."
+                      value={custBillingAddress}
+                      onChange={(e) => setCustBillingAddress(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>City (શહેર)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Surat"
+                      value={custCityInput}
+                      onChange={(e) => setCustCityInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>State (રાજ્ય)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Gujarat"
+                      value={custStateInput}
+                      onChange={(e) => setCustStateInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Country (દેશ)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="India"
+                      value={custCountryInput}
+                      onChange={(e) => setCustCountryInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>PIN / Postal Code (પિનકોડ)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. 395003"
+                      value={custZipInput}
+                      onChange={(e) => setCustZipInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #0284c7, #0d9488)' }}>
+                  💾 {currentLang === 'gu' ? 'એકાઉન્ટ બનાવો અને સેવ કરો' : 'Create Customer Account & Save'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 2. LOGGED-IN CUSTOMER PORTAL DASHBOARD MODAL */}
+      {activeModal === 'customer_portal' && currentCustomer && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '560px', borderRadius: '24px' }}>
+            <button className="modal-close" onClick={() => { setActiveModal(null); setIsEditingCustomerProfile(false); }}>&times;</button>
+
+            {!isEditingCustomerProfile ? (
+              <>
+                <div style={{ background: 'rgba(20, 184, 166, 0.15)', border: '1px solid var(--primary-teal-glow)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '18px', textAlign: 'center', position: 'relative' }}>
+                  <button
+                    type="button"
+                    onClick={initCustomerEditForm}
+                    title={currentLang === 'gu' ? 'પ્રોફાઇલ એડિટ કરો' : 'Edit Profile'}
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      background: 'rgba(14, 165, 233, 0.18)',
+                      border: '1px solid #38bdf8',
+                      borderRadius: '20px',
+                      padding: '4px 12px',
+                      color: '#38bdf8',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    ✏️ {currentLang === 'gu' ? 'એડિટ પ્રોફાઇલ' : 'Edit Profile'}
+                  </button>
+                  <span style={{ fontSize: '2.5rem' }}>👤</span>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: '6px 0 2px 0' }}>
+                    Welcome, {currentCustomer.name}!
+                  </h3>
+                  <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                    ✓ Registered Customer Account Active
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '10px', fontSize: '0.88rem', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🏢 Business / Company:</span>
+                    <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.companyName || 'Individual Buyer'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📞 Phone / WhatsApp:</span>
+                    <strong style={{ color: '#4ade80' }}>{currentCustomer.phone || 'N/A'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>✉️ Email:</span>
+                    <strong style={{ color: '#38bdf8' }}>{currentCustomer.email || 'N/A'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🚚 Delivery Address:</span>
+                    <strong style={{ color: '#facc15', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.deliveryAddress || 'Not Provided'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>🏢 Billing Address:</span>
+                    <strong style={{ color: 'var(--text-main)', textAlign: 'right', maxWidth: '60%' }}>{currentCustomer.billingAddress || currentCustomer.deliveryAddress || 'Same as Delivery'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📍 Location:</span>
+                    <strong style={{ color: 'var(--text-main)' }}>{currentCustomer.city}{currentCustomer.state ? `, ${currentCustomer.state}` : ''}{currentCustomer.pincode ? ` - ${currentCustomer.pincode}` : ''}, {currentCustomer.country}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>📅 Account Created:</span>
+                    <span style={{ color: 'var(--text-sub)' }}>{currentCustomer.registeredAt}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ flex: 1, justifyContent: 'center' }}
+                    onClick={() => {
+                      setActiveModal('quotation');
+                    }}
+                  >
+                    📄 {currentLang === 'gu' ? 'ઝડપી કોટેશન માંગો' : 'Request Instant Quotation'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.4)' }}
+                    onClick={() => {
+                      logoutCustomer();
+                      setActiveModal(null);
+                      setIsEditingCustomerProfile(false);
+                      alert('🔒 Customer logged out successfully.');
+                    }}
+                  >
+                    🔒 {currentLang === 'gu' ? 'લોગઆઉટ' : 'Logout'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!editCustName.trim()) {
+                  alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને તમારું નામ લખો!' : '⚠️ Please enter your Name!');
+                  return;
+                }
+                if (!editCustPhone.trim() && !editCustEmail.trim()) {
+                  alert(currentLang === 'gu' ? '⚠️ કૃપા કરીને મોબાઇલ નંબર અથવા ઇમેઇલ દાખલ કરો!' : '⚠️ Please enter Phone Number or Email!');
+                  return;
+                }
+                const finalDelivery = editCustDelivery.trim();
+                const finalBilling = editCustBillingSame ? finalDelivery : (editCustBilling.trim() || finalDelivery);
+
+                updateCustomerProfile({
+                  name: editCustName.trim(),
+                  companyName: editCustCompany.trim() || 'Individual Buyer',
+                  phone: editCustPhone.trim(),
+                  email: editCustEmail.trim(),
+                  deliveryAddress: finalDelivery,
+                  billingAddress: finalBilling,
+                  city: editCustCity.trim() || 'Surat',
+                  state: editCustState.trim() || 'Gujarat',
+                  pincode: editCustZip.trim(),
+                  country: editCustCountry.trim() || 'India',
+                  ...(editCustPassword ? { password: editCustPassword } : {})
+                });
+                setIsEditingCustomerProfile(false);
+              }}>
+                <div style={{ background: 'rgba(14, 165, 233, 0.12)', border: '1px solid rgba(14, 165, 233, 0.3)', padding: '14px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.8rem' }}>✏️</span>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
+                      {currentLang === 'gu' ? 'કસ્ટમર પ્રોફાઇલ અપડેટ કરો' : 'Update Customer Profile'}
+                    </h3>
+                    <span style={{ fontSize: '0.8rem', color: '#38bdf8' }}>
+                      {currentLang === 'gu' ? 'તમારી સંપર્ક વિગતો અને સરનામું અપડેટ કરો' : 'Edit your personal, contact, and delivery details'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'પૂરું નામ *' : 'Full Name *'}</label>
+                    <input type="text" className="form-control" value={editCustName} onChange={(e) => setEditCustName(e.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'કંપની / બિઝનેસ નામ' : 'Business / Company Name'}</label>
+                    <input type="text" className="form-control" value={editCustCompany} onChange={(e) => setEditCustCompany(e.target.value)} placeholder="e.g. Acme Imports Ltd" />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'મોબાઇલ / વોટ્સએપ *' : 'Phone / WhatsApp *'}</label>
+                    <input type="tel" className="form-control" value={editCustPhone} onChange={(e) => setEditCustPhone(e.target.value)} placeholder="+91 98250..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'ઈમેલ એડ્રેસ' : 'Email Address'}</label>
+                    <input type="email" className="form-control" value={editCustEmail} onChange={(e) => setEditCustEmail(e.target.value)} placeholder="customer@domain.com" />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{currentLang === 'gu' ? 'ડિલિવરી સરનામું (Delivery Address)' : 'Delivery Address'}</label>
+                  <textarea className="form-control" rows="2" value={editCustDelivery} onChange={(e) => setEditCustDelivery(e.target.value)} placeholder="Plot / Street / Area / Landmark" />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '8px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+                    <input type="checkbox" checked={editCustBillingSame} onChange={(e) => setEditCustBillingSame(e.target.checked)} />
+                    {currentLang === 'gu' ? 'બિલિંગ સરનામું ડિલિવરી સરનામાં જેવું જ છે (Same as Delivery)' : 'Billing Address is same as Delivery Address'}
+                  </label>
+                </div>
+
+                {!editCustBillingSame && (
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'બિલિંગ સરનામું (Billing Address)' : 'Billing Address'}</label>
+                    <textarea className="form-control" rows="2" value={editCustBilling} onChange={(e) => setEditCustBilling(e.target.value)} placeholder="Registered Billing Address" />
+                  </div>
+                )}
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'શહેર (City)' : 'City'}</label>
+                    <input type="text" className="form-control" value={editCustCity} onChange={(e) => setEditCustCity(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'રાજ્ય (State)' : 'State'}</label>
+                    <input type="text" className="form-control" value={editCustState} onChange={(e) => setEditCustState(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'પિનકોડ / Zip' : 'Pincode / Postal Code'}</label>
+                    <input type="text" className="form-control" value={editCustZip} onChange={(e) => setEditCustZip(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{currentLang === 'gu' ? 'દેશ (Country)' : 'Country'}</label>
+                    <input type="text" className="form-control" value={editCustCountry} onChange={(e) => setEditCustCountry(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{currentLang === 'gu' ? 'પાસવર્ડ (ઓપ્શનલ - જો બદલવો હોય તો જ લખો)' : 'Password (Optional - leave blank to keep unchanged)'}</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showEditCustPassword ? "text" : "password"}
+                      className="form-control"
+                      value={editCustPassword}
+                      onChange={(e) => setEditCustPassword(e.target.value)}
+                      placeholder="Enter new customer password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditCustPassword(!showEditCustPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1rem' }}
+                      title={showEditCustPassword ? "Hide password" : "Show password"}
+                    >
+                      {showEditCustPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ flex: 1, justifyContent: 'center', padding: '11px', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', fontWeight: 800 }}
+                  >
+                    💾 {currentLang === 'gu' ? 'પ્રોફાઇલ સાચવો (Save)' : 'Save Profile Changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ padding: '11px 18px', justifyContent: 'center' }}
+                    onClick={() => setIsEditingCustomerProfile(false)}
+                  >
+                    ❌ {currentLang === 'gu' ? 'રદ કરો (Cancel)' : 'Cancel'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 3. ADMIN REGISTERED CUSTOMERS & LEADS MANAGEMENT MODAL */}
+      {activeModal === 'admin_leads' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '960px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0, color: 'var(--text-main)' }}>
+                  👥 Registered Customers & Sales Leads Directory ({customerList.length})
+                </h3>
+                <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', margin: '2px 0 0 0' }}>
+                  Complete list of all customers, buyers & importers registered online or inquired via RFQ.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="🔍 Search leads by name, phone, email, city..."
+                  value={custLeadSearch}
+                  onChange={(e) => setCustLeadSearch(e.target.value)}
+                  style={{ width: '260px', fontSize: '0.82rem', padding: '6px 12px' }}
+                />
+
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.78rem', color: '#4ade80', borderColor: 'rgba(34,197,94,0.4)' }}
+                  onClick={() => {
+                    const csvRows = [
+                      ["Name", "Phone", "Email", "Company", "City", "Country", "Registered At", "Notes"],
+                      ...customerList.map(c => [c.name, c.phone, c.email, c.companyName, c.city, c.country, c.registeredAt, c.notes])
+                    ];
+                    const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.map(x => `"${(x||'').replace(/"/g, '""')}"`).join(",")).join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", `registered_customer_leads_${Date.now()}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    alert("📥 Customer Leads exported to Excel/CSV!");
+                  }}
+                >
+                  📊 Export CSV
+                </button>
+              </div>
+            </div>
+
+            <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.06)', borderBottom: '1px solid var(--border-glass)', color: 'var(--text-sub)' }}>
+                    <th style={{ padding: '10px 14px' }}>👤 Customer & Company</th>
+                    <th style={{ padding: '10px 14px' }}>📝 Inquiry Message / Requirements</th>
+                    <th style={{ padding: '10px 14px' }}>📞 Contact Details</th>
+                    <th style={{ padding: '10px 14px' }}>📍 Location</th>
+                    <th style={{ padding: '10px 14px' }}>📅 Date & Time</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'right' }}>⚙️ Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customerList
+                    .filter(c => {
+                      const q = custLeadSearch.toLowerCase().trim();
+                      if (!q) return true;
+                      return (c.name || '').toLowerCase().includes(q) ||
+                             (c.phone || '').toLowerCase().includes(q) ||
+                             (c.email || '').toLowerCase().includes(q) ||
+                             (c.companyName || '').toLowerCase().includes(q) ||
+                             (c.notes || '').toLowerCase().includes(q) ||
+                             (c.city || '').toLowerCase().includes(q);
+                    })
+                    .map(cust => (
+                      <tr key={cust.id} style={{ borderBottom: '1px solid var(--border-glass)', background: 'rgba(255,255,255,0.02)' }}>
+                        <td style={{ padding: '10px 14px', minWidth: '150px' }}>
+                          <strong style={{ color: 'var(--text-main)', display: 'block', fontSize: '0.9rem' }}>{cust.name}</strong>
+                          <span style={{ color: 'var(--text-sub)', fontSize: '0.76rem' }}>🏢 {cust.companyName || 'Individual Buyer'}</span>
+                        </td>
+                        <td style={{ padding: '10px 14px', minWidth: '220px', maxWidth: '280px' }}>
+                          <div style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.76rem', marginBottom: '2px' }}>
+                            💬 Inquiry Details:
+                          </div>
+                          <div style={{ color: 'var(--text-main)', fontSize: '0.78rem', lineHeight: '1.4', background: 'rgba(255,255,255,0.05)', padding: '6px 8px', borderRadius: '6px', whiteSpace: 'pre-wrap', border: '1px solid var(--border-glass)' }}>
+                            {cust.notes || 'General Quotation Request'}
+                          </div>
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          {cust.phone && (
+                            <a
+                              href={`https://wa.me/${cust.phone.replace(/\D/g, '')}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: '#4ade80', fontWeight: 700, display: 'block', textDecoration: 'none' }}
+                            >
+                              💬 {cust.phone}
+                            </a>
+                          )}
+                          {cust.email && (
+                            <a href={`mailto:${cust.email}`} style={{ color: '#38bdf8', fontSize: '0.78rem', textDecoration: 'none', display: 'block' }}>
+                              ✉️ {cust.email}
+                            </a>
+                          )}
+                          {cust.deliveryAddress && (
+                            <div style={{ marginTop: '4px', fontSize: '0.74rem', color: '#facc15' }} title="Delivery Address">
+                              🚚 {cust.deliveryAddress}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '10px 14px', color: 'var(--text-sub)' }}>
+                          <div>📍 {cust.city}{cust.state ? `, ${cust.state}` : ''}{cust.pincode ? ` (${cust.pincode})` : ''}, {cust.country}</div>
+                          {cust.billingAddress && cust.billingAddress !== cust.deliveryAddress && (
+                            <div style={{ marginTop: '2px', fontSize: '0.72rem', color: '#cbd5e1' }} title="Billing Address">
+                              🏢 <strong>Bill:</strong> {cust.billingAddress}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '10px 14px', color: 'var(--text-sub)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                          {cust.registeredAt}
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          {(() => {
+                            const canGenerateQuote = Boolean(isAdminLoggedIn || currentMerchant);
+                            return (
+                              <button
+                                type="button"
+                                disabled={!canGenerateQuote}
+                                className="btn-primary"
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 900,
+                                  background: canGenerateQuote
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : 'rgba(100, 116, 139, 0.25)',
+                                  color: canGenerateQuote ? '#ffffff' : '#94a3b8',
+                                  border: canGenerateQuote ? 'none' : '1px solid rgba(148, 163, 184, 0.3)',
+                                  marginRight: '6px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  boxShadow: canGenerateQuote ? '0 2px 10px rgba(16, 185, 129, 0.4)' : 'none',
+                                  cursor: canGenerateQuote ? 'pointer' : 'not-allowed',
+                                  opacity: canGenerateQuote ? 1 : 0.45
+                                }}
+                                onClick={() => {
+                                  if (!canGenerateQuote) {
+                                    alert('🔒 Access Restricted: Only Admin and "Sell With Us" Merchants can generate Proforma Invoice PDF Quotes.');
+                                    return;
+                                  }
+                                  openQuoteForInquiry(cust);
+                                }}
+                                title={canGenerateQuote
+                                  ? `Generate Individual Export Proforma Invoice PDF specifically for ${cust.name}`
+                                  : "🔒 Access Restricted: Only Admin & 'Sell With Us' Merchants can generate PDF Quotes"}
+                              >
+                                📄 1-Click Individual PDF Quote {!canGenerateQuote && '🔒'}
+                              </button>
+                            );
+                          })()}
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '4px 8px', fontSize: '0.74rem', color: '#f87171', borderColor: 'rgba(248,113,113,0.3)' }}
+                            onClick={() => deleteCustomer(cust.id, cust.name)}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MULTI-COMPANY PROFILE & LOGO EDIT MODAL (SISTER COMPANIES DASHBOARD) */}
+      {activeModal === 'company' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '680px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 900, marginBottom: '8px', color: 'var(--text-main)' }}>
+              🏢 Multi-Company Profile & Sister Company Manager
+            </h3>
+            <p style={{ fontSize: '0.86rem', color: 'var(--text-sub)', marginBottom: '16px', lineHeight: '1.5' }}>
+              Select any sister company below to edit its Company Name, Tagline, Logo, Address, Phone, Email, APEDA / GSTIN registration details.
+            </p>
+
+            {/* Sister Company Switcher Tabs */}
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)' }}>
+              {companiesList.map((comp, idx) => (
+                <button
+                  key={comp.id}
+                  type="button"
+                  className={`btn-secondary ${selectedCompId === comp.id ? 'active' : ''}`}
+                  style={{
+                    fontSize: '0.8rem',
+                    padding: '8px 14px',
+                    whiteSpace: 'nowrap',
+                    fontWeight: 800,
+                    borderRadius: 'var(--radius-pill)',
+                    background: selectedCompId === comp.id ? 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)' : 'rgba(255,255,255,0.06)',
+                    color: selectedCompId === comp.id ? 'white' : 'var(--text-sub)',
+                    borderColor: selectedCompId === comp.id ? 'var(--primary-teal-glow)' : 'var(--border-glass)'
+                  }}
+                  onClick={() => setSelectedCompId(comp.id)}
+                >
+                  {idx === 0 ? '👑 ' : '🏢 '} {comp.name} {idx === 0 && <span style={{ fontSize: '0.68rem', opacity: 0.85, marginLeft: '4px' }}>(મુખ્ય)</span>}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{
+                  fontSize: '0.8rem',
+                  padding: '8px 14px',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 800,
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  color: '#4ade80',
+                  borderColor: 'rgba(34, 197, 94, 0.4)'
+                }}
+                onClick={() => {
+                  const newId = `comp_${Date.now()}`;
+                  const newComp = {
+                    id: newId,
+                    name: `NEW SISTER COMPANY ${companiesList.length + 1}`,
+                    tagline: "GLOBAL EXPORT & TRADE DIVISION",
+                    logo: "images/logo.png",
+                    address: "Surat, Gujarat - 395023, India",
+                    phone: "+91 78619 97755",
+                    email: "info@adidevexport.com",
+                    apedaReg: "APEDA/NEW/2026/001",
+                    gstin: "24AAAAA0000A1Z0"
+                  };
+                  updateCompanyProfile(newComp);
+                  setSelectedCompId(newId);
+                  alert(`✅ New Sister Company Profile Created! Fill in company details and click Save.`);
+                }}
+              >
+                ➕ + Add Sister Company
+              </button>
+            </div>
+
+            {/* Active Company Action Bar with Delete Guard */}
+            {(() => {
+              const targetComp = companiesList.find(c => c.id === selectedCompId);
+              const isPrimary = selectedCompId === (companiesList[0]?.id || 'comp_1') ||
+                                companiesList.length <= 1 ||
+                                (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika'));
+              return (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '10px',
+                  background: isPrimary ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.04)',
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: '16px',
+                  border: isPrimary ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid var(--border-glass)'
+                }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>Editing:</span>
+                    <span style={{ color: isPrimary ? '#34d399' : '#2dd4bf', fontWeight: 900 }}>
+                      {isPrimary ? '👑 ' : '🏢 '} {compNameInput || targetComp?.name || 'Company'}
+                    </span>
+                    {isPrimary && (
+                      <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', fontWeight: 800 }}>
+                        મુખ્ય કંપની (Permanent Main Company)
+                      </span>
+                    )}
+                    {selectedCompId === activeCompanyId && (
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.4)', fontWeight: 800 }}>
+                        ⚡ CURRENTLY ACTIVE
+                      </span>
+                    )}
+                  </div>
+
+                  {isPrimary ? (
+                    <div style={{
+                      fontSize: '0.78rem',
+                      color: '#34d399',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      padding: '5px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(16, 185, 129, 0.25)'
+                    }}>
+                      <span>🛡️ આપણી મુખ્ય કંપની ({compNameInput || targetComp?.name || "મુખ્ય કંપની"}) ક્યારેય ડિલીટ થશે નહીં (તમામ વિગતો મુક્તપણે એડિટ કરી શકાય છે)</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      style={{
+                        fontSize: '0.8rem',
+                        padding: '7px 14px',
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'rgba(239, 68, 68, 0.16)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.45)',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.16)'; e.currentTarget.style.color = '#f87171'; }}
+                      onClick={handleDeleteSisterCompany}
+                      title={`Delete ${compNameInput || 'Sister Company'}`}
+                    >
+                      🗑️ Delete Sister Company (ડિલીટ સિસ્ટર કંપની)
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const finalStamp = compStampInput.trim() || generateDigitalRoundStampSvg(compNameInput.trim(), compApedaInput.trim() || compGstinInput.trim());
+              updateCompanyProfile({
+                id: selectedCompId,
+                name: compNameInput.trim(),
+                tagline: compTaglineInput.trim(),
+                logo: compLogoInput.trim(),
+                stamp: finalStamp,
+                address: compAddressInput.trim(),
+                phone: compPhoneInput.trim(),
+                email: compEmailInput.trim(),
+                apedaReg: compApedaInput.trim(),
+                gstin: compGstinInput.trim(),
+                bankDetails: {
+                  bankName: compBankNameInput.trim(),
+                  accountName: compAccountNameInput.trim() || compNameInput.trim(),
+                  accountNumber: compAccountNumberInput.trim(),
+                  swiftCode: compSwiftCodeInput.trim(),
+                  ifscCode: compIfscCodeInput.trim(),
+                  branch: compBankBranchInput.trim(),
+                  intermediaryBank: compIntermediaryBankInput.trim()
+                }
+              });
+              setActiveCompanyId(selectedCompId);
+              showLiveToast(`✅ Company Profile "${compNameInput}" & Digital Round Stamp saved successfully!`, "success");
+              setActiveModal(null);
+            }}>
+
+              {/* LOGO MANAGER BOX */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                <label className="form-label" style={{ fontWeight: 800, marginBottom: '8px', display: 'block' }}>
+                  🖼️ Company Logo (Header, Footer & Quotations)
+                </label>
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <img
+                    src={compLogoInput || 'images/logo.png'}
+                    alt="Company Logo Preview"
+                    style={{ height: '64px', width: 'auto', objectFit: 'contain', background: '#000', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}
+                    onError={(e) => { e.target.src = 'images/logo.png'; }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            const img = new Image();
+                            img.onload = () => {
+                              const canvas = document.createElement('canvas');
+                              let width = img.width;
+                              let height = img.height;
+                              const maxDim = 600;
+                              if (width > maxDim || height > maxDim) {
+                                if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; }
+                                else { width = Math.round((width * maxDim) / height); height = maxDim; }
+                              }
+                              canvas.width = width;
+                              canvas.height = height;
+                              const ctx = canvas.getContext('2d');
+                              ctx.drawImage(img, 0, 0, width, height);
+                              setCompLogoInput(canvas.toDataURL('image/png'));
+                            };
+                            img.src = evt.target.result;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                      🔗 Or enter Web Logo Image URL:
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="images/logo.png"
+                      value={compLogoInput}
+                      onChange={(e) => setCompLogoInput(e.target.value)}
+                      style={{ marginTop: '4px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* DIGITAL ROUND RUBBER STAMP MANAGER BOX */}
+              <div style={{ background: 'rgba(29, 78, 216, 0.06)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(59, 130, 246, 0.3)', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#60a5fa' }}>
+                    🏵️ Digital Round Rubber Stamp Seal (ડિજિટલ રાઉન્ડ સ્ટેમ્પ)
+                  </label>
+                  <button
+                    type="button"
+                    style={{
+                      fontSize: '0.74rem',
+                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '4px 12px',
+                      borderRadius: '12px',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      const autoStamp = generateDigitalRoundStampSvg(compNameInput || "EXPORT HOUSE", compApedaInput || compGstinInput || "REGISTERED EXPORTER");
+                      setCompStampInput(autoStamp);
+                      showLiveToast("⚡ Official Digital Round Stamp auto-generated!", "success");
+                    }}
+                    title="Generate official round seal using company name & registration number"
+                  >
+                    ⚡ Auto-Generate Digital Stamp
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative', width: '75px', height: '75px', borderRadius: '50%', background: '#ffffff', padding: '4px', border: '2px solid #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      src={compStampInput || generateDigitalRoundStampSvg(compNameInput, compApedaInput || compGstinInput)}
+                      alt="Company Round Stamp Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      onError={(e) => {
+                        e.target.src = generateDigitalRoundStampSvg(compNameInput, compApedaInput || compGstinInput);
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginBottom: '4px' }}>
+                      📁 Upload Custom Stamp Image (PNG with transparent background):
+                    </div>
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            const img = new Image();
+                            img.onload = () => {
+                              const canvas = document.createElement('canvas');
+                              let width = img.width;
+                              let height = img.height;
+                              const maxDim = 400;
+                              if (width > maxDim || height > maxDim) {
+                                if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; }
+                                else { width = Math.round((width * maxDim) / height); height = maxDim; }
+                              }
+                              canvas.width = width;
+                              canvas.height = height;
+                              const ctx = canvas.getContext('2d');
+                              ctx.drawImage(img, 0, 0, width, height);
+                              setCompStampInput(canvas.toDataURL('image/png'));
+                            };
+                            img.src = evt.target.result;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                      🔗 Or Image Web URL:
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="data:image/png;base64,... or https://example.com/stamp.png"
+                      value={compStampInput}
+                      onChange={(e) => setCompStampInput(e.target.value)}
+                      style={{ marginTop: '4px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 800 }}>Company Name *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={compNameInput}
+                  onChange={(e) => setCompNameInput(e.target.value)}
+                  placeholder="e.g. Shree System Tec / Adidev Agro Exports"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 800 }}>Company Tagline / Subtitle *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={compTaglineInput}
+                  onChange={(e) => setCompTaglineInput(e.target.value)}
+                  placeholder="e.g. GLOBAL TRADING HOUSE & EXPORT HOUSE"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 800 }}>Company Address (US English Standard) *</label>
+                <textarea
+                  className="form-control"
+                  rows="2"
+                  value={compAddressInput}
+                  onChange={(e) => setCompAddressInput(e.target.value)}
+                  required
+                ></textarea>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Phone / WhatsApp Number *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={compPhoneInput}
+                    onChange={(e) => setCompPhoneInput(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Email Address *</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    value={compEmailInput}
+                    onChange={(e) => setCompEmailInput(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">APEDA / Export Registration No.</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={compApedaInput}
+                    onChange={(e) => setCompApedaInput(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">GSTIN / Tax Registration No.</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={compGstinInput}
+                    onChange={(e) => setCompGstinInput(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* BANKING & WIRE TRANSFER DETAILS SECTION (OPTIONAL / NON-COMPULSORY FOR PROFORMA INVOICES) */}
+              <div style={{ background: 'rgba(15, 23, 42, 0.65)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(56, 189, 248, 0.3)', marginTop: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#38bdf8', fontSize: '0.92rem' }}>
+                    🏦 Company Banking & Wire Transfer Details (Optional / Non-Compulsory)
+                  </label>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8', background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '12px' }}>
+                    Optional for Proforma Invoices
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginBottom: '12px', lineHeight: '1.4' }}>
+                  Fill in your bank account, SWIFT / BIC, and IFSC details below. Mentioning these on Proforma Invoices is 100% optional.
+                </p>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Bank Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. HDFC Bank Ltd / State Bank of India"
+                      value={compBankNameInput}
+                      onChange={(e) => setCompBankNameInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Account / Beneficiary Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. SHREE SYSTEM TEC"
+                      value={compAccountNameInput}
+                      onChange={(e) => setCompAccountNameInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Account Number / IBAN</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. 50200088997755 / IN56HDFC..."
+                      value={compAccountNumberInput}
+                      onChange={(e) => setCompAccountNumberInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">SWIFT / BIC Code (Overseas T/T Wire)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. HDFCINBBXXX"
+                      value={compSwiftCodeInput}
+                      onChange={(e) => setCompSwiftCodeInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">IFSC Code (Local RTGS/NEFT)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. HDFC0000240"
+                      value={compIfscCodeInput}
+                      onChange={(e) => setCompIfscCodeInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Bank Branch & City</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Ring Road Branch, Surat, Gujarat, India"
+                      value={compBankBranchInput}
+                      onChange={(e) => setCompBankBranchInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Intermediary / Correspondent Bank (Optional for USD/EUR Transfers)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. CitiBank N.A. New York (SWIFT: CITIUS33)"
+                    value={compIntermediaryBankInput}
+                    onChange={(e) => setCompIntermediaryBankInput(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1, minWidth: '220px', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
+                  💾 Save Company Profile & Activate
+                </button>
+                {(() => {
+                  const targetComp = companiesList.find(c => c.id === selectedCompId);
+                  const isPrimary = selectedCompId === (companiesList[0]?.id || 'comp_1') ||
+                                    companiesList.length <= 1 ||
+                                    (targetComp?.name && targetComp.name.toLowerCase().includes('atsondika'));
+                  if (isPrimary) return null;
+                  return (
+                    <button
+                      type="button"
+                      style={{
+                        padding: '13px 18px',
+                        fontSize: '0.88rem',
+                        fontWeight: 800,
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = '#ffffff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'; e.currentTarget.style.color = '#f87171'; }}
+                      onClick={handleDeleteSisterCompany}
+                    >
+                      🗑️ Delete Sister Company (ડિલીટ સિસ્ટર કંપની)
+                    </button>
+                  );
+                })()}
+              </div>
+
+              {/* MULTI-DEVICE DATA BACKUP & SYNC FACILITY */}
+              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px dashed var(--border-glass)' }}>
+                <label className="form-label" style={{ fontWeight: 800, fontSize: '0.85rem', color: '#f59e0b', display: 'block', marginBottom: '8px' }}>
+                  🔄 Multi-Device Backup & Sync Facility (કોમ્પ્યુટર વચ્ચે ડેટા સીંક):
+                </label>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem', padding: '8px 12px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)' }}
+                    onClick={() => {
+                      const backupData = {
+                        companies: companiesList,
+                        activeCompanyId: activeCompanyId,
+                        timestamp: new Date().toISOString()
+                      };
+                      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+                      const downloadAnchor = document.createElement('a');
+                      downloadAnchor.setAttribute("href", dataStr);
+                      downloadAnchor.setAttribute("download", `adidev_company_settings_backup_${Date.now()}.json`);
+                      document.body.appendChild(downloadAnchor);
+                      downloadAnchor.click();
+                      downloadAnchor.remove();
+                      alert("📤 Company Profiles Backup file downloaded! You can import this file on your Office Computer or Laptop.");
+                    }}
+                  >
+                    📤 Export Backup File (બેકઅપ ડાઉનલોડ)
+                  </button>
+
+                  <label
+                    className="btn-secondary"
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem', padding: '8px 12px', color: '#4ade80', borderColor: 'rgba(34, 197, 94, 0.4)', cursor: 'pointer', textAlign: 'center' }}
+                  >
+                    📥 Import Backup File (બીજા કમ્પ્યુટરમાં લાવો)
+                    <input
+                      type="file"
+                      accept=".json"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (evt) => {
+                            try {
+                              const imported = JSON.parse(evt.target.result);
+                              if (imported && Array.isArray(imported.companies)) {
+                                localStorage.setItem('site_company_profiles_v3', JSON.stringify(imported.companies));
+                                localStorage.setItem('site_company_profiles_v2', JSON.stringify(imported.companies));
+                                localStorage.setItem('site_company_profiles_v1', JSON.stringify(imported.companies));
+                                alert("✅ Company Profiles Imported Successfully! Refreshing page...");
+                                window.location.reload();
+                              } else {
+                                alert("⚠️ Invalid backup file format.");
+                              }
+                            } catch(err) {
+                              alert("⚠️ Failed to parse backup file.");
+                            }
+                          };
+                          reader.readAsText(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* LIVE CLOUD SYNC SERVER MONITOR & BACKUP MODAL */}
+      {activeModal === 'cloud_sync' && (
+        <div className="modal-backdrop show" onClick={() => setActiveModal(null)}>
+          <div className="glass-card modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(234, 179, 8, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
+                🌐
+              </div>
+              <div>
+                <h3 className="modal-title" style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.25rem' }}>
+                  Global Real-Time Cloud Sync Server Panel
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: '2px 0 0 0' }}>
+                  માઈક્રોસેકન્ડ ઓટોમેટિક ક્લાઉડ સિન્ક અને ફુલ ડેટાબેઝ બેકઅપ કંટ્રોલ પેનલ
+                </p>
+              </div>
+            </div>
+
+            {/* CONNECTION STATUS CARD */}
+            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 10px #34d399' }}></span>
+                  Cloud Database Status: CONNECTED & ONLINE ⚡
+                </span>
+                <span style={{ fontSize: '0.74rem', background: 'rgba(255,255,255,0.1)', color: '#a7f3d0', padding: '2px 8px', borderRadius: '10px' }}>
+                  Realtime Microsecond Engine
+                </span>
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-sub)', lineHeight: '1.5' }}>
+                📡 <strong>Firebase Cloud Endpoint:</strong><br />
+                <code style={{ fontSize: '0.74rem', color: '#facc15', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', wordBreak: 'break-all' }}>
+                  https://atsondika-global-trade-default-rtdb.asia-southeast1.firebasedatabase.app/live_store.json
+                </code>
+              </div>
+            </div>
+
+            {/* DYNAMIC METRICS GRID */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Active Companies</span>
+                <strong style={{ fontSize: '1.2rem', color: '#38bdf8' }}>{companiesList ? companiesList.length : 4}</strong>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Auto Poll Interval</span>
+                <strong style={{ fontSize: '1.2rem', color: '#4ade80' }}>Every 3s</strong>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-sub)', display: 'block' }}>Global Protection</span>
+                <strong style={{ fontSize: '1.2rem', color: '#facc15' }}>Admin Priority</strong>
+              </div>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.92rem', background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)' }}
+                onClick={async () => {
+                  await fetchServerData();
+                  alert("✅ Force Cloud Sync Executed! All company profiles, products, and rates synchronized live with Firebase Server.");
+                }}
+              >
+                ⚡ Force Cloud Sync Now (હમણાં જ ક્લાઉડ સિન્ક કરો)
+              </button>
+
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ flex: 1, justifyContent: 'center', fontSize: '0.82rem', padding: '10px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)' }}
+                  onClick={() => exportDatabase && exportDatabase()}
+                >
+                  💾 Download Full Database Backup JSON
+                </button>
+
+                <label
+                  className="btn-secondary"
+                  style={{ flex: 1, justifyContent: 'center', fontSize: '0.82rem', padding: '10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', cursor: 'pointer', margin: 0 }}
+                >
+                  📥 Restore Backup JSON
+                  <input
+                    type="file"
+                    accept=".json"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file && importDatabase) {
+                        importDatabase(file);
+                        setActiveModal(null);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.76rem', color: 'var(--text-sub)', textAlign: 'center', marginTop: '16px', margin: '16px 0 0 0' }}>
+              ℹ️ આ સિસ્ટમ દ્વારા તમે કોઈ નવા કમ્પ્યુટર કે ફોન પર સાઈટ ખોલો ત્યારે ડેટા ઓટોમેટિક રી-સ્ટોર થઈ જશે.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* FREIGHT ROUTE & PORT RECORD EDIT/ADD MODAL */}
+      {activeModal === 'freight_route' && (
+        <div className="modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="modal-card glass-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>✕</button>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '1.8rem' }}>⚓</span>
+              <div>
+                <h3 className="modal-title" style={{ margin: 0, color: 'var(--text-main)' }}>
+                  {editingRouteId ? '✏️ Edit Freight Route & Port Record' : '➕ Add New Freight Route / Port Record'}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: '2px 0 0 0' }}>
+                  Add origin & destination ports/airports with transit times & frequencies.
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              saveFreightRoute({
+                mode: routeModeInput,
+                origin: routeOriginInput,
+                dest: routeDestInput,
+                region: routeRegionInput,
+                days: routeDaysInput,
+                freq: routeFreqInput
+              });
+            }}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Transport Mode *</label>
+                  <select
+                    className="form-control"
+                    value={routeModeInput}
+                    onChange={(e) => setRouteModeInput(e.target.value)}
+                    required
+                  >
+                    <option value="Sea Freight">🚢 Sea Freight Vessel</option>
+                    <option value="Air Cargo">✈️ Air Cargo Express</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Destination Region *</label>
+                  <select
+                    className="form-control"
+                    value={routeRegionInput}
+                    onChange={(e) => setRouteRegionInput(e.target.value)}
+                    required
+                  >
+                    <option value="Middle East">Middle East</option>
+                    <option value="Europe">Europe</option>
+                    <option value="USA / North America">USA / North America</option>
+                    <option value="Southeast Asia">Southeast Asia</option>
+                    <option value="Africa">Africa</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <SearchablePortInput
+                  label="Origin Port / Airport (India) *"
+                  value={routeOriginInput}
+                  onChange={(val) => setRouteOriginInput(val)}
+                  placeholder="Type Indian port name (e.g. Surat STV, Mundra, Hazira)..."
+                  portType="origin"
+                  quickPresets={[
+                    { label: '⚓ Hazira/Surat', value: 'Hazira / Surat Port (INHZA)' },
+                    { label: '🛫 Surat STV', value: 'Surat International Airport (STV)' },
+                    { label: '⚓ Mundra', value: 'Mundra Port (INMUN)' },
+                    { label: '⚓ Nhava Sheva', value: 'Nhava Sheva / JNPT (INNSA)' }
+                  ]}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <SearchablePortInput
+                  label="Destination Port / Airport *"
+                  value={routeDestInput}
+                  onChange={(val) => setRouteDestInput(val)}
+                  placeholder="Type global port/country (e.g. Canada, Dubai, Rotterdam)..."
+                  portType="dest"
+                  quickPresets={[
+                    { label: '🇨🇦 Canada/Vancouver', value: 'Vancouver Port (CAVAN)' },
+                    { label: '🇨🇦 Canada/Toronto', value: 'Toronto Pearson International (YYZ)' },
+                    { label: '🇦🇪 Dubai', value: 'Jebel Ali, Dubai (AEJEA)' },
+                    { label: '🇳🇱 Rotterdam', value: 'Rotterdam Port (NLRTM)' }
+                  ]}
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Transit Lead-Time *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. 3.5 - 4 Hours or 4 - 5 Days"
+                    value={routeDaysInput}
+                    onChange={(e) => setRouteDaysInput(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Sailing / Flight Frequency *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. Daily Direct / Express or Weekly Service"
+                    value={routeFreqInput}
+                    onChange={(e) => setRouteFreqInput(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
+                💾 Save Freight Route & Sync Network
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
+      {activeModal === 'admin_security' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('admin')}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px' }}>
+              🔑 Change Admin Password (Mobile & email OTP)
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              Secure password change requiring 6-digit OTP verification sent to registered admin mobile number & email.
+            </p>
+
+            <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '16px', fontSize: '0.84rem' }}>
+              <div><strong>📱 Registered Admin Mobile:</strong> <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{adminMobile}</span></div>
+              <div style={{ marginTop: '4px' }}><strong>✉️ Admin Contact Email:</strong> <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>{activeCompany?.email || 'admin@atsondika.com'}</span></div>
+            </div>
+
+            {otpStep === 0 ? (
+              <div>
+                <div className="form-group">
+                  <label className="form-label">Admin Mobile Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={adminMobile}
+                    onChange={(e) => setAdminMobile(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+                  onClick={() => {
+                    const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    setGeneratedOtp(code);
+                    setOtpStep(1);
+                    alert(`📱 SMS Sent to ${adminMobile}\n✉️ Email Sent to ${activeCompany?.email || 'admin@atsondika.com'}\n\n🔐 Your 6-Digit OTP Verification Code is: ${code}`);
+                  }}
+                >
+                  📲 Send 6-Digit Verification OTP Code
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('admin')}
+                  >
+                    ← Back to Admin Login
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (userOtpInput.trim() !== generatedOtp) {
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent to your mobile & email.");
+                  return;
+                }
+                if (!newPassInput || newPassInput.length < 6) {
+                  alert("⚠️ Password must be at least 6 characters long!");
+                  return;
+                }
+                if (newPassInput !== confirmPassInput) {
+                  alert("⚠️ Passwords do not match!");
+                  return;
+                }
+
+                saveAdminPassword(newPassInput.trim());
+                setIsAdminLoggedIn(true);
+                alert(`✅ Admin Password successfully updated to "${newPassInput.trim()}"!`);
+                setActiveModal(null);
+                setOtpStep(0);
+              }}>
+                <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(34, 197, 94, 0.3)', marginBottom: '14px', fontSize: '0.8rem', color: '#4ade80' }}>
+                  ✅ Verification OTP Code generated! (Simulated Code: <strong>{generatedOtp}</strong>)
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Enter 6-Digit OTP Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter 6-digit OTP"
+                    value={userOtpInput}
+                    onChange={(e) => setUserOtpInput(e.target.value)}
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">New Admin Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter New Password"
+                    value={newPassInput}
+                    onChange={(e) => setNewPassInput(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Confirm New Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Confirm New Password"
+                    value={confirmPassInput}
+                    onChange={(e) => setConfirmPassInput(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }}>
+                  💾 Save & Update Admin Password
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* SELLER SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
+      {activeModal === 'seller_security' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('seller_portal')}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🏬</span> {currentLang === 'gu' ? 'સેલર પાસવર્ડ રીસેટ (Mobile & email OTP)' : 'Reset Seller Password via Mobile & email OTP'}
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              {currentLang === 'gu'
+                ? 'રજીસ્ટર્ડ સેલર મોબાઈલ નંબર અથવા ઈમેલ પર 6-ડિજિટ OTP મેળવી નવો પાસવર્ડ સેટ કરો.'
+                : 'Secure password reset with 6-digit OTP verification sent to your registered seller Mobile & Email.'}
+            </p>
+
+            {sellerOtpStep === 0 ? (
+              <div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    📱 Registered Mobile Number or ✉️ Email *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter registered mobile or email..."
+                    value={sellerOtpTarget}
+                    onChange={(e) => setSellerOtpTarget(e.target.value)}
+                    required
+                  />
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                    Enter the phone number (+91...) or email address registered with your seller account.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', color: 'black', fontWeight: 900 }}
+                  onClick={() => {
+                    if (!sellerOtpTarget.trim()) {
+                      alert("⚠️ Please enter registered Mobile number or Email address!");
+                      return;
+                    }
+                    const q = sellerOtpTarget.trim().toLowerCase();
+                    const cleanDigits = q.replace(/[^0-9]/g, '');
+                    const found = (merchantsList || []).find(m => {
+                      if (!m) return false;
+                      const p = (m.phone || '').toLowerCase().replace(/[^0-9]/g, '');
+                      const e = (m.email || '').toLowerCase().trim();
+                      const n = (m.businessName || '').toLowerCase().trim();
+                      return (cleanDigits && cleanDigits.length >= 6 && p.includes(cleanDigits)) ||
+                             (e && (e === q || e.includes(q))) ||
+                             (n && n.includes(q));
+                    });
+
+                    if (!found) {
+                      alert(`⚠️ No registered Seller found matching "${sellerOtpTarget}".\nPlease check your mobile/email or register as a new seller.`);
+                      return;
+                    }
+
+                    const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    setSellerGeneratedOtp(code);
+                    setMatchedSellerObj(found);
+                    setSellerOtpStep(1);
+                    alert(`📱 SMS Sent to: ${found.phone || sellerOtpTarget}\n✉️ Email Sent to: ${found.email || 'Registered Email'}\n\n🔐 Your 6-Digit Seller OTP Verification Code is: ${code}`);
+                  }}
+                >
+                  📲 Send 6-Digit Verification OTP Code
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('seller_portal')}
+                  >
+                    ← Back to Seller Login
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (sellerUserOtp.trim() !== sellerGeneratedOtp) {
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent via SMS / Email.");
+                  return;
+                }
+                if (!sellerNewPass || sellerNewPass.length < 4) {
+                  alert("⚠️ Password must be at least 4 characters long!");
+                  return;
+                }
+                if (sellerNewPass !== sellerConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-enter.");
+                  return;
+                }
+
+                updateMerchantPassword(matchedSellerObj?.id || sellerOtpTarget, sellerNewPass.trim());
+                alert(`✅ Seller Password successfully updated for "${matchedSellerObj?.businessName || 'Seller'}"! You are now logged in.`);
+                setSellerOtpStep(0);
+                setSellerUserOtp('');
+                setSellerNewPass('');
+                setSellerConfirmPass('');
+                setSellerTab('dashboard');
+                setActiveModal('seller_portal');
+              }}>
+                <div style={{ background: 'rgba(34, 197, 94, 0.12)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)', marginBottom: '14px', fontSize: '0.82rem', color: '#4ade80' }}>
+                  ✅ Verification OTP sent to <strong>{matchedSellerObj?.phone || sellerOtpTarget}</strong> & <strong>{matchedSellerObj?.email || 'Email'}</strong>
+                  <br />(Simulated OTP Code: <strong>{sellerGeneratedOtp}</strong>)
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem' }}>
+                  🏬 <strong>Seller Account:</strong> {matchedSellerObj?.businessName} {matchedSellerObj?.brandName ? `(${matchedSellerObj.brandName})` : ''}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Enter 6-Digit OTP Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter 6-digit OTP code"
+                    value={sellerUserOtp}
+                    onChange={(e) => setSellerUserOtp(e.target.value)}
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>New Seller Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter new seller password"
+                    value={sellerNewPass}
+                    onChange={(e) => setSellerNewPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Confirm New Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Confirm new seller password"
+                    value={sellerConfirmPass}
+                    onChange={(e) => setSellerConfirmPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', fontWeight: 900 }}>
+                  💾 Save & Update Seller Password
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setSellerOtpStep(0)}
+                  >
+                    ← Re-send OTP or Change Number/Email
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOMER SECURITY & MOBILE / EMAIL OTP PASSWORD RESET MODAL */}
+      {activeModal === 'customer_security' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '480px' }}>
+            <button className="modal-close" onClick={() => setActiveModal('customer_auth')}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>👤</span> {currentLang === 'gu' ? 'કસ્ટમર પાસવર્ડ રીસેટ (Mobile & email OTP)' : 'Reset Customer Password via Mobile & email OTP'}
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              {currentLang === 'gu'
+                ? 'રજીસ્ટર્ડ કસ્ટમર મોબાઈલ નંબર અથવા ઈમેલ પર 6-ડિજિટ OTP મેળવી નવો પાસવર્ડ સેટ કરો.'
+                : 'Secure password reset with 6-digit OTP verification sent to your registered Customer Mobile & Email.'}
+            </p>
+
+            {custOtpStep === 0 ? (
+              <div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>
+                    📱 Registered Mobile Number or ✉️ Email *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter registered mobile or email..."
+                    value={custOtpTarget}
+                    onChange={(e) => setCustOtpTarget(e.target.value)}
+                    required
+                  />
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                    Enter the phone number (+91...) or email address associated with your customer account.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', color: 'white', fontWeight: 900 }}
+                  onClick={() => {
+                    if (!custOtpTarget.trim()) {
+                      alert("⚠️ Please enter registered Mobile number or Email address!");
+                      return;
+                    }
+                    const q = custOtpTarget.trim().toLowerCase();
+                    const cleanDigits = q.replace(/[^0-9]/g, '');
+                    const found = (customerList || []).find(c => {
+                      if (!c) return false;
+                      const p = (c.phone || '').toLowerCase().replace(/[^0-9]/g, '');
+                      const e = (c.email || '').toLowerCase().trim();
+                      const n = (c.name || '').toLowerCase().trim();
+                      return (cleanDigits && cleanDigits.length >= 6 && p.includes(cleanDigits)) ||
+                             (e && (e === q || e.includes(q))) ||
+                             (n && n.includes(q));
+                    });
+
+                    const targetCustomer = found || {
+                      id: `cust-${Date.now()}`,
+                      name: q.includes('@') ? q.split('@')[0] : (cleanDigits ? `User ${cleanDigits.slice(-4)}` : 'Customer'),
+                      phone: q.includes('@') ? '' : q,
+                      email: q.includes('@') ? q : ''
+                    };
+
+                    const code = Math.floor(100000 + Math.random() * 900000).toString();
+                    setCustGeneratedOtp(code);
+                    setMatchedCustObj(targetCustomer);
+                    setCustOtpStep(1);
+                    alert(`📱 SMS Sent to: ${targetCustomer.phone || custOtpTarget}\n✉️ Email Sent to: ${targetCustomer.email || 'Registered Email'}\n\n🔐 Your 6-Digit Customer OTP Verification Code is: ${code}`);
+                  }}
+                >
+                  📲 Send 6-Digit Verification OTP Code
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveModal('customer_auth')}
+                  >
+                    ← Back to Customer Login
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (custUserOtp.trim() !== custGeneratedOtp) {
+                  alert("⚠️ Invalid OTP Code! Please enter the 6-digit code sent via SMS / Email.");
+                  return;
+                }
+                if (!custNewPass || custNewPass.length < 4) {
+                  alert("⚠️ Password must be at least 4 characters long!");
+                  return;
+                }
+                if (custNewPass !== custConfirmPass) {
+                  alert("⚠️ Passwords do not match! Please check and re-enter.");
+                  return;
+                }
+
+                const updatedCust = updateCustomerPassword(matchedCustObj?.id || custOtpTarget, custNewPass.trim(), matchedCustObj);
+                alert(`✅ Customer Password successfully updated for "${updatedCust?.name || 'Customer'}"! You are now logged in.`);
+                setCustOtpStep(0);
+                setCustUserOtp('');
+                setCustNewPass('');
+                setCustConfirmPass('');
+                setActiveModal('customer_portal');
+              }}>
+                <div style={{ background: 'rgba(34, 197, 94, 0.12)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(34, 197, 94, 0.3)', marginBottom: '14px', fontSize: '0.82rem', color: '#4ade80' }}>
+                  ✅ Verification OTP sent to <strong>{matchedCustObj?.phone || custOtpTarget}</strong> & <strong>{matchedCustObj?.email || 'Email'}</strong>
+                  <br />(Simulated OTP Code: <strong>{custGeneratedOtp}</strong>)
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem' }}>
+                  👤 <strong>Customer Account:</strong> {matchedCustObj?.name} {matchedCustObj?.companyName && matchedCustObj?.companyName !== 'N/A' ? `(${matchedCustObj.companyName})` : ''}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Enter 6-Digit OTP Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter 6-digit OTP code"
+                    value={custUserOtp}
+                    onChange={(e) => setCustUserOtp(e.target.value)}
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>New Customer Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter new customer password"
+                    value={custNewPass}
+                    onChange={(e) => setCustNewPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 800 }}>Confirm New Password *</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Confirm new customer password"
+                    value={custConfirmPass}
+                    onChange={(e) => setCustConfirmPass(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', fontWeight: 900 }}>
+                  💾 Save & Update Customer Password
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setCustOtpStep(0)}
+                  >
+                    ← Re-send OTP or Change Number/Email
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Hero Banner Edit Modal (Multi-Language) */}
+      {activeModal === 'hero' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '680px' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '14px' }}>
+              ✏️ Edit Hero Banner Note, Headline & Photo
+            </h3>
+
+            {/* Language Selector Tabs */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '10px' }}>
+              {[
+                { code: 'en', flag: '🇬🇧', name: 'English' },
+                { code: 'gu', flag: '🇮🇳', name: 'ગુજરાતી' },
+                { code: 'hi', flag: '🇮🇳', name: 'हिन्दी' },
+                { code: 'fr', flag: '🇫🇷', name: 'Français' }
+              ].map(lang => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => setHeroLangTab(lang.code)}
+                  className={`btn-secondary ${heroLangTab === lang.code ? 'active' : ''}`}
+                  style={{
+                    padding: '6px 14px',
+                    fontSize: '0.82rem',
+                    background: heroLangTab === lang.code ? 'var(--primary-teal)' : 'rgba(255,255,255,0.05)',
+                    color: heroLangTab === lang.code ? 'white' : 'var(--text-sub)',
+                    borderColor: heroLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)',
+                    display: 'inline-flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <FlagIcon code={lang.code} />
+                  <span>{lang.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* REAL-TIME AUTO-TRANSLATION BUTTON */}
+            <div style={{ marginBottom: '16px', background: 'rgba(45, 212, 191, 0.08)', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(45, 212, 191, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2dd4bf', display: 'block' }}>
+                  ⚡ Real-Time Multi-Language Master Auto-Translator
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>
+                  અંગ્રેજી મેઈન ટેક્સ્ટ બદલતા જ ગુજરાતી, હિન્દી અને ફ્રેંચ માં આપોઆપ ઓટો-ટ્રાન્સલેટ થઈ જશે!
+                </span>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ fontSize: '0.8rem', padding: '6px 14px', color: '#2dd4bf', borderColor: 'rgba(45, 212, 191, 0.5)', background: 'rgba(45, 212, 191, 0.15)', fontWeight: 800 }}
+                onClick={async () => {
+                  if (!heroTitleObj.en) {
+                    showLiveToast("Please enter English main headline title first.", "info");
+                    return;
+                  }
+                  const translatedTitle = await autoTranslateFullObject(heroTitleObj.en);
+                  setHeroTitleObj(prev => ({ ...prev, ...translatedTitle }));
+
+                  if (heroSubtitleObj.en) {
+                    const translatedSub = await autoTranslateFullObject(heroSubtitleObj.en);
+                    setHeroSubtitleObj(prev => ({ ...prev, ...translatedSub }));
+                  }
+                  showLiveToast("✅ Real-Time Master Auto-Translation Complete for Gujarati (GU), Hindi (HI), and French (FR)!", "success");
+                }}
+              >
+                🔄 Auto-Translate All Languages Now
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              let finalTitles = { ...heroTitleObj };
+              let finalSubtitles = { ...heroSubtitleObj };
+
+              // Fill any missing language tabs with English as fallback without blocking network requests
+              const enTitle = heroTitleObj.en || '';
+              const enSub = heroSubtitleObj.en || '';
+              ['gu', 'hi', 'fr'].forEach(l => {
+                if (!finalTitles[l]) finalTitles[l] = enTitle;
+                if (!finalSubtitles[l]) finalSubtitles[l] = enSub;
+              });
+
+              saveHeroBanner({
+                badge: badgeInput,
+                title: finalTitles,
+                subtitle: finalSubtitles,
+                image: convertGoogleDriveUrl(heroImgInput) || 'images/hero_export_shipping.png'
+              });
+              showLiveToast("✅ Multi-Language Hero Note & Headline Updated Successfully!", "success");
+              setActiveModal(null);
+            }}>
+              {/* HERO PHOTO MANAGEMENT BOX */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>
+                    🖼️ Hero Banner Image
+                  </label>
+                  {heroImgInput && heroImgInput !== 'images/hero_export_shipping.png' && (
+                    <button
+                      type="button"
+                      style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                      onClick={() => setHeroImgInput('images/hero_export_shipping.png')}
+                    >
+                      🔄 Reset to Default Photo
+                    </button>
+                  )}
+                </div>
+
+                {heroImgInput && (
+                  <div style={{ position: 'relative', width: '100%', height: '140px', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '10px', border: '1px solid var(--border-glass)' }}>
+                    <img
+                      src={convertGoogleDriveUrl(heroImgInput)}
+                      alt="Hero Banner Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        const currentSrc = e.target.src || '';
+                        const fileIdMatch = (heroImgInput || '').match(/(?:file\/d\/|id=|\/d\/|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{5,60})/i);
+                        const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+                        if (fileId) {
+                          if (currentSrc.includes('lh3.googleusercontent.com')) {
+                            e.target.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+                            return;
+                          }
+                          if (currentSrc.includes('thumbnail')) {
+                            e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
+                            return;
+                          }
+                        }
+
+                        // Only revert to default shipping image if NO custom URL was provided
+                        if (!heroImgInput || heroImgInput === 'images/hero_export_shipping.png') {
+                          const defaultSrc = 'images/hero_export_shipping.png';
+                          if (!currentSrc.includes(defaultSrc)) {
+                            e.target.src = defaultSrc;
+                          }
+                        }
+                      }}
+                    />
+                    <span style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.75)', color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
+                      Current Hero Image Preview
+                    </span>
+                  </div>
+                )}
+
+                <div className="form-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
+                      📁 Upload Photo from Device:
+                    </label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const compressed = await superFastCompressImage(file, 1200, 0.82);
+                          if (compressed) {
+                            setHeroImgInput(compressed);
+                            showLiveToast("⚡ Photo compressed & attached!", "success");
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
+                      🔗 Or Image Web URL (Google Drive / Dropbox / Direct Link):
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Paste Google Drive, Dropbox or Web Image URL..."
+                      value={heroImgInput}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const clean = convertGoogleDriveUrl(val);
+                        setHeroImgInput(clean);
+                      }}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        const clean = convertGoogleDriveUrl(val);
+                        setHeroImgInput(clean);
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  💡 <b>Google Drive Tip:</b> Make sure link access is set to <b>"Anyone with the link can view"</b> (Public).
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Hero Badge / Tagline Text</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={badgeInput}
+                  onChange={(e) => setBadgeInput(e.target.value)}
+                  required
+                />
+              </div>
+
+              {/* DYNAMIC TITLE FOR CURRENT ACTIVE LANG TAB */}
+              <div className="form-group">
+                <label className="form-label">
+                  Main Headline Title ({heroLangTab.toUpperCase()}) *
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={heroTitleObj[heroLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHeroTitleObj(prev => ({ ...prev, [heroLangTab]: val }));
+                  }}
+                  required
+                ></textarea>
+              </div>
+
+              {/* DYNAMIC SUBTITLE NOTE FOR CURRENT ACTIVE LANG TAB */}
+              <div className="form-group">
+                <label className="form-label">
+                  Subtitle Exporter Note ({heroLangTab.toUpperCase()}) *
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="4"
+                  value={heroSubtitleObj[heroLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHeroSubtitleObj(prev => ({ ...prev, [heroLangTab]: val }));
+                  }}
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '10px' }}>
+                💾 Save Hero Banner & Translations
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Sub-Product Rates & Prices Manager Modal */}
+      {activeModal === 'ticker' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '880px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                ✏️ Edit Sub-Product Rates & Prices (સબ પ્રોડક્ટ રેટ મેનેજ કરો)
+              </h3>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: '6px 14px', fontSize: '0.8rem', color: '#2dd4bf', borderColor: 'rgba(45, 212, 191, 0.4)', background: 'rgba(45, 212, 191, 0.12)' }}
+                onClick={() => {
+                  if (setEditingProductId) setEditingProductId(null);
+                  setActiveModal('edit_product');
+                }}
+              >
+                ➕ + Add New Sub-Product (નવી સબ પ્રોડક્ટ ઉમેરો)
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '16px' }}>
+              અહીંથી તમે લાઈવ સ્ક્રોલ થતા દરેક સબ પ્રોડક્ટના HSN કોડ, B2B રેટ (ગ્લોબલ Ex-Factory/FOB) અને B2C રેટ (લોકલ રિટેલ ભાવ) સરળતાથી મેનેજ કરી શકો છો.
+            </p>
+
+            {tickerItemsInput.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '36px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed var(--border-glass)', marginBottom: '16px' }}>
+                <span style={{ fontSize: '2.8rem', display: 'block', marginBottom: '12px' }}>📦</span>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: '#f59e0b', fontWeight: 800 }}>
+                  {currentLang === 'gu' ? `"${activeCompany?.name || 'કંપની'}" માટે હજુ કોઈ સબ પ્રોડક્ટ ઉમેરેલ નથી` : `No Sub-Products Saved for ${activeCompany?.name || 'Company'} Yet`}
+                </h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', marginBottom: '18px', maxWidth: '540px', margin: '0 auto 18px auto' }}>
+                  {currentLang === 'gu'
+                    ? `દરેક કંપની પ્રોફાઈલનું પોતાનું જ અલગ પ્રોડક્ટ કેટલોગ હોય છે. આ કંપની માટે સબ પ્રોડક્ટ ઉમેરો જેથી તેના HSN કોડ અને B2B/B2C રેટ્સ અહીં મેનેજ કરી શકાય.`
+                    : `Each sister company profile maintains its own unique product catalog. Click below to add sub-products specifically for this company.`}
+                </p>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ padding: '10px 22px', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  onClick={() => {
+                    if (setEditingProductId) setEditingProductId(null);
+                    setActiveModal('edit_product');
+                  }}
+                >
+                  ➕ + Add Sub-Product for {activeCompany?.name || 'Company'} (પહેલી સબ પ્રોડક્ટ ઉમેરો)
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                saveMarketTickerList(tickerItemsInput);
+                if (showLiveToast) showLiveToast("✅ Sub-Product Rates Updated & Synced Successfully!", "success");
+                else alert("✅ Sub-Product Rates Updated & Synced Successfully!");
+                setActiveModal(null);
+              }}>
+                {/* Form Column Headers */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
+                  gap: '8px',
+                  padding: '0 12px 6px 12px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  color: '#38bdf8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  <div>Icon</div>
+                  <div>૧. સબ પ્રોડક્ટનું નામ</div>
+                  <div>૨. HSN</div>
+                  <div>૩. B2B Unit/Rate</div>
+                  <div>૪. B2C Unit/Rate</div>
+                  <div></div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  {tickerItemsInput.map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      style={{
+                        background: 'rgba(255,255,255,0.03)',
+                        padding: '10px 12px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-glass)',
+                        display: 'grid',
+                        gridTemplateColumns: '44px 1.2fr 90px 1.1fr 1.1fr 38px',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      {/* Icon Input */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ width: '100%', textAlign: 'center', fontSize: '1.1rem', padding: '4px' }}
+                        value={item.icon || '📦'}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, icon: val } : it));
+                        }}
+                        title="Item Emoji / Icon"
+                      />
+
+                      {/* Column 1: Sub-Product Name */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. COTTON-GUJ"
+                        value={item.symbol || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, symbol: val } : it));
+                        }}
+                        required
+                        title="૧. સબ પ્રોડક્ટનું નામ (Sub-Product Name)"
+                      />
+
+                      {/* Column 2: HSN / HS Code */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ fontWeight: 800, fontSize: '0.84rem', color: '#facc15', textAlign: 'center' }}
+                        placeholder="e.g. 5201"
+                        value={item.hsCode || item.hsn || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, hsCode: val, hsn: val } : it));
+                        }}
+                        title="૨. HSN (HS Code)"
+                      />
+
+                      {/* Column 3: B2B Unit/Rate */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ color: '#38bdf8', fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. $1.42/kg (FOB)"
+                        value={item.price || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, price: val } : it));
+                        }}
+                        required
+                        title="૩. B2B Unit/Rate (ગ્લોબલ B2B રેટ)"
+                      />
+
+                      {/* Column 4: B2C Unit/Rate */}
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ color: '#4ade80', fontWeight: 800, fontSize: '0.84rem' }}
+                        placeholder="e.g. ₹140/kg (Local)"
+                        value={item.change || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTickerItemsInput(prev => prev.map((it, i) => i === index ? { ...it, change: val } : it));
+                        }}
+                        title="૪. B2C Unit/Rate (લોકલ B2C રેટ)"
+                      />
+
+                      {/* Delete Item Button */}
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          color: '#ef4444',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
+                          borderRadius: '8px',
+                          padding: '6px',
+                          cursor: 'pointer',
+                          fontWeight: 800,
+                          textAlign: 'center'
+                        }}
+                        onClick={() => {
+                          setTickerItemsInput(prev => prev.filter((_, i) => i !== index));
+                        }}
+                        title="Delete Sub-Product Rate"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }}>
+                  💾 Save Sub-Product Rates & Update Ticker (સબ પ્રોડક્ટ રેટ સેવ કરો)
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* About Us Section & Track Record Stats Edit Modal */}
+      {activeModal === 'about' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '720px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '14px' }}>
+              ✏️ Edit About Us Section & Track Record Stats
+            </h3>
+
+            {/* Language Selector Tabs */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '10px' }}>
+              {[
+                { code: 'en', flag: '🇬🇧', name: 'English' },
+                { code: 'gu', flag: '🇮🇳', name: 'ગુજરાતી' },
+                { code: 'hi', flag: '🇮🇳', name: 'હિन्दी' },
+                { code: 'fr', flag: '🇫🇷', name: 'Français' }
+              ].map(lang => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  className={`btn-secondary ${aboutLangTab === lang.code ? 'active' : ''}`}
+                  style={{
+                    padding: '6px 14px',
+                    fontSize: '0.82rem',
+                    background: aboutLangTab === lang.code ? 'var(--primary-teal)' : 'rgba(255,255,255,0.05)',
+                    color: aboutLangTab === lang.code ? 'white' : 'var(--text-sub)',
+                    borderColor: aboutLangTab === lang.code ? 'var(--primary-teal-glow)' : 'var(--border-glass)',
+                    display: 'inline-flex',
+                    alignItems: 'center'
+                  }}
+                  onClick={() => setAboutLangTab(lang.code)}
+                >
+                  <FlagIcon code={lang.code} />
+                  <span>{lang.name}</span>
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              saveAboutData({
+                badge: aboutBadgeObj,
+                title: aboutTitleObj,
+                desc: aboutDescObj,
+                feat1: aboutFeat1Obj,
+                feat2: aboutFeat2Obj,
+                feat3: aboutFeat3Obj,
+                statsTitle: aboutStatsTitleObj,
+                counts: aboutCounts
+              });
+              alert('✅ About section & stats updated successfully!');
+            }}>
+
+              <div className="form-group">
+                <label className="form-label">Category Badge Text ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutBadgeObj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutBadgeObj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Main Section Title ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutTitleObj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutTitleObj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">About Us Description ({aboutLangTab.toUpperCase()})</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={aboutDescObj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutDescObj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                  required
+                ></textarea>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Key Feature 1 ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutFeat1Obj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutFeat1Obj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Key Feature 2 ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutFeat2Obj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutFeat2Obj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Key Feature 3 ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutFeat3Obj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutFeat3Obj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Stats Card Title ({aboutLangTab.toUpperCase()})</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aboutStatsTitleObj[aboutLangTab] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAboutStatsTitleObj(prev => ({ ...prev, [aboutLangTab]: val }));
+                  }}
+                />
+              </div>
+
+              <h4 style={{ fontSize: '1rem', fontWeight: 800, marginTop: '16px', marginBottom: '10px', color: 'var(--primary-teal-glow)' }}>
+                📊 Numerical Track Record Numbers
+              </h4>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Years Experience (+)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={aboutCounts.exp}
+                    onChange={(e) => setAboutCounts(prev => ({ ...prev, exp: Number(e.target.value) }))}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Export Countries (+)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={aboutCounts.countries}
+                    onChange={(e) => setAboutCounts(prev => ({ ...prev, countries: Number(e.target.value) }))}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Metric Tons Exported (+)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={aboutCounts.shipments}
+                    onChange={(e) => setAboutCounts(prev => ({ ...prev, shipments: Number(e.target.value) }))}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Global Importers (+)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={aboutCounts.clients}
+                    onChange={(e) => setAboutCounts(prev => ({ ...prev, clients: Number(e.target.value) }))}
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '14px' }}>
+                💾 Save About Section & Stats
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DUAL PRODUCT MODAL (2 DISTINCT FORMS FOR MAIN CATEGORY VS SUB-PRODUCT) */}
+      {(activeModal === 'product' || activeModal === 'product_main' || activeModal === 'product_sub') && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card" style={{ maxWidth: '1180px', width: '95%', maxHeight: '92vh', overflowY: 'auto', borderRadius: '20px' }}>
+            <button className="modal-close" onClick={() => setActiveModal((currentMerchant && !isAdminLoggedIn) ? 'seller_portal' : null)}>&times;</button>
+            
+            {/* REGISTERED SELLER MODE STATUS BANNER */}
+            {currentMerchant && !editingProductId && (
+              <div style={{ background: 'rgba(16, 185, 129, 0.12)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.4)', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>🏬 Registered Seller Mode:</span> Uploading Product as <strong>{currentMerchant.businessName}</strong> (📞 {currentMerchant.phone})
+                </div>
+                <span style={{ fontSize: '0.75rem', background: '#059669', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                  ⭐ Verified Exporter
+                </span>
+              </div>
+            )}
+
+            {/* EDITING MODE STATUS BANNER */}
+            {editingProductId && (
+              <div style={{ background: 'rgba(245, 158, 11, 0.15)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.4)', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>✏️ Mode:</span> Editing Product ID <span style={{ fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', padding: '1px 6px', borderRadius: '4px' }}>{editingProductId}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    setEditingProductId(null);
+                    setNameGu('');
+                    setNameEn('');
+                    setSpec('ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ');
+                    alert('✨ Switched to ADD NEW PRODUCT mode!');
+                  }}
+                  style={{ fontSize: '0.76rem', padding: '4px 10px', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.4)', background: 'rgba(34, 197, 94, 0.15)' }}
+                >
+                  ➕ Switch to Add NEW Product
+                </button>
+              </div>
+            )}
+
+            {/* FORM SWITCHER TABS */}
+            {(!currentMerchant || isAdminLoggedIn) && (
+              <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: 'var(--radius-pill)', marginBottom: '20px' }}>
+                <button
+                  type="button"
+                  onClick={() => setProdType('main')}
+                  style={{
+                    flex: 1,
+                    padding: '9px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: 'none',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    background: prodType === 'main' ? 'var(--primary-teal)' : 'transparent',
+                    color: prodType === 'main' ? 'white' : 'var(--text-sub)',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  🏷️ 1. Main Category Form
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProdType('sub')}
+                  style={{
+                    flex: 1,
+                    padding: '9px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: 'none',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    background: prodType === 'sub' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
+                    color: prodType === 'sub' ? 'white' : 'var(--text-sub)',
+                    transition: 'all 0.25s'
+                  }}
+                >
+                  📦 2. Sub-Product Form
+                </button>
+              </div>
+            )}
+
+            {/* ======================================================== */}
+            {/* FORM 1: MAIN PRODUCT / CATEGORY FORM                     */}
+            {/* ======================================================== */}
+            {prodType === 'main' ? (
+              <div>
+                <div style={{
+                  background: 'rgba(13, 148, 136, 0.15)',
+                  border: '1px solid rgba(13, 148, 136, 0.4)',
+                  padding: '10px 16px',
+                  borderRadius: '12px',
+                  marginBottom: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2dd4bf' }}>
+                    🏢 Adding for Company: <strong>{activeCompany?.name || 'Active Company'}</strong>
+                  </span>
+                  <span style={{ fontSize: '0.72rem', background: '#0d9488', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                    Active Profile
+                  </span>
+                </div>
+
+                <div style={{
+                  background: 'rgba(56, 189, 248, 0.12)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  padding: '12px 16px',
+                  borderRadius: '14px',
+                  marginBottom: '16px',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-main)',
+                  lineHeight: '1.5'
+                }}>
+                  🏷️ <strong>Main Category Group (મેઈન કેટેગરી ગ્રુપ):</strong> આ ફોર્મ ફક્ત મેઈન પ્રોડક્ટ કેટેગરી ગ્રુપ (જેમ કે: એગ્રો પ્રોડક્ટ્સ, ઇલેક્ટ્રોનિક્સ, ટેક્સટાઇલ વગેરે) ઉમેરવા માટે છે. પ્રોડક્ટના ફોટો, HSN કોડ, પેકિંગ અને ભાવ <strong>'2. Sub-Product Form'</strong> માં ઉમેરાશે.
+                </div>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!nameGu && !nameEn) return;
+                  const catSlug = catCodeInput.trim() ? catCodeInput.trim().toLowerCase().replace(/\s+/g, '_') : `cat-custom-${Date.now()}`;
+
+                  const targetCompId = activeCompany?.id || activeCompanyId || 'comp_1';
+                  saveProduct({
+                    category: catSlug,
+                    companyId: targetCompId,
+                    parentId: null,
+                    isSub: false,
+                    enableGlobalTrade: true,
+                    enableLocalTrade: true,
+                    hsCode: '',
+                    image: '',
+                    images: [],
+                    names: { gu: nameGu || nameEn, en: nameEn || nameGu, hi: nameGu || nameEn, fr: nameEn || nameGu },
+                    spec: mainDescInput || 'Main Product Category Group',
+                    icon: catIconInput || '🏷️',
+                    packaging: '', moq: '',
+                    isCustom: true
+                  });
+                  alert(`✅ Main Category Group "${nameEn || nameGu}" created successfully!`);
+                  setActiveModal(null);
+                }}>
+                  {/* 1. SELECT PRODUCT TYPE */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Select Product Form Type *</label>
+                    <select className="form-control" value={prodType} onChange={(e) => setProdType(e.target.value)}>
+                      <option value="main">1. Add Main Category Group (e.g. Agro, Electronics, Textiles)</option>
+                      <option value="sub">2. Add Sub-Product (Photos, HSN Code, Specs & Pricing)</option>
+                    </select>
+                  </div>
+
+                  {/* 2. CATEGORY NAME (ENGLISH - PRIMARY BASE LANGUAGE) */}
+                  <div className="form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Main Category Name (English) * <span style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700 }}>(e.g. Agro & Spices Products)</span>
+                      </label>
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        🌐 Main Category Title
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Agro Products / Electronics / Textile & Garments"
+                      value={nameEn}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setNameEn(val);
+                        setNameGu(autoTranslateText(val, 'gu'));
+                        if (val.trim().length > 1) {
+                          fetchGoogleTransliteration(val, 'gu').then(res => {
+                            if (res) setNameGu(res);
+                          });
+                        }
+                      }}
+                      required
+                    />
+                  </div>
+
+                  {/* 3. CATEGORY NAME (GUJARATI - AUTO-TRANSLATED IN REAL-TIME) */}
+                  <div className="form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Category Name (Gujarati) <span style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 700 }}>(⚡ Real-Time Auto-Translated)</span>
+                      </label>
+                      <button
+                        type="button"
+                        style={{
+                          fontSize: '0.72rem',
+                          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                          color: '#ffffff',
+                          border: 'none',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={async () => {
+                          if (nameEn) {
+                            setNameGu(autoTranslateText(nameEn, 'gu'));
+                            const liveGu = await fetchGoogleTransliteration(nameEn, 'gu');
+                            if (liveGu) setNameGu(liveGu);
+                          }
+                        }}
+                        title="Click to auto-translate English name into Gujarati script"
+                      >
+                        ⚡ Auto-Translate
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. એગ્રો અને મસાલા પ્રોડક્ટ્સ"
+                      value={nameGu}
+                      onChange={(e) => setNameGu(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 3. CATEGORY ICON / EMOJI PICKER */}
+                  <div className="form-group" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '14px', border: '1px solid var(--border-glass)', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Category Icon / Emoji (કેટેગરીનું ઈમોજી પસંદ કરો) *
+                      </label>
+                      <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 800 }}>
+                        Selected Emoji: <span style={{ fontSize: '1.3rem', marginLeft: '6px' }}>{catIconInput || '🏷️'}</span>
+                      </span>
+                    </div>
+
+                    {/* Quick Emoji Presets Bar */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                      {[
+                        { emoji: '🌾', label: 'Agro / Spices' },
+                        { emoji: '🥛', label: 'Dairy' },
+                        { emoji: '🧵', label: 'Textiles' },
+                        { emoji: '👕', label: 'Garments' },
+                        { emoji: '📦', label: 'Packaging' },
+                        { emoji: '⚡', label: 'Electronics' },
+                        { emoji: '🚗', label: 'Automobiles' },
+                        { emoji: '⚙️', label: 'Industrial' },
+                        { emoji: '🏭', label: 'New Machinery' },
+                        { emoji: '🏗️', label: 'Used Machinery' },
+                        { emoji: '☕', label: 'Beverages / Tea' },
+                        { emoji: '🍯', label: 'Honey / Organic' },
+                        { emoji: '🧱', label: 'Hardware' },
+                        { emoji: '🏷️', label: 'General Category' }
+                      ].map(item => (
+                        <button
+                          key={item.emoji}
+                          type="button"
+                          style={{
+                            background: catIconInput === item.emoji ? 'rgba(56, 189, 248, 0.35)' : 'rgba(255, 255, 255, 0.08)',
+                            border: catIconInput === item.emoji ? '2px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '10px',
+                            padding: '6px 12px',
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                          onClick={() => setCatIconInput(item.emoji)}
+                          title={item.label}
+                        >
+                          {item.emoji}
+                        </button>
+                      ))}
+                    </div>
+
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Type custom emoji e.g. 🚗, ⚡, 📱"
+                      value={catIconInput}
+                      onChange={(e) => setCatIconInput(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 4. CATEGORY CODE & DESCRIPTION */}
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontWeight: 800 }}>Category Code / Tab ID</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="e.g. agro_spices"
+                        value={catCodeInput}
+                        onChange={(e) => setCatCodeInput(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontWeight: 800 }}>Category Description / Tagline</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="e.g. Premium export quality commodities"
+                        value={mainDescInput}
+                        onChange={(e) => setMainDescInput(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 5. SAVE BUTTON FOR MAIN CATEGORY */}
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{
+                      width: '100%',
+                      justifyContent: 'center',
+                      padding: '14px',
+                      background: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',
+                      borderRadius: 'var(--radius-pill)',
+                      fontSize: '1rem',
+                      fontWeight: 800,
+                      marginTop: '10px'
+                    }}
+                  >
+                    🏷️ Save Main Category Group (મેઈન કેટેગરી ઉમેરો)
+                  </button>
+                </form>
+              </div>
+            ) : (
+              /* ======================================================== */
+              /* FORM 2: SUB-PRODUCT FORM (MAIN PRODUCT CATEGORY DROPDOWN)  */
+              /* ======================================================== */
+              <div>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!nameGu || !hsCode) {
+                    alert("⚠️ Product Name and International HS Code are mandatory!");
+                    return;
+                  }
+                  const imgList = imageUrls.length ? [...imageUrls] : ['images/agro_spices_grains.png'];
+                  
+                  // Extract category from Parent Main Category select
+                  let category = 'agro';
+                  if (parentSelect) {
+                    const mainOpts = getMainProductCategoryOptions();
+                    const matched = mainOpts.find(o => o.category === parentSelect || o.id === parentSelect);
+                    if (matched) category = matched.category;
+                    else category = parentSelect;
+                  }
+
+                  const baseEnglishName = (nameEn || nameGu || 'Product').trim();
+                  const autoNames = autoGenerateMultilingualNames(baseEnglishName);
+                  if (nameGu && nameGu.trim()) autoNames.gu = nameGu.trim();
+
+                  const baseEnglishSpec = (typeof spec === 'string' ? spec : (spec.en || spec.gu || 'Premium Export Quality Category')).trim();
+                  const autoSpec = autoGenerateMultilingualSpec(baseEnglishSpec);
+
+                  const parsedUsd = (priceUSD !== '' && !isNaN(parseFloat(priceUSD))) 
+                    ? parseFloat(priceUSD) 
+                    : ((localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat((parseFloat(localPrice) / 86.45).toFixed(2)) : null);
+
+                  const targetCompId = activeCompany?.id || activeCompanyId || 'comp_1';
+                  saveProduct({
+                    id: editingProductId || undefined,
+                    companyId: targetCompId,
+                    category,
+                    parentId: parentSelect || null,
+                    isSub: true,
+                    enableGlobalTrade,
+                    enableLocalTrade,
+                    enableCoa,
+                    hsCode: hsCode.trim(),
+                    localHsn: localHsn ? localHsn.trim() : `${hsCode.trim()}10`,
+                    image: imgList[0],
+                    images: imgList,
+                    names: autoNames,
+                    spec: autoSpec,
+                    packaging, moq,
+                    priceUSD: parsedUsd,
+                    exportIncoterm: exportIncoterm || 'FOB',
+                    exportCurrency: exportCurrency || 'INR',
+                    localPrice: (localPrice !== '' && !isNaN(parseFloat(localPrice))) ? parseFloat(localPrice) : 999,
+                    mrpInr: (localMrp !== '' && !isNaN(parseFloat(localMrp))) ? parseFloat(localMrp) : 1499,
+                    packingCharge: (packingCharge !== '' && !isNaN(parseFloat(packingCharge))) ? parseFloat(packingCharge) : 0,
+                    courierCharge: (courierCharge !== '' && !isNaN(parseFloat(courierCharge))) ? parseFloat(courierCharge) : 0,
+                    localGstRate: parseFloat(localGstRate) || 18,
+                    localStock: parseInt(localStock) || 100,
+                    couponBadge: couponBadge || '10% OFF Special Offer',
+                    unit: localUnit || 'kg',
+                    currency: localCurrency || 'INR',
+                    isCustom: true
+                  });
+                  alert(`✅ Sub-Product "${baseEnglishName}" with International HS Code "${hsCode}" saved successfully!`);
+                  if (currentMerchant && !isAdminLoggedIn) {
+                    setActiveModal('seller_portal');
+                    setSellerTab('dashboard');
+                  }
+                }}>
+                  {/* 1. SELECT PRODUCT TYPE */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Select Product Type *</label>
+                    <select className="form-control" value={prodType} onChange={(e) => setProdType(e.target.value)}>
+                      <option value="sub">2. Add Sub-Product (Full Specs & Packaging)</option>
+                      <option value="main">1. Add Main Product / Category (e.g., Grains, Fasteners, Spices)</option>
+                    </select>
+                  </div>
+
+                  {/* 2. SELECT PARENT MAIN PRODUCT CATEGORY (CORRECT MAIN CATEGORY NAMES LIST) */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>
+                      Select Parent Main Product Category *
+                    </label>
+                    <select
+                      className="form-control"
+                      value={parentSelect}
+                      onChange={(e) => setParentSelect(e.target.value)}
+                      required
+                    >
+                      {getMainProductCategoryOptions()
+                        .filter(cat => cat.category && !String(cat.category).startsWith('data:') && !String(cat.id).startsWith('data:'))
+                        .map(cat => {
+                          const isBase64OrUrl = cat.icon && (cat.icon.startsWith('data:') || cat.icon.startsWith('http') || cat.icon.length > 30);
+                          const safeIcon = isBase64OrUrl ? (getSmartCategoryIcon(cat.category, cat.nameEn) || '🏷️') : (cat.icon || '🏷️');
+                          let cleanName = (currentLang === 'gu' ? (cat.nameGu || cat.nameEn) : (cat.nameEn || cat.nameGu)) || cat.category || 'Category';
+                          if (typeof cleanName === 'string' && (cleanName.startsWith('data:') || cleanName.length > 80)) {
+                            cleanName = 'Custom Category';
+                          }
+
+                          return (
+                            <option key={cat.id} value={cat.category}>
+                              {safeIcon} {cleanName}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+
+                  {/* 3. PRODUCT NAME (ENGLISH - PRIMARY BASE LANGUAGE) */}
+                  <div className="form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Product Name (English) * <span style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700 }}>(Primary Base Language)</span>
+                      </label>
+                      <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                        🌐 Main Global Name
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Gujarati Dress / Cumin Seeds / Bio-Washed T-Shirts"
+                      value={nameEn}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setNameEn(val);
+                        setNameGu(autoTranslateText(val, 'gu'));
+                        if (val.trim().length > 1) {
+                          fetchGoogleTransliteration(val, 'gu').then(res => {
+                            if (res) setNameGu(res);
+                          });
+                        }
+                      }}
+                      required
+                    />
+                  </div>
+
+                  {/* 4. PRODUCT NAME (GUJARATI - AUTO-TRANSLATED IN REAL-TIME) */}
+                  <div className="form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0 }}>
+                        Product Name (Gujarati) <span style={{ fontSize: '0.74rem', color: '#4ade80', fontWeight: 700 }}>(⚡ Real-Time Auto-Translated)</span>
+                      </label>
+                      <button
+                        type="button"
+                        style={{
+                          fontSize: '0.72rem',
+                          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                          color: '#ffffff',
+                          border: 'none',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={async () => {
+                          if (nameEn) {
+                            setNameGu(autoTranslateText(nameEn, 'gu'));
+                            const liveGu = await fetchGoogleTransliteration(nameEn, 'gu');
+                            if (liveGu) setNameGu(liveGu);
+                          }
+                        }}
+                        title="Click to auto-translate English name into Gujarati script"
+                      >
+                        ⚡ Auto-Translate
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. ગુજરાતી ડ્રેસ (Gujarati Dress)"
+                      value={nameGu}
+                      onChange={(e) => setNameGu(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ background: 'rgba(20, 184, 166, 0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(45, 212, 191, 0.35)', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '1.25rem' }}>🌐</span>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary-teal-glow)' }}>
+                          Global B2B Export Trade Options (ગ્લોબલ એક્ષપોર્ટ વેચાણ & HS કોડ વિગત)
+                        </h4>
+                        <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                          (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🌐 Global Trade (B2B Export) મોડ ચાલુ કરે ત્યારે ડિસ્પલે થશે)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Global Trade & Spec/COA Enable Checkbox Options */}
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        background: enableGlobalTrade ? 'rgba(45, 212, 191, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid ' + (enableGlobalTrade ? '#2dd4bf' : 'rgba(255,255,255,0.2)'),
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={enableGlobalTrade}
+                          onChange={(e) => setEnableGlobalTrade(e.target.checked)}
+                          style={{ width: '16px', height: '16px', accentColor: '#2dd4bf', cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableGlobalTrade ? '#2dd4bf' : '#94a3b8' }}>
+                          🌐 Enable for Global Export Trade (આંતરરાષ્ટ્રીય ગ્લોબલ ટ્રેડમાં લાઈવ બતાવો)
+                        </span>
+                      </label>
+
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        background: enableCoa ? 'rgba(167, 139, 250, 0.18)' : 'rgba(255, 255, 255, 0.05)',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid ' + (enableCoa ? '#a78bfa' : 'rgba(255,255,255,0.2)'),
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={enableCoa}
+                          onChange={(e) => setEnableCoa(e.target.checked)}
+                          style={{ width: '16px', height: '16px', accentColor: '#a78bfa', cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableCoa ? '#c4b5fd' : '#94a3b8' }}>
+                          🧪 Enable "Spec & COA" (લેબ સર્ટિફિકેટ & ટેકનિકલ સ્પેક બટન લાઈવ બતાવો)
+                        </span>
+                      </label>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label className="form-label" style={{ fontWeight: 800, margin: 0, color: '#e2e8f0', fontSize: '0.84rem' }}>
+                        🌐 Global Int'l HS Code Search <span style={{ color: '#2dd4bf', fontWeight: 700 }}>(WCO 6-Digit Online Tool)</span>
+                      </label>
+                    </div>
+
+                    {/* Live Search Tool for Global Int'l HS Code */}
+                    <div style={{ position: 'relative', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="🔍 Type Global product name (e.g. Cumin, Rice, Bolts, Textile)..."
+                          value={hsSearchQuery}
+                          onChange={(e) => {
+                            setHsSearchQuery(e.target.value);
+                            setShowHsDropdown(true);
+                          }}
+                          onFocus={() => setShowHsDropdown(true)}
+                          style={{ fontSize: '0.86rem', flex: 1 }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleOnlineHsSearch(hsSearchQuery, 'international')}
+                          className="btn-primary"
+                          style={{
+                            padding: '0 12px',
+                            flexShrink: 0,
+                            fontSize: '0.78rem',
+                            fontWeight: 800,
+                            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                            boxShadow: '0 2px 10px rgba(2, 132, 199, 0.3)',
+                            whiteSpace: 'nowrap'
+                          }}
+                          title="Search 6-Digit International HS Code Online"
+                        >
+                          🌐 Int'l HS Search
+                        </button>
+                        {hsSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => { setHsSearchQuery(''); setShowHsDropdown(false); }}
+                            className="btn-secondary"
+                            style={{ padding: '0 8px', flexShrink: 0 }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Dropdown Results */}
+                      {showHsDropdown && (
+                        <div className="glass-card" style={{
+                          position: 'absolute',
+                          top: 'calc(100% + 4px)',
+                          left: 0,
+                          width: '100%',
+                          maxHeight: '240px',
+                          overflowY: 'auto',
+                          zIndex: 100,
+                          background: 'rgba(15, 23, 42, 0.98)',
+                          backdropFilter: 'blur(24px)',
+                          border: '1px solid var(--primary-teal-glow)',
+                          borderRadius: 'var(--radius-md)',
+                          boxShadow: '0 15px 40px rgba(0,0,0,0.6)',
+                          padding: '6px'
+                        }}>
+                          <div
+                            onClick={() => {
+                              handleOnlineHsSearch(hsSearchQuery, 'international');
+                              setShowHsDropdown(false);
+                            }}
+                            style={{
+                              padding: '8px',
+                              borderRadius: 'var(--radius-sm)',
+                              cursor: 'pointer',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              background: 'rgba(2, 132, 199, 0.18)',
+                              color: '#38bdf8',
+                              border: '1px solid rgba(56, 189, 248, 0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justify: 'space-between',
+                              marginBottom: '8px'
+                            }}
+                          >
+                            <span>🌐 Search "{hsSearchQuery || 'Product'}" Int'l 6-Digit HS Code Online</span>
+                            <span style={{ fontSize: '0.7rem', background: '#0284c7', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
+                          </div>
+
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', padding: '4px 8px', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '4px' }}>
+                            👇 Quick Auto-Fill Int'l WCO 6-Digit HS Code:
+                          </div>
+
+                          {filteredHsCodes.length === 0 ? (
+                            <div style={{ padding: '10px', textAlign: 'center' }}>
+                              <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '6px' }}>
+                                No matching local database HS Code found for "{hsSearchQuery}".
+                              </p>
+                              <button
+                                type="button"
+                                className="btn-primary"
+                                style={{
+                                  width: '100%',
+                                  fontSize: '0.78rem',
+                                  padding: '6px',
+                                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                                  justify: 'center'
+                                }}
+                                onClick={() => {
+                                  handleOnlineHsSearch(hsSearchQuery, 'international');
+                                  setShowHsDropdown(false);
+                                }}
+                              >
+                                🌐 Search Int'l 6-Digit HS Code Online
+                              </button>
+                            </div>
+                          ) : (
+                            filteredHsCodes.map((item, idx) => (
+                              <div
+                                key={idx}
+                                onClick={() => {
+                                  setHsCode(item.code);
+                                  setHsSearchQuery(`${item.code} - ${item.name}`);
+                                  setShowHsDropdown(false);
+                                }}
+                                style={{
+                                  padding: '8px 10px',
+                                  borderRadius: 'var(--radius-sm)',
+                                  cursor: 'pointer',
+                                  fontSize: '0.82rem',
+                                  display: 'flex',
+                                  justify: 'space-between',
+                                  alignItems: 'center',
+                                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                  transition: 'background 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(20, 184, 166, 0.2)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                              >
+                                <div>
+                                  <span style={{ fontWeight: 900, color: '#4ade80', marginRight: '6px' }}>
+                                    🌐 {item.code}
+                                  </span>
+                                  <span style={{ color: 'var(--text-main)' }}>{item.name}</span>
+                                </div>
+                                <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', color: 'var(--text-sub)', padding: '2px 6px', borderRadius: '4px' }}>
+                                  {item.cat}
+                                </span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px' }}>
+                        🌐 Int'l HS Code (6-Digit WCO) * <span style={{ color: '#f59e0b', fontWeight: 700 }}>(Mandatory / ફરજીયાત)</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="e.g. 090931"
+                        value={hsCode}
+                        onChange={(e) => setHsCode(e.target.value)}
+                        required
+                        style={{ fontWeight: 800, color: 'var(--primary-teal-glow)' }}
+                      />
+                    </div>
+
+                    {/* 3 EXPLICIT MOQ DIVISION BOXES (યુનિટ, કાર્ટન/કોથળા/બોક્ષ અને કન્ટેનર સાઈઝ) */}
+                    <div className="form-group" style={{ marginBottom: 0, width: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <label style={{ fontSize: '0.82rem', color: '#38bdf8', margin: 0, fontWeight: 800 }}>
+                          📦 Minimum Order Quantity (MOQ) - ૩-ડિવીઝન ઓર્ડર બોક્સ (Numbers & Dropdowns)
+                        </label>
+                      </div>
+
+                      {/* 3 Explicit Boxes Grid Container */}
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
+                        gap: '10px',
+                        background: 'rgba(15, 23, 42, 0.7)',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        marginBottom: '10px'
+                      }}>
+                        {/* BOX 1: યુનિટ / નંગ ડ્રોપડાઉન (Single Item Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૧. યુનિટ ડ્રોપડાઉન (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqUnitQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqUnitQty(val);
+                                setMoq(buildMoqString(val, moqUnitType, moqPackQty, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="યુનિટ સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqUnitType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqUnitType(val);
+                                setMoq(buildMoqString(moqUnitQty, val, moqPackQty, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#38bdf8', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="Pcs (નંગ)">Pcs (નંગ / ટુકડા)</option>
+                              <option value="None">None (જરૂર નથી)</option>
+                              <option value="Pairs (જોડી)">Pairs (જોડી)</option>
+                              <option value="Sets (સેટ)">Sets (સેટ)</option>
+                              <option value="Meter (મીટર)">Meter (મીટર)</option>
+                              <option value="Kg (કિલોગ્રામ)">Kg (કિલોગ્રામ)</option>
+                              <option value="Grams (ગ્રામ)">Grams (ગ્રામ)</option>
+                              <option value="Dozen (ડઝન)">Dozen (ડઝન)</option>
+                              <option value="Litre (લીટર)">Litre (લીટર)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* BOX 2: કાર્ટન, કોથળા & બોક્ષ ડ્રોપડાઉન (Master Packaging Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૨. કાર્ટન / કોથળા / બોક્ષ (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqPackQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqPackQty(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, val, moqPackType, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="પેકિંગ સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqPackType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqPackType(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, val, moqContainerQty, moqContainerType));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#facc15', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="Cartons (કાર્ટન)">Cartons (કાર્ટન બોક્સ)</option>
+                              <option value="None">None (જરૂર નથી)</option>
+                              <option value="Bags (કોથળા / ગુણી)">Bags (કોથળા / ગુણી)</option>
+                              <option value="Boxes (માસ્ટર બોક્ષ)">Boxes (માસ્ટર બોક્ષ)</option>
+                              <option value="Bales (ગાંસડી)">Bales (ગાંસડી / બંડલ)</option>
+                              <option value="Drums (ડ્રમ)">Drums (ડ્રમ / બેરલ)</option>
+                              <option value="Pallets (પેલેટ)">Pallets (વુડન પેલેટ)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* BOX 3: કન્ટેનર સાઈઝ ડ્રોપડાઉન (Shipment / Container Size Level) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <label style={{ fontSize: '0.74rem', color: '#2dd4bf', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                            ૩. કન્ટેનર સાઈઝ ડ્રોપડાઉન (Qty)
+                          </label>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="સંખ્યા"
+                              min="0"
+                              value={moqContainerQty}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqContainerQty(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, moqPackType, val, moqContainerType));
+                              }}
+                              style={{ width: '65px', fontWeight: 800, textAlign: 'center', padding: '4px 6px', fontSize: '0.82rem' }}
+                              title="કન્ટેનર સંખ્યા (Numbers Qty)"
+                            />
+                            <select
+                              className="form-control"
+                              value={moqContainerType}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMoqContainerType(val);
+                                setMoq(buildMoqString(moqUnitQty, moqUnitType, moqPackQty, moqPackType, moqContainerQty, val));
+                              }}
+                              style={{ flex: 1, fontWeight: 800, background: '#0f172a', color: '#2dd4bf', fontSize: '0.78rem', padding: '4px 4px' }}
+                            >
+                              <option value="None">None (જરૂર નથી - DHL / Air Cargo)</option>
+                              <option value="20ft FCL Container">20ft FCL Container</option>
+                              <option value="40ft FCL Container">40ft FCL Container</option>
+                              <option value="40ft High Cube (HC)">40ft High Cube (HC)</option>
+                              <option value="LCL Cargo Shipment">LCL Cargo Shipment (ઓછો માલ)</option>
+                              <option value="Air Freight Cargo (DHL/Express)">Air Freight Cargo (DHL / Air Express)</option>
+                              <option value="Courier Parcel">Courier Parcel (કુરિયર પાર્સલ)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      {/* Live Final MOQ Result Field */}
+                      <div>
+                        <label style={{ fontSize: '0.74rem', color: '#2dd4bf', fontWeight: 800, display: 'block', marginBottom: '2px' }}>
+                          🌐 ફાઇનલ MOQ સ્પેસિફિકેશન ટેક્સ્ટ (ઓટો-જનરેટેડ & એડિટેબલ):
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="e.g. 100 Pcs (નંગ) / 10 Cartons (કાર્ટન) / 1 Container (20ft FCL)"
+                          value={moq}
+                          onChange={(e) => setMoq(e.target.value)}
+                          style={{ fontWeight: 800, fontSize: '0.88rem', color: '#2dd4bf', background: '#0f172a', border: '1px solid #2dd4bf' }}
+                        />
+                      </div>
+
+                      {/* 💲 Global Export FOB / CIF Unit Price ($ USD) & Incoterms Selection */}
+                      <div style={{ marginTop: '14px', background: 'rgba(16, 185, 129, 0.08)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap', gap: '8px' }}>
+                          <label style={{ fontSize: '0.88rem', color: '#4ade80', margin: 0, fontWeight: 900 }}>
+                            💲 Global Export Price ($ USD) & Incoterms Selection (FOB / CIF / EXW)
+                          </label>
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => setShowIncotermsModal(true)}
+                            style={{
+                              padding: '4px 10px',
+                              fontSize: '0.76rem',
+                              fontWeight: 800,
+                              background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                              border: '1px solid rgba(56, 189, 248, 0.5)',
+                              boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            📊 View Incoterms Responsibilities Chart & Guide
+                          </button>
+                        </div>
+                        <p style={{ fontSize: '0.74rem', color: '#9ca3af', margin: '0 0 10px' }}>
+                          પરફોર્મા ઈનવોઈસ (Proforma Invoice) અને આંતરરાષ્ટ્રીય B2B ક્વોટેશન માટે કરંસી (ડિફોલ્ટ USD), યુનિટ દીઠ ભાવ અને Incoterm (FOB, CIF, EXW, CFR) પસંદ કરો.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                          {/* Searchable World Currency Dropdown (Default USD) */}
+                          <div style={{ minWidth: '160px', flexShrink: 0 }}>
+                            <SearchableCurrencySelect
+                              label="💱 Export Currency *"
+                              value={exportCurrency || 'INR'}
+                              onChange={(selected) => {
+                                const code = typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR');
+                                setExportCurrency(code);
+                                setQuoteCurrency(code);
+                              }}
+                            />
+                          </div>
+
+                          {/* Export Unit Price Input */}
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flex: 1, minWidth: '170px' }}>
+                            <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#4ade80' }}>
+                              {(DEFAULT_CURRENCIES.find(c => c.code === (exportCurrency || 'USD'))?.symbol) || '$'}
+                            </span>
+                            <input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              className="form-control"
+                              placeholder={`e.g. 14.00 (${exportCurrency || 'USD'} / Unit)`}
+                              value={priceUSD}
+                              onChange={(e) => setPriceUSD(e.target.value)}
+                              style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem', background: '#0f172a', border: '1px solid rgba(74, 222, 128, 0.5)', flex: 1 }}
+                            />
+                            <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700, whiteSpace: 'nowrap' }}>{exportCurrency || 'USD'} / Unit</span>
+                          </div>
+
+                          {/* Incoterm Term Selector Dropdown */}
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800 }}>Incoterm:</span>
+                            <select
+                              className="form-control"
+                              value={exportIncoterm}
+                              onChange={(e) => setExportIncoterm(e.target.value)}
+                              style={{
+                                fontSize: '0.82rem',
+                                fontWeight: 800,
+                                background: '#0f172a',
+                                color: '#facc15',
+                                border: '1px solid rgba(250, 204, 21, 0.5)',
+                                padding: '6px 10px',
+                                borderRadius: '8px',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <option value="FOB">FOB - Free On Board (Loading Port Quay)</option>
+                              <option value="CIF">CIF - Cost, Insurance & Freight (Destination Port)</option>
+                              <option value="EXW">EXW - Ex Works (Factory Premises)</option>
+                              <option value="CFR">CFR - Cost & Freight (Destination Port)</option>
+                              <option value="DDP">DDP - Delivered Duty Paid (Buyer Warehouse Door)</option>
+                              <option value="FCA">FCA - Free Carrier (First Inland Depot)</option>
+                              <option value="CIP">CIP - Carriage & Insurance Paid To</option>
+                              <option value="DAP">DAP - Delivered at Place</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* LOCAL B2C RETAIL TRADE OPTIONS SECTION (લોકલ વેચાણ, પેકિંગ ચાર્જ & કુરિયર ચાર્જીસ) */}
+                  {(() => {
+                    const currSymbolMap = {
+                      INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ', CAD: 'CA$', AUD: 'A$',
+                      JPY: '¥', CHF: 'CHF ', SGD: 'S$', NZD: 'NZ$', HKD: 'HK$', SAR: 'SR ',
+                      QAR: 'QR ', KWD: 'KD ', OMR: 'OMR ', BHD: 'BD ', CNY: '¥', RUB: '₽', BRL: 'R$',
+                      MXN: 'Mex$', ZAR: 'R ', SEK: 'kr ', NOK: 'kr ', DKK: 'kr ', PLN: 'zł ',
+                      TRY: '₺', THB: '฿', IDR: 'Rp ', MYR: 'RM ', PHP: '₱', EGP: 'E£ '
+                    };
+                    const activeCurrCode = typeof localCurrency === 'object' && localCurrency ? (localCurrency.code || 'INR') : (localCurrency || 'INR');
+                    const activeCurrSym = currSymbolMap[activeCurrCode] || (activeCurrCode + ' ');
+                    const currLabelTag = `${activeCurrSym} ${activeCurrCode}`;
+
+                    return (
+                      <div style={{
+                        background: 'rgba(250, 204, 21, 0.05)',
+                        padding: '16px',
+                        borderRadius: '16px',
+                        border: '1px solid rgba(250, 204, 21, 0.35)',
+                        marginBottom: '16px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <span style={{ fontSize: '1.25rem' }}>🛍️</span>
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#facc15' }}>
+                              Local B2C Retail Trade Options (લોકલ વેચાણ, પેકિંગ ચાર્જ & કુરિયર ચાર્જીસ)
+                            </h4>
+                            <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                              (આ વિકલ્પો ફક્ત વિઝિટર જ્યારે 🛍️ Local Trade મોડ ચાલુ કરે ત્યારે જ ડિસ્પલે થશે)
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Local Trade Enable Checkbox Option */}
+                        <div style={{ marginBottom: '12px' }}>
+                          <label style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            background: enableLocalTrade ? 'rgba(250, 204, 21, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                            padding: '6px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid ' + (enableLocalTrade ? '#facc15' : 'rgba(255,255,255,0.2)'),
+                            transition: 'all 0.2s ease'
+                          }}>
+                            <input
+                              type="checkbox"
+                              checked={enableLocalTrade}
+                              onChange={(e) => setEnableLocalTrade(e.target.checked)}
+                              style={{ width: '16px', height: '16px', accentColor: '#facc15', cursor: 'pointer' }}
+                            />
+                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: enableLocalTrade ? '#facc15' : '#94a3b8' }}>
+                              🛍️ Enable for Local B2C Retail Trade (લોકલ બીટુસી રીટેલ ટ્રેડમાં લાઈવ બતાવો)
+                            </span>
+                          </label>
+                        </div>
+
+                        {/* Local HSN Code Live Online Search Tool */}
+                        <div style={{ position: 'relative', marginBottom: '12px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, margin: 0 }}>
+                              🇮🇳 Local HSN Code Search <span style={{ color: '#94a3b8', fontWeight: 600 }}>(Indian Customs 8-Digit Tool)</span>
+                            </label>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="🔍 Type Local product name (e.g. જીરૂં, ઘઉં, ગારમેન્ટ્સ, Bolts)..."
+                              value={localHsnSearchQuery}
+                              onChange={(e) => {
+                                setLocalHsnSearchQuery(e.target.value);
+                                setShowLocalHsnDropdown(true);
+                              }}
+                              onFocus={() => setShowLocalHsnDropdown(true)}
+                              style={{ fontSize: '0.86rem', flex: 1, borderColor: 'rgba(250, 204, 21, 0.4)' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleOnlineHsSearch(localHsnSearchQuery, 'local')}
+                              className="btn-secondary"
+                              style={{
+                                padding: '0 12px',
+                                flexShrink: 0,
+                                fontSize: '0.78rem',
+                                fontWeight: 800,
+                                color: '#facc15',
+                                borderColor: '#facc15',
+                                background: 'rgba(250, 204, 21, 0.15)',
+                                whiteSpace: 'nowrap'
+                              }}
+                              title="Search 8-Digit Indian Local HSN Code Online"
+                            >
+                              🇮🇳 Local HSN Search
+                            </button>
+                            {localHsnSearchQuery && (
+                              <button
+                                type="button"
+                                onClick={() => { setLocalHsnSearchQuery(''); setShowLocalHsnDropdown(false); }}
+                                className="btn-secondary"
+                                style={{ padding: '0 8px', flexShrink: 0 }}
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Local Dropdown Results */}
+                          {showLocalHsnDropdown && (
+                            <div className="glass-card" style={{
+                              position: 'absolute',
+                              top: 'calc(100% + 4px)',
+                              left: 0,
+                              width: '100%',
+                              maxHeight: '240px',
+                              overflowY: 'auto',
+                              zIndex: 100,
+                              background: 'rgba(15, 23, 42, 0.98)',
+                              backdropFilter: 'blur(24px)',
+                              border: '1px solid #facc15',
+                              borderRadius: 'var(--radius-md)',
+                              boxShadow: '0 15px 40px rgba(0,0,0,0.6)',
+                              padding: '6px'
+                            }}>
+                              <div
+                                onClick={() => {
+                                  handleOnlineHsSearch(localHsnSearchQuery, 'local');
+                                  setShowLocalHsnDropdown(false);
+                                }}
+                                style={{
+                                  padding: '8px',
+                                  borderRadius: 'var(--radius-sm)',
+                                  cursor: 'pointer',
+                                  fontSize: '0.78rem',
+                                  fontWeight: 800,
+                                  background: 'rgba(245, 158, 11, 0.15)',
+                                  color: '#f59e0b',
+                                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justify: 'space-between',
+                                  marginBottom: '8px'
+                                }}
+                              >
+                                <span>🇮🇳 Search "{localHsnSearchQuery || 'Product'}" Indian 8-Digit HSN Code Online</span>
+                                <span style={{ fontSize: '0.7rem', background: '#d97706', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>➔</span>
+                              </div>
+
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', padding: '4px 8px', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '4px' }}>
+                                👇 Quick Auto-Fill Indian 8-Digit HSN Code:
+                              </div>
+
+                              {filteredLocalHsCodes.length === 0 ? (
+                                <div style={{ padding: '10px', textAlign: 'center' }}>
+                                  <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '6px' }}>
+                                    No matching local database HSN Code found for "{localHsnSearchQuery}".
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    style={{
+                                      width: '100%',
+                                      fontSize: '0.78rem',
+                                      padding: '6px',
+                                      color: '#facc15',
+                                      borderColor: '#facc15',
+                                      justify: 'center'
+                                    }}
+                                    onClick={() => {
+                                      handleOnlineHsSearch(localHsnSearchQuery, 'local');
+                                      setShowLocalHsnDropdown(false);
+                                    }}
+                                  >
+                                    🇮🇳 Search Local 8-Digit HSN Code Online
+                                  </button>
+                                </div>
+                              ) : (
+                                filteredLocalHsCodes.map((item, idx) => (
+                                  <div
+                                    key={idx}
+                                    onClick={() => {
+                                      if (item.localHsn) setLocalHsn(item.localHsn);
+                                      else setLocalHsn(`${item.code}10`);
+                                      setLocalHsnSearchQuery(`HSN ${item.localHsn || item.code} - ${item.name}`);
+                                      setShowLocalHsnDropdown(false);
+                                    }}
+                                    style={{
+                                      padding: '8px 10px',
+                                      borderRadius: 'var(--radius-sm)',
+                                      cursor: 'pointer',
+                                      fontSize: '0.82rem',
+                                      display: 'flex',
+                                      justify: 'space-between',
+                                      alignItems: 'center',
+                                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                      transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(250, 204, 21, 0.2)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    <div>
+                                      <span style={{ fontWeight: 900, color: '#facc15', marginRight: '6px' }}>
+                                        🇮🇳 {item.localHsn || `${item.code}10`}
+                                      </span>
+                                      <span style={{ color: 'var(--text-main)' }}>{item.name}</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', color: 'var(--text-sub)', padding: '2px 6px', borderRadius: '4px' }}>
+                                      {item.cat}
+                                    </span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ROW 1: LOCAL HSN CODE, PRICING CURRENCY & PRODUCT UNIT */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                          {/* Local HSN Code (8-Digit Customs) */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              🇮🇳 Local HSN Code (8-Digit)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="e.g. 09093110"
+                              value={localHsn}
+                              onChange={(e) => setLocalHsn(e.target.value)}
+                              style={{ fontWeight: 800, color: '#facc15', background: '#0f172a', border: '1px solid rgba(250, 204, 21, 0.5)' }}
+                            />
+                          </div>
+
+                          {/* Pricing Currency Selection (Searchable World Currencies FIRST) */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <SearchableCurrencySelect
+                              label="💱 1. Currency *"
+                              value={localCurrency}
+                              onChange={(selected) => setLocalCurrency(typeof selected === 'object' && selected ? (selected.code || 'INR') : (selected || 'INR'))}
+                            />
+                          </div>
+
+                          {/* Product Unit Selection */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#facc15', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              📐 Product Unit *
+                            </label>
+                            <select
+                              className="form-control"
+                              value={localUnit}
+                              onChange={(e) => setLocalUnit(e.target.value)}
+                              style={{ fontWeight: 800, background: '#0f172a', color: '#facc15', border: '1px solid rgba(250, 204, 21, 0.5)' }}
+                            >
+                              <option value="kg">kg (કિલોગ્રામ - Kilograms)</option>
+                              <option value="pcs">pcs (પીસ - Pieces / Garments)</option>
+                              <option value="gm">gm (ગ્રામ - Grams / Spices)</option>
+                              <option value="Sets">Sets (સેટ - Dress / Punjabi Suits)</option>
+                              <option value="Pairs">Pairs (જોડી - Shoes / Gloves)</option>
+                              <option value="Dozen">Dozen (ડઝન - 12 Pcs)</option>
+                              <option value="Litre">Litre (લીટર - Liquids / Ghee)</option>
+                              <option value="Box">Box (બોક્સ / ખોખું)</option>
+                              <option value="Tin">Tin (ડબ્બો / 15kg Ghee)</option>
+                              <option value="Packet">Packet (પેકેટ / Pouches)</option>
+                              <option value="Bags">Bags (કોથળા / Jute Bags)</option>
+                              <option value="Meter">Meter (મીટર / Fabric)</option>
+                              <option value="Rolls">Rolls (રોલ / Textile)</option>
+                              <option value="MT">MT (મીટ્રિક ટન - Metric Ton)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* ROW 2: DYNAMIC MRP & SELLING PRICE WITH SELECTED CURRENCY */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                          {/* Local MRP Original Price */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              MRP Original Price ({currLabelTag}) *
+                            </label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder={`e.g. 1499 ${activeCurrCode}`}
+                              value={localMrp}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLocalMrp(val);
+                                const mrp = parseFloat(val);
+                                const price = parseFloat(localPrice);
+                                if (mrp > 0 && price > 0 && mrp >= price) {
+                                  const disc = Math.round(((mrp - price) / mrp) * 100);
+                                  setCouponBadge(`${disc}% OFF Special Offer`);
+                                }
+                              }}
+                              style={{ fontWeight: 800, color: '#ef4444' }}
+                            />
+                          </div>
+
+                          {/* Local Discounted Selling Price */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Local Selling Price ({currLabelTag}) *
+                            </label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder={`e.g. 999 ${activeCurrCode}`}
+                              value={localPrice}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLocalPrice(val);
+                                const mrp = parseFloat(localMrp);
+                                const price = parseFloat(val);
+                                if (mrp > 0 && price > 0 && mrp >= price) {
+                                  const disc = Math.round(((mrp - price) / mrp) * 100);
+                                  setCouponBadge(`${disc}% OFF Special Offer`);
+                                }
+                              }}
+                              style={{ fontWeight: 900, color: '#4ade80' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* ROW 3: PACKING CHARGE & COURIER CHARGE WITH DYNAMIC CURRENCY */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                          {/* Packing Charge */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Packing Charge ({currLabelTag}) <span style={{ color: '#4ade80' }}>(0 = FREE)</span>
+                            </label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="0 for FREE Packing"
+                              value={packingCharge}
+                              onChange={(e) => setPackingCharge(e.target.value)}
+                              style={{ fontWeight: 800 }}
+                            />
+                          </div>
+
+                          {/* Courier / Shipping Delivery Charge */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Courier Delivery Charge ({currLabelTag}) <span style={{ color: '#4ade80' }}>(0 = FREE)</span>
+                            </label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="0 for FREE Delivery"
+                              value={courierCharge}
+                              onChange={(e) => setCourierCharge(e.target.value)}
+                              style={{ fontWeight: 800 }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* ROW 4: GST, STOCK QTY, OFFER BADGE */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                          {/* Local GST Rate % */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Local GST Rate (%)
+                            </label>
+                            <select
+                              className="form-control"
+                              value={localGstRate}
+                              onChange={(e) => setLocalGstRate(e.target.value)}
+                              style={{ fontWeight: 800 }}
+                            >
+                              <option value="0">0% (Exempt)</option>
+                              <option value="5">5% GST</option>
+                              <option value="12">12% GST</option>
+                              <option value="18">18% GST</option>
+                              <option value="28">28% GST</option>
+                            </select>
+                          </div>
+
+                          {/* Available Local Stock Quantity */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Local Stock Qty
+                            </label>
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="e.g. 100"
+                              value={localStock}
+                              onChange={(e) => setLocalStock(e.target.value)}
+                              style={{ fontWeight: 800 }}
+                            />
+                          </div>
+
+                          {/* Coupon Badge / Offer Tag */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                              Offer Badge / Coupon
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="e.g. 10% OFF"
+                              value={couponBadge}
+                              onChange={(e) => {
+                                const badgeVal = e.target.value;
+                                setCouponBadge(badgeVal);
+                                const match = badgeVal.match(/(\d+(\.\d+)?)\s*%/);
+                                const mrp = parseFloat(localMrp);
+                                if (match && mrp > 0) {
+                                  const pct = parseFloat(match[1]);
+                                  if (pct >= 0 && pct < 100) {
+                                    const calcSelling = Math.round(mrp - (mrp * pct / 100));
+                                    if (calcSelling > 0) {
+                                      setLocalPrice(calcSelling.toString());
+                                    }
+                                  }
+                                }
+                              }}
+                              style={{ fontWeight: 800 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 6. SPECIFICATIONS */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Specifications</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. ઉચ્ચ ગુણવત્તાયુક્ત પ્રીમિયમ પ્રોડક્ટ"
+                      value={spec}
+                      onChange={(e) => setSpec(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 7. PACKAGING */}
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 800 }}>Packaging</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Standard Export Packing"
+                      value={packaging}
+                      onChange={(e) => setPackaging(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 8. MULTI-IMAGE PHOTO GALLERY MANAGER */}
+                  {renderMultiImageGalleryManager()}
+
+                  {/* 9. SAVE SUB-PRODUCT BUTTON */}
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{
+                      width: '100%',
+                      justify: 'center',
+                      padding: '14px',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      borderRadius: 'var(--radius-pill)',
+                      fontSize: '1rem',
+                      fontWeight: 800,
+                      marginTop: '10px'
+                    }}
+                  >
+                    💾 Save Product
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Branch Modal */}
+      {activeModal === 'branch' && (
+        <div className="modal-backdrop show">
+          <div className="glass-card modal-card">
+            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '18px' }}>
+              {editingBranchId ? '✏️ Edit Branch Office' : '➕ Add New Branch Office'}
+            </h3>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (!cityInput) return;
+              const usFormatted = toUSEnglishAddress(addressInput);
+
+              saveBranch({
+                city: cityInput,
+                person: personInput,
+                phone: phoneInput,
+                email: emailInput,
+                address: usFormatted
+              });
+
+              setActiveModal(null);
+            }}>
+              <div className="form-group">
+                <label className="form-label">City / Country Name *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g. Dubai, UAE"
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Contact Person Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g. Mr. Rajesh Patel"
+                  value={personInput}
+                  onChange={(e) => setPersonInput(e.target.value)}
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Phone Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="+91 78619 97755"
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="surat@adidevexport.com"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Branch Address (US English Standard)</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder="e.g. Plot No. 45, Ring Road, Surat, Gujarat 395002, India"
+                  value={addressInput}
+                  onChange={(e) => setAddressInput(e.target.value)}
+                ></textarea>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginTop: '4px' }}>
+                  ℹ️ Addresses in any language are automatically standardized to US English format.
+                </div>
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '10px' }}>
+                💾 Save Branch Office
+              </button>
+            </form>
           </div>
         </div>
       )}
@@ -7334,7 +11623,7 @@ export default function Modals() {
                     }}
                   >
                     <option value="all">
-                      🌐 {currentLang === 'gu' ? 'All Sister Companies (તમામ કંપનીઓ માટે)' : 'All Sister Companies (Global)'}
+                      🌐 {currentLang === 'gu' ? 'All Sister Companies (તમામ કંપનીઓ માટે)' : 'All Sister Companies'}
                     </option>
                     {allAvailableCompanies.map(comp => (
                       <option key={comp.id} value={comp.id}>
