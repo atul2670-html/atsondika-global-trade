@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useMemo } from 'react';
-import { initialProductsData, defaultBranchOffices, defaultCertificates, translations, defaultCompanyProfiles, seaFreightPorts, airCargoRoutes } from '../data/initialData.js';
+import { initialProductsData, defaultBranchOffices, defaultCertificates, defaultEngineeringMachines, translations, defaultCompanyProfiles, seaFreightPorts, airCargoRoutes } from '../data/initialData.js';
 import { toUSEnglishAddress, convertGoogleDriveUrl } from '../utils/address.js';
 import { realtimeEngine, pushGlobalCloudSync, pullGlobalCloudSync, subscribeToGlobalCloudPush, fetchLiveExchangeRates, DEFAULT_CURRENCIES, LIVE_TICKER_ITEMS } from '../utils/realtimeSync.js';
 
@@ -1224,6 +1224,23 @@ export function AppProvider({ children }) {
     return [...defaultCertificates];
   });
 
+  // Advanced Precision Engineering & CNC Machinery List State
+  const [engineeringMachinesList, setEngineeringMachinesList] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('site_engineering_machines_v1') || 'null');
+      if (Array.isArray(stored) && stored.length > 0) return stored;
+    } catch(e) {}
+    return [...defaultEngineeringMachines];
+  });
+
+  const [editingMachineId, setEditingMachineId] = useState(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('site_engineering_machines_v1', JSON.stringify(engineeringMachinesList));
+    } catch(e) {}
+  }, [engineeringMachinesList]);
+
   // Freight Routes & Ports List (Sea & Air Cargo)
   const defaultFreightRoutes = [...seaFreightPorts, ...airCargoRoutes].map((r, i) => ({
     id: r.id || `route-default-${i}`,
@@ -1337,6 +1354,7 @@ export function AppProvider({ children }) {
         deletedBuiltInIds: overrides.deletedBuiltInIds || deletedBuiltInIds,
         branchesList: overrides.branchesList || branchesList,
         certificatesList: overrides.certificatesList || certificatesList,
+        engineeringMachinesList: overrides.engineeringMachinesList || engineeringMachinesList,
         freightRoutesList: overrides.freightRoutesList || freightRoutesList,
         customerList: overrides.customerList || customerList,
         merchantsList: overrides.merchantsList || merchantsList,
@@ -1532,6 +1550,7 @@ export function AppProvider({ children }) {
         if (Array.isArray(data.deletedBuiltInIds)) setDeletedBuiltInIds(data.deletedBuiltInIds);
         if (Array.isArray(data.branchesList)) setBranchesList(data.branchesList);
         if (Array.isArray(data.certificatesList)) setCertificatesList(data.certificatesList);
+        if (Array.isArray(data.engineeringMachinesList)) setEngineeringMachinesList(data.engineeringMachinesList);
         if (Array.isArray(data.freightRoutesList)) setFreightRoutesList(data.freightRoutesList);
         if (data.heroBanner && typeof data.heroBanner === 'object') {
           setHeroBanner(prev => {
@@ -2209,6 +2228,75 @@ export function AppProvider({ children }) {
         setCertificatesList(nextCerts);
         syncToServer({ certificatesList: nextCerts });
         alert(`✅ Certificate "${title}" deleted!`);
+      }
+    });
+  };
+
+  const saveEngineeringMachine = (machineData) => {
+    const targetId = machineData.id || editingMachineId;
+    const cleanImg = convertGoogleDriveUrl(machineData.image || 'images/bodor_laser_showroom_new.jpg');
+    const cleanPlate = machineData.plateImage ? convertGoogleDriveUrl(machineData.plateImage) : '';
+    const selectedScope = (machineData.companyId && String(machineData.companyId).trim()) ? machineData.companyId : (activeCompanyId || 'all');
+    const machineToSave = {
+      ...machineData,
+      id: targetId || `eng_mach_${Date.now()}`,
+      image: cleanImg,
+      plateImage: cleanPlate,
+      companyId: selectedScope,
+      updatedAt: Date.now()
+    };
+
+    let nextList = engineeringMachinesList;
+    if (targetId && engineeringMachinesList.some(m => m.id === targetId)) {
+      nextList = engineeringMachinesList.map(m => m.id === targetId ? { ...m, ...machineToSave } : m);
+    } else {
+      nextList = [...engineeringMachinesList, machineToSave];
+    }
+
+    setEngineeringMachinesList(nextList);
+    try {
+      localStorage.setItem('site_engineering_machines_v1', JSON.stringify(nextList));
+    } catch(e) {}
+    syncToServer({ engineeringMachinesList: nextList });
+
+    try {
+      realtimeEngine.broadcast('ENGINEERING_MACHINES_UPDATE', {
+        machineId: machineToSave.id,
+        machineModel: machineToSave.model
+      });
+    } catch(e) {}
+
+    if (showLiveToast) {
+      const isGu = currentLang === 'gu';
+      const targetComp = (companiesList || []).find(c => c.id === machineToSave.companyId);
+      const compLabel = machineToSave.companyId === 'all'
+        ? (isGu ? 'તમામ સિસ્ટર કંપનીઓ' : 'All Sister Companies')
+        : (targetComp?.name || machineToSave.companyId);
+      showLiveToast(
+        isGu
+          ? `⚙️ "${machineToSave.model}" મશીનરી ${compLabel} માટે સફળતાપૂર્વક સેવ થઈ ગઈ છે!`
+          : `⚙️ Machinery "${machineToSave.model}" saved successfully for ${compLabel}!`,
+        'success'
+      );
+    }
+
+    setActiveModal(null);
+    setEditingMachineId(null);
+  };
+
+  const deleteEngineeringMachine = (id, modelName) => {
+    verifyAdminAccess(() => {
+      if (confirm(`🗑️ Are you sure you want to delete machinery "${modelName || 'Machine'}" from Engineering Hub?`)) {
+        const nextList = engineeringMachinesList.filter(m => m.id !== id);
+        setEngineeringMachinesList(nextList);
+        try {
+          localStorage.setItem('site_engineering_machines_v1', JSON.stringify(nextList));
+        } catch(e) {}
+        syncToServer({ engineeringMachinesList: nextList });
+        try {
+          realtimeEngine.broadcast('ENGINEERING_MACHINES_UPDATE', { machineId: id });
+        } catch(e) {}
+        alert(`✅ Machinery "${modelName || 'Machine'}" deleted successfully!`);
       }
     });
   };
@@ -3295,6 +3383,7 @@ export function AppProvider({ children }) {
       marketTickerList, saveMarketTickerList,
       branchesList, saveBranch, deleteBranch,
       certificatesList: activeCompanyCertificates, saveCertificate, deleteCertificate,
+      engineeringMachinesList, setEngineeringMachinesList, editingMachineId, setEditingMachineId, saveEngineeringMachine, deleteEngineeringMachine,
       freightRoutesList, saveFreightRoute, deleteFreightRoute,
       customProductsList, saveProduct, deleteProduct, getAllProducts, getMainCategoryList,
       deletedBuiltInIds, setDeletedBuiltInIds,

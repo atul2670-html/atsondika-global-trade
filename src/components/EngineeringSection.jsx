@@ -1,11 +1,41 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { defaultCompanyProfiles } from '../data/initialData';
 
 export default function EngineeringSection() {
-  const { t, currentLang, activeCompany, setIsRfqDrawerOpen } = useApp();
+  const {
+    t,
+    currentLang,
+    activeCompany,
+    activeCompanyId,
+    companiesList,
+    showLiveToast,
+    setIsRfqDrawerOpen,
+    engineeringMachinesList,
+    deleteEngineeringMachine,
+    setEditingMachineId,
+    setActiveModal,
+    isAdminLoggedIn,
+    verifyAdminAccess
+  } = useApp();
 
-  const [bodorTab, setBodorTab] = useState('machine'); // 'machine' | 'plate'
-  const [jyotiTab, setJyotiTab] = useState('machine'); // 'machine' | 'plate'
+  const [machineTabs, setMachineTabs] = useState({});
+  const [engScopeFilter, setEngScopeFilter] = useState('active'); // 'active' | 'all' | specific company id
+
+  // Deduplicated comprehensive sister companies list for Company Scope dropdown
+  const allAvailableCompanies = React.useMemo(() => {
+    const map = new Map();
+    (defaultCompanyProfiles || []).forEach(c => {
+      if (c && c.id) map.set(c.id, c);
+    });
+    (companiesList || []).forEach(c => {
+      if (c && c.id) map.set(c.id, { ...(map.get(c.id) || {}), ...c });
+    });
+    if (activeCompany && activeCompany.id) {
+      map.set(activeCompany.id, { ...(map.get(activeCompany.id) || {}), ...activeCompany });
+    }
+    return Array.from(map.values());
+  }, [companiesList, activeCompany]);
 
   const isGu = currentLang === 'gu';
   const isHi = currentLang === 'hi';
@@ -22,6 +52,21 @@ export default function EngineeringSection() {
       ? `नमस्ते ${companyName}, मैं सीएनसी लेजर कटिंग और वीएमसी प्रेसिजन जॉब वर्क (${topic}) के लिए ड्राइंग और कोटेशन चाहता हूँ।`
       : `Hello ${companyName}, I would like to inquire about CNC Laser Cutting & VMC Precision Job Work (${topic}) with our technical drawings.`;
     window.open(`https://wa.me/${cleanPhone || '917861997755'}?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const currentCompId = activeCompany?.id || activeCompanyId || 'comp_1';
+  const companyMachines = (engineeringMachinesList || []).filter(m => {
+    if (engScopeFilter === 'all') return true;
+    if (engScopeFilter === 'active') {
+      if (!m.companyId || m.companyId === 'all') return true;
+      return m.companyId === currentCompId;
+    }
+    if (!m.companyId || m.companyId === 'all') return true;
+    return m.companyId === engScopeFilter;
+  });
+
+  const setActiveTab = (machId, tab) => {
+    setMachineTabs(prev => ({ ...prev, [machId]: tab }));
   };
 
   return (
@@ -56,287 +101,384 @@ export default function EngineeringSection() {
           <p className="section-subtitle engineering-subtitle">
             {t?.eng_subtitle || (isGu ? 'સુરત અને દક્ષિણ ગુજરાતના ઔદ્યોગિક એકમો તેમ જ ગ્લોબલ એક્સપોર્ટ માટે કટિંગથી લઈને સંપૂર્ણ તૈયાર મશીનરી પાર્ટ્સનું ઇન-હાઉસ ઉત્પાદન.' : 'Turnkey in-house precision component manufacturing in Surat, Gujarat — from laser profile & tube cutting to micron-accurate VMC machining.')}
           </p>
-        </div>
 
-        {/* 2 MAIN ADVANCED MACHINES GRID */}
-        <div className="engineering-grid">
-          {/* MACHINE 1: BODOR FIBER LASER CUTTER */}
-          <div className="card engineering-card">
-            {/* Visual Container with Interactive View Switcher */}
-            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <img
-                src={bodorTab === 'machine' ? 'images/bodor_laser_showroom_new.jpg' : 'images/bodor_laser_cutting_machine.jpg'}
-                alt="Bodor A3T6 CNC Fiber Laser Cutting System"
-                style={{
-                  width: '100%',
-                  height: '240px',
-                  objectFit: bodorTab === 'machine' ? 'cover' : 'contain',
-                  background: '#0a0f1d',
-                  display: 'block',
-                  transition: 'opacity 0.3s ease'
-                }}
-                onError={(e) => { e.target.src = 'images/logo.png'; }}
-              />
-
-              {/* View Switcher Pills */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '10px',
-                  display: 'flex',
-                  gap: '6px',
-                  background: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(12px)',
-                  padding: '4px',
-                  borderRadius: '20px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)'
-                }}
-              >
-                <button
-                  type="button"
-                  style={{
-                    background: bodorTab === 'machine' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '3px 10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setBodorTab('machine')}
-                >
-                  ✨ {isGu ? 'નવો મશીન લુક' : 'New Machine'}
-                </button>
-                <button
-                  type="button"
-                  style={{
-                    background: bodorTab === 'plate' ? 'linear-gradient(135deg, #059669, #047857)' : 'transparent',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '3px 10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setBodorTab('plate')}
-                >
-                  🔍 {isGu ? 'ઓરિજિનલ નેમપ્લેટ' : 'OEM Plate'}
-                </button>
-              </div>
-
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  right: '10px',
-                  background: 'rgba(5, 150, 105, 0.92)',
-                  color: 'white',
-                  padding: '4px 10px',
-                  borderRadius: '10px',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
-                }}
-              >
-                Model: Bodor A3T6
-              </div>
-            </div>
-
-            <h3 className="engineering-card-title">
-              {isGu ? 'CNC ફાઈબર લેસર કટિંગ સિસ્ટમ (શીટ & પાઇપ)' : 'CNC Fiber Laser Sheet & Tube Cutting'}
-            </h3>
-
-            <p className="engineering-card-desc">
-              {isGu
-                ? 'મેટલ શીટ પ્લેટની સાથે રાઉન્ડ, સ્ક્વેર અને રેક્ટંગ્યુલર પાઇપનું અતિશય ચોકસાઈપૂર્વક બર્ર-ફ્રી (Burr-free) હાઈ-સ્પીડ કટિંગ.'
-                : 'High-speed, zero-burr contour cutting for metal flat sheets as well as round, square, and rectangular tubes/pipes.'}
-            </p>
-
-            {/* Spec Highlights Grid */}
-            <div className="engineering-specs-grid">
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'મટિરિયલ્સ' : 'Materials'}
-                </span>
-                <strong className="engineering-spec-value color-teal">MS, SS, Al, Brass</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'કટિંગ ક્ષમતા' : 'Capability'}
-                </span>
-                <strong className="engineering-spec-value color-cyan">Sheet + Pipe/Tube</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'એજ ફિનિશિંગ' : 'Edge Finish'}
-                </span>
-                <strong className="engineering-spec-value color-gold">Smooth & Ready</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'એપ્લિકેશન' : 'Applications'}
-                </span>
-                <strong className="engineering-spec-value color-purple">Panels, Base Plates</strong>
-              </div>
-            </div>
-
-            <div style={{ marginTop: 'auto' }}>
-              <button
-                type="button"
-                className="btn-primary"
-                style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem', padding: '10px 16px' }}
-                onClick={() => openWhatsAppInquiry('Fiber Laser Sheet & Tube Cutting')}
-              >
-                📐 {isGu ? 'લેસર કટિંગ ડ્રોઇંગ મોકલો' : 'Send Drawing for Laser Quote'}
-              </button>
-            </div>
-          </div>
-
-          {/* MACHINE 2: JYOTI RX-20 VMC MACHINING CENTER */}
-          <div className="card engineering-card">
-            {/* Visual Container with Interactive View Switcher */}
-            <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <img
-                src={jyotiTab === 'machine' ? 'images/jyoti_vmc_showroom_new.jpg' : 'images/jyoti_rx20_vmc_machine.jpg'}
-                alt="Jyoti RX-20 C-Frame Vertical Machining Center"
-                style={{
-                  width: '100%',
-                  height: '240px',
-                  objectFit: jyotiTab === 'machine' ? 'cover' : 'contain',
-                  background: '#0a0f1d',
-                  display: 'block',
-                  transition: 'opacity 0.3s ease'
-                }}
-                onError={(e) => { e.target.src = 'images/logo.png'; }}
-              />
-
-              {/* View Switcher Pills */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '10px',
-                  display: 'flex',
-                  gap: '6px',
-                  background: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(12px)',
-                  padding: '4px',
-                  borderRadius: '20px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)'
-                }}
-              >
-                <button
-                  type="button"
-                  style={{
-                    background: jyotiTab === 'machine' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '3px 10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setJyotiTab('machine')}
-                >
-                  ✨ {isGu ? 'નવો મશીન લુક' : 'New Machine'}
-                </button>
-                <button
-                  type="button"
-                  style={{
-                    background: jyotiTab === 'plate' ? 'linear-gradient(135deg, #059669, #047857)' : 'transparent',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '3px 10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setJyotiTab('plate')}
-                >
-                  🔍 {isGu ? 'ઓરિજિનલ નેમપ્લેટ' : 'OEM Plate'}
-                </button>
-              </div>
-
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  right: '10px',
-                  background: 'rgba(2, 132, 199, 0.92)',
-                  color: 'white',
-                  padding: '4px 10px',
-                  borderRadius: '10px',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
-                }}
-              >
-                Jyoti CNC RX-20
-              </div>
-            </div>
-
-            <h3 className="engineering-card-title">
-              {isGu ? 'હેવી-ડ્યુટી VMC પ્રિસિઝન મશીનિંગ (Jyoti RX-20)' : 'Heavy-Duty VMC Precision Machining (Jyoti RX-20)'}
-            </h3>
-
-            <p className="engineering-card-desc">
-              {isGu
-                ? '25 kW સ્પિન્ડલ પાવર અને 20-ટૂલ ATC સાથે માઇક્રોન-લેવલ ચોકસાઈવાળું મિલિંગ, ડ્રિલિંગ, ટેપિંગ અને બોરિંગ કામ.'
-                : 'High-torque 25 kW spindle power with 20-tool Automatic Tool Changer (ATC) delivering micron-accurate milling, boring, and rigid tapping.'}
-            </p>
-
-            {/* Spec Highlights Grid */}
-            <div className="engineering-specs-grid">
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'પાવર & વજન' : 'Power & Rigidity'}
-                </span>
-                <strong className="engineering-spec-value color-teal">25 kW | 5,500 Kg</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'ટૂલિંગ સિસ્ટમ' : 'Tool Magazine'}
-                </span>
-                <strong className="engineering-spec-value color-cyan">20-Tool Auto ATC</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'ઇન્ડસ્ટ્રિયલ કૂલિંગ' : 'Panel Cooling'}
-                </span>
-                <strong className="engineering-spec-value color-gold">Werner Finley AC</strong>
-              </div>
-              <div className="engineering-spec-box">
-                <span className="engineering-spec-label">
-                  {isGu ? 'મુખ્ય એપ્લિકેશન' : 'Key Parts'}
-                </span>
-                <strong className="engineering-spec-value color-purple">Textile, Valves, Dies</strong>
-              </div>
-            </div>
-
-            <div style={{ marginTop: 'auto' }}>
+          {/* ADMIN ACTION: ADD NEW MACHINERY BUTTON */}
+          {isAdminLoggedIn && (
+            <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'center' }}>
               <button
                 type="button"
                 className="btn-primary"
                 style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  fontSize: '0.85rem',
-                  padding: '10px 16px',
-                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                  boxShadow: '0 0 16px rgba(2, 132, 199, 0.4)'
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  padding: '11px 24px',
+                  fontSize: '0.94rem',
+                  fontWeight: 800,
+                  borderRadius: '30px',
+                  boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
-                onClick={() => openWhatsAppInquiry('VMC Heavy Precision Machining')}
+                onClick={() => {
+                  verifyAdminAccess(() => {
+                    setEditingMachineId(null);
+                    setActiveModal('engineering_machine');
+                  });
+                }}
               >
-                ⚙️ {isGu ? 'VMC જોબ વર્ક ઇન્ક્વાયરી કરો' : 'Inquire for VMC Job Work'}
+                <span>⚙️ ➕</span> {isGu ? 'નવી મશીનરી ઉમેરો (Add New Machinery)' : '+ Add New Machinery'}
               </button>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* ADVANCED MACHINES GRID */}
+        {/* SISTER COMPANY MACHINERY FILTER TABS */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: '28px',
+          padding: '6px',
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          maxWidth: '900px',
+          margin: '0 auto 28px auto'
+        }}>
+          <button
+            type="button"
+            className={`btn-secondary ${engScopeFilter === 'active' ? 'active' : ''}`}
+            style={{
+              fontSize: '0.82rem',
+              fontWeight: 800,
+              padding: '8px 16px',
+              borderRadius: '20px',
+              border: '1px solid',
+              background: engScopeFilter === 'active' ? 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)' : 'transparent',
+              color: engScopeFilter === 'active' ? '#ffffff' : 'var(--text-sub)',
+              borderColor: engScopeFilter === 'active' ? 'var(--primary-teal-glow)' : 'transparent',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={() => setEngScopeFilter('active')}
+          >
+            🏢 {companyName} {isGu ? '(હાલની કંપની)' : '(Active)'}
+          </button>
+
+          <button
+            type="button"
+            className={`btn-secondary ${engScopeFilter === 'all' ? 'active' : ''}`}
+            style={{
+              fontSize: '0.82rem',
+              fontWeight: 800,
+              padding: '8px 16px',
+              borderRadius: '20px',
+              border: '1px solid',
+              background: engScopeFilter === 'all' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'transparent',
+              color: engScopeFilter === 'all' ? '#ffffff' : 'var(--text-sub)',
+              borderColor: engScopeFilter === 'all' ? '#0284c7' : 'transparent',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={() => setEngScopeFilter('all')}
+          >
+            🌐 {isGu ? 'તમામ સિસ્ટર કંપનીઓ' : 'All Sister Companies'} ({(engineeringMachinesList || []).length})
+          </button>
+
+          {allAvailableCompanies.filter(c => c.id !== currentCompId && c.name.toLowerCase() !== companyName.toLowerCase()).map(comp => (
+            <button
+              key={comp.id}
+              type="button"
+              className={`btn-secondary ${engScopeFilter === comp.id ? 'active' : ''}`}
+              style={{
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: '1px solid',
+                background: engScopeFilter === comp.id ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent',
+                color: engScopeFilter === comp.id ? '#ffffff' : 'var(--text-sub)',
+                borderColor: engScopeFilter === comp.id ? '#6366f1' : 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={() => setEngScopeFilter(comp.id)}
+            >
+              🏢 {comp.name}
+            </button>
+          ))}
+        </div>
+
+        {companyMachines.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '50px 20px',
+            background: 'rgba(15, 23, 42, 0.6)',
+            borderRadius: '20px',
+            border: '1px dashed rgba(255, 255, 255, 0.15)',
+            margin: '20px 0'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>⚙️</div>
+            <h4 style={{ color: 'var(--text-main)', fontSize: '1.2rem', margin: 0, fontWeight: 800 }}>
+              {isGu ? 'આ કંપની માટે હજુ કોઈ મશીનરી ઉમેરેલ નથી' : 'No Machinery Added Yet'}
+            </h4>
+            <p style={{ color: 'var(--text-sub)', fontSize: '0.88rem', margin: '8px 0 16px' }}>
+              {isGu ? 'ઉપરના "+ નવી મશીનરી ઉમેરો" બટન પર ક્લિક કરીને CNC અથવા લેસર મશીનરી ઉમેરો.' : 'Click above to add your CNC Laser, VMC, Lathe, or other industrial machinery.'}
+            </p>
+            {isAdminLoggedIn && (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  verifyAdminAccess(() => {
+                    setEditingMachineId(null);
+                    setActiveModal('engineering_machine');
+                  });
+                }}
+              >
+                ⚙️ + {isGu ? 'નવી મશીનરી ઉમેરો' : 'Add New Machinery'}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="engineering-grid">
+            {companyMachines.map((mach) => {
+              const currentTab = machineTabs[mach.id] || 'machine';
+              const machTitle = mach.names?.[currentLang] || mach.names?.['en'] || mach.names?.['gu'] || mach.title || 'Advanced Machinery';
+              const machDesc = mach.desc?.[currentLang] || mach.desc?.['en'] || mach.desc?.['gu'] || mach.desc || '';
+              const displayImg = (mach.plateImage && currentTab === 'plate') ? mach.plateImage : (mach.image || 'images/bodor_laser_showroom_new.jpg');
+              const inquiryTopic = mach.inquiryTopic || mach.model || machTitle;
+              const btnText = mach.btnText?.[currentLang] || (isGu ? (mach.btnTextGu || 'ડ્રોઇંગ મોકલો & ઇન્ક્વાયરી કરો') : (mach.btnTextEn || 'Inquire for Job Work'));
+
+              return (
+                <div className="card engineering-card" key={mach.id} style={{ position: 'relative' }}>
+                  {/* Admin Action Bar on Card */}
+                  {isAdminLoggedIn && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      zIndex: 20,
+                      display: 'flex',
+                      gap: '6px',
+                      background: 'rgba(15, 23, 42, 0.92)',
+                      backdropFilter: 'blur(10px)',
+                      padding: '4px 8px',
+                      borderRadius: '20px',
+                      border: '1px solid rgba(255, 255, 255, 0.18)',
+                      boxShadow: '0 4px 14px rgba(0,0,0,0.6)'
+                    }}>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.12)',
+                          border: '1px solid rgba(255, 255, 255, 0.25)',
+                          color: '#38bdf8',
+                          borderRadius: '12px',
+                          padding: '4px 10px',
+                          fontSize: '0.74rem',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          verifyAdminAccess(() => {
+                            setEditingMachineId(mach.id);
+                            setActiveModal('engineering_machine');
+                          });
+                        }}
+                        title="Edit Machinery Details"
+                      >
+                        ✏️ {isGu ? 'એડિટ' : 'Edit'}
+                      </button>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.22)',
+                          border: '1px solid rgba(239, 68, 68, 0.45)',
+                          color: '#f87171',
+                          borderRadius: '12px',
+                          padding: '4px 10px',
+                          fontSize: '0.74rem',
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          deleteEngineeringMachine(mach.id, mach.model || machTitle);
+                        }}
+                        title="Delete Machinery"
+                      >
+                        🗑️ {isGu ? 'હટાવો' : 'Delete'}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Visual Container with Interactive View Switcher */}
+                  <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', marginBottom: '18px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <img
+                      src={displayImg}
+                      alt={machTitle}
+                      style={{
+                        width: '100%',
+                        height: '240px',
+                        objectFit: currentTab === 'machine' ? 'cover' : 'contain',
+                        background: '#0a0f1d',
+                        display: 'block',
+                        transition: 'opacity 0.3s ease'
+                      }}
+                      onError={(e) => { e.target.src = 'images/logo.png'; }}
+                    />
+
+                    {/* View Switcher Pills */}
+                    {mach.plateImage && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          left: '10px',
+                          display: 'flex',
+                          gap: '6px',
+                          background: 'rgba(15, 23, 42, 0.88)',
+                          backdropFilter: 'blur(12px)',
+                          padding: '4px',
+                          borderRadius: '20px',
+                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          zIndex: 10
+                        }}
+                      >
+                        <button
+                          type="button"
+                          style={{
+                            background: currentTab === 'machine' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '16px',
+                            padding: '3px 10px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => setActiveTab(mach.id, 'machine')}
+                        >
+                          ✨ {isGu ? 'નવો મશીન લુક' : 'New Machine'}
+                        </button>
+                        <button
+                          type="button"
+                          style={{
+                            background: currentTab === 'plate' ? 'linear-gradient(135deg, #059669, #047857)' : 'transparent',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '16px',
+                            padding: '3px 10px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => setActiveTab(mach.id, 'plate')}
+                        >
+                          🔍 {isGu ? 'ઓરિજિનલ નેમપ્લેટ' : 'OEM Plate'}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Model Badge */}
+                    {mach.model && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: '10px',
+                          right: '10px',
+                          background: mach.badgeColor || 'rgba(5, 150, 105, 0.92)',
+                          color: 'white',
+                          padding: '4px 10px',
+                          borderRadius: '10px',
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                          zIndex: 10
+                        }}
+                      >
+                        {mach.model}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Company Scope Badge */}
+                  <div style={{ marginBottom: '8px' }}>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      background: (!mach.companyId || mach.companyId === 'all') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                      color: (!mach.companyId || mach.companyId === 'all') ? '#34d399' : '#38bdf8',
+                      border: `1px solid ${(!mach.companyId || mach.companyId === 'all') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      {(!mach.companyId || mach.companyId === 'all') ? (
+                        <>🌐 {isGu ? 'તમામ સિસ્ટર કંપનીઓ' : 'All Sister Companies'}</>
+                      ) : (
+                        <>🏢 {(() => {
+                          const match = allAvailableCompanies.find(c => c.id === mach.companyId);
+                          return match?.name || mach.companyId;
+                        })()}</>
+                      )}
+                    </span>
+                  </div>
+
+                  <h3 className="engineering-card-title">
+                    {machTitle}
+                  </h3>
+
+                  {machDesc && (
+                    <p className="engineering-card-desc">
+                      {machDesc}
+                    </p>
+                  )}
+
+                  {/* Spec Highlights Grid */}
+                  {Array.isArray(mach.specs) && mach.specs.length > 0 && (
+                    <div className="engineering-specs-grid">
+                      {mach.specs.map((sp, sIdx) => {
+                        const specLabel = sp[`label${isGu ? 'Gu' : 'En'}`] || sp.label || sp.labelEn || sp.labelGu || 'Spec';
+                        const specVal = sp.value || sp.val || '-';
+                        const colorClass = sp.colorClass || (sIdx === 0 ? 'color-teal' : sIdx === 1 ? 'color-cyan' : sIdx === 2 ? 'color-gold' : 'color-purple');
+                        return (
+                          <div className="engineering-spec-box" key={sIdx}>
+                            <span className="engineering-spec-label">
+                              {specLabel}
+                            </span>
+                            <strong className={`engineering-spec-value ${colorClass}`}>
+                              {specVal}
+                            </strong>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div style={{ marginTop: 'auto', paddingTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem', padding: '10px 16px' }}
+                      onClick={() => openWhatsAppInquiry(inquiryTopic)}
+                    >
+                      📐 {btnText}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* 4-STEP STREAMLINED WORKFLOW BANNER */}
         <div className="engineering-workflow-box">

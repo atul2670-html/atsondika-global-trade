@@ -489,6 +489,67 @@ export const defaultCertificates = [
   }
 ];
 
+export const defaultEngineeringMachines = [
+  {
+    id: "eng_mach_1",
+    companyId: "all",
+    model: "Bodor A3T6",
+    names: {
+      en: "CNC Fiber Laser Sheet & Tube Cutting",
+      gu: "CNC ફાઈબર લેસર કટિંગ સિસ્ટમ (શીટ & પાઇપ)",
+      hi: "सीएनसी फाइबर लेजर कटिंग सिस्टम (शीट और पाइप)",
+      fr: "Système de découpe laser fibre CNC tôle et tube"
+    },
+    desc: {
+      en: "High-speed, zero-burr contour cutting for metal flat sheets as well as round, square, and rectangular tubes/pipes.",
+      gu: "મેટલ શીટ પ્લેટની સાથે રાઉન્ડ, સ્ક્વેર અને રેક્ટંગ્યુલર પાઇપનું અતિશય ચોકસાઈપૂર્વક બર્ર-ફ્રી (Burr-free) હાઈ-સ્પીડ કટિંગ.",
+      hi: "मेटल शीट प्लेट के साथ राउंड, स्क्वायर और रेक्टैंगुलर पाइप की उच्च गति और बूर-फ्री कटिंग।",
+      fr: "Découpe contour haute vitesse et sans bavure pour tôles et tubes."
+    },
+    image: "images/bodor_laser_showroom_new.jpg",
+    plateImage: "images/bodor_laser_cutting_machine.jpg",
+    badgeColor: "rgba(5, 150, 105, 0.92)",
+    specs: [
+      { labelEn: "Materials", labelGu: "મટિરિયલ્સ", value: "MS, SS, Al, Brass", colorClass: "color-teal" },
+      { labelEn: "Capability", labelGu: "કટિંગ ક્ષમતા", value: "Sheet + Pipe/Tube", colorClass: "color-cyan" },
+      { labelEn: "Edge Finish", labelGu: "એજ ફિનિશિંગ", value: "Smooth & Ready", colorClass: "color-gold" },
+      { labelEn: "Applications", labelGu: "એપ્લિકેશન", value: "Panels, Base Plates", colorClass: "color-purple" }
+    ],
+    inquiryTopic: "Fiber Laser Sheet & Tube Cutting",
+    btnTextEn: "Send Drawing for Laser Quote",
+    btnTextGu: "લેસર કટિંગ ડ્રોઇંગ મોકલો"
+  },
+  {
+    id: "eng_mach_2",
+    companyId: "all",
+    model: "Jyoti CNC RX-20",
+    names: {
+      en: "Heavy-Duty VMC Precision Machining (Jyoti RX-20)",
+      gu: "હેવી-ડ્યુટી VMC પ્રિસિઝન મશીનિંગ (Jyoti RX-20)",
+      hi: "हैवी-ड्यूटी वीएमसी प्रिसिजन मशीनिंग (Jyoti RX-20)",
+      fr: "Usinage de précision VMC haute performance (Jyoti RX-20)"
+    },
+    desc: {
+      en: "High-torque 25 kW spindle power with 20-tool Automatic Tool Changer (ATC) delivering micron-accurate milling, boring, and rigid tapping.",
+      gu: "25 kW સ્પિન્ડલ પાવર અને 20-ટૂલ ATC સાથે માઇક્રોન-લેવલ ચોકસાઈવાળું મિલિંગ, ડ્રિલિંગ, ટેપિંગ અને બોરિંગ કામ.",
+      hi: "25 किलोवाट स्पिंडल पावर और 20-टूल एटीसी के साथ माइक्रोन-सटीक मिलिंग, बोरिंग और रिजिड टैपिंग।",
+      fr: "Broche haute puissance 25 kW avec changeur 20 outils (ATC)."
+    },
+    image: "images/jyoti_vmc_showroom_new.jpg",
+    plateImage: "images/jyoti_rx20_vmc_machine.jpg",
+    badgeColor: "rgba(2, 132, 199, 0.92)",
+    specs: [
+      { labelEn: "Power & Rigidity", labelGu: "પાવર & વજન", value: "25 kW | 5,500 Kg", colorClass: "color-teal" },
+      { labelEn: "Tool Magazine", labelGu: "ટૂલિંગ સિસ્ટમ", value: "20-Tool Auto ATC", colorClass: "color-cyan" },
+      { labelEn: "Panel Cooling", labelGu: "ઇન્ડસ્ટ્રિયલ કૂલિંગ", value: "Werner Finley AC", colorClass: "color-gold" },
+      { labelEn: "Key Parts", labelGu: "મુખ્ય એપ્લિકેશન", value: "Textile, Valves, Dies", colorClass: "color-purple" }
+    ],
+    inquiryTopic: "VMC Heavy Precision Machining",
+    btnTextEn: "Inquire for VMC Job Work",
+    btnTextGu: "VMC જોબ વર્ક ઇન્ક્વાયરી કરો"
+  }
+];
+
 export const translations = {
   en: {
     tagline_top: "APEDA & ISO Certified Premium Global Exporter | Surat, Gujarat",
