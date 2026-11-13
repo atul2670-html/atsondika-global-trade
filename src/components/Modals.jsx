@@ -1056,6 +1056,11 @@ export default function Modals() {
   const [imageUrls, setImageUrls] = useState([]);
   const [newUrlInput, setNewUrlInput] = useState('');
 
+  // Product Catalog PDF Brochure State (પ્રોડક્ટ કેટલોગ PDF)
+  const [catalogPdf, setCatalogPdf] = useState('');
+  const [catalogPdfName, setCatalogPdfName] = useState('');
+  const [catalogPdfUrlInput, setCatalogPdfUrlInput] = useState('');
+
   // Local B2C Retail Trade Options (કુરિયર, પેકિંગ ચાર્જ & લોકલ પ્રાઈઝ)
   const [priceUSD, setPriceUSD] = useState('');
   const [exportIncoterm, setExportIncoterm] = useState('FOB');
@@ -1400,6 +1405,9 @@ export default function Modals() {
             imgs = [convertGoogleDriveUrl(target.image)];
           }
           setImageUrls(imgs.length > 0 ? imgs : ['images/agro_spices_grains.png']);
+          setCatalogPdf(target.catalogPdf || '');
+          setCatalogPdfName(target.catalogPdfName || (target.catalogPdf ? 'Product_Catalog.pdf' : ''));
+          setCatalogPdfUrlInput(target.catalogPdf && !target.catalogPdf.startsWith('data:') ? target.catalogPdf : '');
           return;
         }
       }
@@ -1409,6 +1417,9 @@ export default function Modals() {
       setEnableGlobalTrade(true);
       setEnableLocalTrade(true);
       setEnableCoa(true);
+      setCatalogPdf('');
+      setCatalogPdfName('');
+      setCatalogPdfUrlInput('');
       setNameGu('');
       setNameEn('');
       setCatCodeInput('');
@@ -1937,6 +1948,161 @@ export default function Modals() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // REUSABLE PRODUCT CATALOG PDF BROCHURE MANAGER COMPONENT
+  const renderPdfCatalogManager = () => (
+    <div style={{
+      background: 'rgba(255,255,255,0.03)',
+      padding: '18px',
+      borderRadius: 'var(--radius-md)',
+      border: '1px solid var(--border-glass)',
+      marginBottom: '18px'
+    }} className="catalog-pdf-manager-box">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+        <label className="form-label" style={{ margin: 0, fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          📑 {currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ (PDF Brochure / કેટેલોગ ફાઇલ)' : 'Product Catalog (PDF Brochure / Spec Sheet)'}
+        </label>
+        {catalogPdf ? (
+          <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 800, background: 'rgba(56, 189, 248, 0.15)', padding: '3px 10px', borderRadius: '12px', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+            ✔ {currentLang === 'gu' ? 'PDF જોડાયેલ છે' : 'PDF Attached'}
+          </span>
+        ) : (
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-sub)' }}>
+            {currentLang === 'gu' ? '(વૈકલ્પિક - Optional)' : '(Optional)'}
+          </span>
+        )}
+      </div>
+
+      <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: '0 0 12px 0', lineHeight: 1.5 }}>
+        {currentLang === 'gu'
+          ? 'ગ્રાહકો ડાઉનલોડ કરી શકે તે માટે પ્રોડક્ટનું ઓફિશિયલ કેટલોગ, સ્પેસિફિકેશન શીટ કે બ્રોશર PDF ફાઇલ અપલોડ કરો (100MB સુધી ડાયરેક્ટ અપલોડ અથવા મોટી ફાઇલ માટે Google Drive લિંક).'
+          : 'Upload the official product catalog, specification sheet, or marketing brochure PDF for buyers to view & download (Direct upload up to 100MB or Google Drive link for unlimited file size).'}
+      </p>
+
+      {/* 1. Direct Local PDF File Upload */}
+      <div className="form-group" style={{ marginBottom: '12px' }}>
+        <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px', fontWeight: 700 }}>
+          📁 {currentLang === 'gu' ? 'કમ્પ્યુટર / મોબાઇલમાંથી PDF ફાઇલ પસંદ કરો (100MB સુધી સપોર્ટ):' : 'Upload PDF from Device (Up to 100MB Support):'}
+        </label>
+        <input
+          type="file"
+          className="form-control"
+          accept="application/pdf,.pdf"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            if (file.size > 100 * 1024 * 1024) {
+              alert(currentLang === 'gu' ? '⚠️ PDF ફાઇલ 100MB કરતાં મોટી હોવાથી સીધી અપલોડ થઈ શકશે નહીં. કૃપા કરીને 100MB સુધીની PDF પસંદ કરો અથવા નીચે આપેલા બોક્સમાં Google Drive / Cloud લિંક આપો.' : '⚠️ PDF exceeds 100MB limit. Please choose a PDF under 100MB or provide a Google Drive link below.');
+              return;
+            }
+            showLiveToast(currentLang === 'gu' ? '⚡ PDF કેટલોગ અપલોડ થઈ રહ્યું છે...' : '⚡ Uploading PDF Catalog...', 'info');
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const res = ev.target.result;
+              setCatalogPdf(res);
+              setCatalogPdfName(file.name);
+              showLiveToast(currentLang === 'gu' ? `✔ PDF કેટલોગ "${file.name}" સફળતાપૂર્વક જોડાયું!` : `✔ PDF Catalog "${file.name}" attached!`, 'success');
+            };
+            reader.readAsDataURL(file);
+          }}
+        />
+      </div>
+
+      {/* 2. Web / Google Drive URL input */}
+      <div className="form-group" style={{ marginBottom: '10px' }}>
+        <label style={{ fontSize: '0.78rem', color: 'var(--text-sub)', display: 'block', marginBottom: '4px', fontWeight: 700 }}>
+          🔗 {currentLang === 'gu' ? 'અથવા Google Drive / Web PDF કેટલોગ લિંક દાખલ કરો:' : 'Or Enter Google Drive / Dropbox / Web PDF URL:'}
+        </label>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="url"
+            className="form-control"
+            placeholder="https://drive.google.com/file/d/... or https://example.com/catalog.pdf"
+            value={catalogPdfUrlInput}
+            onChange={(e) => setCatalogPdfUrlInput(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn-secondary"
+            style={{ padding: '0 16px', flexShrink: 0, fontWeight: 800 }}
+            onClick={() => {
+              if (!catalogPdfUrlInput.trim()) return;
+              const cleanUrl = convertGoogleDriveUrl(catalogPdfUrlInput.trim());
+              setCatalogPdf(cleanUrl);
+              setCatalogPdfName('Product_Catalog_Document.pdf');
+              showLiveToast(currentLang === 'gu' ? '✔ PDF લિંક સેવ થઈ ગઈ!' : '✔ PDF Catalog Link attached!', 'success');
+            }}
+          >
+            + {currentLang === 'gu' ? 'લિંક જોડો' : 'Attach Link'}
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Attached PDF Status & Action Buttons */}
+      {catalogPdf && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'rgba(2, 132, 199, 0.12)',
+          border: '1.5px solid rgba(2, 132, 199, 0.35)',
+          padding: '10px 14px',
+          borderRadius: '12px',
+          marginTop: '12px',
+          flexWrap: 'wrap',
+          gap: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '1.6rem' }}>📑</span>
+            <div>
+              <strong style={{ fontSize: '0.86rem', color: 'var(--text-main)', display: 'block' }}>
+                {catalogPdfName || 'Attached_Product_Catalog.pdf'}
+              </strong>
+              <span style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: 700 }}>
+                {catalogPdf.startsWith('data:') ? '📎 Direct File Upload (Base64 PDF)' : '🌐 Cloud Document Link'}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '5px 12px', color: '#0284c7', borderColor: '#0284c7', fontWeight: 800 }}
+              onClick={() => {
+                window.open(convertGoogleDriveUrl(catalogPdf), '_blank');
+              }}
+              title="Open / Preview PDF"
+            >
+              👁️ {currentLang === 'gu' ? 'ઓપન / પ્રીવ્યૂ' : 'Preview PDF'}
+            </button>
+            <button
+              type="button"
+              style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                color: '#ef4444',
+                borderRadius: '8px',
+                padding: '5px 12px',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+              onClick={() => {
+                setCatalogPdf('');
+                setCatalogPdfName('');
+                setCatalogPdfUrlInput('');
+                showLiveToast(currentLang === 'gu' ? '🗑️ PDF કેટલોગ દૂર કરવામાં આવ્યો.' : '🗑️ PDF Catalog removed.', 'info');
+              }}
+              title="Delete Attached PDF"
+            >
+              🗑️ {currentLang === 'gu' ? 'દૂર કરો' : 'Remove'}
+            </button>
           </div>
         </div>
       )}
@@ -6172,6 +6338,8 @@ export default function Modals() {
                     isSub: false,
                     enableGlobalTrade: true,
                     enableLocalTrade: true,
+                    catalogPdf: catalogPdf || '',
+                    catalogPdfName: catalogPdfName || '',
                     hsCode: '',
                     image: '',
                     images: [],
@@ -6343,6 +6511,9 @@ export default function Modals() {
                     </div>
                   </div>
 
+                  {/* 4B. MAIN CATEGORY MASTER PDF CATALOG / BROCHURE */}
+                  {renderPdfCatalogManager()}
+
                   {/* 5. SAVE BUTTON FOR MAIN CATEGORY */}
                   <button
                     type="submit"
@@ -6405,6 +6576,8 @@ export default function Modals() {
                     enableGlobalTrade,
                     enableLocalTrade,
                     enableCoa,
+                    catalogPdf: catalogPdf || '',
+                    catalogPdfName: catalogPdfName || '',
                     hsCode: hsCode.trim(),
                     localHsn: localHsn ? localHsn.trim() : `${hsCode.trim()}10`,
                     image: imgList[0],
@@ -7478,6 +7651,9 @@ export default function Modals() {
 
                   {/* 8. MULTI-IMAGE PHOTO GALLERY MANAGER */}
                   {renderMultiImageGalleryManager()}
+
+                  {/* 8B. PRODUCT CATALOG PDF BROCHURE MANAGER */}
+                  {renderPdfCatalogManager()}
 
                   {/* 9. SAVE SUB-PRODUCT BUTTON */}
                   <button
@@ -11072,6 +11248,21 @@ export default function Modals() {
                 >
                   💬 Request Official Quotation (RFQ)
                 </button>
+
+                {(imagePreviewData.productObj?.catalogPdf || imagePreviewData.catalogPdf) && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ fontSize: '0.8rem', padding: '6px 14px', color: '#38bdf8', borderColor: '#38bdf8', fontWeight: 800 }}
+                    onClick={() => {
+                      const pdf = imagePreviewData.productObj?.catalogPdf || imagePreviewData.catalogPdf;
+                      window.open(convertGoogleDriveUrl(pdf), '_blank');
+                    }}
+                    title="Open Product Catalog PDF"
+                  >
+                    📑 {currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ PDF' : 'Product Catalog (PDF)'}
+                  </button>
+                )}
               </div>
             </div>
 

@@ -136,36 +136,10 @@ export default function EngineeringSection() {
 
         {/* ADVANCED MACHINES GRID */}
         {/* SISTER COMPANY MACHINERY FILTER TABS */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: '28px',
-          padding: '6px',
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '24px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          maxWidth: '900px',
-          margin: '0 auto 28px auto'
-        }}>
+        <div className="engineering-scope-bar">
           <button
             type="button"
-            className={`btn-secondary ${engScopeFilter === 'active' ? 'active' : ''}`}
-            style={{
-              fontSize: '0.82rem',
-              fontWeight: 800,
-              padding: '8px 16px',
-              borderRadius: '20px',
-              border: '1px solid',
-              background: engScopeFilter === 'active' ? 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)' : 'transparent',
-              color: engScopeFilter === 'active' ? '#ffffff' : 'var(--text-sub)',
-              borderColor: engScopeFilter === 'active' ? 'var(--primary-teal-glow)' : 'transparent',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+            className={`engineering-scope-btn scope-active-company ${engScopeFilter === 'active' ? 'active' : ''}`}
             onClick={() => setEngScopeFilter('active')}
           >
             🏢 {companyName} {isGu ? '(હાલની કંપની)' : '(Active)'}
@@ -173,19 +147,7 @@ export default function EngineeringSection() {
 
           <button
             type="button"
-            className={`btn-secondary ${engScopeFilter === 'all' ? 'active' : ''}`}
-            style={{
-              fontSize: '0.82rem',
-              fontWeight: 800,
-              padding: '8px 16px',
-              borderRadius: '20px',
-              border: '1px solid',
-              background: engScopeFilter === 'all' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'transparent',
-              color: engScopeFilter === 'all' ? '#ffffff' : 'var(--text-sub)',
-              borderColor: engScopeFilter === 'all' ? '#0284c7' : 'transparent',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+            className={`engineering-scope-btn scope-all ${engScopeFilter === 'all' ? 'active' : ''}`}
             onClick={() => setEngScopeFilter('all')}
           >
             🌐 {isGu ? 'તમામ સિસ્ટર કંપનીઓ' : 'All Sister Companies'} ({(engineeringMachinesList || []).length})
@@ -195,19 +157,7 @@ export default function EngineeringSection() {
             <button
               key={comp.id}
               type="button"
-              className={`btn-secondary ${engScopeFilter === comp.id ? 'active' : ''}`}
-              style={{
-                fontSize: '0.82rem',
-                fontWeight: 800,
-                padding: '8px 16px',
-                borderRadius: '20px',
-                border: '1px solid',
-                background: engScopeFilter === comp.id ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent',
-                color: engScopeFilter === comp.id ? '#ffffff' : 'var(--text-sub)',
-                borderColor: engScopeFilter === comp.id ? '#6366f1' : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
+              className={`engineering-scope-btn scope-company ${engScopeFilter === comp.id ? 'active' : ''}`}
               onClick={() => setEngScopeFilter(comp.id)}
             >
               🏢 {comp.name}
@@ -216,19 +166,12 @@ export default function EngineeringSection() {
         </div>
 
         {companyMachines.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '50px 20px',
-            background: 'rgba(15, 23, 42, 0.6)',
-            borderRadius: '20px',
-            border: '1px dashed rgba(255, 255, 255, 0.15)',
-            margin: '20px 0'
-          }}>
+          <div className="engineering-empty-card">
             <div style={{ fontSize: '3rem', marginBottom: '10px' }}>⚙️</div>
-            <h4 style={{ color: 'var(--text-main)', fontSize: '1.2rem', margin: 0, fontWeight: 800 }}>
+            <h4 className="engineering-empty-title">
               {isGu ? 'આ કંપની માટે હજુ કોઈ મશીનરી ઉમેરેલ નથી' : 'No Machinery Added Yet'}
             </h4>
-            <p style={{ color: 'var(--text-sub)', fontSize: '0.88rem', margin: '8px 0 16px' }}>
+            <p className="engineering-empty-desc">
               {isGu ? 'ઉપરના "+ નવી મશીનરી ઉમેરો" બટન પર ક્લિક કરીને CNC અથવા લેસર મશીનરી ઉમેરો.' : 'Click above to add your CNC Laser, VMC, Lathe, or other industrial machinery.'}
             </p>
             {isAdminLoggedIn && (
@@ -410,18 +353,7 @@ export default function EngineeringSection() {
 
                   {/* Company Scope Badge */}
                   <div style={{ marginBottom: '8px' }}>
-                    <span style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      background: (!mach.companyId || mach.companyId === 'all') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-                      color: (!mach.companyId || mach.companyId === 'all') ? '#34d399' : '#38bdf8',
-                      border: `1px solid ${(!mach.companyId || mach.companyId === 'all') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}>
+                    <span className={`engineering-scope-badge ${(!mach.companyId || mach.companyId === 'all') ? 'badge-all' : 'badge-company'}`}>
                       {(!mach.companyId || mach.companyId === 'all') ? (
                         <>🌐 {isGu ? 'તમામ સિસ્ટર કંપનીઓ' : 'All Sister Companies'}</>
                       ) : (

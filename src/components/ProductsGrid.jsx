@@ -1013,6 +1013,33 @@ export default function ProductsGrid() {
                               📄 {currentLang === 'gu' ? 'રિક્વેસ્ટ ઓફિશિયલ ક્વોટેશન (RFQ)' : 'Request Official Quotation (RFQ)'}
                             </button>
                           )}
+
+                          {p.catalogPdf && (
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{
+                                width: '100%',
+                                justifyContent: 'center',
+                                color: '#0284c7',
+                                borderColor: 'rgba(2, 132, 199, 0.4)',
+                                background: 'rgba(2, 132, 199, 0.1)',
+                                padding: '5px 8px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                borderRadius: '6px',
+                                whiteSpace: 'nowrap',
+                                marginTop: '4px',
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => {
+                                window.open(convertGoogleDriveUrl(p.catalogPdf), '_blank');
+                              }}
+                              title="View Product Catalog PDF"
+                            >
+                              📑 {currentLang === 'gu' ? 'કેટલોગ PDF' : 'Catalog PDF'}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -1459,6 +1486,34 @@ export default function ProductsGrid() {
                           {currentLang === 'gu' ? '🛒 અત્યારે ખરીદો / કાર્ટમાં ઉમેરો' : 'Add to cart'}
                         </button>
 
+                        {p.catalogPdf && (
+                          <button
+                            type="button"
+                            style={{
+                              width: '100%',
+                              background: 'rgba(2, 132, 199, 0.08)',
+                              border: '1px solid rgba(2, 132, 199, 0.35)',
+                              borderRadius: '20px',
+                              color: '#0284c7',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              padding: '7px 14px',
+                              cursor: 'pointer',
+                              marginTop: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px'
+                            }}
+                            onClick={() => {
+                              window.open(convertGoogleDriveUrl(p.catalogPdf), '_blank');
+                            }}
+                            title={currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ PDF ખોલો' : 'View Product Catalog PDF'}
+                          >
+                            📑 {currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ (PDF Brochure)' : 'Product Catalog (PDF)'}
+                          </button>
+                        )}
+
                         {/* ADMIN EDIT & DELETE CONTROLS (VISIBLE ONLY WHEN LOGGED IN AS ADMIN) */}
                         {isAdminLoggedIn && (
                           <div style={{
@@ -1557,6 +1612,35 @@ export default function ProductsGrid() {
                     {p.hsCode && (
                       <span className="product-hs">
                         HS: {p.hsCode}
+                      </span>
+                    )}
+                    {p.catalogPdf && (
+                      <span
+                        className="product-pdf-tag"
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                          color: '#ffffff',
+                          fontSize: '0.72rem',
+                          fontWeight: 900,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          boxShadow: '0 2px 8px rgba(239, 68, 68, 0.45)',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          zIndex: 15
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(convertGoogleDriveUrl(p.catalogPdf), '_blank');
+                        }}
+                        title={currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ (PDF Brochure) ડાઉનલોડ / જુઓ' : 'Download / View Product Catalog PDF'}
+                      >
+                        📑 PDF
                       </span>
                     )}
 
@@ -1788,6 +1872,36 @@ export default function ProductsGrid() {
                           title={currentLang === 'gu' ? 'લેબ રિપોર્ટ & ટેકનિકલ સ્પેક શીટ (Lab COA & Spec Sheet)' : 'View Technical Spec Sheet & Lab Analysis Report (COA)'}
                         >
                           🧪 {t.btn_spec_coa || 'Spec & COA'}
+                        </button>
+                      )}
+
+                      {p.catalogPdf && (
+                        <button
+                          type="button"
+                          className="btn-secondary product-catalog-pdf-btn"
+                          style={{
+                            width: '100%',
+                            justifyContent: 'center',
+                            color: '#0284c7',
+                            borderColor: 'rgba(2, 132, 199, 0.45)',
+                            background: 'rgba(2, 132, 199, 0.1)',
+                            padding: '7px 4px',
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            gridColumn: '1 / -1',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            lineHeight: '1.2',
+                            boxShadow: '0 2px 8px rgba(2, 132, 199, 0.15)',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => {
+                            window.open(convertGoogleDriveUrl(p.catalogPdf), '_blank');
+                          }}
+                          title={currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ (PDF Brochure) ડાઉનલોડ / જુઓ' : 'Download / View Product Catalog PDF'}
+                        >
+                          📑 {currentLang === 'gu' ? 'પ્રોડક્ટ કેટલોગ (PDF Brochure)' : (currentLang === 'hi' ? 'उत्पाद कैटलॉग (PDF)' : 'Product Catalog (PDF)')}
                         </button>
                       )}
 
