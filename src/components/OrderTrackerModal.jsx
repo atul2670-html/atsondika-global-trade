@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { getGlobalGatewayName } from '../utils/paymentHelpers';
 
 const DEMO_ORDERS = [
   {
@@ -47,7 +48,7 @@ const DEMO_ORDERS = [
 ];
 
 export default function OrderTrackerModal() {
-  const { isOrderTrackerOpen, setIsOrderTrackerOpen, t, sampleRequestsList } = useApp();
+  const { isOrderTrackerOpen, setIsOrderTrackerOpen, t, sampleRequestsList, paymentGatewaysConfig } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('EXP-2026-8801');
   const [activeOrder, setActiveOrder] = useState(DEMO_ORDERS[0]);
@@ -215,7 +216,7 @@ export default function OrderTrackerModal() {
               {/* SKYDO GLOBAL INWARD REMITTANCE & FIRA STATUS BADGE */}
               <div style={{ marginTop: '14px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.78rem', color: '#6ee7b7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <strong style={{ color: 'white', display: 'block' }}>🌐 Skydo B2B Inward Remittance Verified</strong>
+                  <strong style={{ color: 'white', display: 'block' }}>🌐 {getGlobalGatewayName(paymentGatewaysConfig?.global)} B2B Inward Remittance Verified</strong>
                   <span>RBI PA-CB Certified • 0% Forex Markup • FIRA Receipt Issued</span>
                 </div>
                 <span style={{ background: 'rgba(52,211,153,0.2)', color: '#34d399', padding: '4px 10px', borderRadius: '8px', fontWeight: 800, fontSize: '0.75rem' }}>

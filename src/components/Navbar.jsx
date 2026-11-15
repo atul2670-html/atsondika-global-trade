@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { autoTranslateFullObject } from '../utils/translator';
 import { translateFullWebsiteData } from '../utils/masterWebsiteTranslator';
 import FlagIcon from './FlagIcon';
+import { getLocalGatewayName, getGlobalGatewayName } from '../utils/paymentHelpers';
 
 export default function Navbar() {
   const {
@@ -18,7 +19,8 @@ export default function Navbar() {
     customProductsList, saveProduct,
     certificatesList, saveCertificate,
     branchesList, saveBranch,
-    marketTickerList, currentMerchant
+    marketTickerList, currentMerchant,
+    paymentGatewaysConfig
   } = useApp();
 
   const [isFullTranslating, setIsFullTranslating] = useState(false);
@@ -723,10 +725,10 @@ export default function Navbar() {
                   whiteSpace: 'nowrap'
                 }}
                 onClick={() => setIsRfqDrawerOpen(true)}
-                title={tradeMode === 'local' ? 'View Local Trade Cart (Razorpay)' : 'View Global Export Cart & Skydo Remittance'}
+                title={tradeMode === 'local' ? `View Local Trade Cart (${getLocalGatewayName(paymentGatewaysConfig?.local)})` : `View Global Export Cart & ${getGlobalGatewayName(paymentGatewaysConfig?.global)} Remittance`}
               >
                 <span>{tradeMode === 'local' ? '🛒' : '🌐'}</span>
-                <span className="cart-desktop-label">{tradeMode === 'local' ? (t.nav_cart_local || 'Local Cart') : (t.nav_cart_global || 'Global Cart (Skydo Pay)')}</span>
+                <span className="cart-desktop-label">{tradeMode === 'local' ? (t.nav_cart_local || 'Local Cart') : (tradeMode === 'export' ? `Global Cart (${getGlobalGatewayName(paymentGatewaysConfig?.global)})` : (t.nav_cart_global || 'Global Cart'))}</span>
                 <span className="cart-mobile-label">{currentLang === 'gu' ? 'કાર્ટ' : 'Cart'}</span>
                 <span style={{ background: '#ffffff', color: '#0f172a', padding: '1px 7px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>
                   {rfqCartItems.length}

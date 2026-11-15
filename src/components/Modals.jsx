@@ -10,6 +10,15 @@ import SearchableCurrencySelect from './SearchableCurrencySelect';
 import FlagIcon from './FlagIcon';
 import SampleManagerModal from './SampleManagerModal';
 import { defaultCompanyProfiles } from '../data/initialData';
+import {
+  LOCAL_GATEWAY_OPTIONS,
+  GLOBAL_GATEWAY_OPTIONS,
+  getLocalGatewayName,
+  getGlobalGatewayName,
+  getLocalGatewayFieldConfig,
+  getGlobalGatewayFieldConfig,
+  DEFAULT_PROVIDER_CREDENTIALS
+} from '../utils/paymentHelpers';
 
 // INTERNATIONAL WCO (6-DIGIT) & LOCAL CUSTOMS/GST (8-DIGIT) HARMONIZED SYSTEM DICTIONARY
 const hsCodeDictionary = [
@@ -188,27 +197,102 @@ export default function Modals() {
   const [commissionInputRate, setCommissionInputRate] = useState(adminCommissionRate || 2.5);
   const [forexInputRate, setForexInputRate] = useState(forexRiskBuffer !== undefined ? forexRiskBuffer : 2.5);
 
-  const [localGateway, setLocalGateway] = useState(() => paymentGatewaysConfig?.local || {
+  const [localGateway, setLocalGateway] = useState(() => ({
     provider: 'razorpay',
     status: 'active',
     keyId: 'rzp_live_ATS_LOCAL_2026',
     keySecret: '••••••••••••••••',
-    merchantName: 'Atsondika Local Trade'
-  });
+    merchantName: 'Atsondika Local Trade',
+    customName: '',
+    upiId: '',
+    ...(paymentGatewaysConfig?.local || {})
+  }));
 
-  const [globalGateway, setGlobalGateway] = useState(() => paymentGatewaysConfig?.global || {
+  const [globalGateway, setGlobalGateway] = useState(() => ({
     provider: 'skydo',
     status: 'active',
     accountId: 'SKYDO-EXP-ATS-2026',
     swiftCode: 'SKYDUS33XXX',
     ibanVirtualAccount: 'US89 SKYD 1002 9984 001',
-    accountName: 'Atsondika Global Trade Export Escrow'
-  });
+    accountName: 'Atsondika Global Trade Export Escrow',
+    customName: '',
+    ...(paymentGatewaysConfig?.global || {})
+  }));
 
   useEffect(() => {
-    if (paymentGatewaysConfig?.local) setLocalGateway(paymentGatewaysConfig.local);
-    if (paymentGatewaysConfig?.global) setGlobalGateway(paymentGatewaysConfig.global);
+    if (paymentGatewaysConfig?.local) {
+      setLocalGateway(prev => ({ ...prev, ...paymentGatewaysConfig.local }));
+    }
+    if (paymentGatewaysConfig?.global) {
+      setGlobalGateway(prev => ({ ...prev, ...paymentGatewaysConfig.global }));
+    }
   }, [paymentGatewaysConfig]);
+
+  const handleLocalProviderChange = (newProvider) => {
+    const currentProvider = localGateway.provider || 'razorpay';
+    const cache = { ...(localGateway.providerCache || {}) };
+    cache[currentProvider] = {
+      keyId: localGateway.keyId || '',
+      keySecret: localGateway.keySecret || '',
+      customName: localGateway.customName || '',
+      upiId: localGateway.upiId || ''
+    };
+
+    const providerDefaults = DEFAULT_PROVIDER_CREDENTIALS.local[newProvider] || { keyId: '', keySecret: '' };
+    const cachedData = cache[newProvider] || {};
+
+    const updatedLocal = {
+      ...localGateway,
+      provider: newProvider,
+      keyId: cachedData.keyId !== undefined ? cachedData.keyId : (providerDefaults.keyId || ''),
+      keySecret: cachedData.keySecret !== undefined ? cachedData.keySecret : (providerDefaults.keySecret || ''),
+      customName: cachedData.customName !== undefined ? cachedData.customName : (newProvider === 'custom' ? (localGateway.customName || '') : ''),
+      upiId: cachedData.upiId !== undefined ? cachedData.upiId : (localGateway.upiId || ''),
+      providerCache: cache
+    };
+
+    setLocalGateway(updatedLocal);
+
+    if (savePaymentGatewaysConfig) {
+      savePaymentGatewaysConfig({
+        local: updatedLocal,
+        global: globalGateway
+      });
+    }
+  };
+
+  const handleGlobalProviderChange = (newProvider) => {
+    const currentProvider = globalGateway.provider || 'skydo';
+    const cache = { ...(globalGateway.providerCache || {}) };
+    cache[currentProvider] = {
+      accountId: globalGateway.accountId || '',
+      swiftCode: globalGateway.swiftCode || '',
+      accountName: globalGateway.accountName || '',
+      customName: globalGateway.customName || ''
+    };
+
+    const providerDefaults = DEFAULT_PROVIDER_CREDENTIALS.global[newProvider] || { accountId: '', swiftCode: '', accountName: 'Atsondika Global Trade Export Escrow' };
+    const cachedData = cache[newProvider] || {};
+
+    const updatedGlobal = {
+      ...globalGateway,
+      provider: newProvider,
+      accountId: cachedData.accountId !== undefined ? cachedData.accountId : (providerDefaults.accountId || ''),
+      swiftCode: cachedData.swiftCode !== undefined ? cachedData.swiftCode : (providerDefaults.swiftCode || ''),
+      accountName: cachedData.accountName !== undefined ? cachedData.accountName : (providerDefaults.accountName || globalGateway.accountName || 'Atsondika Global Trade Export Escrow'),
+      customName: cachedData.customName !== undefined ? cachedData.customName : (newProvider === 'custom' ? (globalGateway.customName || '') : ''),
+      providerCache: cache
+    };
+
+    setGlobalGateway(updatedGlobal);
+
+    if (savePaymentGatewaysConfig) {
+      savePaymentGatewaysConfig({
+        local: localGateway,
+        global: updatedGlobal
+      });
+    }
+  };
 
   useEffect(() => {
     if (adminCommissionRate !== undefined) {
@@ -2232,7 +2316,7 @@ export default function Modals() {
                 style={{ padding: '14px 18px', justifyContent: 'flex-start', fontSize: '0.9rem', fontWeight: 800, background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', whiteSpace: 'normal', textAlign: 'left', lineHeight: '1.35' }}
                 onClick={() => setActiveModal('admin_payment_gateways')}
               >
-                💳 Payment Gateways Setup — Razorpay (Local ₹) & Skydo (Global $)
+                💳 Payment Gateways & Banking Setup
               </button>
 
               <button
@@ -3261,175 +3345,274 @@ export default function Modals() {
       )}
 
       {/* 3.5 ADMIN PAYMENT GATEWAYS SETUP MODAL */}
-      {activeModal === 'admin_payment_gateways' && (
-        <div className="modal-backdrop show">
-          <div className="glass-card modal-card admin-pg-modal" style={{ maxWidth: '650px', borderRadius: '24px', position: 'relative' }}>
-            <button className="modal-close-round" onClick={() => setActiveModal(null)} title="Close">✕</button>
-            <button className="modal-back-btn" onClick={() => setActiveModal('admin_control')}>← Admin Panel</button>
-            
-            <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '12px' }}>
-              <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💳</span>
-              <h3 className="admin-pg-title" style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>
-                Payment Gateways & Banking Setup
-              </h3>
-              <p className="admin-pg-subtitle" style={{ fontSize: '0.85rem', margin: '4px 0 0' }}>
-                ભારતીય ગ્રાહકો માટે Razorpay અને વિદેશી બાયર્સ માટે Skydo B2B Remittance એકાઉન્ટ લિંક કરો
-              </p>
-            </div>
+      {activeModal === 'admin_payment_gateways' && (() => {
+        const localFieldConfig = getLocalGatewayFieldConfig(localGateway.provider);
+        const globalFieldConfig = getGlobalGatewayFieldConfig(globalGateway.provider);
 
-            <div style={{ display: 'grid', gap: '20px' }}>
-              {/* 1. LOCAL TRADE GATEWAY (INR) */}
-              <div className="admin-pg-card local-pg-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h4 className="pg-card-title local-pg-title">
-                    🇮🇳 Local Trade Gateway (ભારતીય ગ્રાહકો / ₹ INR)
-                  </h4>
-                  <span className={`pg-status-badge ${localGateway.status === 'active' ? 'active' : 'disabled'}`}>
-                    {localGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
-                  </span>
-                </div>
-
-                <div style={{ display: 'grid', gap: '12px' }}>
-                  <div>
-                    <label className="admin-pg-label">
-                      ગેટવે પ્રોવાઈડર (Gateway Provider)
-                    </label>
-                    <select
-                      className="input-field"
-                      value={localGateway.provider || 'razorpay'}
-                      onChange={(e) => setLocalGateway({ ...localGateway, provider: e.target.value })}
-                    >
-                      <option value="razorpay">Razorpay (Recommended — 0% Fee UPI, Cards, Netbanking)</option>
-                      <option value="cashfree">Cashfree Payments (Low Transaction Fee)</option>
-                      <option value="phonepe">PhonePe Business PG (0% Fee UPI)</option>
-                    </select>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div>
-                      <label className="admin-pg-label">
-                        Razorpay Key ID (API Key)
-                      </label>
-                      <input
-                        type="text"
-                        className="input-field"
-                        placeholder="rzp_live_..."
-                        value={localGateway.keyId || ''}
-                        onChange={(e) => setLocalGateway({ ...localGateway, keyId: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="admin-pg-label">
-                        Razorpay Key Secret
-                      </label>
-                      <input
-                        type="password"
-                        className="input-field"
-                        placeholder="••••••••••••••••"
-                        value={localGateway.keySecret || ''}
-                        onChange={(e) => setLocalGateway({ ...localGateway, keySecret: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-pg-info local-info">
-                    ✓ <strong>ગ્રાહક સપોર્ટ:</strong> Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking supported.
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. GLOBAL TRADE B2B EXPORT GATEWAY (USD/EUR) */}
-              <div className="admin-pg-card global-pg-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h4 className="pg-card-title global-pg-title">
-                    🌐 Global Trade B2B Gateway (આંતરરાષ્ટ્રીય ગ્રાહકો / $ USD, € EUR)
-                  </h4>
-                  <span className={`pg-status-badge ${globalGateway.status === 'active' ? 'active' : 'disabled'}`}>
-                    {globalGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
-                  </span>
-                </div>
-
-                <div style={{ display: 'grid', gap: '12px' }}>
-                  <div>
-                    <label className="admin-pg-label">
-                      એક્સપોર્ટ ગેટવે પ્રોવાઈડર (Export Gateway)
-                    </label>
-                    <select
-                      className="input-field"
-                      value={globalGateway.provider || 'skydo'}
-                      onChange={(e) => setGlobalGateway({ ...globalGateway, provider: e.target.value })}
-                    >
-                      <option value="skydo">Skydo Global Remittance (Recommended — 0% Forex, Flat Fee, Free FIRA)</option>
-                      <option value="wire_swift">Direct Wire Transfer / SWIFT IBAN</option>
-                    </select>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div>
-                      <label className="admin-pg-label">
-                        Skydo Account ID / IBAN
-                      </label>
-                      <input
-                        type="text"
-                        className="input-field"
-                        placeholder="SKYDO-EXP-..."
-                        value={globalGateway.accountId || ''}
-                        onChange={(e) => setGlobalGateway({ ...globalGateway, accountId: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="admin-pg-label">
-                        SWIFT / BIC Code
-                      </label>
-                      <input
-                        type="text"
-                        className="input-field"
-                        placeholder="SKYDUS33XXX"
-                        value={globalGateway.swiftCode || ''}
-                        onChange={(e) => setGlobalGateway({ ...globalGateway, swiftCode: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="admin-pg-label">
-                      Export Escrow Account Name
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      placeholder="Atsondika Global Trade Export Escrow Account"
-                      value={globalGateway.accountName || ''}
-                      onChange={(e) => setGlobalGateway({ ...globalGateway, accountName: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="admin-pg-info global-info">
-                    ✓ <strong>RBI Compliance:</strong> RBI PA-CB certified, 0% Forex Markup, Automated Free FIRA / FIRC generation for zero-rated GST export filing.
-                  </div>
-                </div>
-              </div>
-
-              {/* SAVE BUTTON */}
+        return (
+          <div className="modal-backdrop show">
+            <div className="glass-card modal-card admin-pg-modal" style={{ maxWidth: '680px', borderRadius: '24px', position: 'relative' }}>
               <button
-                type="button"
-                className="btn-primary admin-pg-save-btn"
+                className="modal-close-round"
                 onClick={() => {
                   if (savePaymentGatewaysConfig) {
-                    savePaymentGatewaysConfig({
-                      local: localGateway,
-                      global: globalGateway
-                    });
-                    setActiveModal(null);
+                    savePaymentGatewaysConfig({ local: localGateway, global: globalGateway });
                   }
+                  setActiveModal(null);
+                }}
+                title="Close"
+              >
+                ✕
+              </button>
+              <button
+                className="modal-back-btn"
+                onClick={() => {
+                  if (savePaymentGatewaysConfig) {
+                    savePaymentGatewaysConfig({ local: localGateway, global: globalGateway });
+                  }
+                  setActiveModal('admin_control');
                 }}
               >
-                💾 Save Payment Gateways Setup (સેવ કરો)
+                ← Admin Panel
               </button>
+              
+              <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '12px' }}>
+                <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '4px' }}>💳</span>
+                <h3 className="admin-pg-title" style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>
+                  Payment Gateways & Banking Setup
+                </h3>
+                <p className="admin-pg-subtitle" style={{ fontSize: '0.85rem', margin: '4px 0 0' }}>
+                  ભારતીય ગ્રાહકો માટે લોકલ ઓનલાઇન પેમેન્ટ ગેટવે અને વિદેશી બાયર્સ માટે B2B ગ્લોબલ ગેટવે સેટ કરો
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gap: '20px' }}>
+                {/* 1. LOCAL TRADE GATEWAY (INR) */}
+                <div className="admin-pg-card local-pg-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <h4 className="pg-card-title local-pg-title">
+                      🇮🇳 Local Trade Gateway (ભારતીય ગ્રાહકો / ₹ INR)
+                    </h4>
+                    <button
+                      type="button"
+                      className={`pg-status-badge ${localGateway.status === 'active' ? 'active' : 'disabled'}`}
+                      onClick={() => {
+                        const nextStatus = localGateway.status === 'active' ? 'disabled' : 'active';
+                        const updated = { ...localGateway, status: nextStatus };
+                        setLocalGateway(updated);
+                        if (savePaymentGatewaysConfig) {
+                          savePaymentGatewaysConfig({ local: updated, global: globalGateway });
+                        }
+                      }}
+                      title="ક્લિક કરીને ગેટવે ચાલુ / બંધ (Active / Disabled) કરો"
+                      style={{ cursor: 'pointer', border: 'none', outline: 'none' }}
+                    >
+                      {localGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gap: '12px' }}>
+                    <div>
+                      <label className="admin-pg-label">
+                        ગેટવે પ્રોવાઈડર પસંદ કરો (Select Gateway Provider)
+                      </label>
+                      <select
+                        className="input-field"
+                        value={localGateway.provider || 'razorpay'}
+                        onChange={(e) => handleLocalProviderChange(e.target.value)}
+                      >
+                        {LOCAL_GATEWAY_OPTIONS.map(opt => (
+                          <option key={opt.id} value={opt.id}>{opt.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* CUSTOM GATEWAY NAME INPUT (IF CUSTOM SELECTED) */}
+                    {localGateway.provider === 'custom' && (
+                      <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '10px 12px', borderRadius: '12px', border: '1px dashed rgba(59, 130, 246, 0.4)' }}>
+                        <label className="admin-pg-label" style={{ color: '#60a5fa' }}>
+                          ✏️ મનપસંદ ગેટવેનું નામ ટાઈપ કરો (Custom Gateway Provider Name)
+                        </label>
+                        <input
+                          type="text"
+                          className="input-field"
+                          placeholder="દા.ત. PayU, CCAvenue, ICICI PaySeal, HDFC SmartGateway, PayG..."
+                          value={localGateway.customName || ''}
+                          onChange={(e) => setLocalGateway({ ...localGateway, customName: e.target.value })}
+                        />
+                      </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label className="admin-pg-label">
+                          {localFieldConfig.keyLabel}
+                        </label>
+                        <input
+                          type="text"
+                          className="input-field"
+                          placeholder={localFieldConfig.keyPlaceholder}
+                          value={localGateway.keyId || ''}
+                          onChange={(e) => setLocalGateway({ ...localGateway, keyId: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="admin-pg-label">
+                          {localFieldConfig.secretLabel}
+                        </label>
+                        <input
+                          type="password"
+                          className="input-field"
+                          placeholder={localFieldConfig.secretPlaceholder}
+                          value={localGateway.keySecret || ''}
+                          onChange={(e) => setLocalGateway({ ...localGateway, keySecret: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* OPTIONAL DIRECT UPI VPA FOR LOCAL TRADE */}
+                    <div>
+                      <label className="admin-pg-label">
+                        ડાયરેક્ટ UPI ID / VPA (ઓપ્શનલ Instant UPI પેમેન્ટ લિંક)
+                      </label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        placeholder="દા.ત. atsondika@icici અથવા 7861997755@upi"
+                        value={localGateway.upiId || ''}
+                        onChange={(e) => setLocalGateway({ ...localGateway, upiId: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="admin-pg-info local-info">
+                      {localFieldConfig.info}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. GLOBAL TRADE B2B EXPORT GATEWAY (USD/EUR) */}
+                <div className="admin-pg-card global-pg-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <h4 className="pg-card-title global-pg-title">
+                      🌐 Global Trade B2B Gateway (આંતરરાષ્ટ્રીય ગ્રાહકો / $ USD, € EUR)
+                    </h4>
+                    <button
+                      type="button"
+                      className={`pg-status-badge ${globalGateway.status === 'active' ? 'active' : 'disabled'}`}
+                      onClick={() => {
+                        const nextStatus = globalGateway.status === 'active' ? 'disabled' : 'active';
+                        const updated = { ...globalGateway, status: nextStatus };
+                        setGlobalGateway(updated);
+                        if (savePaymentGatewaysConfig) {
+                          savePaymentGatewaysConfig({ local: localGateway, global: updated });
+                        }
+                      }}
+                      title="ક્લિક કરીને ગેટવે ચાલુ / બંધ (Active / Disabled) કરો"
+                      style={{ cursor: 'pointer', border: 'none', outline: 'none' }}
+                    >
+                      {globalGateway.status === 'active' ? '● Live Active' : '○ Disabled'}
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gap: '12px' }}>
+                    <div>
+                      <label className="admin-pg-label">
+                        એક્સપોર્ટ ગેટવે પસંદ કરો (Select Export Gateway Provider)
+                      </label>
+                      <select
+                        className="input-field"
+                        value={globalGateway.provider || 'skydo'}
+                        onChange={(e) => handleGlobalProviderChange(e.target.value)}
+                      >
+                        {GLOBAL_GATEWAY_OPTIONS.map(opt => (
+                          <option key={opt.id} value={opt.id}>{opt.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* CUSTOM GLOBAL GATEWAY NAME INPUT (IF CUSTOM SELECTED) */}
+                    {globalGateway.provider === 'custom' && (
+                      <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 12px', borderRadius: '12px', border: '1px dashed rgba(16, 185, 129, 0.4)' }}>
+                        <label className="admin-pg-label" style={{ color: '#34d399' }}>
+                          ✏️ મનપસંદ ગ્લોબલ ગેટવેનું નામ ટાઈપ કરો (Custom Global Gateway Provider Name)
+                        </label>
+                        <input
+                          type="text"
+                          className="input-field"
+                          placeholder="દા.ત. Adyen, Revolut Business, Tazapay, PingPong, WorldFirst..."
+                          value={globalGateway.customName || ''}
+                          onChange={(e) => setGlobalGateway({ ...globalGateway, customName: e.target.value })}
+                        />
+                      </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label className="admin-pg-label">
+                          {globalFieldConfig.field1Label}
+                        </label>
+                        <input
+                          type="text"
+                          className="input-field"
+                          placeholder={globalFieldConfig.field1Placeholder}
+                          value={globalGateway.accountId || ''}
+                          onChange={(e) => setGlobalGateway({ ...globalGateway, accountId: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="admin-pg-label">
+                          {globalFieldConfig.field2Label}
+                        </label>
+                        <input
+                          type="text"
+                          className="input-field"
+                          placeholder={globalFieldConfig.field2Placeholder}
+                          value={globalGateway.swiftCode || ''}
+                          onChange={(e) => setGlobalGateway({ ...globalGateway, swiftCode: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="admin-pg-label">
+                        {globalFieldConfig.field3Label}
+                      </label>
+                      <input
+                        type="text"
+                        className="input-field"
+                        placeholder={globalFieldConfig.field3Placeholder}
+                        value={globalGateway.accountName || ''}
+                        onChange={(e) => setGlobalGateway({ ...globalGateway, accountName: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="admin-pg-info global-info">
+                      {globalFieldConfig.info}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SAVE BUTTON */}
+                <button
+                  type="button"
+                  className="btn-primary admin-pg-save-btn"
+                  onClick={() => {
+                    if (savePaymentGatewaysConfig) {
+                      savePaymentGatewaysConfig({
+                        local: localGateway,
+                        global: globalGateway
+                      });
+                      setActiveModal(null);
+                    }
+                  }}
+                >
+                  💾 Save Payment Gateways Setup (સેવ કરો)
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ADMIN LOGIN MODAL */}
       {activeModal === 'admin' && (

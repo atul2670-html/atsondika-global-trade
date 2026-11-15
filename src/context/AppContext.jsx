@@ -303,14 +303,16 @@ export function AppProvider({ children }) {
     showLiveToast(`⚙️ Product Approval Policy updated: ${boolVal ? 'Manual Admin Approval Required' : 'Auto Approve'}`, 'info');
   };
 
-  // Payment Gateways Architecture State (Local: Razorpay | Global: Skydo)
+  // Payment Gateways Architecture State (Local: Multi-gateway / Custom | Global: Multi-gateway / Custom)
   const defaultPaymentGatewaysConfig = {
     local: {
       provider: 'razorpay',
       status: 'active',
       keyId: 'rzp_live_ATS_LOCAL_2026',
       keySecret: '••••••••••••••••',
-      merchantName: 'Atsondika Local Trade'
+      merchantName: 'Atsondika Local Trade',
+      customName: '',
+      upiId: ''
     },
     global: {
       provider: 'skydo',
@@ -318,14 +320,21 @@ export function AppProvider({ children }) {
       accountId: 'SKYDO-EXP-ATS-2026',
       swiftCode: 'SKYDUS33XXX',
       ibanVirtualAccount: 'US89 SKYD 1002 9984 001',
-      accountName: 'Atsondika Global Trade Export Escrow'
+      accountName: 'Atsondika Global Trade Export Escrow',
+      customName: ''
     }
   };
 
   const [paymentGatewaysConfig, setPaymentGatewaysConfig] = useState(() => {
     try {
       const stored = localStorage.getItem('site_payment_gateways_config_v1');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          local: { ...defaultPaymentGatewaysConfig.local, ...(parsed.local || {}) },
+          global: { ...defaultPaymentGatewaysConfig.global, ...(parsed.global || {}) }
+        };
+      }
     } catch(e) {}
     return defaultPaymentGatewaysConfig;
   });

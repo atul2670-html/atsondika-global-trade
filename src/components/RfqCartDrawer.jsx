@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import SearchableCurrencySelect from './SearchableCurrencySelect';
+import {
+  getLocalGatewayName,
+  getGlobalGatewayName,
+  getLocalGatewaySubtitle,
+  getGlobalGatewaySubtitle,
+  getGlobalGatewayEscrowInfo
+} from '../utils/paymentHelpers';
 
 const currSymbolMap = {
   INR: '₹', USD: '$', EUR: '€', GBP: '£', AED: 'د.إ ', CAD: 'C$', AUD: 'A$',
@@ -755,13 +762,25 @@ export default function RfqCartDrawer() {
                     </div>
 
                     {/* LIVE LOCAL GATEWAY STATUS BADGE FOR CUSTOMERS */}
-                    <div className="rfq-gateway-badge razorpay">
-                      <span style={{ fontSize: '1.1rem' }}>🔒</span>
-                      <div>
-                        <strong>💳 Local Payment Gateway: Razorpay (Live Active)</strong>
-                        <span>Supports Google Pay, PhonePe, Paytm (0% Fee UPI), Debit/Credit Cards & Netbanking</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const localConfig = paymentGatewaysConfig?.local || {};
+                      const localName = getLocalGatewayName(localConfig);
+                      const isLive = localConfig.status !== 'disabled';
+                      return (
+                        <div className={`rfq-gateway-badge ${isLive ? 'razorpay' : 'disabled'}`} style={!isLive ? { opacity: 0.75, borderColor: 'rgba(239, 68, 68, 0.4)' } : {}}>
+                          <span style={{ fontSize: '1.1rem' }}>{isLive ? '🔒' : 'ℹ️'}</span>
+                          <div>
+                            <strong>💳 Local Payment Gateway: {localName} ({isLive ? 'Live Active' : 'Offline / Inactive'})</strong>
+                            <span>{getLocalGatewaySubtitle(localConfig)}</span>
+                            {localConfig.upiId && isLive && (
+                              <span style={{ display: 'block', marginTop: '3px', color: '#60a5fa', fontWeight: 700 }}>
+                                ⚡ Direct UPI VPA: {localConfig.upiId}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 ) : (
                   /* GLOBAL B2B EXPORT FIELDS */
@@ -842,19 +861,26 @@ export default function RfqCartDrawer() {
                       </div>
                     )}
 
-                    {/* LIVE SKYDO GLOBAL B2B GATEWAY BADGE FOR CUSTOMERS */}
-                    <div className="rfq-gateway-badge skydo">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <span style={{ fontSize: '1.1rem' }}>🌐</span>
-                        <strong>Skydo Global B2B Inward Remittance Gateway (Live Active)</strong>
-                      </div>
-                      <p>
-                        RBI PA-CB Certified • 0% Forex Markup • Automatic Free FIRA / FIRC Receipt Issued for Zero-Rated GST Export Filing.
-                      </p>
-                      <div className="escrow-box">
-                        Bank Escrow ID: {paymentGatewaysConfig?.global?.accountId || 'SKYDO-EXP-ATS-2026'} | SWIFT: {paymentGatewaysConfig?.global?.swiftCode || 'SKYDUS33XXX'}
-                      </div>
-                    </div>
+                    {/* LIVE GLOBAL B2B GATEWAY BADGE FOR CUSTOMERS */}
+                    {(() => {
+                      const globalConfig = paymentGatewaysConfig?.global || {};
+                      const globalName = getGlobalGatewayName(globalConfig);
+                      const isLive = globalConfig.status !== 'disabled';
+                      return (
+                        <div className={`rfq-gateway-badge ${isLive ? 'skydo' : 'disabled'}`} style={!isLive ? { opacity: 0.75, borderColor: 'rgba(239, 68, 68, 0.4)' } : {}}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            <span style={{ fontSize: '1.1rem' }}>🌐</span>
+                            <strong>{globalName} Global B2B Remittance ({isLive ? 'Live Active' : 'Offline / Inactive'})</strong>
+                          </div>
+                          <p>
+                            {getGlobalGatewaySubtitle(globalConfig)}
+                          </p>
+                          <div className="escrow-box">
+                            {getGlobalGatewayEscrowInfo(globalConfig)}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
 
