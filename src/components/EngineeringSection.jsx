@@ -95,7 +95,7 @@ export default function EngineeringSection() {
           </div>
 
           <h2 className="section-title engineering-title">
-            {t?.eng_title || 'Available Advance Machinery & Technical Support for this job work Details.'}
+            {t?.eng_title || 'Available Advanced Machinery & Technical Support for Job Work Details'}
           </h2>
 
           <p className="section-subtitle engineering-subtitle">
