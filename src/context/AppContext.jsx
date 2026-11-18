@@ -1186,6 +1186,24 @@ export function AppProvider({ children }) {
     } catch(e) {}
   }, [customProductsList]);
 
+  // Self-heal deletedBuiltInIds: active custom products/categories in customProductsList must NEVER be in deletedBuiltInIds
+  useEffect(() => {
+    if (customProductsList && customProductsList.length > 0 && deletedBuiltInIds && deletedBuiltInIds.length > 0) {
+      const activeCustomKeys = new Set();
+      customProductsList.forEach(p => {
+        if (!p) return;
+        if (p.id) activeCustomKeys.add(String(p.id));
+        if (p.category) activeCustomKeys.add(String(p.category));
+      });
+      const hasOverlap = deletedBuiltInIds.some(dId => activeCustomKeys.has(String(dId)));
+      if (hasOverlap) {
+        const cleaned = deletedBuiltInIds.filter(dId => !activeCustomKeys.has(String(dId)));
+        setDeletedBuiltInIds(cleaned);
+        try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(cleaned)); } catch(e) {}
+      }
+    }
+  }, [customProductsList, deletedBuiltInIds]);
+
   // Load customProductsList from IndexedDB on startup
   useEffect(() => {
     try {
@@ -1860,8 +1878,12 @@ export function AppProvider({ children }) {
 
     const rawList = [...activeBuiltIn, ...customProductsList];
 
-    // Exclude any product whose specific ID is in deletedBuiltInIds
-    const nonDeleted = rawList.filter(p => p && !deletedSet.has(p.id));
+    // Exclude built-in products whose specific ID is in deletedBuiltInIds (custom products in customProductsList are always active)
+    const nonDeleted = rawList.filter(p => {
+      if (!p) return false;
+      if (!p.isCustom && deletedSet.has(p.id)) return false;
+      return true;
+    });
 
     // Filter products strictly belonging to the active company ONLY
     const companyProducts = nonDeleted.filter(p => (p.companyId || 'comp_1') === activeCompanyId);
@@ -1976,6 +1998,16 @@ export function AppProvider({ children }) {
 
     if (!dataToSave.category) {
       dataToSave.category = `cat-custom-${Date.now()}`;
+    }
+
+    // Un-delete from deletedBuiltInIds if this ID or category was previously marked as deleted
+    if (deletedBuiltInIds && deletedBuiltInIds.length > 0) {
+      const keysToUnDelete = new Set([String(dataToSave.id), String(dataToSave.category)]);
+      if (deletedBuiltInIds.some(d => keysToUnDelete.has(String(d)))) {
+        const updatedDeleted = deletedBuiltInIds.filter(d => !keysToUnDelete.has(String(d)));
+        setDeletedBuiltInIds(updatedDeleted);
+        try { localStorage.setItem('deleted_built_in_ids', JSON.stringify(updatedDeleted)); } catch(e) {}
+      }
     }
 
     if (dataToSave.isSub !== false && dataToSave.companyId === 'comp_1' && (!dataToSave.parentId || dataToSave.parentId === 'agro')) {
@@ -2101,14 +2133,21 @@ export function AppProvider({ children }) {
   const deleteProduct = (id, categoryCode, categoryName, isMainCategory) => {
     verifyAdminAccess(() => {
       if (confirm(`🗑️ Are you sure you want to delete "${categoryName}"?`)) {
-        // 1. Mark as deleted in built-in registry
-        let nextDeleted = [...deletedBuiltInIds];
-        if (id && !nextDeleted.includes(id)) nextDeleted.push(id);
-        if (categoryCode && !nextDeleted.includes(categoryCode)) nextDeleted.push(categoryCode);
+        // 1. Mark as deleted in built-in registry ONLY for built-ins
+        const builtInCatSlugs = new Set(['agro', 'dairy', 'textiles', 'garments', 'industrial', 'new_machinery', 'used_machinery', 'packaging']);
+        const builtInProductIds = new Set((initialProductsData || []).map(p => p.id));
 
-        // Also mark ALL sub-products under this category in built-in & custom data as deleted
+        let nextDeleted = [...deletedBuiltInIds];
+        if (id && (builtInProductIds.has(id) || builtInCatSlugs.has(id)) && !nextDeleted.includes(id)) {
+          nextDeleted.push(id);
+        }
+        if (categoryCode && builtInCatSlugs.has(categoryCode) && !nextDeleted.includes(categoryCode)) {
+          nextDeleted.push(categoryCode);
+        }
+
+        // Also mark ALL built-in sub-products under this category in built-in data as deleted
         const catTitle = (categoryName || '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toLowerCase();
-        [...initialProductsData, ...customProductsList].forEach(bp => {
+        (initialProductsData || []).forEach(bp => {
           if (!bp) return;
           const bpTitle = (bp.names?.en || bp.names?.gu || bp.name || '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toLowerCase();
           const matchesCat = (categoryCode && bp.category === categoryCode) ||
@@ -2116,8 +2155,8 @@ export function AppProvider({ children }) {
                              (categoryCode && bp.parentId === categoryCode) ||
                              (catTitle && (bpTitle === catTitle || bp.category === catTitle));
           if (bp.id === id || matchesCat) {
-            if (bp.id && !nextDeleted.includes(bp.id)) nextDeleted.push(bp.id);
-            if (bp.category && !nextDeleted.includes(bp.category)) nextDeleted.push(bp.category);
+            if (bp.id && builtInProductIds.has(bp.id) && !nextDeleted.includes(bp.id)) nextDeleted.push(bp.id);
+            if (bp.category && builtInCatSlugs.has(bp.category) && !nextDeleted.includes(bp.category)) nextDeleted.push(bp.category);
           }
         });
 
@@ -2385,7 +2424,7 @@ export function AppProvider({ children }) {
       const seenNames = new Set(filteredMaster.map(c => c.nameEn.toLowerCase()));
 
       (customProductsList || [])
-        .filter(cm => cm && !cm.isSub && !deletedSet.has(cm.id))
+        .filter(cm => cm && !cm.isSub)
         .forEach(cm => {
           const catSlug = (cm.category || cm.id || '').trim();
           const titleEn = (cm.names?.en || cm.names?.gu || cm.name || catSlug).trim();
@@ -2408,7 +2447,7 @@ export function AppProvider({ children }) {
 
     // 1. Get all custom main categories strictly created for targetCompId (!cm.isSub)
     const companyCustomMains = (customProductsList || [])
-      .filter(p => p && !p.isSub && !deletedSet.has(p.id))
+      .filter(p => p && !p.isSub)
       .filter(p => (p.companyId || 'comp_1') === targetCompId);
 
     // 2. Collect all active products belonging to targetCompId to determine active categories

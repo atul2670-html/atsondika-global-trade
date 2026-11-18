@@ -160,7 +160,7 @@ export default function Modals() {
     merchantsList, currentMerchant, merchantProductsList, registerMerchant, loginMerchant, logoutMerchant, updateMerchantProfile, updateMerchantStatus, deleteMerchant, updateMerchantPassword, addMerchantProduct, approveMerchantProduct, rejectMerchantProduct, deleteMerchantProduct,
     adminCommissionRate, setAdminCommissionRate, requireProductApproval, setRequireProductApproval,
     forexRiskBuffer, saveForexRiskBuffer,
-    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, setCurrentCategory, verifyAdminAccess,
+    paymentGatewaysConfig, savePaymentGatewaysConfig, deletedBuiltInIds, setDeletedBuiltInIds, currentCategory, setCurrentCategory, verifyAdminAccess,
     sampleRequestsList,
     activeIncoterm, setActiveIncoterm,
     isCodEnabled, toggleCodEnabled, isEngineeringUnitEnabled, toggleEngineeringUnit,
@@ -1322,22 +1322,25 @@ export default function Modals() {
 
   // Helper function to return official Main Categories + custom ones
   const getMainProductCategoryOptions = () => {
-    let mainCategories = [];
-    if (activeCompanyId === 'comp_4') {
-      mainCategories = [
+    const currentCompId = activeCompany?.id || activeCompanyId || 'comp_1';
+    const delSet = new Set(deletedBuiltInIds || []);
+
+    let builtInCategories = [];
+    if (currentCompId === 'comp_4') {
+      builtInCategories = [
         { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક ઓટોમેશન અને ઈલેક્ટ્રોનિક્સ', nameEn: 'Industrial Automation & Electronics', icon: '⚡' },
         { id: 'packaging', category: 'packaging', nameGu: 'ઇકો પેકેજિંગ અને જુટ બેગ્સ', nameEn: 'Eco Packaging & Sustainable Materials', icon: '📦' },
         { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી અને ઓટોમેશન સિસ્ટમ્સ', nameEn: 'New Machinery & Automation Systems', icon: '🏭' },
         { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી ઔદ્યોગિક મશીનરી', nameEn: 'Used Industrial Machinery', icon: '🏗️' }
       ];
-    } else if (activeCompanyId === 'comp_3') {
-      mainCategories = [
+    } else if (currentCompId === 'comp_3') {
+      builtInCategories = [
         { id: 'industrial', category: 'industrial', nameGu: 'ઔદ્યોગિક માલ અને ફાસ્ટનર્સ (બોલ્ટ્સ, નટ્સ, પાઇપ)', nameEn: 'Industrial Goods & Fasteners (Bolts, Nuts, Pipes)', icon: '⚙️' },
         { id: 'new_machinery', category: 'new_machinery', nameGu: 'નવી મશીનરી (CNC, લેથ, સોર્ટકેસ)', nameEn: 'New Machinery (CNC, Lathe, Sortex)', icon: '🏭' },
         { id: 'used_machinery', category: 'used_machinery', nameGu: 'વપરાયેલી મશીનરી (ઔદ્યોગિક પ્લાન્ટસ)', nameEn: 'Used Machinery (Industrial Plants)', icon: '🏗️' }
       ];
     } else {
-      mainCategories = [
+      builtInCategories = [
         { id: 'agro', category: 'agro', nameGu: 'એગ્રો કોમોડિટીઝ (મસાલા, ચોખા, તેલીબિયાં)', nameEn: 'Agro Commodities (Spices, Rice, Oilseeds)', icon: '🌾' },
         { id: 'dairy', category: 'dairy', nameGu: 'ડેરી પ્રોડક્ટ્સ (શુદ્ધ ઘી, સ્કિમ્ડ મિલ્ક પાઉડર - SMP)', nameEn: 'Dairy Products (Pure Ghee, Skimmed Milk Powder - SMP)', icon: '🥛' },
         { id: 'textiles', category: 'textiles', nameGu: 'ટેક્ષટાઈલ પ્રોડક્ટ્સ (સુરત ફેબ્રિક્સ, સાડીઓ, કોટન યાર્ન)', nameEn: 'Textile Products (Surat Fabrics, Designer Sarees, Cotton Yarn)', icon: '🧵' },
@@ -1346,37 +1349,47 @@ export default function Modals() {
       ];
     }
 
-    // Add custom main categories created for this active company
-    const customMains = customProductsList.filter(p => !p.isSub && (p.companyId || 'comp_1') === activeCompanyId);
-    customMains.forEach(cm => {
-      let titleEn = (cm.names?.en || cm.names?.gu || '').trim();
-      let titleGu = (cm.names?.gu || cm.names?.en || '').trim();
-      if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
-      if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
+    // 1. Filter built-in categories by delSet (only built-ins can be deleted this way)
+    const activeBuiltIns = builtInCategories.filter(b => !delSet.has(b.id) && !delSet.has(b.category));
 
-      const catSlug = cm.category || cm.id;
-      let iconVal = cm.icon || getSmartCategoryIcon(catSlug, titleEn);
-      if (typeof iconVal === 'string' && (iconVal.startsWith('data:') || iconVal.startsWith('http') || iconVal.length > 30)) {
-        iconVal = getSmartCategoryIcon(catSlug, titleEn) || '🏷️';
-      }
+    // 2. Add ALL custom main categories for this active company
+    // Custom main categories present in customProductsList (!p.isSub) are actively defined by the user
+    // and must NEVER be suppressed by deletedBuiltInIds!
+    const customList = [];
 
-      if (!mainCategories.some(m => m.category === catSlug || m.id === cm.id)) {
-        mainCategories.push({
+    (customProductsList || [])
+      .filter(p => p && !p.isSub && (p.companyId || 'comp_1') === currentCompId)
+      .forEach(cm => {
+        let titleEn = (cm.names?.en || cm.name || cm.names?.gu || cm.category || '').trim();
+        let titleGu = (cm.names?.gu || cm.name || cm.names?.en || cm.category || '').trim();
+        if (titleEn.startsWith('data:')) titleEn = 'Custom Category';
+        if (titleGu.startsWith('data:')) titleGu = 'કસ્ટમ કેટેગરી';
+
+        const catSlug = cm.category || cm.id;
+        let iconVal = cm.icon || getSmartCategoryIcon(catSlug, titleEn);
+        if (typeof iconVal === 'string' && (iconVal.startsWith('data:') || iconVal.startsWith('http') || iconVal.length > 30)) {
+          iconVal = getSmartCategoryIcon(catSlug, titleEn) || '🏷️';
+        }
+
+        const itemObj = {
           id: cm.id,
           category: catSlug,
-          nameGu: titleGu,
-          nameEn: titleEn,
-          icon: iconVal || '🏷️'
-        });
-      }
-    });
+          nameGu: titleGu || titleEn || 'કસ્ટમ કેટેગરી',
+          nameEn: titleEn || titleGu || 'Custom Category',
+          icon: iconVal || '🏷️',
+          isCustom: true
+        };
 
-    const delSet = new Set(deletedBuiltInIds || []);
-    // Only filter built-ins by delSet; all custom categories are already included in mainCategories
-    return mainCategories.filter(m => {
-      if (m.isCustom) return !delSet.has(m.id);
-      return !delSet.has(m.id) && !delSet.has(m.category);
-    });
+        // If custom category slug or ID collides with a built-in, custom category replaces/overrides it
+        const existingIdx = activeBuiltIns.findIndex(b => b.category === catSlug || b.id === cm.id);
+        if (existingIdx !== -1) {
+          activeBuiltIns[existingIdx] = itemObj;
+        } else if (!customList.some(c => c.category === catSlug || c.id === cm.id)) {
+          customList.push(itemObj);
+        }
+      });
+
+    return [...activeBuiltIns, ...customList];
   };
 
   // Sync state when editing hero
@@ -1434,7 +1447,9 @@ export default function Modals() {
   useEffect(() => {
     if (activeModal === 'product' || activeModal === 'product_main' || activeModal === 'product_sub') {
       const mainCatOptions = getMainProductCategoryOptions();
-      const firstParentCat = mainCatOptions.length > 0 ? mainCatOptions[0].category : 'agro';
+      const defaultParent = (currentCategory && currentCategory !== 'all' && mainCatOptions.some(o => o.category === currentCategory || o.id === currentCategory))
+        ? currentCategory
+        : (mainCatOptions.length > 0 ? mainCatOptions[0].category : 'agro');
 
       if (activeModal === 'product_main' && (!currentMerchant || isAdminLoggedIn)) setProdType('main');
       if (activeModal === 'product_sub' || activeModal === 'product' || (currentMerchant && !isAdminLoggedIn)) setProdType('sub');
@@ -1443,7 +1458,7 @@ export default function Modals() {
         const target = getAllProducts().find(p => p.id === editingProductId);
         if (target) {
           setProdType(target.isSub ? 'sub' : 'main');
-          setParentSelect(target.category || target.parentId || firstParentCat);
+          setParentSelect(target.category || target.parentId || defaultParent);
           setNameGu(target.names?.gu || '');
           setNameEn(target.names?.en || '');
           setCatCodeInput(target.category || `cat-${Date.now()}`);
@@ -1497,7 +1512,7 @@ export default function Modals() {
       }
 
       // Default values
-      setParentSelect(firstParentCat);
+      setParentSelect(defaultParent);
       setEnableGlobalTrade(true);
       setEnableLocalTrade(true);
       setEnableCoa(true);
@@ -6819,7 +6834,7 @@ export default function Modals() {
                           }
 
                           return (
-                            <option key={cat.id} value={cat.category}>
+                            <option key={cat.id || cat.category} value={cat.category}>
                               {safeIcon} {cleanName}
                             </option>
                           );
